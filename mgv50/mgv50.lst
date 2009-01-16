@@ -1,0 +1,71 @@
+EESchema (20080825c)  >> Creation date: 22/9/2008-19:19:57
+
+#Cmp ( Sortiert nach Referenz )
+| C1         100nF       
+| C2         100nF       
+| C3         15nF        
+| C4         15nF        
+| C5         10µF 35V   
+| C6         100nF       
+| D1         LED 3mm green
+| D2         LED 3mm red 
+| J1         DB9 Male    
+| J2         DB9 Female  
+| JP1        JUMPER      
+| P1         CONN_8      
+| P2         CONN_10     
+| P3         CONN_10     
+| P4         CONN_10     
+| Q1         BC337       
+| R1         1K          
+| R2         220K        
+| R3         22K         
+| R4         10K         
+| R5         47K         
+| R6         150K        
+| R7         4K7         
+| R8         1K          
+| R12        10K         
+| RR1        8 x 10K     
+| RR2        8 x 10K     
+| U1         PIC16F873   
+| U2         7805        
+| U3         LM311       
+| X1         20MHz       
+#Ende Cmp
+
+#Cmp ( Sortiert nach Wert)
+| 100nF        C1        
+| 100nF        C2        
+| 100nF        C6        
+| 10K          R4        
+| 10K          R12       
+| 10µF 35V    C5        
+| 150K         R6        
+| 15nF         C3        
+| 15nF         C4        
+| 1K           R1        
+| 1K           R8        
+| 20MHz        X1        
+| 220K         R2        
+| 22K          R3        
+| 47K          R5        
+| 4K7          R7        
+| 7805         U2        
+| 8 x 10K      RR1       
+| 8 x 10K      RR2       
+| BC337        Q1        
+| CONN_10      P2        
+| CONN_10      P3        
+| CONN_10      P4        
+| CONN_8       P1        
+| DB9 Female   J2        
+| DB9 Male     J1        
+| JUMPER       JP1       
+| LED 3mm green D1        
+| LED 3mm red  D2        
+| LM311        U3        
+| PIC16F873    U1        
+#Ende Cmp
+
+#Ende Liste

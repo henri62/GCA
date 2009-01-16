@@ -1,0 +1,520 @@
+# EESchema Netlist Version 1.1 created  24/9/2008-19:15:26
+(
+ ( /48DA0302 $noname  JP3 JUMPER {Lib=JUMPER}
+  (    1 N-000003 )
+  (    2 GND )
+ )
+ ( /48DA02FF $noname  R13 10K {Lib=R}
+  (    1 VCC )
+  (    2 N-000003 )
+ )
+ ( /48DA02EE $noname  R11 10K {Lib=R}
+  (    1 N-000002 )
+  (    2 GND )
+ )
+ ( /48DA02DD $noname  JP4 JUMPER {Lib=JUMPER}
+  (    1 VCC )
+  (    2 N-000002 )
+ )
+ ( /48D7EA82 $noname  U2 7805 {Lib=7805}
+  (    1 VCC )
+  (    2 VAA )
+  (    3 GND )
+ )
+ ( /48D7C41E $noname  C5 10µF_35V {Lib=CAPAPOL}
+  (    1 VCC )
+  (    2 GND )
+ )
+ ( /48D7906A $noname  R1 1K {Lib=R}
+  (    1 N-000014 )
+  (    2 VCC )
+ )
+ ( /48D7905E $noname  C6 100nF {Lib=C}
+  (    1 VCC )
+  (    2 GND )
+ )
+ ( /48D7905B $noname  C2 100nF {Lib=C}
+  (    1 VCC )
+  (    2 GND )
+ )
+ ( /48D79057 $noname  C1 100nF {Lib=C}
+  (    1 VAA )
+  (    2 GND )
+ )
+ ( /48D784BD $noname  JP1 JUMPER {Lib=JUMPER}
+  (    1 N-000015 )
+  (    2 GND )
+ )
+ ( /48D783FC $noname  R12 10K {Lib=R}
+  (    1 VCC )
+  (    2 N-000015 )
+ )
+ ( /48D783F9 $noname  R8 1K {Lib=R}
+  (    1 N-000006 )
+  (    2 N-000004 )
+ )
+ ( /48D783F6 $noname  R7 4K7 {Lib=R}
+  (    1 N-000005 )
+  (    2 N-000012 )
+ )
+ ( /48D78264 $noname  R5 47K {Lib=R}
+  (    1 N-000009 )
+  (    2 N-000010 )
+ )
+ ( /48D7825A $noname  R4 10K {Lib=R}
+  (    1 VCC )
+  (    2 N-000011 )
+ )
+ ( /48D78254 $noname  R6 150K {Lib=R}
+  (    1 N-000010 )
+  (    2 GND )
+ )
+ ( /48D7824E $noname  R3 22K {Lib=R}
+  (    1 N-000011 )
+  (    2 GND )
+ )
+ ( /48D781F5 $noname  R2 220K {Lib=R}
+  (    1 N-000010 )
+  (    2 N-000007 )
+ )
+ ( /48D7802D $noname  C4 15nF {Lib=C}
+  (    1 N-000033 )
+  (    2 GND )
+ )
+ ( /48D78022 $noname  C3 15nF {Lib=C}
+  (    1 N-000034 )
+  (    2 GND )
+ )
+ ( /48D766CD $noname  U1 PIC16F873 {Lib=PIC16F873}
+  (    1 VCC )
+  (    2 N-000012 )
+  (    3 N-000007 )
+  (    4 N-000004 )
+  (    5 N-000015 )
+  (    6 N-000003 )
+  (    7 /IN16 )
+  (    8 GND )
+  (    9 N-000034 )
+  (   10 N-000033 )
+  (   11 /IN15 )
+  (   12 /IN14 )
+  (   13 /IN13 )
+  (   14 /IN12 )
+  (   15 /IN11 )
+  (   16 /IN10 )
+  (   17 /IN9 )
+  (   18 /IN8 )
+  (   19 GND )
+  (   20 VCC )
+  (   21 /IN7 )
+  (   22 /IN6 )
+  (   23 /IN5 )
+  (   24 N-000002 )
+  (   25 /IN4 )
+  (   26 /IN3 )
+  (   27 /IN2 )
+  (   28 /IN1 )
+ )
+ ( /48D76283 $noname  D1 LED_3mm_green {Lib=LED}
+  (    1 N-000014 )
+  (    2 GND )
+ )
+ ( /48D76271 $noname  Q1 BC337 {Lib=NPN}
+  (    1 GND )
+  (    2 N-000005 )
+  (    3 N-000009 )
+ )
+ ( /48D7625B $noname  X1 20MHz {Lib=CRYSTAL}
+  (    1 N-000034 )
+  (    2 N-000033 )
+ )
+ ( /48D76243 $noname  D2 LED_3mm_red {Lib=LED}
+  (    1 N-000006 )
+  (    2 GND )
+ )
+ ( /48D76230 $noname  U3 LM311 {Lib=LM311N}
+  (    1 GND )
+  (    2 N-000010 )
+  (    3 N-000011 )
+  (    4 GND )
+  (    5 ? )
+  (    6 ? )
+  (    7 N-000007 )
+  (    8 VCC )
+ )
+ ( /48D761DA $noname  P4 CONN_10 {Lib=CONN_10}
+  (    1 VCC )
+  (    2 GND )
+  (    3 /IN9 )
+  (    4 /IN10 )
+  (    5 /IN11 )
+  (    6 /IN12 )
+  (    7 /IN13 )
+  (    8 /IN14 )
+  (    9 /IN15 )
+  (   10 /IN16 )
+ )
+ ( /48D761D2 $noname  P1 CONN_8 {Lib=CONN_8}
+  (    1 /IN1 )
+  (    2 /IN2 )
+  (    3 /IN3 )
+  (    4 /IN4 )
+  (    5 /IN5 )
+  (    6 /IN6 )
+  (    7 /IN7 )
+  (    8 /IN8 )
+ )
+ ( /48D761AC $noname  P3 CONN_10 {Lib=CONN_10}
+  (    1 VCC )
+  (    2 GND )
+  (    3 /IN1 )
+  (    4 /IN2 )
+  (    5 /IN3 )
+  (    6 /IN4 )
+  (    7 /IN5 )
+  (    8 /IN6 )
+  (    9 /IN7 )
+  (   10 /IN8 )
+ )
+ ( /48D761A8 $noname  P2 CONN_10 {Lib=CONN_10}
+  (    1 VCC )
+  (    2 GND )
+  (    3 /IN9 )
+  (    4 /IN10 )
+  (    5 /IN11 )
+  (    6 /IN12 )
+  (    7 /IN13 )
+  (    8 /IN14 )
+  (    9 /IN15 )
+  (   10 /IN16 )
+ )
+ ( /48D7617C $noname  RR1 8_x_10K {Lib=RR8}
+  (    1 VCC )
+  (    2 /IN1 )
+  (    3 /IN2 )
+  (    4 /IN3 )
+  (    5 /IN4 )
+  (    6 /IN5 )
+  (    7 /IN6 )
+  (    8 /IN7 )
+  (    9 /IN8 )
+ )
+ ( /48D76175 $noname  RR2 8_x_10K {Lib=RR8}
+  (    1 VCC )
+  (    2 /IN9 )
+  (    3 /IN10 )
+  (    4 /IN11 )
+  (    5 /IN12 )
+  (    6 /IN13 )
+  (    7 /IN14 )
+  (    8 /IN15 )
+  (    9 /IN16 )
+ )
+ ( /48D7614D $noname  J2 DB9_Female {Lib=DB9}
+  (    1 GND )
+  (    2 N-000008 )
+  (    3 N-000009 )
+  (    4 ? )
+  (    5 VAA )
+  (    6 GND )
+  (    7 ? )
+  (    8 ? )
+  (    9 VAA )
+ )
+ ( /48D76147 $noname  J1 DB9_Male {Lib=DB9}
+  (    1 GND )
+  (    2 N-000008 )
+  (    3 N-000009 )
+  (    4 ? )
+  (    5 VAA )
+  (    6 GND )
+  (    7 ? )
+  (    8 ? )
+  (    9 VAA )
+ )
+)
+*
+{ Allowed footprints by component:
+$component R13
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+$endlist
+$component C5
+ CP*
+ SM*
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+$endlist
+$component C6
+ SM*
+ C?
+ C1-1
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+$endlist
+$component C4
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component J2
+ DB9*
+$endlist
+$component J1
+ DB9*
+$endlist
+$endfootprintlist
+}
+{ Pin List by Nets
+Net 1 "GND"
+ JP3 2
+ R11 2
+ U2 3
+ C5 2
+ C6 2
+ C2 2
+ C1 2
+ JP1 2
+ R6 2
+ R3 2
+ C4 2
+ C3 2
+ U1 19
+ U1 8
+ D1 2
+ Q1 1
+ D2 2
+ U3 4
+ U3 1
+ P4 2
+ P3 2
+ P2 2
+ J2 1
+ J2 6
+ J1 1
+ J1 6
+Net 2 ""
+ R11 1
+ JP4 2
+ U1 24
+Net 3 ""
+ JP3 1
+ R13 2
+ U1 6
+Net 4 ""
+ R8 2
+ U1 4
+Net 5 ""
+ R7 1
+ Q1 2
+Net 6 ""
+ R8 1
+ D2 1
+Net 7 ""
+ R2 2
+ U1 3
+ U3 7
+Net 8 ""
+ J2 2
+ J1 2
+Net 9 ""
+ R5 1
+ Q1 3
+ J2 3
+ J1 3
+Net 10 ""
+ R5 2
+ R6 1
+ R2 1
+ U3 2
+Net 11 ""
+ R4 2
+ R3 1
+ U3 3
+Net 12 ""
+ R7 2
+ U1 2
+Net 13 "VAA"
+ U2 2
+ C1 1
+ J2 9
+ J2 5
+ J1 9
+ J1 5
+Net 14 ""
+ R1 1
+ D1 1
+Net 15 ""
+ JP1 1
+ R12 2
+ U1 5
+Net 16 "VCC"
+ R13 1
+ JP4 1
+ U2 1
+ C5 1
+ R1 2
+ C6 1
+ C2 1
+ R12 1
+ R4 1
+ U1 20
+ U1 1
+ U3 8
+ P4 1
+ P3 1
+ P2 1
+ RR1 1
+ RR2 1
+/Net 17 "IN16"
+ U1 7
+ P4 10
+ P2 10
+ RR2 9
+/Net 18 "IN15"
+ U1 11
+ P4 9
+ P2 9
+ RR2 8
+/Net 19 "IN14"
+ U1 12
+ P4 8
+ P2 8
+ RR2 7
+/Net 20 "IN13"
+ U1 13
+ P4 7
+ P2 7
+ RR2 6
+/Net 21 "IN12"
+ U1 14
+ P4 6
+ P2 6
+ RR2 5
+/Net 22 "IN11"
+ U1 15
+ P4 5
+ P2 5
+ RR2 4
+/Net 23 "IN10"
+ U1 16
+ P4 4
+ P2 4
+ RR2 3
+/Net 24 "IN9"
+ U1 17
+ P4 3
+ P2 3
+ RR2 2
+/Net 25 "IN8"
+ U1 18
+ P1 8
+ P3 10
+ RR1 9
+/Net 26 "IN7"
+ U1 21
+ P1 7
+ P3 9
+ RR1 8
+/Net 27 "IN6"
+ U1 22
+ P1 6
+ P3 8
+ RR1 7
+/Net 28 "IN5"
+ U1 23
+ P1 5
+ P3 7
+ RR1 6
+/Net 29 "IN4"
+ U1 25
+ P1 4
+ P3 6
+ RR1 5
+/Net 30 "IN3"
+ U1 26
+ P1 3
+ P3 5
+ RR1 4
+/Net 31 "IN2"
+ U1 27
+ P1 2
+ P3 4
+ RR1 3
+/Net 32 "IN1"
+ U1 28
+ P1 1
+ P3 3
+ RR1 2
+Net 33 ""
+ C4 1
+ U1 10
+ X1 2
+Net 34 ""
+ C3 1
+ U1 9
+ X1 1
+}
+#End

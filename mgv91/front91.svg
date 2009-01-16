@@ -1,0 +1,24 @@
+<svg width="10cm" height="4cm" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect x=".01cm" y=".01cm" width="9.98cm" height="3.98cm" fill="white" stroke="black" stroke-width=".02cm" />
+  <image x="3cm" y="0.2cm" width="4cm" height="2cm" xlink:href="/home/rob/sf/Rocrail/doc/rocrail-logo-net.png" preserveAspectRatio="xMinYMin meet"/>
+  <rect x="2.8cm" y="2cm" width="1.4cm" height="1.5cm" fill="white" stroke="black" stroke-width=".02cm" />
+  
+  <text x="0.3cm" y="3.8cm" font-family="Verdana" font-size="0.3cm" fill="black">
+    MGV91
+  </text>  
+  <text x="4.3cm" y="2.9cm" font-family="Verdana" font-size="0.17cm" fill="black">
+    Power
+  </text>  
+  <text x="5.0cm" y="2.9cm" font-family="Verdana" font-size="0.17cm" fill="black">
+    LocoNet
+  </text>  
+  
+  <circle cx="4.6cm" cy="3.2cm" r=".15cm" fill="green" stroke="black" stroke-width=".02cm"/>
+  <circle cx="5.4cm" cy="3.2cm" r=".15cm" fill="red" stroke="black" stroke-width=".02cm"/>
+  <rect x="5.8cm" y="2cm" width="1.4cm" height="1.5cm" fill="white" stroke="black" stroke-width=".02cm" />
+
+  <circle cx="0.5cm" cy="2.0cm" r=".10cm" fill="none" stroke="black" stroke-width=".02cm"/>
+  <circle cx="9.5cm" cy="2.0cm" r=".10cm" fill="none" stroke="black" stroke-width=".02cm"/>
+
+</svg>
+
