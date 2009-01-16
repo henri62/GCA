@@ -1,0 +1,199 @@
+Cmp-Mod V01 Created by CVpcb (20080825c) date = 23/10/2008-22:31:30
+
+BeginCmp
+TimeStamp = /48FB53C8;
+Reference = C1;
+ValeurCmp = 1000uF;
+IdModule  = C2V10;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB53EE;
+Reference = C2;
+ValeurCmp = 100nF;
+IdModule  = C2;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB53CD;
+Reference = C3;
+ValeurCmp = 100uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB552B;
+Reference = D1;
+ValeurCmp = B80C1500;
+IdModule  = PIN_ARRAY_2X2;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FF60C5;
+Reference = D2;
+ValeurCmp = 1N4001;
+IdModule  = D4;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB5419;
+Reference = D3;
+ValeurCmp = LED_3mA;
+IdModule  = LEDV;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FF60C9;
+Reference = D4;
+ValeurCmp = 1N4001;
+IdModule  = D4;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F49AFC;
+Reference = D5;
+ValeurCmp = LED_3mA;
+IdModule  = LEDV;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F61867;
+Reference = Drill1;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F6186C;
+Reference = Drill2;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F6186F;
+Reference = Drill3;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F618D4;
+Reference = Drill4;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FF929A;
+Reference = Drill5;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FF929F;
+Reference = Drill6;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F49ACE;
+Reference = J1;
+ValeurCmp = RJ12;
+IdModule  = RJ12_E;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F49AD1;
+Reference = J2;
+ValeurCmp = RJ12;
+IdModule  = RJ12_E;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F49AD3;
+Reference = J3;
+ValeurCmp = RJ12;
+IdModule  = RJ12_E;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F49AD6;
+Reference = J4;
+ValeurCmp = RJ12;
+IdModule  = RJ12_E;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FF6335;
+Reference = J5;
+ValeurCmp = RJ12;
+IdModule  = RJ12_E;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB53DE;
+Reference = JP1;
+ValeurCmp = JUMPER;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB52CB;
+Reference = JP2;
+ValeurCmp = JUMPER;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB53E3;
+Reference = P1;
+ValeurCmp = CONN_2;
+IdModule  = bornier2;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F49B19;
+Reference = P2;
+ValeurCmp = CONN_2;
+IdModule  = bornier2;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB5140;
+Reference = P3;
+ValeurCmp = CONN_2;
+IdModule  = bornier2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4900FAE4;
+Reference = P4;
+ValeurCmp = CONN_2;
+IdModule  = bornier2;
+EndCmp
+
+BeginCmp
+TimeStamp = /48F49AE6;
+Reference = R1;
+ValeurCmp = 4K7;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB5410;
+Reference = R2;
+ValeurCmp = 4K7;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /48FB53B0;
+Reference = U1;
+ValeurCmp = LM7812;
+IdModule  = TO220_VERT;
+EndCmp
+
+EndListe

@@ -1,0 +1,73 @@
+
+# This file was written by gpsim.
+
+# You can use this file for example like this:
+#     gpsim -s mycode.cod -c netlist.stc
+
+# If you want to add commands, you can create another .stc file
+# and load this file from it. Something like this:
+# ----------- myproject.stc ---------------
+# load s mycode.cod
+# frequency 12000000
+# load c netlist.stc
+# -----------------------------------------
+# You can then just load this new file:
+#     gpsim -c myproject.stc
+# and use netlist.stc whenever you save from the breadboard.
+#
+
+
+# Processor position:
+
+
+# Module libraries:
+
+
+# Modules:
+p16f873.CONFIG=$ff
+p16f873.WarnMode=true
+p16f873.SafeMode=true
+p16f873.UnknownMode=true
+p16f873.BreakOnReset=true
+p16f873.BreakOnInvalidRegisterRead=true
+p16f873.BreakOnInvalidRegisterWrite=true
+p16f873.frequency=20000000.00000000
+p16f873.xpos=72.00000000000000
+p16f873.ypos=72.00000000000000
+
+
+
+# Connections:
+node butonNext
+attach butonNext porta3
+
+node buttonLeft
+attach buttonLeft portc5
+
+node buttonRight
+attach buttonRight portc6
+
+node buttonSave
+attach buttonSave portc4
+
+node buttonSetup
+attach buttonSetup portc7
+
+node ledOK
+attach ledOK portc3
+
+node microBegin
+attach microBegin portc0
+
+node microEnd
+attach microEnd portc1
+
+node newPos
+attach newPos portc2
+
+node power
+attach power porta1
+
+
+
+# End.

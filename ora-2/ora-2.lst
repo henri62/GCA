@@ -1,0 +1,73 @@
+EESchema (2007-01-15)  >> Creation date: 9/8/2008-16:12:52
+
+#Cmp ( order = Reference )
+| C1         18pF        
+| C2         18pF        
+| C3         470uF       
+| C4         100nF       
+| C5         4.7uF       
+| C6         100nF       
+| D1         1N4148      
+| D2         LED         
+| D3         B80C1500    
+| F1         Multifuse 0,9A
+| JP1        JUMPER      
+| JP2        JUMPER      
+| JP3        JUMPER      
+| K1         CONN_3      
+| K2         CONN_3      
+| K3         CONN_3      
+| K4         CONN_3      
+| K5         CONN_2      
+| K6         CONN_2      
+| O1         6N136       
+| P1         ISP         
+| R1         1K5         
+| R2         10K         
+| R3         10K         
+| R4         1K5         
+| R5         10K         
+| SW1        SW_PUSH     
+| U1         ATTINY2313DIP/SO
+| U2         ULN2803A    
+| U3         ULN2803A    
+| U4         LM7805      
+| X1         10MHz       
+#End Cmp
+
+#Cmp ( order = Value )
+| 100nF        C4        
+| 100nF        C6        
+| 10K          R2        
+| 10K          R3        
+| 10K          R5        
+| 10MHz        X1        
+| 18pF         C1        
+| 18pF         C2        
+| 1K5          R1        
+| 1K5          R4        
+| 1N4148       D1        
+| 4.7uF        C5        
+| 470uF        C3        
+| 6N136        O1        
+| ATTINY2313DIP/SO U1        
+| B80C1500     D3        
+| CONN_2       K5        
+| CONN_2       K6        
+| CONN_3       K1        
+| CONN_3       K2        
+| CONN_3       K3        
+| CONN_3       K4        
+| ISP          P1        
+| JUMPER       JP1       
+| JUMPER       JP2       
+| JUMPER       JP3       
+| LED          D2        
+| LM7805       U4        
+| Multifuse 0,9A F1        
+| SW_PUSH      SW1       
+| ULN2803A     U2        
+| ULN2803A     U3        
+#End Cmp
+
+#End List

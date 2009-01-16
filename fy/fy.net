@@ -1,0 +1,566 @@
+# EESchema Netlist Version 1.1 created  12/9/2008-20:13:59
+(
+ ( 4825B674 $noname$ 21 TFK_705
+  ( 1 N-000008 )
+  ( 2 N-000066 )
+  ( 3 N-000069 )
+  ( 4 ? )
+  ( 5 N-000020 )
+  ( 6 N-000019 )
+  ( 7 N-000002 )
+  ( 8 N-000018 )
+  ( 9 ? )
+  ( 10 N-000016 )
+  ( 11 N-000025 )
+  ( 12 N-000011 )
+  ( 13 VDD )
+  ( 14 VDD )
+  ( 15 N-000014 )
+  ( 16 N-000065 )
+  ( 17 N-000013 )
+  ( 18 N-000012 )
+ )
+ ( 48289116 $noname$ C1 100uF
+  ( 1 N-000004 )
+  ( 2 GND )
+ )
+ ( 4821E9C7 $noname$ C2 10p
+  ( 1 GND )
+  ( 2 N-000035 )
+ )
+ ( 4821E9CD $noname$ C3 10p
+  ( 1 GND )
+  ( 2 N-000034 )
+ )
+ ( 482572C6 $noname$ C4 100uF
+  ( 1 VDD )
+  ( 2 GND )
+ )
+ ( 4821EB06 $noname$ D1 LED
+  ( 1 N-000049 )
+  ( 2 N-000057 )
+ )
+ ( 48289095 $noname$ D2 BRIDGE
+  ( 1 GND )
+  ( 2 N-000058 )
+  ( 3 N-000004 )
+  ( 4 N-000022 )
+ )
+ ( 4821F06C $noname$ K1 CONN_3
+  ( 1 N-000031 )
+  ( 2 N-000048 )
+  ( 3 GND )
+ )
+ ( 4825755D $noname$ P1 CONN_7
+  ( 1 N-000070 )
+  ( 2 N-000071 )
+  ( 3 N-000026 )
+  ( 4 N-000005 )
+  ( 5 N-000027 )
+  ( 6 N-000056 )
+  ( 7 N-000028 )
+ )
+ ( 482570C3 $noname$ P2 CONN_6
+  ( 1 N-000055 )
+  ( 2 N-000052 )
+  ( 3 N-000051 )
+  ( 4 N-000053 )
+  ( 5 N-000050 )
+  ( 6 GND )
+ )
+ ( 4821F1AF $noname$ P3 CONN_5
+  ( 1 N-000045 )
+  ( 2 N-000046 )
+  ( 3 N-000033 )
+  ( 4 GND )
+  ( 5 VDD )
+ )
+ ( 4821F7A0 $noname$ P4 CONN_2
+  ( 1 N-000022 )
+  ( 2 N-000058 )
+ )
+ ( 4821EFFC $noname$ R1 1k
+  ( 1 N-000039 )
+  ( 2 N-000028 )
+ )
+ ( 4821F006 $noname$ R2 1k
+  ( 1 N-000056 )
+  ( 2 N-000040 )
+ )
+ ( 4821F00C $noname$ R3 1k
+  ( 1 N-000038 )
+  ( 2 N-000027 )
+ )
+ ( 4821F72B $noname$ R4 560
+  ( 1 N-000006 )
+  ( 2 N-000071 )
+ )
+ ( 4821F016 $noname$ R5 1k
+  ( 1 N-000041 )
+  ( 2 N-000005 )
+ )
+ ( 4821F0C5 $noname$ R6 1k
+  ( 1 N-000037 )
+  ( 2 N-000026 )
+ )
+ ( 4821F758 $noname$ R7 1k
+  ( 1 N-000049 )
+  ( 2 N-000044 )
+ )
+ ( 4821EFDF $noname$ R8 1k
+  ( 1 VDD )
+  ( 2 N-000032 )
+ )
+ ( 4821EFE5 $noname$ R9 1k
+  ( 1 VDD )
+  ( 2 N-000042 )
+ )
+ ( 4821EFEA $noname$ R10 1k
+  ( 1 VDD )
+  ( 2 N-000036 )
+ )
+ ( 4821EFF0 $noname$ R11 1k
+  ( 1 VDD )
+  ( 2 N-000043 )
+ )
+ ( 4821F0FB $noname$ R12 1k
+  ( 1 VDD )
+  ( 2 N-000047 )
+ )
+ ( 48256767 $noname$ R13 10k
+  ( 1 VDD )
+  ( 2 N-000050 )
+ )
+ ( 4821FC66 $noname$ R14 10k
+  ( 1 VDD )
+  ( 2 N-000053 )
+ )
+ ( 4821FC6B $noname$ R15 10k
+  ( 1 VDD )
+  ( 2 N-000051 )
+ )
+ ( 4821FC71 $noname$ R16 10k
+  ( 1 VDD )
+  ( 2 N-000052 )
+ )
+ ( 482570B8 $noname$ R17 10k
+  ( 1 VDD )
+  ( 2 N-000055 )
+ )
+ ( 482200CE $noname$ R18 10k
+  ( 1 VDD )
+  ( 2 N-000030 )
+ )
+ ( 482577F1 $noname$ R19 1k
+  ( 1 GND )
+  ( 2 N-000057 )
+ )
+ ( 482F5FF6 $noname$ R20 560
+  ( 1 N-000065 )
+  ( 2 N-000010 )
+ )
+ ( 482F601F $noname$ R21 560
+  ( 1 N-000014 )
+  ( 2 N-000009 )
+ )
+ ( 482F603B $noname$ R22 560
+  ( 1 N-000069 )
+  ( 2 N-000067 )
+ )
+ ( 482F6063 $noname$ R23 560
+  ( 1 N-000066 )
+  ( 2 N-000068 )
+ )
+ ( 482F6085 $noname$ R24 560
+  ( 1 N-000008 )
+  ( 2 N-000007 )
+ )
+ ( 482F60C1 $noname$ R25 560
+  ( 1 N-000012 )
+  ( 2 N-000074 )
+ )
+ ( 482F609F $noname$ R26 560
+  ( 1 N-000013 )
+  ( 2 N-000021 )
+ )
+ ( 4821FDD8 $noname$ R27 10k
+  ( 1 VDD )
+  ( 2 N-000031 )
+ )
+ ( 4821FDDD $noname$ R28 10k
+  ( 1 VDD )
+  ( 2 N-000048 )
+ )
+ ( 482F5EAB $noname$ R29 560
+  ( 1 N-000002 )
+  ( 2 N-000060 )
+ )
+ ( 482F5E91 $noname$ R30 560
+  ( 1 N-000019 )
+  ( 2 N-000062 )
+ )
+ ( 482F5EA0 $noname$ R31 560
+  ( 1 N-000016 )
+  ( 2 N-000064 )
+ )
+ ( 482F5E4A $noname$ R32 560
+  ( 1 N-000011 )
+  ( 2 N-000059 )
+ )
+ ( 482F5E87 $noname$ R33 560
+  ( 1 N-000020 )
+  ( 2 N-000061 )
+ )
+ ( 482F5E98 $noname$ R34 560
+  ( 1 N-000018 )
+  ( 2 N-000063 )
+ )
+ ( 482F5EB8 $noname$ R35 560
+  ( 1 N-000025 )
+  ( 2 N-000017 )
+ )
+ ( 48CAC808 R3 R36 10k
+  ( 1 N-000073 )
+  ( 2 VDD )
+ )
+ ( 48CAC817 R3 R37 10k
+  ( 1 N-000023 )
+  ( 2 VDD )
+ )
+ ( 4821EC05 $noname$ U1 PHDARL
+  ( 1 N-000039 )
+  ( 2 N-000070 )
+  ( 3 GND )
+  ( 4 N-000032 )
+ )
+ ( 4821EE6E $noname$ U2 PHDARL
+  ( 1 N-000040 )
+  ( 2 N-000070 )
+  ( 3 GND )
+  ( 4 N-000042 )
+ )
+ ( 4821EE74 $noname$ U3 PHDARL
+  ( 1 N-000038 )
+  ( 2 N-000070 )
+  ( 3 GND )
+  ( 4 N-000036 )
+ )
+ ( 4821EE79 $noname$ U4 PHDARL
+  ( 1 N-000041 )
+  ( 2 N-000070 )
+  ( 3 GND )
+  ( 4 N-000043 )
+ )
+ ( 4821F093 $noname$ U5 PHDARL
+  ( 1 N-000037 )
+  ( 2 N-000070 )
+  ( 3 GND )
+  ( 4 N-000047 )
+ )
+ ( 4821F690 $noname$ U6 PHDARL
+  ( 1 N-000044 )
+  ( 2 GND )
+  ( 3 N-000070 )
+  ( 4 N-000006 )
+ )
+ ( 488635E6 $noname$ U06 4543
+  ( 1 N-000023 )
+  ( 2 N-000072 )
+  ( 3 N-000024 )
+  ( 4 N-000054 )
+  ( 5 N-000029 )
+  ( 6 VDD )
+  ( 7 GND )
+  ( 8 GND )
+  ( 9 N-000010 )
+  ( 10 N-000009 )
+  ( 11 N-000067 )
+  ( 12 N-000068 )
+  ( 13 N-000007 )
+  ( 14 N-000021 )
+  ( 15 N-000074 )
+  ( 16 VDD )
+ )
+ ( 4821E8FB $noname$ U7 PIC16F876
+  ( 1 N-000030 )
+  ( 2 N-000045 )
+  ( 3 N-000046 )
+  ( 4 N-000033 )
+  ( 5 N-000055 )
+  ( 6 N-000023 )
+  ( 7 N-000073 )
+  ( 8 GND )
+  ( 9 N-000035 )
+  ( 10 N-000034 )
+  ( 11 N-000031 )
+  ( 12 N-000048 )
+  ( 13 N-000047 )
+  ( 14 N-000049 )
+  ( 15 N-000052 )
+  ( 16 N-000051 )
+  ( 17 N-000053 )
+  ( 18 N-000050 )
+  ( 19 GND )
+  ( 20 VDD )
+  ( 21 N-000029 )
+  ( 22 N-000024 )
+  ( 23 N-000072 )
+  ( 24 N-000054 )
+  ( 25 N-000043 )
+  ( 26 N-000036 )
+  ( 27 N-000042 )
+  ( 28 N-000032 )
+ )
+ ( 48878CA0 $noname$ U8 7805
+  ( 1 N-000004 )
+  ( 2 GND )
+  ( 3 VDD )
+ )
+ ( 48863602 $noname$ U08 4543
+  ( 1 N-000073 )
+  ( 2 N-000072 )
+  ( 3 N-000024 )
+  ( 4 N-000054 )
+  ( 5 N-000029 )
+  ( 6 VDD )
+  ( 7 GND )
+  ( 8 GND )
+  ( 9 N-000017 )
+  ( 10 N-000064 )
+  ( 11 N-000063 )
+  ( 12 N-000062 )
+  ( 13 N-000061 )
+  ( 14 N-000060 )
+  ( 15 N-000059 )
+  ( 16 VDD )
+ )
+ ( 4821EB4A $noname$ X1 20MHz
+  ( 1 N-000035 )
+  ( 2 N-000034 )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C1
+ CP*
+ SM*
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component C4
+ CP*
+ SM*
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R10
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R13
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R14
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R15
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R16
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R17
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R18
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R19
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R20
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R21
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R22
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R23
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R24
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R25
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R26
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R27
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R28
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R29
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R30
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R31
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R32
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R33
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R34
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R35
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R36
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R37
+ R?
+ SM0603
+ SM0805
+$endlist
+$component U1
+ so4*
+$endlist
+$component U2
+ so4*
+$endlist
+$component U3
+ so4*
+$endlist
+$component U4
+ so4*
+$endlist
+$component U5
+ so4*
+$endlist
+$component U6
+ so4*
+$endlist
+$endfootprintlist
+}

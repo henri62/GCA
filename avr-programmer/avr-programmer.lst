@@ -1,0 +1,27 @@
+EESchema (2007-01-15)  >> Creation date: 18/6/2008-19:52:28
+
+#Cmp ( order = Reference )
+| D1         4,7V        
+| D2         4,7V        
+| J1         DB9         
+| P1         CONN_3X2    
+| Q1         BC549       
+| R1         10k         
+| R2         1k          
+| R3         1k          
+| R4         15k         
+#End Cmp
+
+#Cmp ( order = Value )
+| 10k          R1        
+| 15k          R4        
+| 1k           R2        
+| 1k           R3        
+| 4,7V         D1        
+| 4,7V         D2        
+| BC549        Q1        
+| CONN_3X2     P1        
+| DB9          J1        
+#End Cmp
+
+#End List

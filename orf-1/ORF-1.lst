@@ -1,0 +1,415 @@
+EESchema (2007-01-15)  >> Creation date: 14/7/2008-16:35:24
+
+#Cmp ( order = Reference )
+| C1         10n         
+| C10        10n         
+| C11        10n         
+| C12        10n         
+| C13        10n         
+| C14        10n         
+| C15        10n         
+| C16        10n         
+| C17        100n        
+| C18        100n        
+| C19        100uF       
+| C2         10n         
+| C3         10n         
+| C4         10n         
+| C5         10n         
+| C6         10n         
+| C7         10n         
+| C8         10n         
+| C9         10n         
+| D1         DIODE 3A    
+| D10        DIODE 3A    
+| D11        DIODE 3A    
+| D12        DIODE 3A    
+| D13        DIODE 3A    
+| D14        DIODE 3A    
+| D15        DIODE 3A    
+| D16        DIODE 3A    
+| D17        DIODE 3A    
+| D18        DIODE 3A    
+| D19        DIODE 3A    
+| D2         DIODE 3A    
+| D20        DIODE 3A    
+| D21        DIODE 3A    
+| D22        DIODE 3A    
+| D23        DIODE 3A    
+| D24        DIODE 3A    
+| D25        DIODE 3A    
+| D26        DIODE 3A    
+| D27        DIODE 3A    
+| D28        DIODE 3A    
+| D29        DIODE 3A    
+| D3         DIODE 3A    
+| D30        DIODE 3A    
+| D31        DIODE 3A    
+| D32        DIODE 3A    
+| D4         DIODE 3A    
+| D5         DIODE 3A    
+| D6         DIODE 3A    
+| D7         DIODE 3A    
+| D8         DIODE 3A    
+| D9         DIODE 3A    
+| J1         CONN_2      
+| J10        CONN_2      
+| J11        CONN_2      
+| J12        CONN_2      
+| J13        CONN_2      
+| J14        CONN_2      
+| J15        CONN_2      
+| J16        CONN_2      
+| J17        CONN_2      
+| J18        CONN_2      
+| J19        CONN_2      
+| J2         CONN_2      
+| J20        CONN_2      
+| J21        CONN_2      
+| J3         CONN_2      
+| J4         CONN_2      
+| J5         CONN_2      
+| J6         CONN_2      
+| J7         CONN_2      
+| J8         CONN_2      
+| J9         CONN_2      
+| K1         CONN_8      
+| K2         CONN_8      
+| K3         CONN_8      
+| K4         CONN_8      
+| LED1       LED         
+| LED10      LED         
+| LED11      LED         
+| LED12      LED         
+| LED13      LED         
+| LED14      LED         
+| LED15      LED         
+| LED16      LED         
+| LED2       LED         
+| LED3       LED         
+| LED4       LED         
+| LED5       LED         
+| LED6       LED         
+| LED7       LED         
+| LED8       LED         
+| LED9       LED         
+| O1         PC817       
+| O10        PC817       
+| O11        PC817       
+| O12        PC817       
+| O13        PC817       
+| O14        PC817       
+| O15        PC817       
+| O16        PC817       
+| O2         PC817       
+| O3         PC817       
+| O4         PC817       
+| O5         PC817       
+| O6         PC817       
+| O7         PC817       
+| O8         PC817       
+| O9         PC817       
+| P1         CONN_6      
+| P2         CONN_6      
+| P3         RJ45        
+| P4         RJ45        
+| Q1         BC338       
+| Q10        BC338       
+| Q11        BC338       
+| Q12        BC338       
+| Q13        BC338       
+| Q14        BC338       
+| Q15        BC338       
+| Q16        BC338       
+| Q17        BC338       
+| Q2         BC338       
+| Q3         BC338       
+| Q4         BC338       
+| Q5         BC338       
+| Q6         BC338       
+| Q7         BC338       
+| Q8         BC338       
+| Q9         BC338       
+| R1         1k          
+| R10        1k          
+| R11        1k          
+| R12        1k          
+| R13        1k          
+| R14        1k          
+| R15        1k          
+| R16        1k          
+| R17        1k          
+| R18        1k          
+| R19        1k          
+| R2         1k          
+| R20        1k          
+| R21        1k          
+| R22        1k          
+| R23        1k          
+| R24        1k          
+| R25        1k          
+| R26        1k          
+| R27        1k          
+| R28        1k          
+| R29        1k          
+| R3         1k          
+| R30        1k          
+| R31        1k          
+| R32        1k          
+| R33        4k7         
+| R34        4k7         
+| R35        4k7         
+| R36        4k7         
+| R37        4k7         
+| R38        4k7         
+| R39        4k7         
+| R4         1k          
+| R40        4k7         
+| R41        4k7         
+| R42        4k7         
+| R43        4k7         
+| R44        4k7         
+| R45        4k7         
+| R46        4k7         
+| R47        4k7         
+| R48        4k7         
+| R49        10k         
+| R5         1k          
+| R50        10k         
+| R51        10k         
+| R52        10k         
+| R53        10k         
+| R54        10k         
+| R55        10k         
+| R56        10k         
+| R57        10k         
+| R58        10k         
+| R59        10k         
+| R6         1k          
+| R60        10k         
+| R61        10k         
+| R62        10k         
+| R63        10k         
+| R64        10k         
+| R65        10k         
+| R66        10k         
+| R67        100k        
+| R68        220R        
+| R7         1k          
+| R8         1k          
+| R9         1k          
+| U1         4014        
+| U2         4014        
+| U3         4044        
+| U4         4044        
+| U5         4044        
+| U6         4044        
+#End Cmp
+
+#Cmp ( order = Value )
+| 100k         R67       
+| 100n         C17       
+| 100n         C18       
+| 100uF        C19       
+| 10k          R49       
+| 10k          R50       
+| 10k          R51       
+| 10k          R52       
+| 10k          R53       
+| 10k          R54       
+| 10k          R55       
+| 10k          R56       
+| 10k          R57       
+| 10k          R58       
+| 10k          R59       
+| 10k          R60       
+| 10k          R61       
+| 10k          R62       
+| 10k          R63       
+| 10k          R64       
+| 10k          R65       
+| 10k          R66       
+| 10n          C1        
+| 10n          C10       
+| 10n          C11       
+| 10n          C12       
+| 10n          C13       
+| 10n          C14       
+| 10n          C15       
+| 10n          C16       
+| 10n          C2        
+| 10n          C3        
+| 10n          C4        
+| 10n          C5        
+| 10n          C6        
+| 10n          C7        
+| 10n          C8        
+| 10n          C9        
+| 1k           R1        
+| 1k           R10       
+| 1k           R11       
+| 1k           R12       
+| 1k           R13       
+| 1k           R14       
+| 1k           R15       
+| 1k           R16       
+| 1k           R17       
+| 1k           R18       
+| 1k           R19       
+| 1k           R2        
+| 1k           R20       
+| 1k           R21       
+| 1k           R22       
+| 1k           R23       
+| 1k           R24       
+| 1k           R25       
+| 1k           R26       
+| 1k           R27       
+| 1k           R28       
+| 1k           R29       
+| 1k           R3        
+| 1k           R30       
+| 1k           R31       
+| 1k           R32       
+| 1k           R4        
+| 1k           R5        
+| 1k           R6        
+| 1k           R7        
+| 1k           R8        
+| 1k           R9        
+| 220R         R68       
+| 4014         U1        
+| 4014         U2        
+| 4044         U3        
+| 4044         U4        
+| 4044         U5        
+| 4044         U6        
+| 4k7          R33       
+| 4k7          R34       
+| 4k7          R35       
+| 4k7          R36       
+| 4k7          R37       
+| 4k7          R38       
+| 4k7          R39       
+| 4k7          R40       
+| 4k7          R41       
+| 4k7          R42       
+| 4k7          R43       
+| 4k7          R44       
+| 4k7          R45       
+| 4k7          R46       
+| 4k7          R47       
+| 4k7          R48       
+| BC338        Q1        
+| BC338        Q10       
+| BC338        Q11       
+| BC338        Q12       
+| BC338        Q13       
+| BC338        Q14       
+| BC338        Q15       
+| BC338        Q16       
+| BC338        Q17       
+| BC338        Q2        
+| BC338        Q3        
+| BC338        Q4        
+| BC338        Q5        
+| BC338        Q6        
+| BC338        Q7        
+| BC338        Q8        
+| BC338        Q9        
+| CONN_2       J1        
+| CONN_2       J10       
+| CONN_2       J11       
+| CONN_2       J12       
+| CONN_2       J13       
+| CONN_2       J14       
+| CONN_2       J15       
+| CONN_2       J16       
+| CONN_2       J17       
+| CONN_2       J18       
+| CONN_2       J19       
+| CONN_2       J2        
+| CONN_2       J20       
+| CONN_2       J21       
+| CONN_2       J3        
+| CONN_2       J4        
+| CONN_2       J5        
+| CONN_2       J6        
+| CONN_2       J7        
+| CONN_2       J8        
+| CONN_2       J9        
+| CONN_6       P1        
+| CONN_6       P2        
+| CONN_8       K1        
+| CONN_8       K2        
+| CONN_8       K3        
+| CONN_8       K4        
+| DIODE 3A     D1        
+| DIODE 3A     D10       
+| DIODE 3A     D11       
+| DIODE 3A     D12       
+| DIODE 3A     D13       
+| DIODE 3A     D14       
+| DIODE 3A     D15       
+| DIODE 3A     D16       
+| DIODE 3A     D17       
+| DIODE 3A     D18       
+| DIODE 3A     D19       
+| DIODE 3A     D2        
+| DIODE 3A     D20       
+| DIODE 3A     D21       
+| DIODE 3A     D22       
+| DIODE 3A     D23       
+| DIODE 3A     D24       
+| DIODE 3A     D25       
+| DIODE 3A     D26       
+| DIODE 3A     D27       
+| DIODE 3A     D28       
+| DIODE 3A     D29       
+| DIODE 3A     D3        
+| DIODE 3A     D30       
+| DIODE 3A     D31       
+| DIODE 3A     D32       
+| DIODE 3A     D4        
+| DIODE 3A     D5        
+| DIODE 3A     D6        
+| DIODE 3A     D7        
+| DIODE 3A     D8        
+| DIODE 3A     D9        
+| LED          LED1      
+| LED          LED10     
+| LED          LED11     
+| LED          LED12     
+| LED          LED13     
+| LED          LED14     
+| LED          LED15     
+| LED          LED16     
+| LED          LED2      
+| LED          LED3      
+| LED          LED4      
+| LED          LED5      
+| LED          LED6      
+| LED          LED7      
+| LED          LED8      
+| LED          LED9      
+| PC817        O1        
+| PC817        O10       
+| PC817        O11       
+| PC817        O12       
+| PC817        O13       
+| PC817        O14       
+| PC817        O15       
+| PC817        O16       
+| PC817        O2        
+| PC817        O3        
+| PC817        O4        
+| PC817        O5        
+| PC817        O6        
+| PC817        O7        
+| PC817        O8        
+| PC817        O9        
+| RJ45         P3        
+| RJ45         P4        
+#End Cmp
+
+#End List

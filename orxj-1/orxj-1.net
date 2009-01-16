@@ -1,0 +1,177 @@
+# EESchema Netlist Version 1.1 created  23/10/2008-22:31:30
+(
+ ( /48FB53C8 C2V10 C1 1000uF
+  ( 1 N-000019 )
+  ( 2 N-000025 )
+ )
+ ( /48FB53EE C2 C2 100nF
+  ( 1 N-000018 )
+  ( 2 N-000025 )
+ )
+ ( /48FB53CD C1V5 C3 100uF
+  ( 1 N-000018 )
+  ( 2 N-000025 )
+ )
+ ( /48FB552B PIN_ARRAY_2X2 D1 B80C1500
+  ( 1 N-000025 )
+  ( 2 N-000001 )
+  ( 3 N-000019 )
+  ( 4 N-000010 )
+ )
+ ( /48FF60C5 D4 D2 1N4001
+  ( 1 N-000008 )
+  ( 2 N-000025 )
+ )
+ ( /48FB5419 LEDV D3 LED_3mA
+  ( 1 N-000018 )
+  ( 2 N-000007 )
+ )
+ ( /48FF60C9 D4 D4 1N4001
+  ( 1 N-000018 )
+  ( 2 N-000002 )
+ )
+ ( /48F49AFC LEDV D5 LED_3mA
+  ( 1 N-000024 )
+  ( 2 N-000009 )
+ )
+ ( /48F61867 1pin Drill1 CONN_1
+  ( 1 ? )
+ )
+ ( /48F6186C 1pin Drill2 CONN_1
+  ( 1 ? )
+ )
+ ( /48F6186F 1pin Drill3 CONN_1
+  ( 1 ? )
+ )
+ ( /48F618D4 1pin Drill4 CONN_1
+  ( 1 ? )
+ )
+ ( /48FF929A 1pin Drill5 CONN_1
+  ( 1 ? )
+ )
+ ( /48FF929F 1pin Drill6 CONN_1
+  ( 1 ? )
+ )
+ ( /48F49ACE RJ12_E J1 RJ12
+  ( 1 N-000011 )
+  ( 2 N-000025 )
+  ( 3 N-000006 )
+  ( 4 N-000005 )
+  ( 5 N-000003 )
+  ( 6 N-000004 )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /48F49AD1 RJ12_E J2 RJ12
+  ( 1 N-000011 )
+  ( 2 N-000025 )
+  ( 3 N-000006 )
+  ( 4 N-000005 )
+  ( 5 N-000024 )
+  ( 6 N-000004 )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /48F49AD3 RJ12_E J3 RJ12
+  ( 1 ? )
+  ( 2 N-000025 )
+  ( 3 N-000006 )
+  ( 4 N-000005 )
+  ( 5 N-000024 )
+  ( 6 ? )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /48F49AD6 RJ12_E J4 RJ12
+  ( 1 ? )
+  ( 2 N-000025 )
+  ( 3 N-000006 )
+  ( 4 N-000005 )
+  ( 5 N-000024 )
+  ( 6 ? )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /48FF6335 RJ12_E J5 RJ12
+  ( 1 ? )
+  ( 2 N-000025 )
+  ( 3 N-000006 )
+  ( 4 N-000005 )
+  ( 5 N-000024 )
+  ( 6 ? )
+  ( 7 ? )
+  ( 8 ? )
+ )
+ ( /48FB53DE PIN_ARRAY_2X1 JP1 JUMPER
+  ( 1 N-000024 )
+  ( 2 N-000002 )
+ )
+ ( /48FB52CB PIN_ARRAY_2X1 JP2 JUMPER
+  ( 1 N-000003 )
+  ( 2 N-000024 )
+ )
+ ( /48FB53E3 bornier2 P1 CONN_2
+  ( 1 N-000001 )
+  ( 2 N-000010 )
+ )
+ ( /48F49B19 bornier2 P2 CONN_2
+  ( 1 N-000004 )
+  ( 2 N-000011 )
+ )
+ ( /48FB5140 bornier2 P3 CONN_2
+  ( 1 N-000024 )
+  ( 2 N-000025 )
+ )
+ ( /4900FAE4 bornier2 P4 CONN_2
+  ( 1 N-000004 )
+  ( 2 N-000011 )
+ )
+ ( /48F49AE6 R4 R1 4K7
+  ( 1 N-000009 )
+  ( 2 N-000025 )
+ )
+ ( /48FB5410 R4 R2 4K7
+  ( 1 N-000007 )
+  ( 2 N-000025 )
+ )
+ ( /48FB53B0 TO220_VERT U1 LM7812
+  ( 1 N-000018 )
+  ( 2 N-000019 )
+  ( 3 N-000008 )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C1
+ CP*
+ SM*
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ CP*
+ SM*
+$endlist
+$component D2
+ D?
+ S*
+$endlist
+$component D4
+ D?
+ S*
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+$endlist
+$endfootprintlist
+}

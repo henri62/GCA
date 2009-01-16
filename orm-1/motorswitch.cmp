@@ -1,0 +1,80 @@
+Cmp-Mod V01 Created by Cvpcb (2006-08-28) date = 3/10/2007-22:08:39
+
+BeginCmp
+TimeStamp = 4703CDEB;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = LEDV;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CDC3;
+Reference = D2;
+ValeurCmp = LED;
+IdModule  = LEDV;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CD41;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = bornier3;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CD28;
+Reference = K2;
+ValeurCmp = CONN_2;
+IdModule  = bornier2;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CD82;
+Reference = Q1;
+ValeurCmp = BD140;
+IdModule  = TO220_VERT;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CD7E;
+Reference = Q2;
+ValeurCmp = BD140;
+IdModule  = TO220_VERT;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CDE0;
+Reference = R1;
+ValeurCmp = 1K5;
+IdModule  = R5;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CDDB;
+Reference = R2;
+ValeurCmp = 1K5;
+IdModule  = R5;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CDE2;
+Reference = R3;
+ValeurCmp = 1K5;
+IdModule  = R5;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CDE5;
+Reference = R4;
+ValeurCmp = 1K5;
+IdModule  = R5;
+EndCmp
+
+BeginCmp
+TimeStamp = 4703CDE8;
+Reference = R5;
+ValeurCmp = 1k;
+IdModule  = R5;
+EndCmp
+
+EndListe

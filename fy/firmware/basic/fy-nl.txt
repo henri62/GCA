@@ -1,0 +1,84 @@
+FiddleYard controllerboard en  driverprint .
+
+Eigenschappen:
+
+Maximaal 15 spoorposities kunnen worden vastgelegd
+Handmatige bediening mogelijk
+Goede exacte en reproduceerbare positionering
+Snelheid van de FY instelbaar in 15 stappen
+Kiezen tussen permanente of tijdelijke  bekrachtiging van de stappenmotor. 
+Aanloopversnelling  en afremvertraging
+Keert na terugkeren van de spanning terug naar de laatst gekozen positie
+terugmelding na bereiken van positie
+weergeven van de positie op het display
+
+
+
+
+
+Omdat de FY aangedreven wordt door een stappenmotor moet een nulpositie vastgelegd worden. Bij het opstarten voor de eerste keer en als 
+de voedingsspaning van het controllerboard is geweest wordt de FY automatisch naar deze 0-positie gestuurd. Het bereiken van de eindschakelaar 
+legt de nulpositie in de software vast.
+
+De stappenmotor zal bij het starten langzaam de snelheid verhogen en aan het eind weer langzaam verlagen. De treinen blijven dan rustig op
+de FY staan.
+
+
+Bediening:
+
+Op het controllerboard worden 4 drukknoppen aangesloten en 1 schakelaar.
+
+Met de schakelaar maak je een keuze tussen programmode voor o.a. het vastleggen van de posities en operatingmode.
+
+Als alles goed is aangesloten loopt de FY richting microswitch/eindschakelaar om de 0-positie vast te leggen. Loopt de FY de verkeerde kant op dan 
+moet van 1 van de 2  spoelen de aansluiting omgedraaid worden.
+
+Vanuit deze 0-positie worden voor iedere rail-positie de stappen voor de stappenmotor vastgelegd .
+
+Als de Pic het programma opgestart heeft knippert ter bevestiging de rode led op het controller-board.
+
+Programmode:
+
+Stuur de FY naar de eerste gewenste positie mbv. de buttons links en rechts en druk daarna op de button-save.
+Deze positie is nu opgeslagen in geheugenplaats 1.
+Automatisch wordt nu de 2e geheugenplaats voor de volgende positie in het display aangegeven. 
+Breng de FY in de 2e gewenste positie met de links en rechts buttons en druk de button-save. 
+Met de button-next kan deze FY-positie ook op een andere geheugenplaats worden vastgelegd.
+
+Gekozen kan worden om de stappenmotor permanent te bekrachtigen, de FY is dan met de hand niet te verplaatsen, 
+of alleen te bekrachtigen tijdens het stappen. Als voor het laatste gekozen wordt wordt er aanzienlijk minder vermogen 
+in de driverprint en in de stappenmotor gedissipieerd. Het handmatig verplaatsen van de FY is dan mogelijk maar de software is daarna 
+ontregeld waardoor opnieuw naar de programmode geschakeld moet worden zodat de o-initialisatie weer plaats kan vinden. 
+Door de button-links en de button-rechts gelijktijdig in te drukken 
+wordt van bekrachtigingsmode gewisseld. Deze wisseling wordt aangegeven door een knipperende rode led.
+
+
+De Pic software kan 15 posities opslaan.
+
+Heeft de FY minder sporen, programmeer dan de laaste geheugenplaatsen met de zelfde laatste positie.
+
+Als alle posities vastgelegd zijn, schakel dan naar de operating-mode.
+
+
+Operatingmode:
+
+De koppeling met Rocrail moet tot stand zijn gebracht. 
+De FY stuurt naar de 0-positie .
+Aansturing vanuit RR is nu mogelijk.
+Met de links- en rechtsbuttons kan de FY handmatig naar de verschillende voorgeprogrammeerde posities worden gestuurd.
+Tijdens het bewegen gaat de rode led uit, als de positie bereikt is licht de led op.
+
+Om een stappenmotor goed te laten lopen is het van belang dat de DC-voeding voor de stappenmotor een goede waarde heeft.
+Hij moet voldoende kracht opbrengen en mag niet te veel geluid produceren
+Het is aan te bevelen een instelbare voeding te kiezen.
+
+Door op de next-button te drukken wordt de snelheidstrap op het display getoont.Gekozen kan worden uit 15 snelheidstrappen. Het kiezen van een snelheid 
+gebeurt met de save-button. De teller loopt van 1 tot 15, als 15 bereikt wordt volgt wederom snelheidstrap 1. Snelheidstrap 1 geeft de  hoogste en 15 de laagste snelheid.
+
+
+ 
+
+
+
+
+
