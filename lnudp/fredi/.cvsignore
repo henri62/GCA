@@ -1,0 +1,14 @@
+*.o
+*.lst
+*.obj
+*.hex
+*.map
+*.elf
+*.org
+*.eep
+*.~*
+*.bak
+.project
+*.lss
+*.sym
+.dep
