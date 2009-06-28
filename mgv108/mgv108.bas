@@ -21,55 +21,78 @@ Dim short_circuit As Bit
 Dim no_pulse As Bit
 Dim stop_booster As Bit
 Dim pulse_count As Byte
+Dim led_pulse As Word
 Dim previous_pulse As Bit
 Dim led As Byte
 Dim loconet_in_control As Bit
 Dim led_count As Byte
 Dim max_current As Word
+Dim task As Byte
 no_pulse = 0
 short_circuit = 0
 pulse_count = 0
 current_count = 0
+led_pulse = 0
 GPIO = %1111111          'system on
 loconet_in_control = 1
-
+task = 0
 main:
 'WaitMs 1          'Total loop time of program = ~~ 265 uS.
 					'so with this 1 mS wait it is approx 1.26 mSec.
 'counter pulse_count need to count to 20 to shut output off in time
 'current_count need to count to 800 for 1 sec delay for short circuit
-	If GP3 = 1 Then
-		GPIO = %101011          'normal power off
-		short_circuit = 0          'reset short_circuit
-		no_pulse = 0          'reset pulse check error
-		loconet_in_control = 1          'enable loconet next power on
+	If GP3 = 1 Then          'normal power off
+		task = 3
 	Else
 		Gosub check_current
-		If short_circuit = 1 Then
-			led_count = led_count + 1
-			Select Case led_count
-			Case 100
-				GPIO = %101011          'short circuit out off
-			Case 255
-				GPIO = %001011          'short circuit out on
-				led = 0
-			Case Else
-			EndSelect
-			loconet_in_control = 0          'disable next possible
+		If short_circuit = 1 Then          'current too high detected
+			task = 2
 		Else
 			Gosub check_pulse
 			If no_pulse = 1 Then          'there was no pulse
-				GPIO = %101011          'power off
-				loconet_in_control = 0          'disable next possible
+				task = 1
 			Else          'everything seems to be fine
-				GPIO = %111111          'normal power on, no indication
-				loconet_in_control = 0          'disable loconet next power on
+				task = 0          'normal power on, no indication
 			Endif          'no pulse
 		Endif          'end short_circuit
 	Endif          'end gp3=1
 
+	Select Case task
+	Case 3          'normal power off
+		GPIO = %111011
+		short_circuit = 0          'reset short_circuit
+		no_pulse = 0          'reset pulse check error
+		loconet_in_control = 1          'enable loconet next power on
+	Case 2          'current too high detected
+		led_count = led_count + 1
+		Select Case led_count
+		Case 100
+			GPIO = %101011          'short circuit out off
+		Case 255
+			GPIO = %001011          'short circuit out on
+			led = 0
+		Case Else
+		EndSelect
+			loconet_in_control = 0          'disable next possible
+	Case 1
+		led_pulse = led_pulse + 1
+		Select Case led_pulse
+		Case 1000
+			GPIO = %111011          'le4  off
+			led_pulse = 0
+		Case 500
+			GPIO = %011011          'le4  on
+		Case Else
+		EndSelect
+		loconet_in_control = 0          'disable next possible
+	Case Else          'normal power on, no indication
+		GPIO = %111111          'normal power on, no indication
+		loconet_in_control = 0          'disable loconet next power on
+
+	EndSelect
 
 Goto main
+
 
 
 End                                               
