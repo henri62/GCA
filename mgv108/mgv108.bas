@@ -59,29 +59,29 @@ main:
 
 	Select Case task
 	Case 3          'normal power off
-		GPIO = %111011
-		short_circuit = 0          'reset short_circuit
+		GPIO = %111011          'led 5 on
+		short_circuit = 0          'reset short_circuit. booster off
 		no_pulse = 0          'reset pulse check error
 		loconet_in_control = 1          'enable loconet next power on
 	Case 2          'current too high detected
 		led_count = led_count + 1
 		Select Case led_count
 		Case 100
-			GPIO = %101011          'short circuit out off
+			GPIO = %111011          'short circuit out off, led 5 on, . booster off
 		Case 255
-			GPIO = %001011          'short circuit out on
+			GPIO = %011011          'short circuit out on, led 5 on . booster off
 			led = 0
 		Case Else
 		EndSelect
 			loconet_in_control = 0          'disable next possible
-	Case 1
+	Case 1          'no pulse encountered
 		led_pulse = led_pulse + 1
-		Select Case led_pulse
+		Select Case led_pulse          'slow puls on led 4
 		Case 1000
-			GPIO = %111011          'le4  off
+			GPIO = %111011          'led4  off , led 5 on . booster off
 			led_pulse = 0
 		Case 500
-			GPIO = %011011          'le4  on
+			GPIO = %011011          'led4  on, led 5 on . booster off
 		Case Else
 		EndSelect
 		loconet_in_control = 0          'disable next possible
