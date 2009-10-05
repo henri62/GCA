@@ -1,0 +1,224 @@
+
+
+Interrupt:
+  Update timer flags.
+
+Init:
+  Initialize I/O, timers and interrupts.
+  Calls: Zero_Buffers
+         EEPROM_to_RAM
+         Init_IO_Ports
+
+Main:
+  Main program loop.
+  Calls: CD_Backoff
+         Housekeep_Ln_Out
+         Check_All_Inputs
+         Transmit_Packet
+         Disconnect
+         Housekeep_Ln_In
+         Decode_Packet
+         Blink
+         Receive
+         Wait_90
+
+Receive:
+  Receive a LocoNet packet.
+  Calls: Get_Byte3
+  
+Get_Byte:
+  Read startbit and 8 data bits.
+  Calls: Delay2
+         
+
+Get_Byte3:
+  Byte read with 2 out of 3 bit sampling.
+  Calls: Delay2
+         Delay
+
+Transmit_Packet:
+  Transmits a LocoNet packet.
+  Calls: Transmit_Byte
+ 
+Transmit_Byte:
+  Transmit a LocoNet byte with bit timing.
+  Calls: Delay2
+         
+Housekeep_Ln_Out:
+  Set bit 5 of LN_Flags if a packet is ready for transmission
+  buffer search with 32 bytes in takes 480 cycles or 96 us.
+  Calls: Tx_Check_Pos
+         Tx_Check_Valid
+         Tx_Invalid_Packet
+
+Tx_Check_Valid:
+  Exclusive OR all packet bytes, result should be 0xff.
+  Calls: -
+
+Tx_Check_Pos:
+  Returns 1 if buffer holds all bytes of a packet.
+  Calls: -
+
+Tx_Invalid_Packet:
+  Adjust TX buffer pointer.
+  Calls: -
+
+Housekeep_Ln_In:
+  Set LN_IN of LN_Flags if LocoNet packet received complete
+    buffer search with 32 bytes in takes 480 cycles or 96 us.
+  Calls: Rx_Check_Pos
+         Rx_Check_Valid
+         Rx_Invalid_Packet
+
+Rx_Check_Valid:
+  Exclusive OR all packet bytes, result should be 0xff.
+  Calls: -
+
+Rx_Check_Pos:
+  Returns 1 if buffer holds all bytes of a packet.
+  Calls: 
+
+Rx_Invalid_Packet:
+  Discard a packet by clearing its OPCODE byte.
+  Calls: -
+
+CD_Backoff:
+  CD_Backoff delay is defined at 1.2 ms in Loconet PE
+    Priority delay is defined at 1.2 ms for I/O devices
+    Therefore total delay is 2.4 ms.
+  Calls: -
+
+Disconnect:
+  Check for a disconnect state.
+  Calls: PowerOn_Send_All_Inputs
+         Zero_Buffers
+
+Zero_Buffers:
+  Clears receive and send buffers.
+  Calls: -
+
+Delay2:
+  Delay (66 + [W]*3) cycles.
+  Calls: Delay
+
+Delay:
+  Delay (2 + [W]*3) cycles.
+  Calls: -
+
+Wait_90:
+  90 us wait loop.
+  Calls: Delay
+  
+Incr_TxBuffer_Ptr:
+  TxBuffer_Ptr must be between Tx_Buffer and Tx_Buffer_End.
+  Calls: -
+
+Increment_FSR:
+  Range of FSR : Rx_Buffer to Rx_Buffer_End.
+  Calls: -
+
+Remove_Packet:
+  Remove packet from receive buffer. 
+  Calls: Incr_RxBuffer_Ptr
+
+Decode_Packet:
+  Decode LocoNet packet and compare address.
+  Calls: Receive_OPC_INPUT_REP
+         Receive_OPC_SW_REQ
+         Increment_FSR
+         Get_EE_Data
+         Read_Write_CV
+         PowerOn_Send_All_Inputs
+         Remove_Packet
+
+Send_Program_Packet:
+  Put 16 byte LocoNet Program Packet in TxBuffer.
+  Calls: Incr_TxBuffer_Ptr
+         Get_EE_Data
+         
+Write_EE_Data:
+  Calls: EEPROM_to_RAM
+
+Get_EE_Data:
+  Calls: -
+
+Read_Write_CV:
+  Calls: Increment_FSR
+         Write_EE_Data
+         Send_Program_Packet
+         Get_EE_Data
+         Multi_Port_Write
+         Multi_Port_Read_1
+         Multi_Port_Read_2
+         Multi_Port_Read_3
+         Multi_Port_Read_4
+
+Check_All_Inputs:
+  Check every 10ms all inputs.
+  Calls: Check_Input
+
+Check_Input:
+  Check one input for state change.
+  Calls: Debounce_Input
+
+Debounce_Input:
+  Loop 3 times to debounce an input going from high to low.
+  Calls: Generate_Message
+
+Set_Output:
+Clear_Output:
+  Set/Clear Output Port Bit. (Two entry points.)
+  Calls: -
+
+Receive_OPC_INPUT_REP:
+  Calls: Incr_RxBuffer_Ptr
+         Clear_Output
+         Set_Output
+
+Receive_OPC_SW_REQ:
+  Calls: Incr_RxBuffer_Ptr
+         Clear_Output
+         Set_Output
+         Multi
+
+PowerOn_Send_All_Inputs:
+  If a poweron request is received, send the state of all inputs.
+  Calls: -
+
+EEPROM_to_RAM:
+  Get the SV's of the receive messages to RAM (to improve speed).
+  Calls: Get_EE_Data
+
+Generate_Message:
+  Generate a LocoNet packet.
+  Calls: Get_EE_Data
+         Incr_TxBuffer_Ptr
+         
+Multi_Port_Read_1:
+Multi_Port_Read_2:
+Multi_Port_Read_3:
+Multi_Port_Read_4:
+  Calls: -
+
+Multi_Port_Write:
+  Calls: Increment_FSR
+
+Init_IO_Ports:
+  Calls: 
+
+Blink:
+  BTFSS	PORTA,RX should be inserted every 50 machine cycles.
+  Calls: 
+
+Multi:
+  Calls: Clear_Output
+
+
+
+
+
+
+
+
+
+
