@@ -1,0 +1,61 @@
+﻿<?xml version="1.0"?>
+<project name="MPTC" default="build" basedir=".">
+
+	<property name="basedir" value="${project::get-base-directory()}"/>
+	<property name="builddir" value="${basedir}\Build"/>
+	<property name="srcdir" value="${basedir}\src"/>
+
+	<property name="sdcc" value="sdcc.exe"/>
+	<property name="device" value="16F873"/>
+
+        <target name="clean" description="remove all generated files">
+		<delete dir="${builddir}" />
+        </target>
+
+	<target name="prepare">
+		<mkdir dir="${builddir}"/>
+		<mkdir dir="${builddir}\obj"/>
+	</target>
+
+	<target name="compile" depends="clean, prepare">
+		<!-- Compile -->
+		<foreach item="File" property="filename">
+			<in>
+				<items basedir="${srcdir}">
+					<include name="*.c"/>
+				</items>
+			</in>
+			<do>
+				<exec program="${sdcc}">
+					<arg value="-mpic14"/>
+					<arg value="-p${device}"/>
+					<arg value="-o"/>
+					<arg value="${builddir}\obj\${path::get-file-name-without-extension(filename)}.o"/>
+					<arg value="-c"/>
+					<arg value="${filename}"/>
+				</exec>
+			</do>
+		</foreach>
+		<!-- Link -->
+		<exec program="${sdcc}">
+			<arg value="-mpic14"/>
+			<arg value="-p${device}"/>
+			<arg value="-Wl-c"/>
+			<arg value="-Wl-m"/>
+			<arg value="-Wl-r"/>
+			<arg value="-o"/>
+			<arg value="${builddir}\Mgv50.hex"/>
+			<arg value="${builddir}\obj\bank0.o"/>
+			<arg value="${builddir}\obj\bank1.o"/>
+			<!-- arg value="${builddir}\obj\mgv50_io.o"/>
+			<arg value="${builddir}\obj\eeprom.o"/>
+			<arg value="${builddir}\obj\ln_receiver.o"/>
+			<arg value="${builddir}\obj\ln_rxbuffer.o"/>
+			<arg value="${builddir}\obj\ln_transmitter.o"/ -->
+		</exec>
+	</target>
+
+        <target name="build" depends="compile" description="Compile">
+        </target>
+
+</project>
