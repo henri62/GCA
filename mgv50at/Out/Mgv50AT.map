@@ -1,0 +1,579 @@
+Archive member included because of file (symbol)
+
+c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodqi4.o)
+                              Out/Mgv50At.o (__udivmodqi4)
+c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodhi4.o)
+                              Out/Mgv50At.o (__udivmodhi4)
+c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_copy_data.o)
+                              Out/Main.o (__do_copy_data)
+c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_clear_bss.o)
+                              Out/Main.o (__do_clear_bss)
+c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(memcpy.o)
+                              Out/ln_buf.o (memcpy)
+c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rb.1C1D1E.o)
+                              Out/Mgv50At.o (__eeprom_read_byte_1C1D1E)
+c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rw.1C1D1E.o)
+                              Out/Mgv50At.o (__eeprom_read_word_1C1D1E)
+c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_wb.1C1D1E.o)
+                              Out/Mgv50At.o (__eeprom_write_byte_1C1D1E)
+c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_ww.1C1D1E.o)
+                              Out/Mgv50At.o (__eeprom_write_word_1C1D1E)
+
+Allocating common symbols
+Common symbol       size              file
+
+lnTxSuccess         0x1               Out/ln_sw_uart.o
+lnTxIndex           0x1               Out/ln_sw_uart.o
+lnTxLength          0x1               Out/ln_sw_uart.o
+lnCurrentByte       0x1               Out/ln_sw_uart.o
+lnCompareTarget     0x2               Out/ln_sw_uart.o
+lnRxBuffer          0x2               Out/ln_sw_uart.o
+lnState             0x1               Out/ln_sw_uart.o
+lnBitCount          0x1               Out/ln_sw_uart.o
+lnTxData            0x2               Out/ln_sw_uart.o
+
+Discarded input sections
+
+ .stabstr       0x00000000        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00002000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+LOAD Out/Main.o
+LOAD Out/Mgv50At.o
+LOAD Out/ln_buf.o
+LOAD Out/ln_sw_uart.o
+LOAD Out/ln_interface.o
+LOAD c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a
+LOAD c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a
+LOAD c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000     0x1c92
+ *(.vectors)
+ .vectors       0x00000000       0x26 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+                0x00000000                __vectors
+                0x00000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ *(.progmem*)
+                0x00000026                . = ALIGN (0x2)
+                0x00000026                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x00000026        0x0 linker stubs
+ *(.trampolines*)
+                0x00000026                __trampolines_end = .
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x00000026                __ctors_start = .
+ *(.ctors)
+                0x00000026                __ctors_end = .
+                0x00000026                __dtors_start = .
+ *(.dtors)
+                0x00000026                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x00000026        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+                0x00000026                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x00000026        0xc c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x00000032       0x16 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_copy_data.o)
+                0x00000032                __do_copy_data
+ .init4         0x00000048       0x10 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_clear_bss.o)
+                0x00000048                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x00000058        0x2 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+ *(.init9)
+ *(.text)
+ .text          0x0000005a        0x2 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+                0x0000005a                __vector_1
+                0x0000005a                __vector_12
+                0x0000005a                __bad_interrupt
+                0x0000005a                __vector_3
+                0x0000005a                __vector_11
+                0x0000005a                __vector_13
+                0x0000005a                __vector_17
+                0x0000005a                __vector_7
+                0x0000005a                __vector_4
+                0x0000005a                __vector_2
+                0x0000005a                __vector_15
+                0x0000005a                __vector_8
+                0x0000005a                __vector_14
+                0x0000005a                __vector_10
+                0x0000005a                __vector_16
+                0x0000005a                __vector_18
+ .text          0x0000005c        0x0 Out/Main.o
+ .text          0x0000005c        0x0 Out/Mgv50At.o
+ .text          0x0000005c        0x0 Out/ln_buf.o
+ .text          0x0000005c        0x0 Out/ln_sw_uart.o
+ .text          0x0000005c        0x0 Out/ln_interface.o
+ .text          0x0000005c        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodqi4.o)
+ .text          0x0000005c        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodhi4.o)
+ .text          0x0000005c        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_copy_data.o)
+ .text          0x0000005c        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_clear_bss.o)
+ .text          0x0000005c       0x12 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(memcpy.o)
+                0x0000005c                memcpy
+ .text          0x0000006e        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rb.1C1D1E.o)
+ .text          0x0000006e        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rw.1C1D1E.o)
+ .text          0x0000006e        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_wb.1C1D1E.o)
+ .text          0x0000006e        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_ww.1C1D1E.o)
+                0x0000006e                . = ALIGN (0x2)
+ *(.text.*)
+ .text.main     0x0000006e        0x8 Out/Main.o
+                0x0000006e                main
+ .text.Mgv50AtSetPinDirection
+                0x00000076       0xa6 Out/Mgv50At.o
+                0x00000076                Mgv50AtSetPinDirection
+ .text.Mgv50AtSetPin
+                0x0000011c       0xf8 Out/Mgv50At.o
+                0x0000011c                Mgv50AtSetPin
+ .text.__vector_9
+                0x00000214      0x146 Out/Mgv50At.o
+                0x00000214                __vector_9
+ .text.Mgv50AtLocoNetLedStart
+                0x0000035a        0xa Out/Mgv50At.o
+                0x0000035a                Mgv50AtLocoNetLedStart
+ .text.Mgv50AtLocoNetLedCheck
+                0x00000364       0x18 Out/Mgv50At.o
+                0x00000364                Mgv50AtLocoNetLedCheck
+ .text.Mgv50AtUpdateEepromDataUnit
+                0x0000037c       0x1c Out/Mgv50At.o
+                0x0000037c                Mgv50AtUpdateEepromDataUnit
+ .text.Mgv50AtUpdateEepromData
+                0x00000398       0x6a Out/Mgv50At.o
+                0x00000398                Mgv50AtUpdateEepromData
+ .text.Mgv50AtResetModule
+                0x00000402       0xc8 Out/Mgv50At.o
+                0x00000402                Mgv50AtResetModule
+ .text.Mgv50AtTurnOutHandler
+                0x000004ca       0xa6 Out/Mgv50At.o
+                0x000004ca                Mgv50AtTurnOutHandler
+ .text.Mgv50AtSensorJumper
+                0x00000570       0x32 Out/Mgv50At.o
+                0x00000570                Mgv50AtSensorJumper
+ .text.Mgv50AtBlockOutput
+                0x000005a2       0x7c Out/Mgv50At.o
+                0x000005a2                Mgv50AtBlockOutput
+ .text.Mgv50AtXpeerRead
+                0x0000061e      0x1e2 Out/Mgv50At.o
+                0x0000061e                Mgv50AtXpeerRead
+ .text.Mgv50AtXPeerMpWrite
+                0x00000800      0x158 Out/Mgv50At.o
+                0x00000800                Mgv50AtXPeerMpWrite
+ .text.Mgv50AtXPeerMpRead
+                0x00000958       0xb8 Out/Mgv50At.o
+                0x00000958                Mgv50AtXPeerMpRead
+ .text.Mgv50AtLocnetXPeerResponse
+                0x00000a10       0x62 Out/Mgv50At.o
+                0x00000a10                Mgv50AtLocnetXPeerResponse
+ .text.Mgv50AtXPeerHandler
+                0x00000a72      0x554 Out/Mgv50At.o
+                0x00000a72                Mgv50AtXPeerHandler
+ .text.Mgv50AtRcvLocoNet
+                0x00000fc6       0x5c Out/Mgv50At.o
+                0x00000fc6                Mgv50AtRcvLocoNet
+ .text.Mgv50AtReportSensor
+                0x00001022      0x1a0 Out/Mgv50At.o
+                0x00001022                Mgv50AtReportSensor
+ .text.Mgv50AtMain
+                0x000011c2       0x3e Out/Mgv50At.o
+                0x000011c2                Mgv50AtMain
+ .text.Mgv50AtInit
+                0x00001200      0x366 Out/Mgv50At.o
+                0x00001200                Mgv50AtInit
+ .text.getLnBufStats
+                0x00001566        0x6 Out/ln_buf.o
+                0x00001566                getLnBufStats
+ .text.getLnMsgSize
+                0x0000156c       0x26 Out/ln_buf.o
+                0x0000156c                getLnMsgSize
+ .text.recvLnMsg
+                0x00001592      0x1d4 Out/ln_buf.o
+                0x00001592                recvLnMsg
+ .text.initLnBuf
+                0x00001766        0xc Out/ln_buf.o
+                0x00001766                initLnBuf
+ .text.__vector_5
+                0x00001772       0x5c Out/ln_sw_uart.o
+                0x00001772                __vector_5
+ .text.__vector_6
+                0x000017ce      0x1ee Out/ln_sw_uart.o
+                0x000017ce                __vector_6
+ .text.initLocoNetHardware
+                0x000019bc       0x30 Out/ln_sw_uart.o
+                0x000019bc                initLocoNetHardware
+ .text.sendLocoNetPacketTry
+                0x000019ec      0x13e Out/ln_sw_uart.o
+                0x000019ec                sendLocoNetPacketTry
+ .text.sendLocoNet4BytePacketTry
+                0x00001b2a       0x36 Out/ln_interface.o
+                0x00001b2a                sendLocoNet4BytePacketTry
+ .text.sendLocoNetPacket
+                0x00001b60       0x6a Out/ln_interface.o
+                0x00001b60                sendLocoNetPacket
+ .text.sendLocoNet4BytePacket
+                0x00001bca       0x34 Out/ln_interface.o
+                0x00001bca                sendLocoNet4BytePacket
+ .text.recvLocoNetPacket
+                0x00001bfe        0xc Out/ln_interface.o
+                0x00001bfe                recvLocoNetPacket
+ .text.initLocoNet
+                0x00001c0a        0xc Out/ln_interface.o
+                0x00001c0a                initLocoNet
+ .text.libgcc   0x00001c16       0x18 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodqi4.o)
+                0x00001c16                __udivmodqi4
+ .text.libgcc   0x00001c2e       0x28 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodhi4.o)
+                0x00001c2e                __udivmodhi4
+ .text.libgcc   0x00001c56        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_copy_data.o)
+ .text.libgcc   0x00001c56        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_clear_bss.o)
+ .text.eeprom   0x00001c56       0x10 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rb.1C1D1E.o)
+                0x00001c56                __eeprom_read_byte_1C1D1E
+ .text.eeprom   0x00001c66        0xa c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rw.1C1D1E.o)
+                0x00001c66                __eeprom_read_word_1C1D1E
+ .text.eeprom   0x00001c70       0x18 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_wb.1C1D1E.o)
+                0x00001c70                __eeprom_write_byte_1C1D1E
+ .text.eeprom   0x00001c88        0xa c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_ww.1C1D1E.o)
+                0x00001c88                __eeprom_write_word_1C1D1E
+                0x00001c92                . = ALIGN (0x2)
+ *(.fini9)
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ *(.fini0)
+                0x00001c92                _etext = .
+
+.data           0x00800060        0x0 load address 0x00001c92
+                0x00800060                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+ .data          0x00800060        0x0 Out/Main.o
+ .data          0x00800060        0x0 Out/Mgv50At.o
+ .data          0x00800060        0x0 Out/ln_buf.o
+ .data          0x00800060        0x0 Out/ln_sw_uart.o
+ .data          0x00800060        0x0 Out/ln_interface.o
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodqi4.o)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodhi4.o)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_copy_data.o)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_clear_bss.o)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(memcpy.o)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rb.1C1D1E.o)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rw.1C1D1E.o)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_wb.1C1D1E.o)
+ .data          0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_ww.1C1D1E.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x00800060                . = ALIGN (0x2)
+                0x00800060                _edata = .
+                0x00800060                PROVIDE (__data_end, .)
+
+.bss            0x00800060      0x223
+                0x00800060                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+ .bss           0x00800060        0x0 Out/Main.o
+ .bss           0x00800060        0x0 Out/Mgv50At.o
+ .bss           0x00800060        0x0 Out/ln_buf.o
+ .bss           0x00800060        0x0 Out/ln_sw_uart.o
+ .bss           0x00800060        0x0 Out/ln_interface.o
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodqi4.o)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_udivmodhi4.o)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_copy_data.o)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/avr4\libgcc.a(_clear_bss.o)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(memcpy.o)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rb.1C1D1E.o)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_rw.1C1D1E.o)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_wb.1C1D1E.o)
+ .bss           0x00800060        0x0 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4\libc.a(ee_ww.1C1D1E.o)
+ *(.bss*)
+ .bss.Mgv50AtLocoNet
+                0x00800060       0x8c Out/Mgv50At.o
+ .bss.Mgv50AtSensorInput
+                0x008000ec        0x3 Out/Mgv50At.o
+ .bss.Mgv50AtConfig
+                0x008000ef      0x174 Out/Mgv50At.o
+ .bss.Mgv50AtCheckSensors
+                0x00800263        0x1 Out/Mgv50At.o
+ .bss.Mgv50AtLocoNetActivity
+                0x00800264        0x1 Out/Mgv50At.o
+ .bss.Mgv50AtLocoNetSendPacket
+                0x00800265       0x10 Out/Mgv50At.o
+ .bss.pstLnRxBuffer
+                0x00800275        0x2 Out/ln_interface.o
+ *(COMMON)
+ COMMON         0x00800277        0xc Out/ln_sw_uart.o
+                0x00800277                lnTxSuccess
+                0x00800278                lnTxIndex
+                0x00800279                lnTxLength
+                0x0080027a                lnCurrentByte
+                0x0080027b                lnCompareTarget
+                0x0080027d                lnRxBuffer
+                0x0080027f                lnState
+                0x00800280                lnBitCount
+                0x00800281                lnTxData
+                0x00800283                PROVIDE (__bss_end, .)
+                0x00001c92                __data_load_start = LOADADDR (.data)
+                0x00001c92                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x00800283        0x0
+                0x00800283                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x00800283                PROVIDE (__noinit_end, .)
+                0x00800283                _end = .
+                0x00800283                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000        0x0
+ *(.eeprom*)
+                0x00810000                __eeprom_end = .
+
+.stab           0x00000000      0x36c
+ *(.stab)
+ .stab          0x00000000      0x36c c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+
+.stabstr        0x00000000       0x84
+ *(.stabstr)
+ .stabstr       0x00000000       0x84 c:/winavr/bin/../lib/gcc/avr/4.1.1/../../../../avr/lib/avr4/crtm8.o
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0x1b0
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x28 Out/Main.o
+ .debug_aranges
+                0x00000028       0xc0 Out/Mgv50At.o
+ .debug_aranges
+                0x000000e8       0x40 Out/ln_buf.o
+ .debug_aranges
+                0x00000128       0x40 Out/ln_sw_uart.o
+ .debug_aranges
+                0x00000168       0x48 Out/ln_interface.o
+
+.debug_pubnames
+                0x00000000      0x3c7
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x00000000       0x1b Out/Main.o
+ .debug_pubnames
+                0x0000001b      0x1e9 Out/Mgv50At.o
+ .debug_pubnames
+                0x00000204       0x51 Out/ln_buf.o
+ .debug_pubnames
+                0x00000255       0xeb Out/ln_sw_uart.o
+ .debug_pubnames
+                0x00000340       0x87 Out/ln_interface.o
+
+.debug_info     0x00000000     0x4de0
+ *(.debug_info)
+ .debug_info    0x00000000       0xa6 Out/Main.o
+ .debug_info    0x000000a6     0x1dc1 Out/Mgv50At.o
+ .debug_info    0x00001e67      0xf4a Out/ln_buf.o
+ .debug_info    0x00002db1     0x1036 Out/ln_sw_uart.o
+ .debug_info    0x00003de7      0xff9 Out/ln_interface.o
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev   0x00000000      0x7e0
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000       0x3d Out/Main.o
+ .debug_abbrev  0x0000003d      0x2fb Out/Mgv50At.o
+ .debug_abbrev  0x00000338      0x174 Out/ln_buf.o
+ .debug_abbrev  0x000004ac      0x1c3 Out/ln_sw_uart.o
+ .debug_abbrev  0x0000066f      0x171 Out/ln_interface.o
+
+.debug_line     0x00000000     0x1ef8
+ *(.debug_line)
+ .debug_line    0x00000000       0xfb Out/Main.o
+ .debug_line    0x000000fb     0x1478 Out/Mgv50At.o
+ .debug_line    0x00001573      0x2ba Out/ln_buf.o
+ .debug_line    0x0000182d      0x4ac Out/ln_sw_uart.o
+ .debug_line    0x00001cd9      0x21f Out/ln_interface.o
+
+.debug_frame    0x00000000      0x270
+ *(.debug_frame)
+ .debug_frame   0x00000000       0x20 Out/Main.o
+ .debug_frame   0x00000020      0x150 Out/Mgv50At.o
+ .debug_frame   0x00000170       0x50 Out/ln_buf.o
+ .debug_frame   0x000001c0       0x50 Out/ln_sw_uart.o
+ .debug_frame   0x00000210       0x60 Out/ln_interface.o
+
+.debug_str      0x00000000      0xca4
+ *(.debug_str)
+ .debug_str     0x00000000       0x90 Out/Main.o
+                                 0xe8 (size before relaxing)
+ .debug_str     0x00000090      0x985 Out/Mgv50At.o
+                                0xb27 (size before relaxing)
+ .debug_str     0x00000a15       0x7a Out/ln_buf.o
+                                0x4c6 (size before relaxing)
+ .debug_str     0x00000a8f      0x150 Out/ln_sw_uart.o
+                                0x5b4 (size before relaxing)
+ .debug_str     0x00000bdf       0xc5 Out/ln_interface.o
+                                0x5a8 (size before relaxing)
+
+.debug_loc      0x00000000      0xfa9
+ *(.debug_loc)
+ .debug_loc     0x00000000      0xd2a Out/Mgv50At.o
+ .debug_loc     0x00000d2a       0xec Out/ln_buf.o
+ .debug_loc     0x00000e16       0xa5 Out/ln_sw_uart.o
+ .debug_loc     0x00000ebb       0xee Out/ln_interface.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(Out/Mgv50AT.out elf32-avr)
+LOAD linker stubs
