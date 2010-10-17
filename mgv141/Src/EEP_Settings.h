@@ -1,18 +1,17 @@
 
 /**
  ******************************************************************************
- * @file 		Version.h                                         
- * @ingroup     Version
- * @defgroup	Version
- * @author		Robert Evers                                                      
- * @attention	Header file for version info
+ * @file       EEP_Settings.h
+ * @ingroup    EEP
+ * @author     Robert Evers
+ * @attention  Header file for EEPROM definition and position.
  ******************************************************************************
  * Change history   : See CVS log
  ******************************************************************************
  */
 
-#ifndef VERSION_H
-#define VERSION_H
+#ifndef EEP_SETTING_H
+#define EEP_SETTING_H
 
 /*
  ******************************************************************************
@@ -20,15 +19,22 @@
  ******************************************************************************
  */
 
- /* 
+#include <inttypes.h>
+#include <avr\eeprom.h>
+
+/*
   ******************************************************************************
   * Macro definitions
   ******************************************************************************
   */
 
-#define SW_MAJOR 4
-#define SW_MINOR 74
+/* *INDENT-OFF* */
 
+
+#define EEP_SETTINGS_BASE_ADDRESS 0
+#define EEP_SETTINGS_AXLE_DATA    2
+
+/* *INDENT-ON* */
  /* 
   ******************************************************************************
   * Types
@@ -47,4 +53,4 @@
   *******************************************************************************************
   */
 
-#endif   /* VERSION_H */
+#endif   /* EEP_SETTING_H */

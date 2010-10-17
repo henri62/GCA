@@ -12,16 +12,11 @@
  * Standard include files
  *******************************************************************************************
  */
-#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <inttypes.h>
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
-#include "Version.h"
-#include "Enc28j60.h"
-#include "Serial_mega.h"
-#include "EthLocBuffer.h"
+#include "stack.h"
 #include "UserIo.h"
 
 /*
@@ -30,23 +25,16 @@
  *******************************************************************************************
  */
 
+/* *INDENT-OFF* */
+
 #define USER_IO_TIMER_OVERFLOW_TIME       4                                   /**< Timer overflow in msec */
-#define USER_IO_BLINK_RATE                500 / USER_IO_TIMER_OVERFLOW_TIME   /**< Led blink rate is msec */
+#define USER_IO_BLINK_RATE                1000 / USER_IO_TIMER_OVERFLOW_TIME  /**< Led blink rate is msec */
 #define USER_IO_FLASH_TIME                50 / USER_IO_TIMER_OVERFLOW_TIME    /**< Led flash time */
-#define USER_IO_SCREEN_UPDATE             2000 / USER_IO_TIMER_OVERFLOW_TIME  /**< User Io update of screen */
+#define USER_IO_TCP_IP_TIME               50 / USER_IO_TIMER_OVERFLOW_TIME    /**< TCPIP timer  */
 
 #define USER_IO_EEP_IP_ADDRES_BASE        0                                   /**< Ip address location in EEPROM */
 #define USER_IO_EEP_IP_ADDRES_LENGTH      4                                   /**< Ip address length */
 
-#define USER_IO_RCV_LENGTH                10                                  /**< Max buffer size for serial in data */
-#define USER_IO_CR                        0x0D                                /**< ASCII CR */
-
-#define USER_IO_COMMAND_IP_1              "IP1="                              /**< Change IP addres digit 1 */
-#define USER_IO_COMMAND_IP_2              "IP2="                              /**< Change IP addres digit 2 */
-#define USER_IO_COMMAND_IP_3              "IP3="                              /**< Change IP addres digit 3 */
-#define USER_IO_COMMAND_IP_4              "IP4="                              /**< Change IP addres digit 4 */
-
-#define USER_UI_STR_SIZE                  25                                  /**< String size for info screen */
 /*
  *******************************************************************************************
  * Types
@@ -68,85 +56,15 @@ typedef struct
  */
 
 TUserIoLedStat	   UserIoLedStat[userIoLedMax];          /**< Led status array */
-uint16_t          UserIoScreenUpdateCnt;                /**< Counter for update of user screen */
-uint8_t           UserIoRcvBuffer[USER_IO_RCV_LENGTH];  /**< Buffer for serial in data */
-uint8_t           UserIoRcvCnt;                         /**< Counter for received serial in data */
+uint8_t           UserIoTcpIpCnt;
+
+/* *INDENT-ON* */
 
 /*
  *******************************************************************************************
  * Routines implementation
  *******************************************************************************************
  */
-
-/**
- *******************************************************************************************
- * @fn	    	void UserIoProcessSerialData(uint8_t * Data)		
- * @brief   	Check the content of the received command, and if required perform
- *              an action. 
- * @param       Data   Pointer to the array with received data. 
- * @return		None
- * @attention	- 
- *******************************************************************************************
- */
-void UserIoProcessSerialData(uint8_t * Data)
-{
-   uint8_t                                 IpAddress[4];
-   uint8_t                                 IpDigitValue;
-
-   if (strncmp((char *)Data, (char *)USER_IO_COMMAND_IP_1, strlen((char *)USER_IO_COMMAND_IP_1)) == 0)
-   {
-      IpDigitValue = atoi((char *)&Data[strlen((char *)USER_IO_COMMAND_IP_1)]);
-      UserIoIpAddressGet(IpAddress);
-      IpAddress[0] = IpDigitValue;
-      UserIoIpAddressSet(IpAddress);
-   }
-}
-
-/**
- *******************************************************************************************
- * @fn	    	void UserIoInfoScreen(void)		
- * @brief   	Display some info on the serial port (ASCII terminal).
- * @return		None
- * @attention	- 
- *******************************************************************************************
- */
-void UserIoInfoScreen(void)
-{
-   char                                    DebugMsg[USER_UI_STR_SIZE];
-   uint8_t                                 IpAddress[4];
-   uint32_t                                LoconetCnt;
-   uint32_t                                UdpCnt;
-
-   Serial_Buffer_Sent_FillFlash(PSTR("\x1B[2J\0"));
-   Serial_Buffer_Sent_FillFlash(PSTR("MGV101 Ethernet Loconet Buffer \r\n\0"));
-   Serial_Buffer_Sent_FillFlash(PSTR("\r\n\0"));
-   Serial_Buffer_Sent_FillFlash(PSTR("Version               : \0"));
-   sprintf(DebugMsg, "%d.%d\r\n", SW_MAJOR, SW_MINOR);
-   Serial_Buffer_Sent_Fill_Block((uint8_t *) DebugMsg);
-   Serial_Buffer_Sent_FillFlash(PSTR("\r\n\0"));
-
-   Serial_Buffer_Sent_FillFlash(PSTR("IP Address            : \0"));
-   UserIoIpAddressGet(IpAddress);
-   sprintf(DebugMsg, "%d.%d.%d.%d \r\n", IpAddress[0], IpAddress[1], IpAddress[2], IpAddress[3]);
-   Serial_Buffer_Sent_Fill_Block((uint8_t *) DebugMsg);
-   Serial_Buffer_Sent_FillFlash(PSTR("ENC28J60 revision ID  : \0"));
-   sprintf(DebugMsg, "0x%02X\r\n", enc28j60getrev());
-   Serial_Buffer_Sent_Fill_Block((uint8_t *) DebugMsg);
-   Serial_Buffer_Sent_FillFlash(PSTR("\r\n\0"));
-
-   EthLocBufferGetReceiveCounters(&LoconetCnt, &UdpCnt);
-   Serial_Buffer_Sent_FillFlash(PSTR("Received \r\n\0"));
-   Serial_Buffer_Sent_FillFlash(PSTR("     UDP packages     : \0"));
-   sprintf(DebugMsg, "%ld\r\n", UdpCnt);
-   Serial_Buffer_Sent_Fill_Block((uint8_t *) DebugMsg);
-   Serial_Buffer_Sent_FillFlash(PSTR("     Loconet packages : \0"));
-   sprintf(DebugMsg, "%ld\r\n", LoconetCnt);
-   Serial_Buffer_Sent_Fill_Block((uint8_t *) DebugMsg);
-   Serial_Buffer_Sent_FillFlash(PSTR("\r\n\r\n\0"));
-   Serial_Buffer_Sent_FillFlash(PSTR(">\0"));
-
-   Serial_Buffer_Sent_Fill_Block(UserIoRcvBuffer);
-}
 
 /**
  *******************************************************************************************
@@ -172,10 +90,7 @@ void UserIoInit(void)
    /* Set timer 2, timer overrun ~4,08 msec @ 8Mhz */
    TCCR2B |= (1 << CS22) | (1 << CS20);
 
-   UserIoRcvCnt = 0;
-   UserIoScreenUpdateCnt = 0;
-   memset(UserIoRcvBuffer, 0, sizeof(UserIoRcvBuffer));
-
+   UserIoTcpIpCnt = 0;
 }
 
 /**
@@ -227,7 +142,6 @@ TUserIoJumperStatus UserIoGetJumperStatus(TUserIoJumper Jumper)
 void UserIoMain(void)
 {
    uint8_t                                 Index;
-   uint8_t                                 RcvChar;
 
    if (TIFR2 & (1 << TOV2))
    {
@@ -243,9 +157,6 @@ void UserIoMain(void)
                UserIoLedStat[Index].BlinkCnt = 0;
                switch (Index)
                {
-                  case userIoLed3:
-                     PORTB ^= (1 << PB1);
-                     break;
                   case userIoLed4:
                      PORTC ^= (1 << PC3);
                      break;
@@ -268,9 +179,6 @@ void UserIoMain(void)
                UserIoLedStat[Index].BlinkCnt = 0;
                switch (Index)
                {
-                  case userIoLed3:
-                     PORTB |= (1 << PB1);
-                     break;
                   case userIoLed4:
                      PORTC |= (1 << PC3);
                      break;
@@ -287,35 +195,10 @@ void UserIoMain(void)
          }
       }
 
-      if (UserIoGetJumperStatus(userIoJumper1) == userIoJumperStatusClosed)
+      UserIoTcpIpCnt++;
+      if (UserIoTcpIpCnt >= USER_IO_TCP_IP_TIME)
       {
-         /* Any data received on the serial port? */
-         if (Serial_Buffer_Receive_Read_Byte(&RcvChar))
-         {
-            if (RcvChar != USER_IO_CR)
-            {
-               UserIoRcvBuffer[UserIoRcvCnt] = RcvChar;
-               UserIoRcvCnt++;
-               if (UserIoRcvCnt >= USER_IO_RCV_LENGTH)
-               {
-                  UserIoRcvCnt = 0;
-                  memset(UserIoRcvBuffer, 0, sizeof(UserIoRcvBuffer));
-               }
-            }
-            else
-            {
-               UserIoProcessSerialData(UserIoRcvBuffer);
-               UserIoRcvCnt = 0;
-               memset(UserIoRcvBuffer, 0, sizeof(UserIoRcvBuffer));
-            }
-         }
-         /* Update info screen if time elapsed. */
-         UserIoScreenUpdateCnt++;
-         if (UserIoScreenUpdateCnt >= USER_IO_SCREEN_UPDATE)
-         {
-            UserIoInfoScreen();
-            UserIoScreenUpdateCnt = 0;
-         }
+         eth.timer = 1;
       }
    }
 }
@@ -333,27 +216,6 @@ void UserIoSetLed(TUserIoLed Led, TUserIoLedSet Set)
 {
    switch (Led)
    {
-      case userIoLed3:
-         switch (Set)
-         {
-            case userIoLedSetOff:
-               PORTB |= (1 << PB1);
-               break;
-            case userIoLedSetOn:
-               PORTB &= ~(1 << PB1);
-               break;
-            case userIoLedSetBlink:
-               UserIoLedStat[userIoLed3].BlinkCnt = 0;
-               break;
-            case userIoLedSetToggle:
-               PORTB ^= (1 << PB1);
-               break;
-            case userIoLedSetFlash:
-               PORTB &= ~(1 << PB1);
-               UserIoLedStat[userIoLed3].BlinkCnt = 0;
-               break;
-         }
-         break;
       case userIoLed4:
          switch (Set)
          {
@@ -425,54 +287,50 @@ void UserIoSetLed(TUserIoLed Led, TUserIoLedSet Set)
 
 /**
  *******************************************************************************************
- * @fn	    	void UserIoIpAddressGet(uint8_t * IpAddress)
- * @brief   	Read the stored IP address from EEPROM. If no address is stored
- *              (255.255.255.255) the default value of 192.168.0.99 will be written
- *              into EEPROM and returned.     
- * @param       *IpAddress Pointer to array where IP address must be stored.  
- * @attention	- 
+ * @fn	    	void UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t *NetMask, uint8_t RouterIp)
+ * @brief   	Read the IP Address. In future this function may be extended with reading from
+ *             EEPROM.
+ * @param       *IpAddress Pointer to array where IP address must be stored.
+ * @attention	-
  *******************************************************************************************
  */
-void UserIoIpAddressGet(uint8_t * IpAddress)
+void UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * RouterIp)
 {
-   uint8_t                                 IpEep[4];
-   uint8_t                                 IpEepInvalid[4] = { 255, 255, 255, 255 };
-   uint8_t                                 IpEepDefault[4] = { 192, 168, 0, 99 };
-   uint8_t                                 Index;
+   uint8_t                                 IpAddress_1[4] = { 192, 168, 0, 200 };
+   uint8_t                                 IpAddress_2[4] = { 192, 168, 1, 200 };
+   uint8_t                                 IpAddress_3[4] = { 192, 168, 100, 88 };
+   uint8_t                                 NetMask_1[4] = { 255, 255, 255, 0 };
+   uint8_t                                 NetMask_2[4] = { 255, 255, 255, 0 };
+   uint8_t                                 NetMask_3[4] = { 255, 255, 255, 0 };
+   uint8_t                                 RouterIp_1[4] = { 192, 168, 0, 1 };
+   uint8_t                                 RouterIp_2[4] = { 192, 168, 1, 1 };
+   uint8_t                                 RouterIp_3[4] = { 192, 168, 100, 1 };
 
-   // Read IP address from EEPROM
-   for (Index = 0; Index < USER_IO_EEP_IP_ADDRES_LENGTH; Index++)
-   {
-      IpEep[Index] = eeprom_read_byte((uint8_t *) USER_IO_EEP_IP_ADDRES_BASE + Index);
-   }
+   uint8_t                                 Jumpers;
 
-   // Invalid Ip value? 
-   if (memcmp(IpEep, IpEepInvalid, sizeof(IpEepDefault)) == 0)
-   {
-      UserIoIpAddressSet(IpEepDefault);
-      memcpy(IpAddress, IpEepDefault, sizeof(IpEepDefault));
-   }
-   else
-   {
-      memcpy(IpAddress, IpEep, sizeof(IpEep));
-   }
-}
+   Jumpers = PINC & 0x07;
 
-/**
- *******************************************************************************************
- * @fn	    	void UserIoIpAddressSet(uint8_t * IpAddress)
- * @brief   	Write the IP address into EEPROM.      
- * @param       *IpAddress Pointer to array where IP address must be read from. 
- * @attention	- 
- *******************************************************************************************
- */
-void UserIoIpAddressSet(uint8_t * IpAddress)
-{
-   uint8_t                                 Index;
-
-   // Read IP address from EEPROM
-   for (Index = 0; Index < USER_IO_EEP_IP_ADDRES_LENGTH; Index++)
+   switch (Jumpers)
    {
-      eeprom_write_byte((uint8_t *) USER_IO_EEP_IP_ADDRES_BASE + Index, IpAddress[Index]);
+      case 7:
+         memcpy(IpAddress, IpAddress_1, sizeof(IpAddress_1));
+         memcpy(NetMask, NetMask_1, sizeof(NetMask_1));
+         memcpy(RouterIp, RouterIp_1, sizeof(RouterIp_1));
+         break;
+      case 6:
+         memcpy(IpAddress, IpAddress_2, sizeof(IpAddress_2));
+         memcpy(NetMask, NetMask_2, sizeof(NetMask_2));
+         memcpy(RouterIp, RouterIp_2, sizeof(RouterIp_2));
+         break;
+      case 5:
+         memcpy(IpAddress, IpAddress_3, sizeof(IpAddress_3));
+         memcpy(NetMask, NetMask_3, sizeof(NetMask_3));
+         memcpy(RouterIp, RouterIp_3, sizeof(RouterIp_3));
+         break;
+      default:
+         memcpy(IpAddress, IpAddress_1, sizeof(IpAddress_1));
+         memcpy(NetMask, NetMask_1, sizeof(NetMask_1));
+         memcpy(RouterIp, RouterIp_1, sizeof(RouterIp_1));
+         break;
    }
 }

@@ -53,7 +53,7 @@
 #define LN_TX_DDR                DDRB
 #define LN_TX_BIT                PB1
 
-#define LN_TIMER_TX_RELOAD_ADJUST   55
+#define LN_TIMER_TX_RELOAD_ADJUST   50
 
 /*
  *******************************************************************************************

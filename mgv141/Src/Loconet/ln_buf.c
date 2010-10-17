@@ -111,7 +111,9 @@ lnMsg                                  *recvLnMsg(LnBuf * Buffer)
          // if the ReadPacket index is not the same as the Read index then we have received the
          // start of the next packet without completing the previous one which is an error
          if (Buffer->ReadPacketIndex != Buffer->ReadIndex)
+         {
             Buffer->Stats.RxErrors++;
+         }
 
          Buffer->ReadPacketIndex = Buffer->ReadIndex;
          Buffer->CheckSum = LN_CHECKSUM_SEED;
@@ -228,6 +230,11 @@ lnMsg                                  *recvLnMsg(LnBuf * Buffer)
    }
 
    return NULL;
+}
+
+LnBufStats                             *getLnBufStats(LnBuf * Buffer)
+{
+   return 0;
 }
 
 byte getLnMsgSize(volatile lnMsg * Msg)

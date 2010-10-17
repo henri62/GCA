@@ -1,27 +1,27 @@
 
 /**
- *******************************************************************************************
- * @file		EthLocBuffer.h
- * @ingroup	    EthLocBuffer
- * @defgroup	EthLocBuffer EthLocBuffer : Loconet / UDP processing. 
- * @brief		EthLocBuffer Process the data between the network interface and Loconet interface. 
- *******************************************************************************************
+ ******************************************************************************************
+ * @file       MgvAxleCounter.c
+ * @ingroup    MgvAxleCounter
+ * @brief      MgvAxleCounter Count the number of axles of a train.
+ ******************************************************************************************
  */
-#ifndef ETH_LOC_BUF
-#define ETH_LOC_BUF
+#ifndef MGV_XX_AXLE_COUNTER
+#define MGV_XX_AXLE_COUNTER
 
 /*
- *******************************************************************************************
+ ******************************************************************************************
  * Standard include files
- *******************************************************************************************
+ ******************************************************************************************
  */
-#include <inttypes.h>
 
 /*
  *******************************************************************************************
  * Macro definitions
  *******************************************************************************************
  */
+
+//#define    MGV_AXLE_COUNTER_DEBUG                1       /**< Debug on yes / no */
 
 /*
  *******************************************************************************************
@@ -41,7 +41,7 @@
  *******************************************************************************************
  */
 
-extern void                             EthLocBufferInit(void);
-extern void                             EthLocBufferMain(void);
+extern void                             MgvAxleCounterInit(void);
+extern void                             MgvAxleCounterMain(void);
 
-#endif   // ETH_LOC_BUF
+#endif   // MGV_XX_AXLE_COUNTER

@@ -1,27 +1,26 @@
 
 /**
- *******************************************************************************************
- * @file 		main.c                                         
- * @ingroup     Main
- * @defgroup	Main Main : Main appliocation of the MGV101 Ethernet Loconet buffer.  
+ ******************************************************************************************
+ * @file       main.c
+ * @ingroup    main
  * @author		Robert Evers                                                      
- *******************************************************************************************
+ * @attention	Main of Axle counter application.
+ ******************************************************************************************
  */
 
 /*
- *******************************************************************************************
+ ******************************************************************************************
  * Standard include files
- *******************************************************************************************
+ ******************************************************************************************
  */
+#include <stdio.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-#include "UserIo.h"
-#include "enc28j60.h"
-#include "EthLocBuffer.h"
-
-#ifndef F_CPU
-# 	error F_CPU NOT DEFINED!!!
+#ifdef MGV_AXLE_COUNTER_DEBUG
+#include "serial_mega.h"
 #endif
+#include "Version.h"
+#include "MgvAxleCounter.h"
 
 /*
  *******************************************************************************************
@@ -46,7 +45,6 @@
  * Prototypes
  *******************************************************************************************
  */
-int                                     main(void);
 
 /*
  *******************************************************************************************
@@ -56,28 +54,26 @@ int                                     main(void);
 
 /**
  *******************************************************************************************
- * @fn	    	void main(void)		
- * @brief   	Main routine of MGV101 Ethernet Loconet  application.
- * @return		None
+ * @fn	    void main(void)		
+ * @brief   Main routine of Axle counter application.
+ * @return	None
  * @attention	
  *******************************************************************************************
  */
 
 int main(void)
 {
-   /* Set run led */
-   UserIoInit();
-   UserIoSetLed(userIoLed4, userIoLedSetBlink);
-   UserIoSetLed(userIoLed5, userIoLedSetBlink);
+#  ifdef MGV_AXLE_COUNTER_DEBUG
+   Serial_Init_19200_Baud();
+   Serial_Enable_Transmit_Interrupts();
+#  endif
 
-   /* Init the Ethernet Loconet interface */
-   EthLocBufferInit();
+   MgvAxleCounterInit();
 
    sei();
 
    while (1)
    {
-      UserIoMain();
-      EthLocBufferMain();
+      MgvAxleCounterMain();
    }
 }

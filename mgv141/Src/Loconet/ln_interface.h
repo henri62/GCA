@@ -11,6 +11,9 @@
 ** The bit period is then the clock frequency / LocoNet Baud rate
 */
 
+#ifndef F_CPU
+#  error Define F_CPU for bit time loconet!!!!!
+#endif
 #define LN_BIT_PERIOD       (F_CPU / 16666)
 
 typedef enum
@@ -45,6 +48,8 @@ LN_STATUS                               sendLocoNetPacketTry(lnMsg * TxData, uns
 void                                    initLocoNet(LnBuf * RxBuffer);
 lnMsg                                  *recvLocoNetPacket(void);
 LN_STATUS                               sendLocoNetPacket(lnMsg * TxPacket);
+LN_STATUS                               sendLocoNet4BytePacket(byte OpCode, byte Data1, byte Data2);
+LN_STATUS                               sendLocoNet4BytePacketTry(byte OpCode, byte Data1, byte Data2, byte PrioDelay);
 
 // Additional functionallity to implement the tight timing requirements for a master
 #ifdef LOCONET_MASTER

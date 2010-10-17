@@ -1,0 +1,14 @@
+Version 202 03-10-2010
+ * Minimum input high time set to 40 msec. 
+ * No difference anymore between high time block and normal input.  
+
+Version 201 29-10-2010
+ * Input handling and Global PowerOn / Off updated.
+ * Corrected base address handling after a power on. 
+ * Blink time handling after power on updated. 
+ * Non supported SV's (like Servo) are answerred with 0. 
+ * MP Read handling updated. 
+ * Reset from programming mode behaviour updated. 
+
+Version 200
+ * Initial version.

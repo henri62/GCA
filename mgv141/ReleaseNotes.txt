@@ -1,0 +1,9 @@
+Version 130
+ * SV handling updated. Addresses for an axle are transmitted in two SV's. 
+   The uneven SV holds the low part of the addres, the even SV holds the high part of an address. 
+
+Version 127
+ * Added SV handling. 
+
+Version 011
+ * Initial test version.

@@ -72,18 +72,14 @@ extern                                  "C"
 #include "loconet.h"
 
 #ifndef LN_BUF_SIZE
-#define LN_BUF_SIZE 250
-#endif
-
-#if LN_BUF_SIZE > 255
-#  error LN_BUF_SIZE is byte, max 255 !
+#define LN_BUF_SIZE 128
 #endif
 
    typedef struct
    {
-      byte                                    RxPackets;
+      word                                    RxPackets;
       byte                                    RxErrors;
-      byte                                    TxPackets;
+      word                                    TxPackets;
       byte                                    TxError;
       byte                                    Collisions;
    } LnBufStats;
@@ -91,9 +87,9 @@ extern                                  "C"
    typedef struct
    {
       byte                                    Buf[LN_BUF_SIZE];
-      uint16_t                                WriteIndex;
-      uint16_t                                ReadIndex;
-      uint16_t                                ReadPacketIndex;
+      byte                                    WriteIndex;
+      byte                                    ReadIndex;
+      byte                                    ReadPacketIndex;
       byte                                    CheckSum;
       byte                                    ReadExpLen;
       LnBufStats                              Stats;
@@ -101,6 +97,7 @@ extern                                  "C"
 
    void                                    initLnBuf(LnBuf * Buffer);
    lnMsg                                  *recvLnMsg(LnBuf * Buffer);
+   LnBufStats                             *getLnBufStats(LnBuf * Buffer);
    byte                                    getLnMsgSize(volatile lnMsg * newMsg);
 
 #ifdef __BORLANDC__

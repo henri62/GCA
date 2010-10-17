@@ -23,6 +23,8 @@
  *******************************************************************************************
  */
 
+/* *INDENT-OFF* */
+
 /**
  * Enum for the jumpers.
  */
@@ -47,8 +49,7 @@ userIoJumperStatusClosed      /**< Jumper closed */
  */
 typedef enum
 {
-   userIoLed3 = 0,           /**< Led 3 control PB1 */
-   userIoLed4,               /**< Led 4 control PC3 */
+   userIoLed4 = 0,           /**< Led 4 control PC3 */
    userIoLed5,               /**< Led 5 control PC4 */
    userIoLed6,               /**< Led 6 control PC5 */
    userIoLedMax
@@ -79,6 +80,8 @@ typedef enum
  *******************************************************************************************
  */
 
+/* *INDENT-ON* */
+
 /*
  *******************************************************************************************
  * Prototypes
@@ -89,7 +92,6 @@ extern void                             UserIoInit(void);
 extern void                             UserIoMain(void);
 extern TUserIoJumperStatus              UserIoGetJumperStatus(TUserIoJumper Jumper);
 extern void                             UserIoSetLed(TUserIoLed Led, TUserIoLedSet Set);
-extern void                             UserIoIpAddressGet(uint8_t * IpAddress);
-extern void                             UserIoIpAddressSet(uint8_t * IpAddress);
+extern void                             UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * RouterIp);
 
 #endif   // USER_IO_H

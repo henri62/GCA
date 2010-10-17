@@ -59,14 +59,13 @@
 
 #define MGV50AT_INVALID_EEP_DATA_WORD              0xFFFF         /**< Invalid EEPROM data */
 #define MGV50AT_INVALID_EEP_DATA_BYTE              0xFF           /**< Invalid EEPROM data */
-#define MGV50AT_CONFIG_BYTE_DEFAULT                0x1F;          /**< B0 default and input default */
-#define MGV50AT_LOCO_IO_DEFAULT_ADDRESS            0x0101         /**< Default LocoIo address */
+#define MGV50AT_CONFIG_BYTE_DEFAULT                0x1B;          /**< B0 default and input default */
+#define MGV50AT_LOCO_IO_DEFAULT_ADDRESS            0x0151         /**< Default LocoIo address */
 
 #define MGV50AT_SENSOR_TIMER_OVERFLOW_TIME         2              /**< ~2 msec timer overrun */
-#define MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON         200 / MGV50AT_SENSOR_TIMER_OVERFLOW_TIME    /**< Time constant switch on */
-#define MGV50AT_SENSOR_BLOCK_CNT_PULSE_ON          80 / MGV50AT_SENSOR_TIMER_OVERFLOW_TIME     /**< Time constant switch on */
+#define MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON         40 / MGV50AT_SENSOR_TIMER_OVERFLOW_TIME    /**< Time constant switch on */
 #define MGV50AT_SENSOR_BLOCK_CNT_DELAY_OFF         1000 / MGV50AT_SENSOR_TIMER_OVERFLOW_TIME   /**< Time constant delayed off */
-#define MGV50AT_SENSOR_BLOCK_CNT_SENSOR_OFF        10 / MGV50AT_SENSOR_TIMER_OVERFLOW_TIME     /**< Time constant off */
+#define MGV50AT_SENSOR_BLOCK_CNT_SENSOR_OFF        5 / MGV50AT_SENSOR_TIMER_OVERFLOW_TIME     /**< Time constant off */
 #define MGV50AT_BLINK_TIME                         (250 / MGV50AT_SENSOR_TIMER_OVERFLOW_TIME)  /**< Time for blinking / flashing */
 #define MGV50AT_OUTPUT_TIME_PULSE_HW               (250 / MGV50AT_SENSOR_TIMER_OVERFLOW_TIME)  /**< Time for pulse output */
 
@@ -183,7 +182,6 @@ typedef struct
    uint8_t                 *SensorIn;              /**< Pointer to sensor input value */
    uint16_t                OutputCnt;              /**< Counter for HW reset and blinking output */
    uint16_t                SensorCnt;              /**< Counter for sensor status */
-   uint16_t                SensorCntMax;           /**< Counter max value for sensor status */
    uint8_t                 OpCodeCmdData[3];       /**< Extra opcode command */
 }TMgv50AtConfigPin;
 
@@ -348,7 +346,7 @@ SIGNAL(SIG_OVERFLOW0)
                     Mgv50AtConfig.Pin[Index].ConfigByte.Input.Inverted == 1)))
          {
             Mgv50AtConfig.Pin[Index].SensorCnt++;
-            if (Mgv50AtConfig.Pin[Index].SensorCnt >= Mgv50AtConfig.Pin[Index].SensorCntMax)
+            if (Mgv50AtConfig.Pin[Index].SensorCnt >= MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON)
             {
                if (Mgv50AtConfig.Pin[Index].ConfigByte.Input.Delay == 0)
                {
@@ -356,7 +354,7 @@ SIGNAL(SIG_OVERFLOW0)
                }
                else
                {
-                  Mgv50AtConfig.Pin[Index].SensorCnt = Mgv50AtConfig.Pin[Index].SensorCntMax;
+                  Mgv50AtConfig.Pin[Index].SensorCnt = MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON;
                }
             }
          }
@@ -440,7 +438,7 @@ void Mgv50AtLocoNetLedCheck(void)
 void Mgv50AtUpdateEepromDataUnit(TMgv50AtConfig * ConfigPtr)
 {
    eeprom_write_word((uint16_t *) (EEP_SETTINGS_BASE_ADDRESS), ConfigPtr->UnitAddress);
-   eeprom_write_word((uint16_t *) (EEP_SETTINGS_BASE_ADDRESS + 2), ConfigPtr->BlinkValue);
+   eeprom_write_word((uint16_t *) (EEP_SETTINGS_BLINK_ADDRESS), ConfigPtr->BlinkValue);
 }
 
 /**
@@ -471,50 +469,6 @@ void Mgv50AtUpdateEepromData(TMgv50AtConfig * ConfigPtr, uint8_t Index)
 
 /**
  ******************************************************************************
- * @fn         void Mgv50AtResetModule(void)
- * @brief      Set all values of the module to default.
- * @return     None
- * @attention  Default is all pins as input and set as block.
- ******************************************************************************
- */
-void Mgv50AtResetModule(TMgv50AtConfig * ConfigPtr)
-{
-   uint8_t                                 Index;
-   uint8_t                                 IndexOpCode;
-
-   ConfigPtr->UnitAddress = MGV50AT_LOCO_IO_DEFAULT_ADDRESS;
-   ConfigPtr->BlinkValue = MGV50AT_BLINK_TIME;
-
-   for (Index = 0; Index < MGV50AT_NUMBER_OF_PINS; Index++)
-   {
-
-      ConfigPtr->Pin[Index].Address = Index;
-      ConfigPtr->Pin[Index].Type = mgv50AtPinTypeInput;
-      ConfigPtr->Pin[Index].SensorCntMax = MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON;
-      ConfigPtr->Pin[Index].ConfigByte.ByteValue = MGV50AT_CONFIG_BYTE_DEFAULT;
-      ConfigPtr->Pin[Index].LocoIoGetal_2 = ConfigPtr->Pin[Index].Address & 0x7F;
-      ConfigPtr->Pin[Index].LocoIoGetal_3 = (ConfigPtr->Pin[Index].Address >> 9) & 0x7F;
-
-      Mgv50AtSetPinDirection(ConfigPtr->Pin[Index].PortDdr, ConfigPtr->Pin[Index].PinNumber,
-                             ConfigPtr->Pin[Index].Type);
-      Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 1);
-
-      if (Index % 2)
-      {
-         ConfigPtr->Pin[Index].LocoIoGetal_3 |= 0x10;
-      }
-
-      for (IndexOpCode = 0; IndexOpCode < EEP_SETTINGS_OPCODE_SIZE; IndexOpCode++)
-      {
-         eeprom_write_byte((uint8_t *) (EEP_SETTINGS_OPCODE_BASE + (Index * EEP_SETTINGS_OPCODE_SIZE) +
-                                        IndexOpCode), 0);
-         Mgv50AtConfig.Pin[Index].OpCodeCmdData[IndexOpCode] = 0;
-      }
-   }
-}
-
-/**
- ******************************************************************************
  * @fn         void Mgv50AtReportSensor(TMgv50AtConfig * ConfigPtr)
  * @brief      Transmit the input status on the loconet bus if required. If the
  *             extra opcode is filled in this is also transmitted.
@@ -532,7 +486,7 @@ void Mgv50AtReportSensor(TMgv50AtConfig * ConfigPtr)
    {
       if (ConfigPtr->Pin[Index].Type == mgv50AtPinTypeInput)
       {
-         if (ConfigPtr->Pin[Index].SensorCnt >= ConfigPtr->Pin[Index].SensorCntMax)
+         if (ConfigPtr->Pin[Index].SensorCnt >= MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON)
          {
             if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitOn)
             {
@@ -707,18 +661,20 @@ void Mgv50AtSensorJumper(TMgv50AtConfig * ConfigPtr)
 {
    uint8_t                                 Index;
 
-   if (!(MGV50AT_SENSOR_JUMPER))
+   for (Index = 0; Index < MGV50AT_NUMBER_OF_PINS; Index++)
    {
-      for (Index = 0; Index < MGV50AT_NUMBER_OF_PINS; Index++)
+      if (ConfigPtr->Pin[Index].Type == mgv50AtPinTypeInput)
       {
-         if (ConfigPtr->Pin[Index].Type == mgv50AtPinTypeInput)
+         if (MGV50AT_SENSOR_JUMPER)
          {
-            /* Is it a block?! */
-            if (ConfigPtr->Pin[Index].ConfigByte.Input.OpCode)
-            {
-               ConfigPtr->Pin[Index].SensorCnt = 0;
-               ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitSkip;
-            }
+            /* Start recount... */
+            ConfigPtr->Pin[Index].SensorCnt = 0;
+            ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitIdle;
+         }
+         else
+         {
+            ConfigPtr->Pin[Index].SensorCnt = 0;
+            ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitSkip;
          }
       }
    }
@@ -862,6 +818,16 @@ void Mgv50AtXpeerRead(lnMsg * LocoNetSendPacketPtr, TMgv50AtConfig * ConfigPtr, 
             break;
       }
    }
+   else
+   {
+      /* All other SV's (Servo) reject */
+      *ValidDataPtr = 1;
+      Mgv50AtLocoNetSendPacket.px.d5 = ConfigPtr->UnitAddress >> 8;
+      Mgv50AtLocoNetSendPacket.px.d6 = 0;
+      Mgv50AtLocoNetSendPacket.px.d7 = 0;
+      Mgv50AtLocoNetSendPacket.px.d8 = 0;
+   }
+
 }
 
 /**
@@ -888,7 +854,6 @@ void Mgv50AtLocnetXPeerResponse(lnMsg * LocoNetSendPacketPtr, TMgv50AtConfig * C
    LocoNetSendPacketPtr->px.d1 = DataPtr->px.d1;
    LocoNetSendPacketPtr->px.d2 = DataPtr->px.d2;
    LocoNetSendPacketPtr->px.d3 = SW_MINOR;
-   LocoNetSendPacketPtr->px.d4 = 0;
 
    while ((sendLocoNetPacket(LocoNetSendPacketPtr) != LN_DONE) && (LocoNetTxCnt < MGV50AT_LOCONET_X_PEER_RESPONSE_TRY))
    {
@@ -998,8 +963,7 @@ void Mgv50AtXPeerMpRead(lnMsg * LocoNetSendPacketPtr, TMgv50AtConfig * ConfigPtr
                         uint8_t * ValidDataPtr)
 {
    uint8_t                                 Index;
-   uint16_t                                MpReadData = 0;
-   uint16_t                                MpReadDataMask = 0;
+   uint16_t                                MpReadData = 0xFFFF;
 
    /* Now check if pin is output, if yes so then handle the mask data */
    for (Index = 0; Index < MGV50AT_NUMBER_OF_PINS; Index++)
@@ -1007,28 +971,23 @@ void Mgv50AtXPeerMpRead(lnMsg * LocoNetSendPacketPtr, TMgv50AtConfig * ConfigPtr
       /* If output set it if mask required to do so ... */
       if (ConfigPtr->Pin[Index].Type == mgv50AtPinTypeInput)
       {
-         if (ConfigPtr->Pin[Index].SensorCnt >= ConfigPtr->Pin[Index].SensorCntMax)
+         if (ConfigPtr->Pin[Index].SensorCnt >= MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON)
          {
-            MpReadData |= (1 << Index);
+            MpReadData &= ~(1 << Index);
          }
-      }
-      else
-      {
-         MpReadDataMask |= (1 << Index);
       }
    }
 
    /* Compose the response */
    *ValidDataPtr = 1;
-   LocoNetSendPacketPtr->px.d5 = MpReadDataMask & 0x7F;
+   LocoNetSendPacketPtr->px.d4 = DataPtr->px.d4;
+   LocoNetSendPacketPtr->px.d5 = 0;
    LocoNetSendPacketPtr->px.d6 = MpReadData & 0x7F;
-   LocoNetSendPacketPtr->px.d7 = (MpReadDataMask >> 8) & 0x7F;
-   LocoNetSendPacketPtr->px.d8 = (MpReadData >> 8) & 0x7F;
+   LocoNetSendPacketPtr->px.d7 = (MpReadData >> 8) & 0x7F;
+   LocoNetSendPacketPtr->px.d8 = 0;
 
-   DataPtr->px.pxct2 = (MpReadDataMask & 0x0080) ? 0x01 : 0x00;
-   DataPtr->px.pxct2 = (MpReadData & 0x0080) ? 0x02 : 0x00;
-   DataPtr->px.pxct2 = (MpReadDataMask & 0x8000) ? 0x04 : 0x00;
-   DataPtr->px.pxct2 = (MpReadData & 0x8000) ? 0x08 : 0x00;
+   LocoNetSendPacketPtr->px.pxct2 = (MpReadData & 0x0080) ? 0x02 : 0x00;
+   LocoNetSendPacketPtr->px.pxct2 |= (MpReadData & 0x8000) ? 0x04 : 0x00;
 }
 
 /**
@@ -1052,6 +1011,7 @@ void Mgv50AtXPeerHandler(lnMsg * DataPtr, TMgv50AtConfig * ConfigPtr)
    /* Is the xpeer message for us ? */
    UnitAddress = ((uint16_t) DataPtr->px.d5 << 8) | DataPtr->px.dst_l;
 
+   Mgv50AtLocoNetSendPacket.px.d4 = 0;
    Mgv50AtLocoNetSendPacket.px.pxct2 = 0;
 
    switch (DataPtr->px.dst_l)
@@ -1061,16 +1021,18 @@ void Mgv50AtXPeerHandler(lnMsg * DataPtr, TMgv50AtConfig * ConfigPtr)
          {
             case MGV50AT_LOCONET_X_PEER_COMMAND_WRITE:
                /* Reset */
-               Mgv50AtResetModule(ConfigPtr);
+               ConfigPtr->UnitAddress = MGV50AT_LOCO_IO_DEFAULT_ADDRESS;
                Mgv50AtUpdateEepromDataUnit(ConfigPtr);
+               Mgv50AtLocoNetSendPacket.px.d5 = ConfigPtr->UnitAddress >> 8;
                Mgv50AtLocoNetSendPacket.px.d6 = 0;
                Mgv50AtLocoNetSendPacket.px.d7 = 0;
-               Mgv50AtLocoNetSendPacket.px.d8 = 0;
+               Mgv50AtLocoNetSendPacket.px.d8 = DataPtr->px.d4;
                ValidData = 1;
                ValidEeprom = 1;
                break;
             case MGV50AT_LOCONET_X_PEER_COMMAND_READ:
                /* Identify */
+               Mgv50AtLocoNetSendPacket.px.d5 = ConfigPtr->UnitAddress >> 8;
                Mgv50AtLocoNetSendPacket.px.d6 = (uint8_t) ((ConfigPtr->BlinkValue / MGV50AT_BLINK_TIME) - 1) << 4;
                Mgv50AtLocoNetSendPacket.px.d7 = ConfigPtr->UnitAddress;
                Mgv50AtLocoNetSendPacket.px.d8 = ConfigPtr->UnitAddress >> 8;
@@ -1256,16 +1218,6 @@ void Mgv50AtXPeerHandler(lnMsg * DataPtr, TMgv50AtConfig * ConfigPtr)
                            }
                         }
 
-                        /* Update count max for pulse or block */
-                        if (Mgv50AtConfig.Pin[ConfigIndex].LocoIoGetal_3 & 0x10)
-                        {
-                           Mgv50AtConfig.Pin[ConfigIndex].SensorCntMax = MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON;
-                        }
-                        else
-                        {
-                           Mgv50AtConfig.Pin[ConfigIndex].SensorCntMax = MGV50AT_SENSOR_BLOCK_CNT_PULSE_ON;
-                        }
-
                         ValidData = 1;
                         ValidEeprom = 1;
                         Mgv50AtLocoNetSendPacket.px.d5 = ConfigPtr->UnitAddress >> 8;
@@ -1297,6 +1249,15 @@ void Mgv50AtXPeerHandler(lnMsg * DataPtr, TMgv50AtConfig * ConfigPtr)
                   Mgv50AtLocoNetSendPacket.px.d8 = DataPtr->px.d4;
                   Mgv50AtLocoNetSendPacket.px.pxct2 = DataPtr->px.pxct1;
                }
+               else
+               {
+                  /* All other SV's (Servo) reject */
+                  ValidData = 1;
+                  Mgv50AtLocoNetSendPacket.px.d5 = ConfigPtr->UnitAddress >> 8;
+                  Mgv50AtLocoNetSendPacket.px.d6 = 0;
+                  Mgv50AtLocoNetSendPacket.px.d7 = 0;
+                  Mgv50AtLocoNetSendPacket.px.d8 = 0;
+               }
             }
             else
             {
@@ -1307,16 +1268,19 @@ void Mgv50AtXPeerHandler(lnMsg * DataPtr, TMgv50AtConfig * ConfigPtr)
    else
    {
       /* An MP command ?! */
-      if ((DataPtr->px.d2 == 0) && (DataPtr->px.d3 == 0))
+      UnitAddress = ((uint16_t) DataPtr->px.d4 << 8) | DataPtr->px.dst_l;
       {
-         switch (DataPtr->px.d1)
+         if (UnitAddress == ConfigPtr->UnitAddress)
          {
-            case MGV50AT_LOCONET_X_PEER_COMMAND_MP_WRITE:
-               Mgv50AtXPeerMpWrite(&Mgv50AtLocoNetSendPacket, ConfigPtr, DataPtr, &ValidData);
-               break;
-            case MGV50AT_LOCONET_X_PEER_COMMAND_MP_READ:
-               Mgv50AtXPeerMpRead(&Mgv50AtLocoNetSendPacket, ConfigPtr, DataPtr, &ValidData);
-               break;
+            switch (DataPtr->px.d1)
+            {
+               case MGV50AT_LOCONET_X_PEER_COMMAND_MP_WRITE:
+                  Mgv50AtXPeerMpWrite(&Mgv50AtLocoNetSendPacket, ConfigPtr, DataPtr, &ValidData);
+                  break;
+               case MGV50AT_LOCONET_X_PEER_COMMAND_MP_READ:
+                  Mgv50AtXPeerMpRead(&Mgv50AtLocoNetSendPacket, ConfigPtr, DataPtr, &ValidData);
+                  break;
+            }
          }
       }
    }
@@ -1431,7 +1395,7 @@ void Mgv50AtInit(void)
       Mgv50AtConfig.UnitAddress = MGV50AT_LOCO_IO_DEFAULT_ADDRESS;
    }
 
-   Mgv50AtConfig.BlinkValue = eeprom_read_word((uint16_t *) EEP_SETTINGS_BASE_ADDRESS + 2);
+   Mgv50AtConfig.BlinkValue = eeprom_read_word((uint16_t *) EEP_SETTINGS_BLINK_ADDRESS);
    if (Mgv50AtConfig.BlinkValue == MGV50AT_INVALID_EEP_DATA_WORD)
    {
       Mgv50AtConfig.BlinkValue = MGV50AT_BLINK_TIME;
@@ -1577,15 +1541,6 @@ void Mgv50AtInit(void)
             Mgv50AtSetPinDirection(Mgv50AtConfig.Pin[Index].PortDdr, Mgv50AtConfig.Pin[Index].PinNumber,
                                    Mgv50AtConfig.Pin[Index].Type);
             Mgv50AtSetPin(Mgv50AtConfig.Pin[Index].PortOut, Mgv50AtConfig.Pin[Index].PinNumber, 1);
-
-            if (Mgv50AtConfig.Pin[Index].LocoIoGetal_3 & 0x10)
-            {
-               Mgv50AtConfig.Pin[Index].SensorCntMax = MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON;
-            }
-            else
-            {
-               Mgv50AtConfig.Pin[Index].SensorCntMax = MGV50AT_SENSOR_BLOCK_CNT_PULSE_ON;
-            }
             break;
          case mgv50AtPinTypeOutput:
             Mgv50AtSetPinDirection(Mgv50AtConfig.Pin[Index].PortDdr, Mgv50AtConfig.Pin[Index].PinNumber,

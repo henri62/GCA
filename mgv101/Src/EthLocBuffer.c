@@ -1,9 +1,9 @@
 
 /**
  *******************************************************************************************
- * @file 		EthLocBuffer.c                                         
+ * @file        EthLocBuffer.c
  * @ingroup     EthLocBuffer
- * @attention	
+ * @attention
  *******************************************************************************************
  */
 
@@ -15,14 +15,10 @@
 
 #include <inttypes.h>
 #include <string.h>
-#include <avr/pgmspace.h>
-#include "net.h"
+#include "stack.h"
 #include "UserIo.h"
-#include "timeout.h"
 #include "enc28j60.h"
 #include "ln_sw_uart.h"
-#include "serial_mega.h"
-#include "ip_arp_udp_tcp.h"
 #include "EthLocBuffer.h"
 
 /*
@@ -31,9 +27,10 @@
  *******************************************************************************************
  */
 
-#define ETH_LOC_BUFFER_BUFFER_SIZE  200                     /**< Network receive buffer */
-#define ETH_LOC_BUFFER_UDP_PORT     1235                    /**< Listen / write port for UDP */
+/* *INDENT-OFF* */
 
+#define ETH_LOC_BUFFER_MAX_LOCONET_TX     20          /**< Max number of tries * LN_TX_RETRIES_MAX !! */
+#define ETH_LOC_BUFFER_BUFFER_TCP_PORT    1235        /**< Port to listen / write */
 /*
  *******************************************************************************************
  * Types
@@ -46,13 +43,12 @@
  *******************************************************************************************
  */
 
-static uint8_t    EthLocBufferMac[6] = {0x00,0x23,0x8b,0x13,0xaa,0x6e};   /**< Mac Address */
-static uint8_t    EthLocBufferIp[4];                                      /**< IP Address */
-static uint8_t    EthLocBufferIpDst[4]  = {224,0,0,1};                    /**< IP destination address */
-static uint8_t    EthLocBufferEthBuf[ETH_LOC_BUFFER_BUFFER_SIZE+1];       /**< Network receive buffer */
-static LnBuf      EthLocBufferLocoNet;                                    /**< Loconet buffer */
-static uint32_t   EthLocBufferRcvCntUdp;                                  /**< Counter for received UDP data */
-static uint32_t   EthLocBufferRcvCntLoconet;                              /**< Counter for received loconet data */
+static LnBuf      EthLocBufferLocoNet;                /**< Loconet buffer */
+static uint8_t    EthLocBufferTcpIpIndex;             /**< Index for TcpIp transmit */
+static uint8_t    EthLocBufferTcpContinue;            /**< Process next Loconet message */
+static lnMsg      EthLocBufferTcpLoconetData;         /**< Copy of last received Loconet data for retry on TCPIP */
+static uint8_t    EthLocBufferTcpLoconetDataLenght;   /**< Copy of length last received Loconet data for retry on TCPIP */
+/* *INDENT-ON* */
 
 /*
  *******************************************************************************************
@@ -62,36 +58,21 @@ static uint32_t   EthLocBufferRcvCntLoconet;                              /**< C
 
 /**
  *******************************************************************************************
- * @fn	    	static void EthLocBufferPingCallBack(uint8_t * DataPtr)	
- * @brief   	If a ping is received for us blink the led. 
- * @param       DataPtr Ping data pointer.  
- * @return		None
- * @attention	- 
+ * @fn         static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
+ * @brief      Process the content of a received message from the Loconet bus and
+ *             forward it on to the TCP/IP.
+ * @param      LnPacket  Pointer to Loconet variable.
+ * @return     None
+ * @attention  -
  *******************************************************************************************
  */
-
-static void EthLocBufferPingCallBack(uint8_t * DataPtr)
-{
-   UserIoSetLed(userIoLed5, userIoLedSetFlash);
-}
-
-/**
- *******************************************************************************************
- * @fn	    	static void EthLocBufferRcvLocoNet(uint8_t * UdpDataPtr, lnMsg * LnPacket)
- * @brief   	Process the content of a received message from the loconet bus.
- * @param       LnPacket  Pointer to Loconet variable. 
- * @return		None
- * @attention	- 
- *******************************************************************************************
- */
-
-static void EthLocBufferRcvLocoNet(uint8_t * UdpDataPtr, lnMsg * LnPacket)
+static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
 {
    uint8_t                                 OpCode;
    uint8_t                                 OpcodeFamily;
    uint8_t                                 RxLength;
 
-   /* Blink led to indicate something is received from Loconet bus */
+   /* Blink led to indicate something is received and processed from Loconet bus */
    UserIoSetLed(userIoLed6, userIoLedSetFlash);
 
    /* Check received data from Loconet */
@@ -126,132 +107,204 @@ static void EthLocBufferRcvLocoNet(uint8_t * UdpDataPtr, lnMsg * LnPacket)
    /* Copy the data so it can be transmitted to RocRail */
    if (RxLength != 0)
    {
-      send_udp(EthLocBufferEthBuf, (char *)LnPacket->data, RxLength,
-               ETH_LOC_BUFFER_UDP_PORT, EthLocBufferIpDst, ETH_LOC_BUFFER_UDP_PORT);
-
-      EthLocBufferRcvCntLoconet++;
-   }
-}
-
-/**
- *******************************************************************************************
- * @fn	    	void EthLocBufferRcvEthernet(uint8_t *RcvData, uint16_t RcvLength)	
- * @brief   	Check the content of a received message from the ethernet bus.
- * @param       RcvData  Pointer to array with received data. 
- * @param       RcvLength Number of received bytes.  
- * @return		None
- * @attention	- 
- *******************************************************************************************
- */
-
-static void EthLocBufferRcvEthernet(uint8_t * RcvData, uint16_t RcvLength)
-{
-   lnMsg                                   LocoNetSendPacket;
-   uint16_t                                RcvPort = 0;
-
-   if (packetloop_icmp_tcp(RcvData, RcvLength) == 0)
-   {
-      /* Ip packet for us? */
-      if (eth_type_is_ip_and_my_ip(RcvData, RcvLength))
+      /* If a connection to us is present then transmit new data */
+      if (EthLocBufferTcpIpIndex != 255)
       {
-         RcvPort = ip_arp_udp_tcp_get_source_port(RcvData);
+         memcpy(&eth_buffer[TCP_DATA_START_FIX], (char *)LnPacket->data, RxLength);
+         tcp_entry[EthLocBufferTcpIpIndex].status = ACK_FLAG | PSH_FLAG;
+         create_new_tcp_packet(RxLength, EthLocBufferTcpIpIndex);
+         tcp_packet_retry_tx_reset(EthLocBufferTcpIpIndex);
+         tcp_packet_retry_tx_set(EthLocBufferTcpIpIndex);
 
-         if (RcvPort == ETH_LOC_BUFFER_UDP_PORT)
-         {
-            /* Blink led to indicate something is received from the network */
-            UserIoSetLed(userIoLed5, userIoLedSetFlash);
-            if (RcvData[IP_PROTO_P] == IP_PROTO_UDP_V)
-            {
-               /* UDP multicast data from RocRail... Process it. */
-               memset(&LocoNetSendPacket, 0, sizeof(LocoNetSendPacket));
-               LocoNetSendPacket.sd.mesg_size = RcvData[UDP_LEN_L_P] - UDP_HEADER_LEN;
-
-               /* Copy the data so it can be transmitted to the Loconet */
-               EthLocBufferRcvCntUdp++;
-               memcpy(LocoNetSendPacket.data, &RcvData[UDP_DATA_P], LocoNetSendPacket.sd.mesg_size);
-               sendLocoNetPacket(&LocoNetSendPacket);
-            }
-         }
+         memcpy(EthLocBufferTcpLoconetData.data, (char *)LnPacket->data, RxLength);
+         EthLocBufferTcpLoconetDataLenght = RxLength;
+         EthLocBufferTcpContinue = 0;
       }
    }
 }
 
 /**
  *******************************************************************************************
- * @fn	    	void EthLocBufferInit(void)		
- * @brief   	Init the ENC2860 ntwork chip and init the loconet interface. 
- * @return		None
- * @attention	- 
+ * @fn	      void EthLocBufferRcvEthernet(uint8_t *RcvData, uint16_t RcvLength)
+ * @brief      Check the content of a received message from the ethernet bus.
+ * @param      RcvData  Pointer to array with received data.
+ * @param      RcvLength Number of received bytes.
+ * @return     None
+ * @attention  The stack uses calls this function also in case a retry must be generated.
+ *******************************************************************************************
+ */
+
+static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
+{
+   uint8_t                                 TxMaxCnt = 0;
+   uint8_t                                 OpCode = 0;
+   uint8_t                                 OpcodeFamily = 0;
+   LN_STATUS                               TxStatus = LN_DONE;
+   lnMsg                                   LocoNetSendPacket;
+
+   if ((tcp_entry[TcpFpIndex].status & PSH_FLAG) == PSH_FLAG)
+   {
+      /* Check if received data is Loconet format */
+      OpCode = (uint8_t) eth_buffer[TCP_DATA_START_FIX];
+      OpcodeFamily = (OpCode >> 5);
+      switch (OpcodeFamily)
+      {
+           /* *INDENT-OFF* */
+           case 0b100:
+              /* 2 data bytes, inc checksum */
+              LocoNetSendPacket.sz.mesg_size = 2;
+              break;
+           case 0b101:
+              /* 4 data bytes, inc checksum */
+              LocoNetSendPacket.sz.mesg_size = 4;
+              break;
+           case 0b110:
+              /* 6 data bytes, inc checksum */
+              LocoNetSendPacket.sz.mesg_size = 6;
+              break;
+           case 0b111:
+              /* N data bytes, inc checksum, next octet is N */
+              LocoNetSendPacket.sz.mesg_size = eth_buffer[TCP_DATA_START_FIX+1];
+              break;
+           default:
+              /* Unknown... */
+              LocoNetSendPacket.sz.mesg_size = 0;
+              break;
+           /* *INDENT-ON* */
+      }
+
+      if (LocoNetSendPacket.sz.mesg_size > 0)
+      {
+         /* Blink led to indicate Loconet data is received from RocRail */
+         UserIoSetLed(userIoLed5, userIoLedSetFlash);
+
+         /* Copy the data so it can be transmitted to the Loconet */
+         memcpy(LocoNetSendPacket.data, &eth_buffer[TCP_DATA_START_FIX], LocoNetSendPacket.sz.mesg_size);
+
+         if (EthLocBufferTcpIpIndex == 255)
+         {
+            EthLocBufferTcpIpIndex = TcpFpIndex;
+         }
+
+         do
+         {
+            TxStatus = sendLocoNetPacket(&LocoNetSendPacket);
+            TxMaxCnt++;
+         }
+         while ((TxStatus != LN_DONE) && (TxMaxCnt < ETH_LOC_BUFFER_MAX_LOCONET_TX));
+         /* Message probably transmitted, ack the TCP/IP data */
+         tcp_entry[TcpFpIndex].status = ACK_FLAG;
+         create_new_tcp_packet(0, TcpFpIndex);
+      }
+   }
+   else if ((tcp_entry[TcpFpIndex].status & RETRY_FLAG) == RETRY_FLAG)
+   {
+      /* Retransmit last transmitted data */
+      tcp_entry[EthLocBufferTcpIpIndex].status = ACK_FLAG | PSH_FLAG;
+      memcpy(&eth_buffer[TCP_DATA_START_FIX], EthLocBufferTcpLoconetData.data, EthLocBufferTcpLoconetDataLenght);
+      create_new_tcp_packet(EthLocBufferTcpLoconetDataLenght, EthLocBufferTcpIpIndex);
+      tcp_packet_retry_tx_set(EthLocBufferTcpIpIndex);
+   }
+   else if ((tcp_entry[TcpFpIndex].status & ACK_FLAG) == ACK_FLAG)
+   {
+      /* Ack received on last transmitted data. New messages from Loconet cam be forwarded. */
+      tcp_packet_retry_tx_clear(EthLocBufferTcpIpIndex);
+      EthLocBufferTcpContinue = 1;
+   }
+   else if ((tcp_entry[TcpFpIndex].status & FIN_FLAG) == FIN_FLAG)
+   {
+      /* Connection ended from PC side. */
+      EthLocBufferTcpIpIndex = 255;
+      EthLocBufferTcpContinue = 255;
+      /* Blink TCPIP led indicating no connection is present to RocRail */
+      UserIoSetLed(userIoLed4, userIoLedSetOff);
+      UserIoSetLed(userIoLed4, userIoLedSetBlink);
+      UserIoSetLed(userIoLed5, userIoLedSetBlink);
+   }
+   else if ((tcp_entry[TcpFpIndex].status & RETRY_ABORT_FLAG) == RETRY_ABORT_FLAG)
+   {
+      /* Connection ended because max number of retries for tx. */
+      EthLocBufferTcpIpIndex = 255;
+      EthLocBufferTcpContinue = 255;
+      /* Blink TCPIP led indicating no connection is present to RocRail */
+      UserIoSetLed(userIoLed4, userIoLedSetOff);
+      UserIoSetLed(userIoLed4, userIoLedSetBlink);
+      UserIoSetLed(userIoLed5, userIoLedSetBlink);
+   }
+}
+
+/**
+ *******************************************************************************************
+ * @fn	      void EthLocBufferInit(void)
+ * @brief      Init the ENC2860 network chip and init the loconet interface.
+ * @return     None
+ * @attention  -
  *******************************************************************************************
  */
 
 void EthLocBufferInit(void)
 {
-   /* Set up the 2860 */
-   enc28j60Init(EthLocBufferMac);
-   enc28j60clkout(2);
-   _delay_ms(1);
+   uint8_t                                 IpAddress[4];
+   uint8_t                                 NetMask[4];
+   uint8_t                                 RouterIp[4];
+   uint8_t                                 MacData[6] = { 0x4D, 0x47, 0x56, 0x31, 0x30, 0x31 };
 
-   /* Magjack leds configuration */
-   enc28j60PhyWrite(PHLCON, 0x476);
-   _delay_ms(1);
-
-   /* Init the network layer */
-   UserIoIpAddressGet(EthLocBufferIp);
-   init_ip_arp_udp_tcp(EthLocBufferMac, EthLocBufferIp, ETH_LOC_BUFFER_UDP_PORT);
-   register_ping_rec_callback(&EthLocBufferPingCallBack);
+   /* Set up the network interface */
+   UserIoIpSettingsGet(IpAddress, NetMask, RouterIp);
+   stack_set_ip_settings(IpAddress, NetMask, RouterIp);
+   stack_init();
+   enc28j60SetMac(MacData);
+   add_tcp_app(ETH_LOC_BUFFER_BUFFER_TCP_PORT, (void (*)(unsigned char))EthLocBufferTcpRcvEthernet);
 
    /* Init loconet */
    initLocoNet(&EthLocBufferLocoNet);
 
-   /* Set used variables to default */
-   EthLocBufferRcvCntUdp = 0;
-   EthLocBufferRcvCntLoconet = 0;
+   /* Set used variables to initial values */
+   EthLocBufferTcpIpIndex = 255;
+   EthLocBufferTcpContinue = 0;
 }
 
 /**
  *******************************************************************************************
- * @fn	    	void EthLocBufferMain(void)		
- * @brief   	Verify if data is present in the network interface or locnet <br>
- *              interface and process it.  
- * @return		None
- * @attention	- 
+ * @fn	      void EthLocBufferMain(void)
+ * @brief      Verify if data is present in the network interface or locnet <br>
+ *             interface and process it.
+ * @return     None
+ * @attention  -
  *******************************************************************************************
  */
 
 void EthLocBufferMain(void)
 {
-   uint16_t                                Enc2860Rcv = 0;
    lnMsg                                  *RxPacket;
 
-   Enc2860Rcv = enc28j60PacketReceive(ETH_LOC_BUFFER_BUFFER_SIZE, EthLocBufferEthBuf);
-   if (Enc2860Rcv != 0)
+   /* Update the network stack */
+   eth_get_data();
+
+   /* Handle ping stuff */
+   if (ping.result)
    {
-      /* Something received, process it */
-      EthLocBufferRcvEthernet(EthLocBufferEthBuf, Enc2860Rcv);
+      UserIoSetLed(userIoLed5, userIoLedSetFlash);
+      ping.result = 0;
    }
 
-   RxPacket = recvLocoNetPacket();
-   if (RxPacket)
+   /* If no TCPIP connection discard all received Loconet data */
+   if (EthLocBufferTcpIpIndex == 255)
    {
-      /* Something received from Loconet interface, process it */
-      EthLocBufferRcvLocoNet(EthLocBufferEthBuf, RxPacket);
+      RxPacket = recvLocoNetPacket();
+      if (RxPacket)
+      {
+         UserIoSetLed(userIoLed6, userIoLedSetFlash);
+      }
    }
-}
-
-/**
- *******************************************************************************************
- * @fn	    	void EthLocBufferGetReceiveCounters(uint32_t * LoconetCnt, uint32_t * UdpCnt)
- * @brief   	Receive actual counters of received data.
- * @param       LoconetCnt   Received messages from the loconet bus. 
- * @param       UdpCnt       Received messages from Rocrail / UDP .  
- * @return		None
- * @attention	- 
- *******************************************************************************************
- */
-
-void EthLocBufferGetReceiveCounters(uint32_t * LoconetCnt, uint32_t * UdpCnt)
-{
-   *UdpCnt = EthLocBufferRcvCntUdp;
-   *LoconetCnt = EthLocBufferRcvCntLoconet;
+   else if (EthLocBufferTcpContinue != 0)
+   {
+      RxPacket = recvLocoNetPacket();
+      if (RxPacket)
+      {
+         /* Something received from Loconet interface, process it */
+         EthLocBufferTcpContinue = 0;
+         EthLocBufferRcvLocoNet(RxPacket);
+      }
+   }
 }
