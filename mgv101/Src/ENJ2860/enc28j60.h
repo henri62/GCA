@@ -23,9 +23,8 @@ extern unsigned char                    enc_revid;
 void                                    enc_init(void);
 void                                    enc_send_packet(unsigned int len, unsigned char *buf);
 unsigned int                            enc_receive_packet(unsigned int bufsize, unsigned char *buf);
-void enc28j60SetMac(unsigned char *MacPtr);
-
-#define enc28j60_revision       enc_revid
+void                                    enc28j60SetMac(unsigned char *MacPtr);
+unsigned char                           enc28j60linkup(void);
 
    /*************************************************************
 	  enc buffer configuration

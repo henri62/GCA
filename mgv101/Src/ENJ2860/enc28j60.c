@@ -37,7 +37,6 @@
 //-----------------------------------------------------------------------------
 
 unsigned char                           mymac[6];
-unsigned char                           enc_revid = 0;
 
 //-----------------------------------------------------------------------------
 
@@ -271,7 +270,6 @@ static void enc_write_reg(unsigned char reg, unsigned char value)
    enc_deselect();
 }
 
-#if 0
 static unsigned int enc_read_phyreg(unsigned char phyreg)
 {
    unsigned int                            value;
@@ -286,7 +284,6 @@ static unsigned int enc_read_phyreg(unsigned char phyreg)
 
    return value;
 }
-#endif
 
 static void enc_write_phyreg(unsigned char phyreg, unsigned int value)
 {
@@ -452,12 +449,6 @@ void enc_init(void)
    // send a reset command via spi to the enc
    enc_reset();
 
-   // wait for the CLKRDY bit
-   while (!(enc_read_reg(ENC_REG_ESTAT) & (1 << ENC_BIT_CLKRDY)));
-
-   // get enc revision id
-   enc_revid = enc_read_reg(ENC_REG_EREVID);
-
    // setup enc registers according to the enc_configdata struct
    while (1)
    {
@@ -512,4 +503,12 @@ void enc28j60SetMac(unsigned char *MacPtr)
   }
 }
 
+unsigned char enc28j60linkup(void)
+{
+        // bit 10 (= bit 3 in upper reg)
+   return(enc_read_phyreg(ENC_REG_PHSTAT2) && 4);
+}
+
 //-----------------------------------------------------------------------------
+
+

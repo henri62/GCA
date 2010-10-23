@@ -89,7 +89,7 @@ extern unsigned int                     IP_id_counter;
 #define MAX_TCP_ENTRY 2
 #define MAX_UDP_ENTRY 0
 #define MAX_ARP_ENTRY 1
-#define MTU_SIZE 300
+#define MTU_SIZE 200
 #endif
 
 #define ARP_REPLY_LEN		60
@@ -156,13 +156,12 @@ char                                    arp_entry_search(unsigned long);
 void                                    arp_reply(void);
 void                                    arp_entry_add(void);
 char                                    arp_request(unsigned long);
+void                                    arp_gratuitous_packet (void);
 
 void                                    make_ip_header(unsigned char *, unsigned long);
 void                                    icmp_send(unsigned long, unsigned char, unsigned char, unsigned int,
                                                   unsigned int);
 unsigned int                            checksum(unsigned char *, unsigned int, unsigned long);
-
-void                                    udp_socket_process(void);
 
 void                                    tcp_entry_add(unsigned char *);
 void                                    tcp_socket_process(void);
@@ -174,37 +173,33 @@ void                                    create_new_tcp_packet(unsigned int, unsi
 void                                    tcp_packet_retry_tx_reset(unsigned char index);
 void                                    tcp_packet_retry_tx_set(unsigned char index);
 void                                    tcp_packet_retry_tx_clear(unsigned char index);
-void                                    create_new_udp_packet(unsigned int, unsigned int, unsigned int, unsigned long);
-
 void                                    find_and_start(unsigned char index);
 void                                    tcp_timer_call(void);
 void                                    arp_timer_call(void);
 void                                    add_tcp_app(unsigned int, void (*fp1) (unsigned char));
 void                                    kill_tcp_app(unsigned int port);
-void                                    add_udp_app(unsigned int, void (*fp1) (unsigned char));
-void                                    kill_udp_app(unsigned int port);
 void                                    change_port_tcp_app(unsigned int, unsigned int);
 void                                    pinging(void);
 char                                    tcp_entry_search_for_connection(unsigned int SrcPort,
                                                                         unsigned char *TcpIpIndex);
 
-#define ETHER_OFFSET			0x00
-#define ARP_OFFSET				0x0E
-#define IP_OFFSET				0x0E
-#define ICMP_OFFSET				0x22
-#define ICMP_DATA				0x2A
-#define TCP_OFFSET				0x22
-#define UDP_OFFSET				0x22
+#define ETHER_OFFSET          0x00
+#define ARP_OFFSET            0x0E
+#define IP_OFFSET             0x0E
+#define ICMP_OFFSET           0x22
+#define ICMP_DATA             0x2A
+#define TCP_OFFSET            0x22
+#define UDP_OFFSET            0x22
 
-struct arp_table                        arp_entry[MAX_ARP_ENTRY];
-struct tcp_table                        tcp_entry[MAX_TCP_ENTRY + 1];
+struct arp_table              arp_entry[MAX_ARP_ENTRY];
+struct tcp_table              tcp_entry[MAX_TCP_ENTRY + 1];
 
 //IP Protocol Types
-#define	PROT_ICMP				0x01                                             // zeigt an die Nutzlasten enthalten das 
+#define	PROT_ICMP             0x01                                             // zeigt an die Nutzlasten enthalten das
                                                                                // ICMP Prot
-#define	PROT_TCP				0x06                                                // zeigt an die Nutzlasten enthalten das 
+#define	PROT_TCP              0x06                                                // zeigt an die Nutzlasten enthalten das
                                                                                // TCP Prot.
-#define	PROT_UDP				0x11                                                // zeigt an die Nutzlasten enthalten das 
+#define	PROT_UDP              0x11                                                // zeigt an die Nutzlasten enthalten das
                                                                                // UDP Prot.
 
 //Defines für IF Abfrage
@@ -242,6 +237,8 @@ struct tcp_table                        tcp_entry[MAX_TCP_ENTRY + 1];
                                                                                // (acknowledge)
 #define  RETRY_FLAG        0x20
 #define  RETRY_ABORT_FLAG  0x40
+
+#define  ARP_TRAILER_SIZE  18
 
 //----------------------------------------------------------------------------
 //Aufbau eines Ethernetheader

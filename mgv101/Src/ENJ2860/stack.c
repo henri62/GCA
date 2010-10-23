@@ -24,20 +24,16 @@
 
 #include <avr/interrupt.h>
 #include <string.h>
-#include <avr/eeprom.h>
 #include <avr/io.h>
-
 #include <avr/pgmspace.h>
 #include "enc28j60.h"
 #include "stack.h"
 
+#define STACK_ARP_GRACIOUS_MAX           6
+#define STACK_ARP_GRACIOUS_INTERVAL_TIME 250
+
 
 TCP_PORT_ITEM TCP_PORT_TABLE[MAX_APP_ENTRY] = // Port-Tabelle
-{
-	{0,0}
-};
-
-UDP_PORT_ITEM UDP_PORT_TABLE[MAX_APP_ENTRY] = // Port-Tabelle
 {
 	{0,0}
 };
@@ -55,6 +51,9 @@ struct arp_table arp_entry[MAX_ARP_ENTRY];
 struct tcp_table tcp_entry[MAX_TCP_ENTRY+1]; 
 
 PING_STRUCT ping;
+
+unsigned char arp_gratuitous_tmr_cnt;
+unsigned char arp_gratuitous_tx_cnt;
 
 //----------------------------------------------------------------------------
 //Converts integer variables to network Byte order
@@ -92,6 +91,9 @@ void stack_set_ip_settings(uint8_t * myIpPtr, uint8_t * myNetMask, uint8_t * myR
 void stack_init (void)
 {
    eth.timer = 0;
+
+   arp_gratuitous_tmr_cnt = 0;
+   arp_gratuitous_tx_cnt = 0;
 
    /* NIC Initialisieren */
    enc_init();
@@ -164,6 +166,32 @@ void arp_timer_call (void)
 	}
 }
 
+
+//----------------------------------------------------------------------------
+//If a link is present the gracious ARP is transmitted 5 times to announce ourself
+//to the network.
+void arp_gratious_timer_call (void)
+{
+   if (enc28j60linkup())
+   {
+      if (arp_gratuitous_tx_cnt < STACK_ARP_GRACIOUS_MAX)
+      {
+         arp_gratuitous_tmr_cnt++;
+         if (arp_gratuitous_tmr_cnt > STACK_ARP_GRACIOUS_INTERVAL_TIME)
+         {
+            arp_gratuitous_packet();
+            arp_gratuitous_tmr_cnt = 0;
+            arp_gratuitous_tx_cnt++;
+         }
+      }
+   }
+   else
+   {
+      arp_gratuitous_tmr_cnt = 0;
+      arp_gratuitous_tx_cnt = 0;
+   }
+}
+
 //----------------------------------------------------------------------------
 //Trägt TCP PORT/Anwendung in Anwendungsliste ein
 void add_tcp_app (unsigned int port, void(*fp1)(unsigned char))
@@ -202,41 +230,6 @@ void change_port_tcp_app (unsigned int port_old, unsigned int port_new)
 }
 
 //----------------------------------------------------------------------------
-//Trägt UDP PORT/Anwendung in Anwendungsliste ein
-void add_udp_app (unsigned int port, void(*fp1)(unsigned char))
-{
-	unsigned char port_index = 0;
-	//Freien Eintrag in der Anwendungliste suchen
-	while (UDP_PORT_TABLE[port_index].port)
-	{ 
-		port_index++;
-	}
-	if (port_index >= MAX_APP_ENTRY)
-	{
-		return;
-	}
-	UDP_PORT_TABLE[port_index].port = port;
-	UDP_PORT_TABLE[port_index].fp = *fp1;
-	return;
-}
-
-//----------------------------------------------------------------------------
-//Löscht UDP Anwendung aus der Anwendungsliste
-void kill_udp_app (unsigned int port)
-{
-    unsigned char i;
-
-    for (i = 0; i < MAX_APP_ENTRY; i++)
-    {
-        if ( UDP_PORT_TABLE[i].port == port )
-        {
-            UDP_PORT_TABLE[i].port = 0;
-        }
-    }
-    return;
-}
-
-//----------------------------------------------------------------------------
 //ETH get data
 void eth_get_data(void)
 {
@@ -246,6 +239,7 @@ void eth_get_data(void)
    {
       tcp_timer_call();
       arp_timer_call();
+      // arp_gratious_timer_call();
       eth.timer = 0;
    }
 
@@ -303,13 +297,7 @@ void check_packet (void)
                 else
                 {
                     if( ip->IP_Proto == PROT_TCP ) tcp_socket_process();
-                    if( ip->IP_Proto == PROT_UDP ) udp_socket_process();
                 }
-            }
-            else
-            if (ip->IP_Destaddr == (unsigned long)0xffffffff ) // if broadcast
-            {
-                if( ip->IP_Proto == PROT_UDP ) udp_socket_process();
             }
         }
     }
@@ -551,6 +539,44 @@ char arp_request (unsigned long dest_ip)
         eth_get_data();
     }
     return(0);//keine Antwort
+}
+
+//----------------------------------------------------------------------------
+// Diese Routine erzeugt einen ARP gratuitous message to announce the
+// device on the network without expecting a reply.
+// http://en.wikipedia.org/wiki/Address_Resolution_Protocol or
+// http://wiki.wireshark.org/Gratuitous_ARP for a description.
+
+void arp_gratuitous_packet (void)
+{
+    unsigned char BroadcastMac[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    unsigned char buffer[ARP_REQUEST_LEN];
+
+    struct Ethernet_Header *ethernet;
+    struct ARP_Header *arp;
+
+    memset(buffer,0,sizeof(buffer));
+
+    ethernet = (struct Ethernet_Header *)&buffer[ETHER_OFFSET];
+    arp      = (struct ARP_Header      *)&buffer[ARP_OFFSET];
+
+    // Nutzlast Datagramm;0x0806 = ARP
+    ethernet->EnetPacketType = HTONS(0x0806);
+
+    memcpy(&ethernet->EnetPacketSrc[0],&mymac[0],sizeof(mymac));
+    memcpy(&ethernet->EnetPacketDest[0],&BroadcastMac[0],sizeof(BroadcastMac));
+    arp->ARP_SIPAddr = *((unsigned long *)&myip[0]);
+    arp->ARP_TIPAddr = *((unsigned long *)&myip[0]);
+    memcpy(&arp->ARP_SHAddr[0],&mymac[0],sizeof(mymac));
+    memcpy(&arp->ARP_THAddr[0],&BroadcastMac[0],sizeof(BroadcastMac));
+
+    arp->ARP_HWType = HTONS(0x0001);
+    arp->ARP_PRType = HTONS(0x0800);
+    arp->ARP_HWLen  = 0x06;
+    arp->ARP_PRLen  = 0x04;
+    arp->ARP_Op     = HTONS(0x0001);
+
+    enc_send_packet(ARP_REPLY_LEN, buffer);
 }
 
 //----------------------------------------------------------------------------
@@ -799,76 +825,6 @@ char tcp_entry_search_for_connection (unsigned int SrcPort, unsigned char *TcpIp
 }
 
 //----------------------------------------------------------------------------
-//Diese Routine verwaltet die UDP Ports
-void udp_socket_process(void)
-{
-	unsigned char port_index = 0;	
-	struct UDP_Header *udp;
-    
-	udp = (struct UDP_Header *)&eth_buffer[UDP_OFFSET];
-
-	//UDP DestPort mit Portanwendungsliste durchführen
-	while (UDP_PORT_TABLE[port_index].port && UDP_PORT_TABLE[port_index].port!=(htons(udp->udp_DestPort)))
-	{ 
-		port_index++;
-	}
-	
-	// Wenn index zu gross, dann beenden keine vorhandene Anwendung für den Port
-	if (!UDP_PORT_TABLE[port_index].port)
-	{ 
-		//Keine vorhandene Anwendung eingetragen! (ENDE)
-		return;
-	}
-
-	//zugehörige Anwendung ausführen
-	UDP_PORT_TABLE[port_index].fp(0); 
-	return;
-}
-
-//----------------------------------------------------------------------------
-//Diese Routine Erzeugt ein neues UDP Packet
-void create_new_udp_packet( unsigned int  data_length,
-                            unsigned int  src_port,
-                            unsigned int  dest_port,
-                            unsigned long dest_ip)
-{
-    unsigned int  result16;
-    unsigned long result32;
-
-    struct UDP_Header *udp;
-    struct IP_Header  *ip;
-
-    udp = (struct UDP_Header *)&eth_buffer[UDP_OFFSET];
-    ip  = (struct IP_Header  *)&eth_buffer[IP_OFFSET];
-  
-    udp->udp_SrcPort  = htons(src_port);
-    udp->udp_DestPort = htons(dest_port);
-
-    data_length     += UDP_HDR_LEN;                //UDP Packetlength
-    udp->udp_Hdrlen = htons(data_length);
-
-    data_length     += IP_VERS_LEN;                //IP Headerlänge + UDP Headerlänge
-    ip->IP_Pktlen = htons(data_length);
-    data_length += ETH_HDR_LEN;
-    ip->IP_Proto = PROT_UDP;
-    make_ip_header (eth_buffer,dest_ip);
-
-    udp->udp_Chksum = 0;
-  
-    //Berechnet Headerlänge und Addiert Pseudoheaderlänge 2XIP = 8
-    result16 = htons(ip->IP_Pktlen) + 8;
-    result16 = result16 - ((ip->IP_Vers_Len & 0x0F) << 2);
-    result32 = result16 + 0x09;
-  
-    //Routine berechnet die Checksumme
-    result16 = checksum ((&ip->IP_Vers_Len+12), result16, result32);
-    udp->udp_Chksum = htons(result16);
-
-    enc_send_packet(data_length, eth_buffer);
-    return;
-}
-
-//----------------------------------------------------------------------------
 //Diese Routine verwaltet die TCP Ports
 void tcp_socket_process(void)
 {
@@ -968,11 +924,11 @@ void tcp_socket_process(void)
 		result32 = htons32(tcp_entry[index].seq_counter) + 1;
 		tcp_entry[index].seq_counter = htons32(result32);
 		
-		if (tcp_entry[index].status & FIN_FLAG)
-		{
-			// Ende der Anwendung mitteilen !
-			TCP_PORT_TABLE[port_index].fp(index);
+		// Ende der Anwendung mitteilen !
+		TCP_PORT_TABLE[port_index].fp(index);
 
+      if (tcp_entry[index].status & FIN_FLAG)
+      {
 			tcp_entry[index].status = ACK_FLAG | FIN_FLAG;
 			create_new_tcp_packet(0,index);
 		}

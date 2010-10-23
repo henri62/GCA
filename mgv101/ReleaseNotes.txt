@@ -1,4 +1,11 @@
-Version 1.6 
+Version 1.7
+ * Padding enabled of ENC28J60. By this network messages with a size lower 64 are filled up to 64.
+ * Non used items (for example UDP) removed from stack.c 
+ * ENC driver cleaned up.
+ * If connection was ended by RocRail MGV101 did not see this, fixed this. After connection is ended 
+   the run led and the TCPIP led will blink simultaniously.   
+
+Version 1.6 16-10-2010
  * Jumpers can be used to select a FIXED IP address for the MGV101. 
     * No jumpers set is 192.168.0.200
     * Jumper on PC0 (JP1) is 192.168.1.200
@@ -9,10 +16,10 @@ Version 1.6
    present can be observed on the leds of the macjack.  
  * Added a fix, after certain message types the target mac address was incorrect. 
     
-Version 1.5 
+Version 1.5 14-10-2010
  * IP address set fixed to 192.168.100.88. 
 
-Version 1.4
+Version 1.4 13-10-2010
  * UDP is replaced by TCP/IP. 
  * Used TCPIP stack is now from http://www.ulrichradig.de/home/index.php/avr/eth_m32_ex  
  * Generated hex file renamed to MGV101.hex 
@@ -35,5 +42,5 @@ Version 1.1 13-07-2010
  * Added extra logging option using jumper 2. Loconet data and UDP data are forwarded on the serial port. 
  * The echo in the Loconet driver is removed. 
 
-Version 1.0 28-10-2010
+Version 1.0 28-06-2010
  * Initial version. 

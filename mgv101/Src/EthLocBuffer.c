@@ -205,19 +205,15 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
       create_new_tcp_packet(EthLocBufferTcpLoconetDataLenght, EthLocBufferTcpIpIndex);
       tcp_packet_retry_tx_set(EthLocBufferTcpIpIndex);
    }
-   else if ((tcp_entry[TcpFpIndex].status & ACK_FLAG) == ACK_FLAG)
-   {
-      /* Ack received on last transmitted data. New messages from Loconet cam be forwarded. */
-      tcp_packet_retry_tx_clear(EthLocBufferTcpIpIndex);
-      EthLocBufferTcpContinue = 1;
-   }
-   else if ((tcp_entry[TcpFpIndex].status & FIN_FLAG) == FIN_FLAG)
+   else if (((tcp_entry[TcpFpIndex].status & FIN_FLAG) == FIN_FLAG) ||
+            ((tcp_entry[TcpFpIndex].status & RST_FLAG) == RST_FLAG))
    {
       /* Connection ended from PC side. */
       EthLocBufferTcpIpIndex = 255;
       EthLocBufferTcpContinue = 255;
       /* Blink TCPIP led indicating no connection is present to RocRail */
       UserIoSetLed(userIoLed4, userIoLedSetOff);
+      UserIoSetLed(userIoLed5, userIoLedSetOff);
       UserIoSetLed(userIoLed4, userIoLedSetBlink);
       UserIoSetLed(userIoLed5, userIoLedSetBlink);
    }
@@ -228,8 +224,15 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
       EthLocBufferTcpContinue = 255;
       /* Blink TCPIP led indicating no connection is present to RocRail */
       UserIoSetLed(userIoLed4, userIoLedSetOff);
+      UserIoSetLed(userIoLed5, userIoLedSetOff);
       UserIoSetLed(userIoLed4, userIoLedSetBlink);
       UserIoSetLed(userIoLed5, userIoLedSetBlink);
+   }
+   else if ((tcp_entry[TcpFpIndex].status & ACK_FLAG) == ACK_FLAG)
+   {
+      /* Ack received on last transmitted data. New messages from Loconet cam be forwarded. */
+      tcp_packet_retry_tx_clear(EthLocBufferTcpIpIndex);
+      EthLocBufferTcpContinue = 1;
    }
 }
 

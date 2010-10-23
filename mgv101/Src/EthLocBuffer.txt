@@ -6,11 +6,7 @@
 The MGV101 EthernetLoconetBuffer is a device acting as a gateway between Loconet and the network connection 
 of a PC. This eliminates the use of a serial usb converter, which sometimes gives troubles.<br> 
 Now just connect the MGV101 to your PC or router, setup RocRail for MGV101 and have fun!<br>
-
-@section Connection 
-Some network interfaces have an autodetection regarding the connection. If the MGV101 <br>
-is not reqognized, use a cross cable or a router / switch.<br>
-On Windows, youm must disable the wireless interface! 
+See http://wiki.rocrail.net/doku.php?id=mgv101-en&DokuWiki= for details on the MGV101 hardware.<br> 
 
 \image html mgv101.jpg
 
@@ -25,18 +21,48 @@ For Loconet the Loconet driver is used from http://sourceforge.net/projects/embe
 - Non used function are removed. 
 
 The used Ethernet software is from http://www.ulrichradig.de/home/index.php/avr/eth_m32_ex <br> 
-- The driver is slightly modified for transmitting unicast messages. 
 - Retransmit flag is added.
 - Added en- or disable of retransmit when transmitted packets does not receive an ACK. 
+- Added functions to set Mac and Ip address from the application instead of using defines. 
 
-@section Building the code. 
+@section Building Building the code. 
 - Download WINAVR version 20070122 at http://sourceforge.net/projects/winavr/files/WinAVR/20070122/ <br>
   Other versions may also be used, but tested is with the 20070122 version. 
 - Open the Programmers NotePad project file MGV101.pnproj. Programmers NotePad is an installation option of WinAvr. 
 - Select Tools->Make All
 - Flash the generated hex file EtLocBuf.hex into the Atmel microcontroller. 
 
-@section Disclaimer 
+@section IpAddress IpAddress selection.
+The IP address for the MGV101 is FIXED. For now 3 Ip Addresses can be selected using the jumpers. 
+- No jumpers set is 192.168.0.200
+- Jumper on PC0 (JP1) is 192.168.1.200
+- Jumper on PC1 (JP2) is 192.168.100.88
+
+All other combinations default to 192.168.0.200 
+
+@section Windows Windows and TCP/Ack delay. 
+The MGV101 receives an ACK message on each transmitted TCP/IP message to RocRail.<br>
+If you are using Windows, you might encounter slow response of the MGV101 and RocRail.<br>
+This is caused by the Ack delay in Windows. It's usefull to add the registery entry TcpAckFrquency.<br>
+Below in a few words how I changed this... 
+
+- Start->Opdrachtpromp->RegEdit
+- Select HKEY_LOCAL_MACHINE->SYSTEM->CurrentControlSet->Services->TcpIp->Interfaces
+- Search the applicable interface, find it by comparing the listed IP addresses with the IP address of your PC.
+- Select Bewerken -> Nieuw -> DWORD
+- Double click on the new entry and change the name into TcpAckFrequency and enter value 1. 
+- Press OK, and restart your machine.
+- Now the data exchange between RocRail and MGV101 is fast. 
+
+See also 
+- http://support.microsoft.com/kb/328890
+- http://smallvoid.com/article/winnt-nagle-algorithm.html 
+
+@section Connection Connection
+Some network interfaces have an autodetection regarding the connection. If the MGV101 <br>
+is not reqognized, use a cross cable or a router / switch.<br>
+
+@section Disclaimer Disclaimer
 - The software is as is. I'm not responsible in any way for errors in this <br>
 software or damage to your property when using this software. Feel free <br>
 to update / modify / improve the software. 

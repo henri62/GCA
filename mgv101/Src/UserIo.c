@@ -45,8 +45,8 @@
  * Typedef struct for led info */
 typedef struct
 {
-	uint8_t 		BlinkCnt;                    /**< Counter for led blink if active */
-	TUserIoLedSet 	Stat;                     /**< Set status for led */
+   uint8_t          BlinkCnt;                           /**< Counter for led blink if active */
+   TUserIoLedSet    Stat;                               /**< Set status for led */
 }TUserIoLedStat;
 
 /*
@@ -55,8 +55,8 @@ typedef struct
  *******************************************************************************************
  */
 
-TUserIoLedStat	   UserIoLedStat[userIoLedMax];          /**< Led status array */
-uint8_t           UserIoTcpIpCnt;
+TUserIoLedStat    UserIoLedStat[userIoLedMax];           /**< Led status array */
+uint8_t           UserIoTcpIpCnt;                        /**< Timer counter for TcpIp retry */
 
 /* *INDENT-ON* */
 
@@ -68,10 +68,10 @@ uint8_t           UserIoTcpIpCnt;
 
 /**
  *******************************************************************************************
- * @fn	    	void UserIoInit(void)		
- * @brief   	Init the IO pins of the jumpers and leds.  
- * @return		None
- * @attention	- 
+ * @fn         void UserIoInit(void)
+ * @brief      Init the IO pins of the jumpers and leds.
+ * @return     None
+ * @attention  -
  *******************************************************************************************
  */
 void UserIoInit(void)
@@ -95,11 +95,11 @@ void UserIoInit(void)
 
 /**
  *******************************************************************************************
- * @fn	    	userIoJumperStatus UserIoGetJumperStatus(TUserIoJumper Jumper)		
- * @brief   	Read the status of a jumper.   
- * @param       Jumper Jumper to read. 
- * @return		userIoJumperStatus
- * @attention	- 
+ * @fn         userIoJumperStatus UserIoGetJumperStatus(TUserIoJumper Jumper)
+ * @brief      Read the status of a jumper.
+ * @param      Jumper Jumper to read.
+ * @return     userIoJumperStatus
+ * @attention  -
  *******************************************************************************************
  */
 TUserIoJumperStatus UserIoGetJumperStatus(TUserIoJumper Jumper)
@@ -132,10 +132,10 @@ TUserIoJumperStatus UserIoGetJumperStatus(TUserIoJumper Jumper)
 
 /**
  *******************************************************************************************
- * @fn	    	void UserIoMain(void)		
- * @brief   	Main routine of userIo. Check if timer overrun, if yes check
- *              if a led is in blink mode.   
- * @return		None
+ * @fn         void UserIoMain(void)
+ * @brief      Main routine of userIo. Check if timer overrun, if yes check
+ *             if a led is in blink mode.
+ * @return     None
  * @attention	- 
  *******************************************************************************************
  */
@@ -205,11 +205,11 @@ void UserIoMain(void)
 
 /**
  *******************************************************************************************
- * @fn	    	void UserIoSetLed(TUserIoLed Led,TUserIoLedSet Set)		
- * @brief   	Set a led to a required status.    
- * @param       Led Led to be set. 
- * @param		Set How the led must be set. 
- * @attention	- 
+ * @fn         void UserIoSetLed(TUserIoLed Led,TUserIoLedSet Set)
+ * @brief      Set a led to a required status.
+ * @param      Led Led to be set.
+ * @param      Set How the led must be set.
+ * @attention  -
  *******************************************************************************************
  */
 void UserIoSetLed(TUserIoLed Led, TUserIoLedSet Set)
@@ -287,10 +287,12 @@ void UserIoSetLed(TUserIoLed Led, TUserIoLedSet Set)
 
 /**
  *******************************************************************************************
- * @fn	    	void UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t *NetMask, uint8_t RouterIp)
- * @brief   	Read the IP Address. In future this function may be extended with reading from
+ * @fn         void UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * RouterIp)
+ * @brief      Read the IP Address. In future this function may be extended with reading from
  *             EEPROM.
- * @param       *IpAddress Pointer to array where IP address must be stored.
+ * @param      *IpAddress Pointer to array where IP address must be stored.
+ * @param      *NetMask Pointer to array where the NetMask must be stored.
+ * @param      *RouterIp Pointer to array where the RouterIp must be stored.
  * @attention	-
  *******************************************************************************************
  */
