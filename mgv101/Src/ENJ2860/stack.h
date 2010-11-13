@@ -237,6 +237,7 @@ struct tcp_table              tcp_entry[MAX_TCP_ENTRY + 1];
                                                                                // (acknowledge)
 #define  RETRY_FLAG        0x20
 #define  RETRY_ABORT_FLAG  0x40
+#define  LINK_DOWN         0x80
 
 #define  ARP_TRAILER_SIZE  18
 

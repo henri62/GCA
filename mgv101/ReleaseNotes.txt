@@ -1,3 +1,20 @@
+Version 1.72
+ * Change of 1.71 slightly changed again. If long messages where received the MGV101 didn't
+   do anything more. Buffer is read so the 28J60 is not put into reset. 
+ * 3 Gratitiuos ARP packets are transmitted as soon as a link is discovered. By this MGV101
+   announces itself to the network. 
+ * If a ping command is received the Loconet indication led will flash. 
+ * Padding disabled of ENC28J60.
+ * After all retries to transmit data on TCPIP data failed MGV101 transmits a TCPIP message with
+   the FIN flag set.
+ * If the link is down for ~2 seconds and a connection to RocRail was present or if retransmit 
+   maximum is reached GlobalPowerOff is transmitted on the Loconet bus. 
+
+Version 1.71
+ * If a TCP/IP packet is received larger compared to the TCP/IP receive buffer of the Atmel the
+   ENC28J60 was put in reset. Changed this into reading the data out of the ENC28J60 buffer but not
+   storing it.  
+
 Version 1.7
  * Padding enabled of ENC28J60. By this network messages with a size lower 64 are filled up to 64.
  * Non used items (for example UDP) removed from stack.c 

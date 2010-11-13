@@ -396,7 +396,7 @@ unsigned int enc_receive_packet(unsigned int bufsize, unsigned char *buf)
    // added by Sjors: reset the ENC when needed
    // If the receive OK bit is not 1 or the zero bit is not zero, or the packet is larger then the buffer, reset the
    // enc chip and SPI
-   if ((!(status & (1 << 7))) || (status & 0x8000) || (len > bufsize))
+   if ((!(status & (1 << 7))) || (status & 0x8000))
    {
       enc_init();
    }
@@ -407,9 +407,10 @@ unsigned int enc_receive_packet(unsigned int bufsize, unsigned char *buf)
 
    // if the application buffer is to small, we just truncate
    if (len > bufsize)
+   {
       len = bufsize;
+   }
 
-   // now read the packet data into buffer
    enc_read_buf(buf, len);
 
    // adjust the ERXRDPT pointer (= free this packet in rx buffer)

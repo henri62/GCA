@@ -25,6 +25,8 @@
 
 /* *INDENT-OFF* */
 
+#define USER_IO_TIMER_OVERFLOW_TIME       4         /**< Timer overflow in msec */
+
 /**
  * Enum for the jumpers.
  */
@@ -80,6 +82,7 @@ typedef enum
  *******************************************************************************************
  */
 
+extern uint16_t           UserIoTcpIpLinkCnt;
 /* *INDENT-ON* */
 
 /*

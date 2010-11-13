@@ -29,12 +29,13 @@
 #include "enc28j60.h"
 #include "stack.h"
 
-#define STACK_ARP_GRACIOUS_MAX           6
+#define STACK_ARP_GRACIOUS_MAX           2
 #define STACK_ARP_GRACIOUS_INTERVAL_TIME 250
 
 
-TCP_PORT_ITEM TCP_PORT_TABLE[MAX_APP_ENTRY] = // Port-Tabelle
+TCP_PORT_ITEM TCP_PORT_TABLE[MAX_APP_ENTRY+1] = // Port-Tabelle
 {
+	{0,0},
 	{0,0}
 };
 
@@ -83,7 +84,7 @@ void stack_set_ip_settings(uint8_t * myIpPtr, uint8_t * myNetMask, uint8_t * myR
 {
    memcpy(myip, myIpPtr, sizeof(myip));
    memcpy(netmask, myNetMask, sizeof(netmask));
-   memcpy(router_ip, myRouterIp, sizeof(myRouterIp));
+   memcpy(router_ip, myRouterIp, sizeof(router_ip));
 }
 
 //----------------------------------------------------------------------------
@@ -117,7 +118,7 @@ void tcp_timer_call (void)
 				if ((tcp_entry[index].error_count++) > MAX_TCP_ERRORCOUNT)
 				{
 					ETH_INT_DISABLE;
-					tcp_entry[index].status =  RST_FLAG | ACK_FLAG;
+					tcp_entry[index].status =  FIN_FLAG;
 					create_new_tcp_packet(0,index);
 					tcp_entry[index].status =RETRY_ABORT_FLAG;
 					find_and_start (index);
@@ -239,7 +240,7 @@ void eth_get_data(void)
    {
       tcp_timer_call();
       arp_timer_call();
-      // arp_gratious_timer_call();
+      arp_gratious_timer_call();
       eth.timer = 0;
    }
 
@@ -568,7 +569,7 @@ void arp_gratuitous_packet (void)
     arp->ARP_SIPAddr = *((unsigned long *)&myip[0]);
     arp->ARP_TIPAddr = *((unsigned long *)&myip[0]);
     memcpy(&arp->ARP_SHAddr[0],&mymac[0],sizeof(mymac));
-    memcpy(&arp->ARP_THAddr[0],&BroadcastMac[0],sizeof(BroadcastMac));
+    memset(arp->ARP_THAddr,0,sizeof(BroadcastMac));
 
     arp->ARP_HWType = HTONS(0x0001);
     arp->ARP_PRType = HTONS(0x0800);
@@ -576,7 +577,7 @@ void arp_gratuitous_packet (void)
     arp->ARP_PRLen  = 0x04;
     arp->ARP_Op     = HTONS(0x0001);
 
-    enc_send_packet(ARP_REPLY_LEN, buffer);
+    enc_send_packet(ARP_REQUEST_LEN, buffer);
 }
 
 //----------------------------------------------------------------------------

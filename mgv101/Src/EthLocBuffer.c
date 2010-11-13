@@ -31,6 +31,7 @@
 
 #define ETH_LOC_BUFFER_MAX_LOCONET_TX     20          /**< Max number of tries * LN_TX_RETRIES_MAX !! */
 #define ETH_LOC_BUFFER_BUFFER_TCP_PORT    1235        /**< Port to listen / write */
+#define ETH_LOC_BUFFER_LINK_DOWN_TIME     2000 / USER_IO_TIMER_OVERFLOW_TIME
 /*
  *******************************************************************************************
  * Types
@@ -47,6 +48,7 @@ static LnBuf      EthLocBufferLocoNet;                /**< Loconet buffer */
 static uint8_t    EthLocBufferTcpIpIndex;             /**< Index for TcpIp transmit */
 static uint8_t    EthLocBufferTcpContinue;            /**< Process next Loconet message */
 static lnMsg      EthLocBufferTcpLoconetData;         /**< Copy of last received Loconet data for retry on TCPIP */
+static uint8_t    EthLocBufferTcpIpLinkStatus;        /**< Status of the network link */
 static uint8_t    EthLocBufferTcpLoconetDataLenght;   /**< Copy of length last received Loconet data for retry on TCPIP */
 /* *INDENT-ON* */
 
@@ -55,6 +57,75 @@ static uint8_t    EthLocBufferTcpLoconetDataLenght;   /**< Copy of length last r
  * Routines implementation
  *******************************************************************************************
  */
+
+/**
+ *******************************************************************************************
+ * @fn         static void EthLocBufferTransmitGlobalPowerOff(void)
+ * @brief      Transmit Global PowerOff on the Loconet bus.
+ * @return     None
+ * @attention  -
+ *******************************************************************************************
+ */
+static void EthLocBufferTransmitGlobalPowerOff(void)
+{
+   LN_STATUS                               TxStatus = LN_DONE;
+   lnMsg                                   LocoNetSendPacket;
+   uint8_t                                 TxMaxCnt = 0;
+
+   /* Transmit Power Off on Loconet */
+   LocoNetSendPacket.sz.mesg_size = 2;
+   LocoNetSendPacket.data[0] = 0x82;
+   LocoNetSendPacket.data[1] = 0x7D;
+
+   do
+   {
+      TxStatus = sendLocoNetPacket(&LocoNetSendPacket);
+      TxMaxCnt++;
+   }
+   while ((TxStatus != LN_DONE) && (TxMaxCnt < ETH_LOC_BUFFER_MAX_LOCONET_TX));
+}
+
+/**
+ *******************************************************************************************
+ * @fn         static void EthLocBufferVerifyLinkStatus(void)
+ * @brief      If the link was up and next down transmit Loconet message off.
+ * @return     None
+ * @attention  -
+ *******************************************************************************************
+ */
+static void EthLocBufferVerifyLinkStatus(void)
+{
+   if (enc28j60linkup() == 0)
+   {
+      if (UserIoTcpIpLinkCnt >= ETH_LOC_BUFFER_LINK_DOWN_TIME)
+      {
+         if (EthLocBufferTcpIpLinkStatus == 1)
+         {
+            /* If a connection from RocRail was present transmit off command on Loconet. */
+            if (EthLocBufferTcpIpIndex != 255)
+            {
+               tcp_index_del(EthLocBufferTcpIpIndex);
+
+               EthLocBufferTcpIpIndex = 255;
+               EthLocBufferTcpContinue = 255;
+
+               EthLocBufferTransmitGlobalPowerOff();
+
+               /* Blink TCPIP led indicating no connection is present to RocRail */
+               UserIoSetLed(userIoLed4, userIoLedSetOff);
+               UserIoSetLed(userIoLed5, userIoLedSetOff);
+               UserIoSetLed(userIoLed4, userIoLedSetBlink);
+               UserIoSetLed(userIoLed5, userIoLedSetBlink);
+            }
+         }
+      }
+   }
+   else
+   {
+      UserIoTcpIpLinkCnt = 0;
+      EthLocBufferTcpIpLinkStatus = 1;
+   }
+}
 
 /**
  *******************************************************************************************
@@ -211,6 +282,9 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
       /* Connection ended from PC side. */
       EthLocBufferTcpIpIndex = 255;
       EthLocBufferTcpContinue = 255;
+
+      EthLocBufferTransmitGlobalPowerOff();
+
       /* Blink TCPIP led indicating no connection is present to RocRail */
       UserIoSetLed(userIoLed4, userIoLedSetOff);
       UserIoSetLed(userIoLed5, userIoLedSetOff);
@@ -222,6 +296,9 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
       /* Connection ended because max number of retries for tx. */
       EthLocBufferTcpIpIndex = 255;
       EthLocBufferTcpContinue = 255;
+
+      EthLocBufferTransmitGlobalPowerOff();
+
       /* Blink TCPIP led indicating no connection is present to RocRail */
       UserIoSetLed(userIoLed4, userIoLedSetOff);
       UserIoSetLed(userIoLed5, userIoLedSetOff);
@@ -265,6 +342,7 @@ void EthLocBufferInit(void)
    /* Set used variables to initial values */
    EthLocBufferTcpIpIndex = 255;
    EthLocBufferTcpContinue = 0;
+   EthLocBufferTcpLoconetDataLenght = 0;
 }
 
 /**
@@ -287,7 +365,7 @@ void EthLocBufferMain(void)
    /* Handle ping stuff */
    if (ping.result)
    {
-      UserIoSetLed(userIoLed5, userIoLedSetFlash);
+      UserIoSetLed(userIoLed6, userIoLedSetFlash);
       ping.result = 0;
    }
 
@@ -310,4 +388,7 @@ void EthLocBufferMain(void)
          EthLocBufferRcvLocoNet(RxPacket);
       }
    }
+
+   /* Check the link status */
+   EthLocBufferVerifyLinkStatus();
 }

@@ -27,7 +27,6 @@
 
 /* *INDENT-OFF* */
 
-#define USER_IO_TIMER_OVERFLOW_TIME       4                                   /**< Timer overflow in msec */
 #define USER_IO_BLINK_RATE                1000 / USER_IO_TIMER_OVERFLOW_TIME  /**< Led blink rate is msec */
 #define USER_IO_FLASH_TIME                50 / USER_IO_TIMER_OVERFLOW_TIME    /**< Led flash time */
 #define USER_IO_TCP_IP_TIME               50 / USER_IO_TIMER_OVERFLOW_TIME    /**< TCPIP timer  */
@@ -57,6 +56,7 @@ typedef struct
 
 TUserIoLedStat    UserIoLedStat[userIoLedMax];           /**< Led status array */
 uint8_t           UserIoTcpIpCnt;                        /**< Timer counter for TcpIp retry */
+uint16_t          UserIoTcpIpLinkCnt;                    /**< Timer counter for TcpIp link status */
 
 /* *INDENT-ON* */
 
@@ -200,6 +200,8 @@ void UserIoMain(void)
       {
          eth.timer = 1;
       }
+
+      UserIoTcpIpLinkCnt++;
    }
 }
 
