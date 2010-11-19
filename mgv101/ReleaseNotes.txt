@@ -1,3 +1,7 @@
+Version 1.73
+ * Added code so fuses don't have to be set in case a Mgea168 is used out of the box. 
+   If not out of the box, make sure to select 8Mhz internal clock and CLKDIV needs to be active. 
+   
 Version 1.72
  * Change of 1.71 slightly changed again. If long messages where received the MGV101 didn't
    do anything more. Buffer is read so the 28J60 is not put into reset. 

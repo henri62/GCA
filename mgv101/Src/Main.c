@@ -15,6 +15,7 @@
  */
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <util/delay.h>
 #include "UserIo.h"
 #include "enc28j60.h"
 #include "EthLocBuffer.h"
@@ -65,6 +66,11 @@ int                                     main(void);
 
 int main(void)
 {
+   // Set clock speed to "no pre-scaler"
+   CLKPR = (1 << CLKPCE);
+   CLKPR = 0;
+   _delay_ms(12);
+
    /* Set run led */
    UserIoInit();
    UserIoSetLed(userIoLed4, userIoLedSetBlink);
