@@ -1,9 +1,9 @@
-Version 204 xx-12-2010
+Version 204 28-11-2010
  * When reading or writing from/to EEPROM interrupts are disbled.
- * If configuration data is rceoved forst the data is wrotten into EEPROM and then the response is transmitted.
-   Previous caused sometimes messup of communication. 
+ * If configuration data is received first the data is written into EEPROM and then the response is transmitted.
+   Previous caused sometimes mess up of communication. 
  * Transmit of sensor data updated. 
- * Jumper moved to pin 3. 
+ * Jumper moved to pin B3. 
 
 Version 203 03-10-2010
  * Startup behavior after power (connecting to Loconet bus) updated. Only active inputs at power are transmitted.
