@@ -1,3 +1,16 @@
+Version 204 xx-12-2010
+ * When reading or writing from/to EEPROM interrupts are disbled.
+ * If configuration data is rceoved forst the data is wrotten into EEPROM and then the response is transmitted.
+   Previous caused sometimes messup of communication. 
+ * Transmit of sensor data updated. 
+ * Jumper moved to pin 3. 
+
+Version 203 03-10-2010
+ * Startup behavior after power (connecting to Loconet bus) updated. Only active inputs at power are transmitted.
+ * Some code clean up. 
+ * Global PowerOn / Off of version 201 removed. 
+ * Routines remevod for setting pin direction and pin status, replaced by dorect port acces. 
+
 Version 202 03-10-2010
  * Minimum input high time set to 40 msec. 
  * No difference anymore between high time block and normal input.  

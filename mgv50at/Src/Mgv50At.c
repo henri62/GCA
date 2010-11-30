@@ -44,7 +44,6 @@
 #define MGV50AT_LOCONET_TURNOUT_COMMAND            0xB0           /**< Loconet turnout command */
 #define MGV50AT_LOCONET_SENSOR_COMMAND             0xB2           /**< Loconet sensor command */
 #define MGV50AT_LOCONET_X_PEER                     0xE5           /**< Loconet XPeer command */
-#define MGV50AT_LOCONET_GLOBAL_POWER_OFF           0x82           /**< Loconet global power off command */
 #define MGV50AT_LOCONET_GLOBAL_POWER_ON            0x83           /**< Loconet global power on command */
 #define MGV50AT_LOCONET_X_PEER_MSG_SIZE            0x10           /**< Loconet Xpeer response number of bytes */
 #define MGV50AT_LOCONET_X_PEER_COMMAND_WRITE       0x01           /**< Loconet Xpeer write sv */
@@ -53,7 +52,7 @@
 #define MGV50AT_LOCONET_X_PEER_COMMAND_MP_READ     0x04           /**< Loconet Xpeer MP write */
 #define MGV50AT_LOCONET_X_PEER_GENERIC_ADDRESS     0x00           /**< Dest Low is 0, reset unit */
 
-#define MGV50AT_LOCONET_X_PEER_RESPONSE_TRY        20             /**< Number of retries for transmit xpeer response */
+#define MGV50AT_LOCONET_X_PEER_RESPONSE_TRY        50             /**< Number of retries for transmit xpeer response */
 
 #define MGV50AT_NUMBER_OF_PINS                     16             /**< Number of available pin */
 
@@ -73,7 +72,7 @@
 #define MGV50AT_LOCONET_ACTIVITY_ON                PORTB |= (1<<PB2);   /**< Loconet activity led on */
 #define MGV50AT_LOCONET_ACTIVITY_OFF               PORTB &= ~(1<<PB2);  /**< Loconet activity led off */
 
-#define MGV50AT_SENSOR_JUMPER                      PINB & (1<<PINB4)    /**< Transmit input status after power on yes / no */
+#define MGV50AT_SENSOR_JUMPER                      PINB & (1<<PINB3)    /**< Transmit input status after power on yes / no */
 
 #define PORTBDIR 0
 #define PORTBOUT 1
@@ -122,16 +121,6 @@ typedef union
 } TMgv50AtConfigByte;
 
 /**
- * Typedef struct for storing input data from  ports
- */
-typedef struct
-{
-   uint8_t           PinB;                   /**< Actual debounce value inputs port B */
-   uint8_t           PinC;                   /**< Actual debounce value inputs port  B */
-   uint8_t           PinD;                   /**< Actual debounce value inputs port B */
-}TMgv50AtSensorInput;
-
-/**
  * Typedef enum for selected option of a pin
  */
 typedef enum
@@ -169,8 +158,9 @@ typedef enum
 typedef struct
 {
    uint16_t                Address;                /**< Loconet address of the pin */
-   uint8_t                 PortOut;                /**< Output address port */
-   uint8_t                 PortDdr;                /**< Output address port */
+   volatile uint8_t        *PortOut;               /**< Output port */
+   volatile uint8_t        *PortDdr;               /**< Data direction port */
+   volatile uint8_t        *PortIn;                /**< Input port */
    uint8_t                 PinNumber;              /**< Pin number 1 of port */
    TMgv50AtConfigByte      ConfigByte;             /**< Config byte, stored for easy response */
    uint8_t                 LocoIoGetal_2;          /**< LocoIoGetal2, stored for easy response */
@@ -179,7 +169,6 @@ typedef struct
    TMgv50AtOutputType      OutputType;             /**< The type of output */
    uint8_t                 OutputActive;           /**< Output active / set. */
    TMgv50AtSensorTransmit  Transmit;               /**< New sensor status transmitted */
-   uint8_t                 *SensorIn;              /**< Pointer to sensor input value */
    uint16_t                OutputCnt;              /**< Counter for HW reset and blinking output */
    uint16_t                SensorCnt;              /**< Counter for sensor status */
    uint8_t                 OpCodeCmdData[3];       /**< Extra opcode command */
@@ -202,11 +191,10 @@ typedef struct
  */
 
 static LnBuf                  Mgv50AtLocoNet ;            /**< Loconet variable */
-static TMgv50AtSensorInput    Mgv50AtSensorInput;         /**< Holds the input values */
 static TMgv50AtConfig         Mgv50AtConfig;              /**< Config of the module */
-static uint8_t                Mgv50AtCheckSensors;        /**< Update the sensor info. */
 static uint8_t                Mgv50AtLocoNetActivity;     /**< Counter for loconet led blink */
 static lnMsg                  Mgv50AtLocoNetSendPacket;   /**< Loconet Tx buffer */
+static uint8_t                Mgv50AtSensorIndex;         /**< Sensor status transmit index */
 
 /* *INDENT-ON* */
 
@@ -215,94 +203,6 @@ static lnMsg                  Mgv50AtLocoNetSendPacket;   /**< Loconet Tx buffer
  * Routines implementation
  *******************************************************************************************
  */
-
-void Mgv50AtSetPinDirection(uint8_t Port, uint8_t Pin, TMgv50AtPinType Type)
-{
-   switch (Port)
-   {
-      case PORTBDIR:
-         switch (Type)
-         {
-            case mgv50AtPinTypeInput:
-               DDRB &= ~(1 << Pin);
-               break;
-            default:
-               DDRB |= (1 << Pin);
-               break;
-         }
-         break;
-      case PORTCDIR:
-         switch (Type)
-         {
-            case mgv50AtPinTypeInput:
-               DDRC &= ~(1 << Pin);
-               break;
-            default:
-               DDRC |= (1 << Pin);
-               break;
-         }
-         break;
-      case PORTDDIR:
-         switch (Type)
-         {
-            case mgv50AtPinTypeInput:
-               DDRD &= ~(1 << Pin);
-               break;
-            default:
-               DDRD |= (1 << Pin);
-               break;
-         }
-   }
-}
-
-void Mgv50AtSetPin(uint8_t Port, uint8_t Pin, uint8_t OnOff)
-{
-   switch (Port)
-   {
-      case PORTBOUT:
-         if (OnOff == 0)
-         {
-            PORTB &= ~(1 << Pin);
-         }
-         else if (OnOff == 1)
-         {
-            PORTB |= (1 << Pin);
-         }
-         else if (OnOff == 2)
-         {
-            PORTB ^= (1 << Pin);
-         }
-         break;
-      case PORTCOUT:
-         if (OnOff == 0)
-         {
-            PORTC &= ~(1 << Pin);
-         }
-         else if (OnOff == 1)
-         {
-            PORTC |= (1 << Pin);
-         }
-         else if (OnOff == 2)
-         {
-            PORTC ^= (1 << Pin);
-         }
-         break;
-      case PORTDOUT:
-         if (OnOff == 0)
-         {
-            PORTD &= ~(1 << Pin);
-         }
-         else if (OnOff == 1)
-         {
-            PORTD |= (1 << Pin);
-         }
-         else if (OnOff == 2)
-         {
-            PORTD ^= (1 << Pin);
-         }
-         break;
-   }
-}
 
 /**
  ******************************************************************************
@@ -324,12 +224,11 @@ SIGNAL(SIG_OVERFLOW0)
       /* Pin used as sensor / switch !? */
       if (Mgv50AtConfig.Pin[Index].Type == mgv50AtPinTypeInput)
       {
-         Mgv50AtCheckSensors = 1;
          /* If pin NOT active the it's 'off', handle it... Handle also the inverted option for an input, thats why the
           * if construction is so 'readable' */
-         if (((*Mgv50AtConfig.Pin[Index].SensorIn & (1 << Mgv50AtConfig.Pin[Index].PinNumber) &&
+         if (((*Mgv50AtConfig.Pin[Index].PortIn & (1 << Mgv50AtConfig.Pin[Index].PinNumber) &&
                Mgv50AtConfig.Pin[Index].ConfigByte.Input.Inverted == 0)) ||
-             ((!(*Mgv50AtConfig.Pin[Index].SensorIn & (1 << Mgv50AtConfig.Pin[Index].PinNumber)) &&
+             ((!(*Mgv50AtConfig.Pin[Index].PortIn & (1 << Mgv50AtConfig.Pin[Index].PinNumber)) &&
                Mgv50AtConfig.Pin[Index].ConfigByte.Input.Inverted == 1)))
          {
             if (Mgv50AtConfig.Pin[Index].SensorCnt > 0)
@@ -340,9 +239,9 @@ SIGNAL(SIG_OVERFLOW0)
          /* If pin ACTIVE the it's 'occupied / pushed', handle it... Handle also the inverted option for an input,
           * thats why the if construction is so 'readable' */
          else if (((!
-                    (*Mgv50AtConfig.Pin[Index].SensorIn & (1 << Mgv50AtConfig.Pin[Index].PinNumber) &&
+                    (*Mgv50AtConfig.Pin[Index].PortIn & (1 << Mgv50AtConfig.Pin[Index].PinNumber) &&
                      Mgv50AtConfig.Pin[Index].ConfigByte.Input.Inverted == 0)) ||
-                   (((*Mgv50AtConfig.Pin[Index].SensorIn & (1 << Mgv50AtConfig.Pin[Index].PinNumber))) &&
+                   (((*Mgv50AtConfig.Pin[Index].PortIn & (1 << Mgv50AtConfig.Pin[Index].PinNumber))) &&
                     Mgv50AtConfig.Pin[Index].ConfigByte.Input.Inverted == 1)))
          {
             Mgv50AtConfig.Pin[Index].SensorCnt++;
@@ -372,7 +271,7 @@ SIGNAL(SIG_OVERFLOW0)
                   if (Mgv50AtConfig.Pin[Index].OutputCnt >= MGV50AT_OUTPUT_TIME_PULSE_HW)
                   {
                      Mgv50AtConfig.Pin[Index].OutputActive = 0;
-                     Mgv50AtSetPin(Mgv50AtConfig.Pin[Index].PortOut, Mgv50AtConfig.Pin[Index].PinNumber, 0);
+                     *Mgv50AtConfig.Pin[Index].PortOut &= ~(1 << Mgv50AtConfig.Pin[Index].PinNumber);
                   }
                   break;
                case mgv50AtOutputTypeBlink:
@@ -380,7 +279,7 @@ SIGNAL(SIG_OVERFLOW0)
                   if (Mgv50AtConfig.Pin[Index].OutputCnt >= Mgv50AtConfig.BlinkValue)
                   {
                      Mgv50AtConfig.Pin[Index].OutputCnt = 0;
-                     Mgv50AtSetPin(Mgv50AtConfig.Pin[Index].PortOut, Mgv50AtConfig.Pin[Index].PinNumber, 2);
+                     *Mgv50AtConfig.Pin[Index].PortOut ^= (1 << Mgv50AtConfig.Pin[Index].PinNumber);
                   }
                   break;
                default:
@@ -437,8 +336,10 @@ void Mgv50AtLocoNetLedCheck(void)
  */
 void Mgv50AtUpdateEepromDataUnit(TMgv50AtConfig * ConfigPtr)
 {
+   cli();
    eeprom_write_word((uint16_t *) (EEP_SETTINGS_BASE_ADDRESS), ConfigPtr->UnitAddress);
    eeprom_write_word((uint16_t *) (EEP_SETTINGS_BLINK_ADDRESS), ConfigPtr->BlinkValue);
+   sei();
 }
 
 /**
@@ -453,6 +354,7 @@ void Mgv50AtUpdateEepromDataUnit(TMgv50AtConfig * ConfigPtr)
  */
 void Mgv50AtUpdateEepromData(TMgv50AtConfig * ConfigPtr, uint8_t Index)
 {
+   cli();
    eeprom_write_word((uint16_t *) (EEP_SETTINGS_PIN_DATA_START + (Index * EEP_SETTINGS_PIN_DATA_SIZE)),
                      ConfigPtr->Pin[Index].Address);
    eeprom_write_byte((uint8_t *) (EEP_SETTINGS_PIN_DATA_START + (Index * EEP_SETTINGS_PIN_DATA_SIZE) + 2),
@@ -465,6 +367,7 @@ void Mgv50AtUpdateEepromData(TMgv50AtConfig * ConfigPtr, uint8_t Index)
                      ConfigPtr->Pin[Index].LocoIoGetal_3);
    eeprom_write_byte((uint8_t *) (EEP_SETTINGS_PIN_DATA_START + (Index * EEP_SETTINGS_PIN_DATA_SIZE) + 6),
                      ConfigPtr->Pin[Index].OutputType);
+   sei();
 }
 
 /**
@@ -480,110 +383,128 @@ void Mgv50AtUpdateEepromData(TMgv50AtConfig * ConfigPtr, uint8_t Index)
 void Mgv50AtReportSensor(TMgv50AtConfig * ConfigPtr)
 {
    lnMsg                                   LocoNetSendPacket;
-   uint8_t                                 Index;
 
-   for (Index = 0; Index < MGV50AT_NUMBER_OF_PINS; Index++)
+   if (ConfigPtr->Pin[Mgv50AtSensorIndex].Type == mgv50AtPinTypeInput)
    {
-      if (ConfigPtr->Pin[Index].Type == mgv50AtPinTypeInput)
+      if (ConfigPtr->Pin[Mgv50AtSensorIndex].SensorCnt >= MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON)
       {
-         if (ConfigPtr->Pin[Index].SensorCnt >= MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON)
+         if (ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit != mgv50AtSensorTransmitOn)
          {
-            if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitOn)
+            LocoNetSendPacket.sd.mesg_size = 4;
+            if ((ConfigPtr->Pin[Mgv50AtSensorIndex].ConfigByte.Input.OpCode) &&
+                (ConfigPtr->Pin[Mgv50AtSensorIndex].ConfigByte.Input.Block))
             {
-               if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitSkip)
+               /* Transmit the sensor status on the Loconet bus */
+               LocoNetSendPacket.data[0] = MGV50AT_LOCONET_SENSOR_COMMAND;
+               LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 1) & 0x7F;
+               LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 8;
+               LocoNetSendPacket.data[2] |= 0x10;
+               if (ConfigPtr->Pin[Mgv50AtSensorIndex].Address & 1)
                {
-                  LocoNetSendPacket.sd.mesg_size = 4;
-                  if ((ConfigPtr->Pin[Index].ConfigByte.Input.OpCode) && (ConfigPtr->Pin[Index].ConfigByte.Input.Block))
-                  {
-                     /* Transmit the sensor status on the Loconet bus */
-                     LocoNetSendPacket.data[0] = MGV50AT_LOCONET_SENSOR_COMMAND;
-                     LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Index].Address >> 1) & 0x7F;
-                     LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].Address >> 8;
-                     LocoNetSendPacket.data[2] |= 0x10;
-                     if (ConfigPtr->Pin[Index].Address & 1)
-                     {
-                        LocoNetSendPacket.data[2] |= 0x20;
-                     }
-                  }
-                  else
-                  {
-                     /* Transmit the switch request on the Loconet bus */
-                     LocoNetSendPacket.data[0] = MGV50AT_LOCONET_TURNOUT_COMMAND;
-                     LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Index].Address) & 0x7F;
-                     LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].Address >> 7;
-                     LocoNetSendPacket.data[2] |= 0x10;
-                  }
-                  /* Transmit, if transmit not succeeded it will be performed next time.. */
+                  LocoNetSendPacket.data[2] |= 0x20;
+               }
+            }
+            else
+            {
+               /* Transmit the switch request on the Loconet bus */
+               LocoNetSendPacket.data[0] = MGV50AT_LOCONET_TURNOUT_COMMAND;
+               LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Mgv50AtSensorIndex].Address) & 0x7F;
+               LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 7;
+               LocoNetSendPacket.data[2] |= 0x10;
+            }
+            /* Transmit, if transmit not succeeded it will be performed next time.. */
+            if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
+            {
+               Mgv50AtLocoNetLedStart();
+               /* Transmit the extra opcode of an input (if present) */
+               if (ConfigPtr->Pin[Mgv50AtSensorIndex].OpCodeCmdData[0] != 0)
+               {
+                  LocoNetSendPacket.data[0] = ConfigPtr->Pin[Mgv50AtSensorIndex].OpCodeCmdData[0];
+                  LocoNetSendPacket.data[1] = ConfigPtr->Pin[Mgv50AtSensorIndex].OpCodeCmdData[1];
+                  LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].OpCodeCmdData[2];
                   if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
                   {
                      Mgv50AtLocoNetLedStart();
-                     /* Transmit the extra opcode of an input (if present) */
-                     if (ConfigPtr->Pin[Index].OpCodeCmdData[0] != 0)
-                     {
-                        LocoNetSendPacket.data[0] = ConfigPtr->Pin[Index].OpCodeCmdData[0];
-                        LocoNetSendPacket.data[1] = ConfigPtr->Pin[Index].OpCodeCmdData[1];
-                        LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].OpCodeCmdData[2];
-                        if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
-                        {
-                           Mgv50AtLocoNetLedStart();
-                           ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOn;
-                        }
-                     }
-                     else
-                     {
-                        ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOn;
-                     }
+                     ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit = mgv50AtSensorTransmitOn;
+                     Mgv50AtSensorIndex++;
+                     Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
                   }
                }
                else
                {
-                  /* Initial change after power on skipped */
-                  ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOn;
+                  ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit = mgv50AtSensorTransmitOn;
+                  Mgv50AtSensorIndex++;
+                  Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
                }
             }
          }
-         else if (ConfigPtr->Pin[Index].SensorCnt < MGV50AT_SENSOR_BLOCK_CNT_SENSOR_OFF)
+         else
          {
-            if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitOff)
-            {
-               if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitSkip)
-               {
-                  LocoNetSendPacket.sd.mesg_size = 4;
-                  if ((ConfigPtr->Pin[Index].ConfigByte.Input.OpCode) && (ConfigPtr->Pin[Index].ConfigByte.Input.Block))
-                  {
-                     /* Transmit the sensor status on the loconet bus */
-                     LocoNetSendPacket.data[0] = MGV50AT_LOCONET_SENSOR_COMMAND;
-                     LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Index].Address >> 1) & 0x7F;
-                     LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].Address >> 8;
-                     if (ConfigPtr->Pin[Index].Address & 1)
-                     {
-                        LocoNetSendPacket.data[2] |= 0x20;
-                     }
-                  }
-                  else
-                  {
-                     /* Transmit the switch request on the Loconet bus */
-                     LocoNetSendPacket.data[0] = MGV50AT_LOCONET_TURNOUT_COMMAND;
-                     LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Index].Address) & 0x7F;
-                     LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].Address >> 7;
-                     LocoNetSendPacket.data[2] |= 0x30;
-                  }
-
-                  /* Transmit, if transmit not succeeded it will be performed next time.. */
-                  if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
-                  {
-                     Mgv50AtLocoNetLedStart();
-                     ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOff;
-                  }
-               }
-               else
-               {
-                  /* Initial change after power on skipped */
-                  ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOff;
-               }
-            }
+            Mgv50AtSensorIndex++;
+            Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
          }
       }
+      else if (ConfigPtr->Pin[Mgv50AtSensorIndex].SensorCnt == 0)
+      {
+         if (ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit != mgv50AtSensorTransmitOff)
+         {
+            if (ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit != mgv50AtSensorTransmitSkip)
+            {
+               LocoNetSendPacket.sd.mesg_size = 4;
+               if ((ConfigPtr->Pin[Mgv50AtSensorIndex].ConfigByte.Input.OpCode) &&
+                   (ConfigPtr->Pin[Mgv50AtSensorIndex].ConfigByte.Input.Block))
+               {
+                  /* Transmit the sensor status on the loconet bus */
+                  LocoNetSendPacket.data[0] = MGV50AT_LOCONET_SENSOR_COMMAND;
+                  LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 1) & 0x7F;
+                  LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 8;
+                  if (ConfigPtr->Pin[Mgv50AtSensorIndex].Address & 1)
+                  {
+                     LocoNetSendPacket.data[2] |= 0x20;
+                  }
+               }
+               else
+               {
+                  /* Transmit the switch request on the Loconet bus */
+                  LocoNetSendPacket.data[0] = MGV50AT_LOCONET_TURNOUT_COMMAND;
+                  LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Mgv50AtSensorIndex].Address) & 0x7F;
+                  LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 7;
+                  LocoNetSendPacket.data[2] |= 0x30;
+               }
+
+               /* Transmit, if transmit not succeeded it will be performed next time.. */
+               if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
+               {
+                  Mgv50AtLocoNetLedStart();
+                  ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit = mgv50AtSensorTransmitOff;
+                  Mgv50AtSensorIndex++;
+                  Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
+               }
+            }
+            else
+            {
+               /* Initial change after power on skipped */
+               ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit = mgv50AtSensorTransmitOff;
+               Mgv50AtSensorIndex++;
+               Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
+            }
+         }
+         else
+         {
+            Mgv50AtSensorIndex++;
+            Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
+         }
+      }
+      else
+      {
+         Mgv50AtSensorIndex++;
+         Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
+      }
+   }
+   else
+   {
+      Mgv50AtSensorIndex++;
+      Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
    }
 }
 
@@ -618,12 +539,12 @@ void Mgv50AtTurnOutHandler(byte * DataPtr, TMgv50AtConfig * ConfigPtr)
                /* CV2 option? */
                if (ConfigPtr->Pin[Index].LocoIoGetal_3 & 0x20)
                {
-                  Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 0);
+                  *ConfigPtr->Pin[Index].PortOut &= ~(1 << ConfigPtr->Pin[Index].PinNumber);
                   ConfigPtr->Pin[Index].OutputActive = 0;
                }
                else
                {
-                  Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 1);
+                  *ConfigPtr->Pin[Index].PortOut |= (1 << ConfigPtr->Pin[Index].PinNumber);
                   ConfigPtr->Pin[Index].OutputCnt = 0;
                   ConfigPtr->Pin[Index].OutputActive = 1;
                }
@@ -632,13 +553,13 @@ void Mgv50AtTurnOutHandler(byte * DataPtr, TMgv50AtConfig * ConfigPtr)
             {
                if (ConfigPtr->Pin[Index].LocoIoGetal_3 & 0x20)
                {
-                  Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 1);
+                  *ConfigPtr->Pin[Index].PortOut |= (1 << ConfigPtr->Pin[Index].PinNumber);
                   ConfigPtr->Pin[Index].OutputCnt = 0;
                   ConfigPtr->Pin[Index].OutputActive = 1;
                }
                else
                {
-                  Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 0);
+                  *ConfigPtr->Pin[Index].PortOut &= ~(1 << ConfigPtr->Pin[Index].PinNumber);
                   ConfigPtr->Pin[Index].OutputActive = 0;
                }
             }
@@ -650,34 +571,28 @@ void Mgv50AtTurnOutHandler(byte * DataPtr, TMgv50AtConfig * ConfigPtr)
 
 /**
  ******************************************************************************
- * @fn         void Mgv50AtSensorJumper(TMgv50AtConfig * ConfigPtr)
- * @brief      Reset sensor status if jumper is set.
+ * @fn         void Mgv50AtSensorReset(TMgv50AtConfig * ConfigPtr)
+ * @brief      Reset sensor status after global power on command.
  * @param      ConfigPtr Pointer to data with config settings of pins.
  * @return     None
  * @attention  -
  ******************************************************************************
  */
-void Mgv50AtSensorJumper(TMgv50AtConfig * ConfigPtr)
+void Mgv50AtSensorReset(TMgv50AtConfig * ConfigPtr)
 {
    uint8_t                                 Index;
 
+   cli();
    for (Index = 0; Index < MGV50AT_NUMBER_OF_PINS; Index++)
    {
       if (ConfigPtr->Pin[Index].Type == mgv50AtPinTypeInput)
       {
-         if (MGV50AT_SENSOR_JUMPER)
-         {
-            /* Start recount... */
-            ConfigPtr->Pin[Index].SensorCnt = 0;
-            ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitIdle;
-         }
-         else
-         {
-            ConfigPtr->Pin[Index].SensorCnt = 0;
-            ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitSkip;
-         }
+         /* After power on from Loconet transmit actual status of pins */
+         ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitIdle;
       }
    }
+   Mgv50AtSensorIndex = 0;
+   sei();
 }
 
 /**
@@ -713,11 +628,11 @@ void Mgv50AtBlockOutput(byte * DataPtr, TMgv50AtConfig * ConfigPtr)
          {
             if (DataPtr[2] & 0x10)
             {
-               Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 0);
+               *ConfigPtr->Pin[Index].PortOut &= ~(1 << ConfigPtr->Pin[Index].PinNumber);
             }
             else
             {
-               Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 1);
+               *ConfigPtr->Pin[Index].PortOut |= (1 << ConfigPtr->Pin[Index].PinNumber);
             }
          }
       }
@@ -910,12 +825,12 @@ void Mgv50AtXPeerMpWrite(lnMsg * LocoNetSendPacketPtr, TMgv50AtConfig * ConfigPt
                /* CV2 option? */
                if (ConfigPtr->Pin[Index].LocoIoGetal_3 & 0x20)
                {
-                  Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 0);
+                  *ConfigPtr->Pin[Index].PortOut &= ~(1 << ConfigPtr->Pin[Index].PinNumber);
                   ConfigPtr->Pin[Index].OutputActive = 0;
                }
                else
                {
-                  Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 1);
+                  *ConfigPtr->Pin[Index].PortOut |= (1 << ConfigPtr->Pin[Index].PinNumber);
                   ConfigPtr->Pin[Index].OutputCnt = 0;
                   ConfigPtr->Pin[Index].OutputActive = 1;
                }
@@ -924,13 +839,13 @@ void Mgv50AtXPeerMpWrite(lnMsg * LocoNetSendPacketPtr, TMgv50AtConfig * ConfigPt
             {
                if (ConfigPtr->Pin[Index].LocoIoGetal_3 & 0x20)
                {
-                  Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 1);
+                  *ConfigPtr->Pin[Index].PortOut |= (1 << ConfigPtr->Pin[Index].PinNumber);
                   ConfigPtr->Pin[Index].OutputCnt = 0;
                   ConfigPtr->Pin[Index].OutputActive = 1;
                }
                else
                {
-                  Mgv50AtSetPin(ConfigPtr->Pin[Index].PortOut, ConfigPtr->Pin[Index].PinNumber, 0);
+                  *ConfigPtr->Pin[Index].PortOut &= ~(1 << ConfigPtr->Pin[Index].PinNumber);
                   ConfigPtr->Pin[Index].OutputActive = 0;
                }
             }
@@ -1136,10 +1051,7 @@ void Mgv50AtXPeerHandler(lnMsg * DataPtr, TMgv50AtConfig * ConfigPtr)
                         if ((DataPtr->px.d4 & 0x03) == 0x03)
                         {
                            ConfigPtr->Pin[ConfigIndex].Type = mgv50AtPinTypeInput;
-                           Mgv50AtSetPinDirection(ConfigPtr->Pin[ConfigIndex].PortDdr,
-                                                  ConfigPtr->Pin[ConfigIndex].PinNumber,
-                                                  ConfigPtr->Pin[ConfigIndex].Type);
-
+                           *ConfigPtr->Pin[ConfigIndex].PortDdr &= ~(1 << ConfigPtr->Pin[ConfigIndex].PinNumber);
                            ConfigPtr->Pin[ConfigIndex].ConfigByte.ByteValue = DataPtr->px.d4;
 
                            ValidData = 1;
@@ -1153,19 +1065,15 @@ void Mgv50AtXPeerHandler(lnMsg * DataPtr, TMgv50AtConfig * ConfigPtr)
                         {
                            /* Output settings */
                            ConfigPtr->Pin[ConfigIndex].Type = mgv50AtPinTypeOutput;
-                           Mgv50AtSetPinDirection(ConfigPtr->Pin[ConfigIndex].PortDdr,
-                                                  ConfigPtr->Pin[ConfigIndex].PinNumber,
-                                                  ConfigPtr->Pin[ConfigIndex].Type);
+                           *ConfigPtr->Pin[ConfigIndex].PortDdr |= (1 << ConfigPtr->Pin[ConfigIndex].PinNumber);
                            ConfigPtr->Pin[ConfigIndex].ConfigByte.ByteValue = DataPtr->px.d4;
                            if (ConfigPtr->Pin[ConfigIndex].ConfigByte.Output.ContactHighStart)
                            {
-                              Mgv50AtSetPin(ConfigPtr->Pin[ConfigIndex].PortOut, ConfigPtr->Pin[ConfigIndex].PinNumber,
-                                            1);
+                              *ConfigPtr->Pin[ConfigIndex].PortOut |= (1 << ConfigPtr->Pin[ConfigIndex].PinNumber);
                            }
                            else
                            {
-                              Mgv50AtSetPin(ConfigPtr->Pin[ConfigIndex].PortOut, ConfigPtr->Pin[ConfigIndex].PinNumber,
-                                            0);
+                              *ConfigPtr->Pin[ConfigIndex].PortOut &= ~(1 << ConfigPtr->Pin[ConfigIndex].PinNumber);
                            }
                            ConfigPtr->Pin[ConfigIndex].OutputType =
                               ((DataPtr->px.d4 & 0x04) ? mgv50AtOutputTypeHwPulse :
@@ -1286,16 +1194,15 @@ void Mgv50AtXPeerHandler(lnMsg * DataPtr, TMgv50AtConfig * ConfigPtr)
    }
 
    /* Transmit response if required and update EEPROM data if required */
-   if (ValidData != 0)
-   {
-      Mgv50AtLocnetXPeerResponse(&Mgv50AtLocoNetSendPacket, ConfigPtr, DataPtr);
-   }
-
    if (ValidEeprom != 0)
    {
       Mgv50AtUpdateEepromData(ConfigPtr, ConfigIndex);
    }
 
+   if (ValidData != 0)
+   {
+      Mgv50AtLocnetXPeerResponse(&Mgv50AtLocoNetSendPacket, ConfigPtr, DataPtr);
+   }
 }
 
 /**
@@ -1356,10 +1263,8 @@ void Mgv50AtRcvLocoNet(lnMsg * LnPacket)
          case MGV50AT_LOCONET_X_PEER:
             Mgv50AtXPeerHandler(LnPacket, &Mgv50AtConfig);
             break;
-         case MGV50AT_LOCONET_GLOBAL_POWER_OFF:
-            break;
          case MGV50AT_LOCONET_GLOBAL_POWER_ON:
-            Mgv50AtSensorJumper(&Mgv50AtConfig);
+            Mgv50AtSensorReset(&Mgv50AtConfig);
             break;
          default:
             break;
@@ -1382,10 +1287,9 @@ void Mgv50AtInit(void)
    uint8_t                                 Index;
    uint8_t                                 OpCodeIndex;
 
-   /* Get initial status of the inputs */
-   Mgv50AtSensorInput.PinB = PINB;
-   Mgv50AtSensorInput.PinC = PINC;
-   Mgv50AtSensorInput.PinD = PIND;
+   /* Loconet activity led and jumper internal pull up */
+   DDRB |= (1 << PB2);
+   PORTB |= (1 << PB3);
 
    /* Read the config from the EEPROM. Value 0xFFFF is assumed as invalid, i.e. default EEPROM data. If detected, a
     * default value will be set. */
@@ -1403,85 +1307,85 @@ void Mgv50AtInit(void)
 
    /* Set location of pins and origin of pin data to make life easier during processing of sensor inputs / setting
     * outputs .... */
-   Mgv50AtConfig.Pin[0].SensorIn = &Mgv50AtSensorInput.PinC;
    Mgv50AtConfig.Pin[0].PinNumber = 5;
-   Mgv50AtConfig.Pin[0].PortOut = PORTCOUT;
-   Mgv50AtConfig.Pin[0].PortDdr = PORTCDIR;
+   Mgv50AtConfig.Pin[0].PortOut = &PORTC;
+   Mgv50AtConfig.Pin[0].PortDdr = &DDRC;
+   Mgv50AtConfig.Pin[0].PortIn = &PINC;
 
-   Mgv50AtConfig.Pin[1].SensorIn = &Mgv50AtSensorInput.PinC;
    Mgv50AtConfig.Pin[1].PinNumber = 4;
-   Mgv50AtConfig.Pin[1].PortOut = PORTCOUT;
-   Mgv50AtConfig.Pin[1].PortDdr = PORTCDIR;
+   Mgv50AtConfig.Pin[1].PortOut = &PORTC;
+   Mgv50AtConfig.Pin[1].PortDdr = &DDRC;
+   Mgv50AtConfig.Pin[1].PortIn = &PINC;
 
-   Mgv50AtConfig.Pin[2].SensorIn = &Mgv50AtSensorInput.PinD;
    Mgv50AtConfig.Pin[2].PinNumber = 0;
-   Mgv50AtConfig.Pin[2].PortOut = PORTDOUT;
-   Mgv50AtConfig.Pin[2].PortDdr = PORTDDIR;
+   Mgv50AtConfig.Pin[2].PortOut = &PORTD;
+   Mgv50AtConfig.Pin[2].PortDdr = &DDRD;
+   Mgv50AtConfig.Pin[2].PortIn = &PIND;
 
-   Mgv50AtConfig.Pin[3].SensorIn = &Mgv50AtSensorInput.PinC;
    Mgv50AtConfig.Pin[3].PinNumber = 3;
-   Mgv50AtConfig.Pin[3].PortOut = PORTCOUT;
-   Mgv50AtConfig.Pin[3].PortDdr = PORTCDIR;
+   Mgv50AtConfig.Pin[3].PortOut = &PORTC;
+   Mgv50AtConfig.Pin[3].PortDdr = &DDRC;
+   Mgv50AtConfig.Pin[3].PortIn = &PINC;
 
-   Mgv50AtConfig.Pin[4].SensorIn = &Mgv50AtSensorInput.PinD;
    Mgv50AtConfig.Pin[4].PinNumber = 1;
-   Mgv50AtConfig.Pin[4].PortOut = PORTDOUT;
-   Mgv50AtConfig.Pin[4].PortDdr = PORTDDIR;
+   Mgv50AtConfig.Pin[4].PortOut = &PORTD;
+   Mgv50AtConfig.Pin[4].PortDdr = &DDRD;
+   Mgv50AtConfig.Pin[4].PortIn = &PIND;
 
-   Mgv50AtConfig.Pin[5].SensorIn = &Mgv50AtSensorInput.PinC;
    Mgv50AtConfig.Pin[5].PinNumber = 2;
-   Mgv50AtConfig.Pin[5].PortOut = PORTCOUT;
-   Mgv50AtConfig.Pin[5].PortDdr = PORTCDIR;
+   Mgv50AtConfig.Pin[5].PortOut = &PORTC;
+   Mgv50AtConfig.Pin[5].PortDdr = &DDRC;
+   Mgv50AtConfig.Pin[5].PortIn = &PINC;
 
-   Mgv50AtConfig.Pin[6].SensorIn = &Mgv50AtSensorInput.PinD;
    Mgv50AtConfig.Pin[6].PinNumber = 2;
-   Mgv50AtConfig.Pin[6].PortOut = PORTDOUT;
-   Mgv50AtConfig.Pin[6].PortDdr = PORTDDIR;
+   Mgv50AtConfig.Pin[6].PortOut = &PORTD;
+   Mgv50AtConfig.Pin[6].PortDdr = &DDRD;
+   Mgv50AtConfig.Pin[6].PortIn = &PIND;
 
-   Mgv50AtConfig.Pin[7].SensorIn = &Mgv50AtSensorInput.PinD;
    Mgv50AtConfig.Pin[7].PinNumber = 3;
-   Mgv50AtConfig.Pin[7].PortOut = PORTDOUT;
-   Mgv50AtConfig.Pin[7].PortDdr = PORTDDIR;
+   Mgv50AtConfig.Pin[7].PortOut = &PORTD;
+   Mgv50AtConfig.Pin[7].PortDdr = &DDRD;
+   Mgv50AtConfig.Pin[7].PortIn = &PIND;
 
-   Mgv50AtConfig.Pin[8].SensorIn = &Mgv50AtSensorInput.PinC;
    Mgv50AtConfig.Pin[8].PinNumber = 1;
-   Mgv50AtConfig.Pin[8].PortOut = PORTCOUT;
-   Mgv50AtConfig.Pin[8].PortDdr = PORTCDIR;
+   Mgv50AtConfig.Pin[8].PortOut = &PORTC;
+   Mgv50AtConfig.Pin[8].PortDdr = &DDRC;
+   Mgv50AtConfig.Pin[8].PortIn = &PINC;
 
-   Mgv50AtConfig.Pin[9].SensorIn = &Mgv50AtSensorInput.PinD;
    Mgv50AtConfig.Pin[9].PinNumber = 4;
-   Mgv50AtConfig.Pin[9].PortOut = PORTDOUT;
-   Mgv50AtConfig.Pin[9].PortDdr = PORTDDIR;
+   Mgv50AtConfig.Pin[9].PortOut = &PORTD;
+   Mgv50AtConfig.Pin[9].PortDdr = &DDRD;
+   Mgv50AtConfig.Pin[9].PortIn = &PIND;
 
-   Mgv50AtConfig.Pin[10].SensorIn = &Mgv50AtSensorInput.PinC;
    Mgv50AtConfig.Pin[10].PinNumber = 0;
-   Mgv50AtConfig.Pin[10].PortOut = PORTCOUT;
-   Mgv50AtConfig.Pin[10].PortDdr = PORTCDIR;
+   Mgv50AtConfig.Pin[10].PortOut = &PORTC;
+   Mgv50AtConfig.Pin[10].PortDdr = &DDRC;
+   Mgv50AtConfig.Pin[10].PortIn = &PINC;
 
-   Mgv50AtConfig.Pin[11].SensorIn = &Mgv50AtSensorInput.PinB;
    Mgv50AtConfig.Pin[11].PinNumber = 6;
-   Mgv50AtConfig.Pin[11].PortOut = PORTBOUT;
-   Mgv50AtConfig.Pin[11].PortDdr = PORTBDIR;
+   Mgv50AtConfig.Pin[11].PortOut = &PORTB;
+   Mgv50AtConfig.Pin[11].PortDdr = &DDRB;
+   Mgv50AtConfig.Pin[11].PortIn = &PINB;
 
-   Mgv50AtConfig.Pin[12].SensorIn = &Mgv50AtSensorInput.PinB;
    Mgv50AtConfig.Pin[12].PinNumber = 7;
-   Mgv50AtConfig.Pin[12].PortOut = PORTBOUT;
-   Mgv50AtConfig.Pin[12].PortDdr = PORTBDIR;
+   Mgv50AtConfig.Pin[12].PortOut = &PORTB;
+   Mgv50AtConfig.Pin[12].PortDdr = &DDRB;
+   Mgv50AtConfig.Pin[12].PortIn = &PINB;
 
-   Mgv50AtConfig.Pin[13].SensorIn = &Mgv50AtSensorInput.PinD;
    Mgv50AtConfig.Pin[13].PinNumber = 5;
-   Mgv50AtConfig.Pin[13].PortOut = PORTDOUT;
-   Mgv50AtConfig.Pin[13].PortDdr = PORTDDIR;
+   Mgv50AtConfig.Pin[13].PortOut = &PORTD;
+   Mgv50AtConfig.Pin[13].PortDdr = &DDRD;
+   Mgv50AtConfig.Pin[13].PortIn = &PIND;
 
-   Mgv50AtConfig.Pin[14].SensorIn = &Mgv50AtSensorInput.PinD;
    Mgv50AtConfig.Pin[14].PinNumber = 6;
-   Mgv50AtConfig.Pin[14].PortOut = PORTDOUT;
-   Mgv50AtConfig.Pin[14].PortDdr = PORTDDIR;
+   Mgv50AtConfig.Pin[14].PortOut = &PORTD;
+   Mgv50AtConfig.Pin[14].PortDdr = &DDRD;
+   Mgv50AtConfig.Pin[14].PortIn = &PIND;
 
-   Mgv50AtConfig.Pin[15].SensorIn = &Mgv50AtSensorInput.PinD;
    Mgv50AtConfig.Pin[15].PinNumber = 7;
-   Mgv50AtConfig.Pin[15].PortOut = PORTDOUT;
-   Mgv50AtConfig.Pin[15].PortDdr = PORTDDIR;
+   Mgv50AtConfig.Pin[15].PortOut = &PORTD;
+   Mgv50AtConfig.Pin[15].PortDdr = &DDRD;
+   Mgv50AtConfig.Pin[15].PortIn = &PIND;
 
    /* Read the pin data from EEPROM and check if it is valid, if not set a default value. Default is input type block,
     * non inverted */
@@ -1534,30 +1438,38 @@ void Mgv50AtInit(void)
          }
       }
 
+      Mgv50AtConfig.Pin[Index].SensorCnt = 0;
+
       /* Depending on the configuration settings set pin as input or output. */
       switch (Mgv50AtConfig.Pin[Index].Type)
       {
          case mgv50AtPinTypeInput:
-            Mgv50AtSetPinDirection(Mgv50AtConfig.Pin[Index].PortDdr, Mgv50AtConfig.Pin[Index].PinNumber,
-                                   Mgv50AtConfig.Pin[Index].Type);
-            Mgv50AtSetPin(Mgv50AtConfig.Pin[Index].PortOut, Mgv50AtConfig.Pin[Index].PinNumber, 1);
+            *Mgv50AtConfig.Pin[Index].PortDdr &= ~(1 << Mgv50AtConfig.Pin[Index].PinNumber);
+            *Mgv50AtConfig.Pin[Index].PortOut |= (1 << Mgv50AtConfig.Pin[Index].PinNumber);
             break;
          case mgv50AtPinTypeOutput:
-            Mgv50AtSetPinDirection(Mgv50AtConfig.Pin[Index].PortDdr, Mgv50AtConfig.Pin[Index].PinNumber,
-                                   Mgv50AtConfig.Pin[Index].Type);
+            *Mgv50AtConfig.Pin[Index].PortDdr |= (1 << Mgv50AtConfig.Pin[Index].PinNumber);
+
             if (Mgv50AtConfig.Pin[Index].ConfigByte.Output.ContactHighStart)
             {
-               Mgv50AtSetPin(Mgv50AtConfig.Pin[Index].PortOut, Mgv50AtConfig.Pin[Index].PinNumber, 1);
+               *Mgv50AtConfig.Pin[Index].PortOut |= (1 << Mgv50AtConfig.Pin[Index].PinNumber);
             }
             else
             {
-               Mgv50AtSetPin(Mgv50AtConfig.Pin[Index].PortOut, Mgv50AtConfig.Pin[Index].PinNumber, 0);
+               *Mgv50AtConfig.Pin[Index].PortOut &= ~(1 << Mgv50AtConfig.Pin[Index].PinNumber);
             }
             break;
       }
 
-      Mgv50AtConfig.Pin[Index].Transmit = mgv50AtSensorTransmitIdle;
-      Mgv50AtConfig.Pin[Index].OutputActive = 0;
+      /* If jumper set during power on then skip only transmit active pins. */
+      if (!(MGV50AT_SENSOR_JUMPER))
+      {
+         Mgv50AtConfig.Pin[Index].Transmit = mgv50AtSensorTransmitSkip;
+      }
+      else
+      {
+         Mgv50AtConfig.Pin[Index].Transmit = mgv50AtSensorTransmitIdle;
+      }
 
       /* Read opcode data */
       for (OpCodeIndex = 0; OpCodeIndex < EEP_SETTINGS_OPCODE_SIZE; OpCodeIndex++)
@@ -1576,19 +1488,11 @@ void Mgv50AtInit(void)
    TCCR0 |= (1 << CS00) | (1 << CS01);
    TIMSK |= (1 << TOIE0);
 
-   /* Loconet activity led */
-   DDRB |= (1 << PB2);
-
-   /* Jumper input pull up */
-   PORTB |= (1 << PB4);
-
    /* Init loconet */
    initLocoNet(&Mgv50AtLocoNet);
 
-   Mgv50AtSensorJumper(&Mgv50AtConfig);
-
    /* Now lets wait some time before continuing after supply voltage is applied .. */
-   for (Index = 0; Index < 50; Index++)
+   for (Index = 0; Index < 10; Index++)
    {
       _delay_ms(20);
    }
@@ -1616,17 +1520,6 @@ void Mgv50AtMain(void)
       Mgv50AtRcvLocoNet(RxPacket);
    }
 
-   /* Read and store inputs. */
-   Mgv50AtSensorInput.PinB = PINB;
-   Mgv50AtSensorInput.PinC = PINC;
-   Mgv50AtSensorInput.PinD = PIND;
-
-   /* If sensors updated by timer interrupts update the sensor info */
-   if (Mgv50AtCheckSensors != 0)
-   {
-      Mgv50AtReportSensor(&Mgv50AtConfig);
-      Mgv50AtCheckSensors = 0;
-
-      Mgv50AtLocoNetLedCheck();
-   }
+   Mgv50AtReportSensor(&Mgv50AtConfig);
+   Mgv50AtLocoNetLedCheck();
 }
