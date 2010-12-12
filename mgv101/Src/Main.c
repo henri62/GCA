@@ -19,6 +19,7 @@
 #include "UserIo.h"
 #include "enc28j60.h"
 #include "EthLocBuffer.h"
+#include "LoconetTxBuffer.h"
 
 #ifndef F_CPU
 # 	error F_CPU NOT DEFINED!!!
@@ -47,7 +48,6 @@
  * Prototypes
  *******************************************************************************************
  */
-int                                     main(void);
 
 /*
  *******************************************************************************************
@@ -66,7 +66,7 @@ int                                     main(void);
 
 int main(void)
 {
-   // Set clock speed to "no pre-scaler"
+   /* Set clock speed to "no pre-scaler" */
    CLKPR = (1 << CLKPCE);
    CLKPR = 0;
    _delay_ms(12);
@@ -76,8 +76,8 @@ int main(void)
    UserIoSetLed(userIoLed4, userIoLedSetBlink);
    UserIoSetLed(userIoLed5, userIoLedSetBlink);
 
-   /* Init the Ethernet Loconet interface */
    EthLocBufferInit();
+   LoconetTxBufferInit();
 
    sei();
 
@@ -85,5 +85,6 @@ int main(void)
    {
       UserIoMain();
       EthLocBufferMain();
+      LoconetTxBufferMain();
    }
 }

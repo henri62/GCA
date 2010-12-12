@@ -19,6 +19,7 @@
 #include "UserIo.h"
 #include "enc28j60.h"
 #include "ln_sw_uart.h"
+#include "LoconetTxBuffer.h"
 #include "EthLocBuffer.h"
 
 /*
@@ -29,9 +30,9 @@
 
 /* *INDENT-OFF* */
 
-#define ETH_LOC_BUFFER_MAX_LOCONET_TX     20          /**< Max number of tries * LN_TX_RETRIES_MAX !! */
-#define ETH_LOC_BUFFER_BUFFER_TCP_PORT    1235        /**< Port to listen / write */
-#define ETH_LOC_BUFFER_LINK_DOWN_TIME     2000 / USER_IO_TIMER_OVERFLOW_TIME
+#define ETH_LOC_BUFFER_MAX_LOCONET_TX     20                                  /**< Max number of tries * LN_TX_RETRIES_MAX !! */
+#define ETH_LOC_BUFFER_BUFFER_TCP_PORT    1235                                /**< Port to listen / write */
+#define ETH_LOC_BUFFER_LINK_DOWN_TIME     2000 / USER_IO_TIMER_OVERFLOW_TIME  /**< No link present (anymore). */
 /*
  *******************************************************************************************
  * Types
@@ -57,6 +58,27 @@ static uint8_t    EthLocBufferTcpLoconetDataLenght;   /**< Copy of length last r
  * Routines implementation
  *******************************************************************************************
  */
+
+/**
+ *******************************************************************************************
+ * @fn         static void EthLocBufferTcpIpConnectionEnded(void)
+ * @brief      TCPIP Connection to PC is ended / terminated. Set MGV101 variables to
+ *             starting state and blink leds.
+ * @return     None
+ * @attention  -
+ *******************************************************************************************
+ */
+static void EthLocBufferTcpIpConnectionEnded(void)
+{
+   EthLocBufferTcpIpIndex = 255;
+   EthLocBufferTcpContinue = 255;
+
+   /* Blink TCPIP led indicating no connection is present to RocRail */
+   UserIoSetLed(userIoLed4, userIoLedSetOff);
+   UserIoSetLed(userIoLed5, userIoLedSetOff);
+   UserIoSetLed(userIoLed4, userIoLedSetBlink);
+   UserIoSetLed(userIoLed5, userIoLedSetBlink);
+}
 
 /**
  *******************************************************************************************
@@ -105,17 +127,8 @@ static void EthLocBufferVerifyLinkStatus(void)
             if (EthLocBufferTcpIpIndex != 255)
             {
                tcp_index_del(EthLocBufferTcpIpIndex);
-
-               EthLocBufferTcpIpIndex = 255;
-               EthLocBufferTcpContinue = 255;
-
+               EthLocBufferTcpIpConnectionEnded();
                EthLocBufferTransmitGlobalPowerOff();
-
-               /* Blink TCPIP led indicating no connection is present to RocRail */
-               UserIoSetLed(userIoLed4, userIoLedSetOff);
-               UserIoSetLed(userIoLed5, userIoLedSetOff);
-               UserIoSetLed(userIoLed4, userIoLedSetBlink);
-               UserIoSetLed(userIoLed5, userIoLedSetBlink);
             }
          }
       }
@@ -181,25 +194,25 @@ static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
       /* If a connection to us is present then transmit new data */
       if (EthLocBufferTcpIpIndex != 255)
       {
+         EthLocBufferTcpContinue = 0;
+         EthLocBufferTcpLoconetDataLenght = RxLength;
+         memcpy(EthLocBufferTcpLoconetData.data, (char *)LnPacket->data, RxLength);
+
          memcpy(&eth_buffer[TCP_DATA_START_FIX], (char *)LnPacket->data, RxLength);
          tcp_entry[EthLocBufferTcpIpIndex].status = ACK_FLAG | PSH_FLAG;
          create_new_tcp_packet(RxLength, EthLocBufferTcpIpIndex);
          tcp_packet_retry_tx_reset(EthLocBufferTcpIpIndex);
          tcp_packet_retry_tx_set(EthLocBufferTcpIpIndex);
-
-         memcpy(EthLocBufferTcpLoconetData.data, (char *)LnPacket->data, RxLength);
-         EthLocBufferTcpLoconetDataLenght = RxLength;
-         EthLocBufferTcpContinue = 0;
       }
    }
 }
 
 /**
  *******************************************************************************************
- * @fn	      void EthLocBufferRcvEthernet(uint8_t *RcvData, uint16_t RcvLength)
- * @brief      Check the content of a received message from the ethernet bus.
- * @param      RcvData  Pointer to array with received data.
- * @param      RcvLength Number of received bytes.
+ * @fn	      static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
+ * @brief      Check the content of a received message from the ethernet bus. This function <br>
+ *             is called by the stack if a message is received with out IP address.
+ * @param      TcpFpIndex Index of the connection.
  * @return     None
  * @attention  The stack uses calls this function also in case a retry must be generated.
  *******************************************************************************************
@@ -207,10 +220,10 @@ static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
 
 static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
 {
-   uint8_t                                 TxMaxCnt = 0;
    uint8_t                                 OpCode = 0;
    uint8_t                                 OpcodeFamily = 0;
-   LN_STATUS                               TxStatus = LN_DONE;
+   uint8_t                                 TxBufferSetStatus = 0;
+
    lnMsg                                   LocoNetSendPacket;
 
    if ((tcp_entry[TcpFpIndex].status & PSH_FLAG) == PSH_FLAG)
@@ -259,10 +272,10 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
 
          do
          {
-            TxStatus = sendLocoNetPacket(&LocoNetSendPacket);
-            TxMaxCnt++;
+            TxBufferSetStatus = LoconetTxBufferSet(&LocoNetSendPacket);
          }
-         while ((TxStatus != LN_DONE) && (TxMaxCnt < ETH_LOC_BUFFER_MAX_LOCONET_TX));
+         while (TxBufferSetStatus != 1);
+
          /* Message probably transmitted, ack the TCP/IP data */
          tcp_entry[TcpFpIndex].status = ACK_FLAG;
          create_new_tcp_packet(0, TcpFpIndex);
@@ -280,34 +293,18 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
             ((tcp_entry[TcpFpIndex].status & RST_FLAG) == RST_FLAG))
    {
       /* Connection ended from PC side. */
-      EthLocBufferTcpIpIndex = 255;
-      EthLocBufferTcpContinue = 255;
-
+      EthLocBufferTcpIpConnectionEnded();
       EthLocBufferTransmitGlobalPowerOff();
-
-      /* Blink TCPIP led indicating no connection is present to RocRail */
-      UserIoSetLed(userIoLed4, userIoLedSetOff);
-      UserIoSetLed(userIoLed5, userIoLedSetOff);
-      UserIoSetLed(userIoLed4, userIoLedSetBlink);
-      UserIoSetLed(userIoLed5, userIoLedSetBlink);
    }
    else if ((tcp_entry[TcpFpIndex].status & RETRY_ABORT_FLAG) == RETRY_ABORT_FLAG)
    {
       /* Connection ended because max number of retries for tx. */
-      EthLocBufferTcpIpIndex = 255;
-      EthLocBufferTcpContinue = 255;
-
+      EthLocBufferTcpIpConnectionEnded();
       EthLocBufferTransmitGlobalPowerOff();
-
-      /* Blink TCPIP led indicating no connection is present to RocRail */
-      UserIoSetLed(userIoLed4, userIoLedSetOff);
-      UserIoSetLed(userIoLed5, userIoLedSetOff);
-      UserIoSetLed(userIoLed4, userIoLedSetBlink);
-      UserIoSetLed(userIoLed5, userIoLedSetBlink);
    }
    else if ((tcp_entry[TcpFpIndex].status & ACK_FLAG) == ACK_FLAG)
    {
-      /* Ack received on last transmitted data. New messages from Loconet cam be forwarded. */
+      /* Ack received on last transmitted data. New messages from Loconet if present can be forwarded. */
       tcp_packet_retry_tx_clear(EthLocBufferTcpIpIndex);
       EthLocBufferTcpContinue = 1;
    }
@@ -348,7 +345,7 @@ void EthLocBufferInit(void)
 /**
  *******************************************************************************************
  * @fn	      void EthLocBufferMain(void)
- * @brief      Verify if data is present in the network interface or locnet <br>
+ * @brief      Verify if data is present in the network interface or loconet <br>
  *             interface and process it.
  * @return     None
  * @attention  -

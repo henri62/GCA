@@ -91,9 +91,11 @@ extern                                  "C"
    typedef struct
    {
       byte                                    Buf[LN_BUF_SIZE];
-      uint16_t                                WriteIndex;
-      uint16_t                                ReadIndex;
-      uint16_t                                ReadPacketIndex;
+      byte                                    ln_buf_process[20];
+      byte                                    ln_buf_process_cnt;
+      byte                                    WriteIndex;
+      byte                                    ReadIndex;
+      byte                                    ReadPacketIndex;
       byte                                    CheckSum;
       byte                                    ReadExpLen;
       LnBufStats                              Stats;

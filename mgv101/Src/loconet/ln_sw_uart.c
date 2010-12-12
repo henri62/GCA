@@ -45,87 +45,7 @@
 
 #include "ln_sw_uart.h"
 
-/*** [BA040321] added ifdef for different PCB. Value defined in sysdef.h ****/
-#if defined BOARD_LOCO_DEV                                                     // EmbeddedLocoNet
-#define LN_RX_PORT            PINB
-#define LN_RX_BIT             PB0
-
-#define LN_SB_SIGNAL          SIG_INPUT_CAPTURE1
-#define LN_SB_INT_ENABLE_REG  TIMSK
-#define LN_SB_INT_ENABLE_BIT  TICIE1
-#define LN_SB_INT_STATUS_REG  TIFR
-#define LN_SB_INT_STATUS_BIT  ICF1
-
-#define LN_TMR_SIGNAL         SIG_OUTPUT_COMPARE1A
-#define LN_TMR_INT_ENABLE_REG TIMSK
-#define LN_TMR_INT_ENABLE_BIT OCIE1A
-#define LN_TMR_INT_STATUS_REG TIFR
-#define LN_TMR_INT_STATUS_BIT OCF1A
-#define LN_TMR_INP_CAPT_REG   ICR1                                             // [BA040319] added defines for:
-#define LN_TMR_OUTP_CAPT_REG  OCR1A                                            // ICR1, OCR1A, TCNT1, TCCR1B
-#define LN_TMR_COUNT_REG      TCNT1                                            // and replaced their occurence in
-#define LN_TMR_CONTROL_REG    TCCR1B                                           // the code.
-
-#define LN_TMR_PRESCALER      1
-
-#define LN_TX_PORT            PORTD
-#define LN_TX_DDR             DDRD
-#define LN_TX_BIT             PD6
-
-#elif defined BOARD_PROTO_128                                                  // ProtoBoardMega128
-#define LN_RX_PORT            PINE
-#define LN_RX_BIT             PORTE7
-
-#define LN_SB_SIGNAL          SIG_INPUT_CAPTURE3
-#define LN_SB_INT_ENABLE_REG  ETIMSK
-#define LN_SB_INT_ENABLE_BIT  TICIE3
-#define LN_SB_INT_STATUS_REG  ETIFR
-#define LN_SB_INT_STATUS_BIT  ICF3
-
-#define LN_TMR_SIGNAL         SIG_OUTPUT_COMPARE3A
-#define LN_TMR_INT_ENABLE_REG ETIMSK
-#define LN_TMR_INT_ENABLE_BIT OCIE3A
-#define LN_TMR_INT_STATUS_REG ETIFR
-#define LN_TMR_INT_STATUS_BIT OCF3A
-#define LN_TMR_INP_CAPT_REG   ICR3                                             // [BA040319] added defines for:
-#define LN_TMR_OUTP_CAPT_REG  OCR3A                                            // ICR1, OCR1A, TCNT1, TCCR1B
-#define LN_TMR_COUNT_REG      TCNT3                                            // and replaced their occurence in
-#define LN_TMR_CONTROL_REG    TCCR3B                                           // the code.
-
-#define LN_TMR_PRESCALER      1
-
-#define LN_TX_PORT            PORTE
-#define LN_TX_DDR             DDRE
-#define LN_TX_BIT             PORTE6
-
-/*** [DH040609] added OmniPort Board definitions for OmniLinx Project */
-#elif defined BOARD_OMNIPORT_OMNILINX                                          // OmniPort OmniLinx Project
-#define LN_RX_PORT            PINC                                             // OmniLinx
-#define LN_RX_BIT             PC1                                              // OmniLinx
-
-#define LN_SB_SIGNAL          SIG_INPUT_CAPTURE1
-#define LN_SB_INT_ENABLE_REG  TIMSK
-#define LN_SB_INT_ENABLE_BIT  TICIE1
-#define LN_SB_INT_STATUS_REG  TIFR
-#define LN_SB_INT_STATUS_BIT  ICF1
-
-#define LN_TMR_SIGNAL         SIG_OUTPUT_COMPARE1A
-#define LN_TMR_INT_ENABLE_REG TIMSK
-#define LN_TMR_INT_ENABLE_BIT OCIE1A
-#define LN_TMR_INT_STATUS_REG TIFR
-#define LN_TMR_INT_STATUS_BIT OCF1A
-#define LN_TMR_INP_CAPT_REG   ICR1                                             // [BA040319] added defines for:
-#define LN_TMR_OUTP_CAPT_REG  OCR1A                                            // ICR1, OCR1A, TCNT1, TCCR1B
-#define LN_TMR_COUNT_REG      TCNT1                                            // and replaced their occurence in
-#define LN_TMR_CONTROL_REG    TCCR1B                                           // the code.
-
-#define LN_TMR_PRESCALER      1
-
-#define LN_TX_PORT            PORTC                                            // OmniLinx
-#define LN_TX_DDR             DDRC                                             // OmniLinx
-#define LN_TX_BIT             PC0                                              // OmniLinx
-
-#elif defined BOARD_ETHERNET_LOCONET_BUFFER_MGV_101
+#ifdef BOARD_ETHERNET_LOCONET_BUFFER_MGV_101
 #define LN_RX_PORT            PINB
 #define LN_RX_BIT             PB0
 
@@ -140,42 +60,16 @@
 #define LN_TMR_INT_ENABLE_BIT OCIE1A
 #define LN_TMR_INT_STATUS_REG TIFR1
 #define LN_TMR_INT_STATUS_BIT OCF1A
-#define LN_TMR_INP_CAPT_REG   ICR1                                             // [BA040319] added defines for:
-#define LN_TMR_OUTP_CAPT_REG  OCR1A                                            // ICR1, OCR1A, TCNT1, TCCR1B
-#define LN_TMR_COUNT_REG      TCNT1                                            // and replaced there occurence in
-#define LN_TMR_CONTROL_REG    TCCR1B                                           // the code.
+#define LN_TMR_INP_CAPT_REG   ICR1
+#define LN_TMR_OUTP_CAPT_REG  OCR1A
+#define LN_TMR_COUNT_REG      TCNT1
+#define LN_TMR_CONTROL_REG    TCCR1B
 
 #define LN_TMR_PRESCALER      1
 
 #define LN_TX_PORT            PORTB
 #define LN_TX_DDR             DDRB
 #define LN_TX_BIT             PB1
-
-#elif defined BOARD_DT006_MEGA16                                               // ProtoBoardMega128
-#define LN_RX_PORT            PINB
-#define LN_RX_BIT             PB0
-
-#define LN_SB_SIGNAL          SIG_INPUT_CAPTURE1
-#define LN_SB_INT_ENABLE_REG  TIMSK
-#define LN_SB_INT_ENABLE_BIT  TICIE1
-#define LN_SB_INT_STATUS_REG  TIFR
-#define LN_SB_INT_STATUS_BIT  ICF1
-
-#define LN_TMR_SIGNAL         SIG_OUTPUT_COMPARE1A
-#define LN_TMR_INT_ENABLE_REG TIMSK
-#define LN_TMR_INT_ENABLE_BIT OCIE1A
-#define LN_TMR_INT_STATUS_REG TIFR
-#define LN_TMR_INT_STATUS_BIT OCF1A
-#define LN_TMR_INP_CAPT_REG   ICR1                                             // [BA040319] added defines for:
-#define LN_TMR_OUTP_CAPT_REG  OCR1A                                            // ICR1, OCR1A, TCNT1, TCCR1B
-#define LN_TMR_COUNT_REG      TCNT1                                            // and replaced there occurence in
-#define LN_TMR_CONTROL_REG    TCCR1B                                           // the code.
-
-#define LN_TMR_PRESCALER      1
-
-#define LN_TX_PORT            PORTD
-#define LN_TX_DDR             DDRD
-#define LN_TX_BIT             PD6
 
 #else    // No Board defined (Error)
 #    warning "Board not defined"
@@ -204,10 +98,8 @@
 
 #define   LN_COLLISION_TICKS 15
 
-#define   LN_TX_RETRIES_MAX  25
-
-          // The Start Bit period is a full bit period + half of the next bit period
-          // so that the bit is sampled in middle of the bit
+// The Start Bit period is a full bit period + half of the next bit period
+// so that the bit is sampled in middle of the bit
 #define LN_TIMER_RX_START_PERIOD    LN_BIT_PERIOD + (LN_BIT_PERIOD / 2)
 #define LN_TIMER_RX_RELOAD_PERIOD   LN_BIT_PERIOD
 #define LN_TIMER_TX_RELOAD_PERIOD   LN_BIT_PERIOD
@@ -254,9 +146,7 @@ LnBuf                                  *lnRxBuffer;
 volatile lnMsg                         *volatile lnTxData;
 volatile byte                           lnTxIndex;
 volatile byte                           lnTxLength;
-volatile byte                           lnTxSuccess;                           // this boolean flag as a message from
-
-                                                                               // timer interrupt to send function
+volatile byte                           lnTxSuccess;
 
 /**************************************************************************
 *
@@ -319,7 +209,9 @@ ISR(LN_TMR_SIGNAL)                                                             /
       {
          lnCurrentByte >>= 1;
          if (bit_is_set(LN_RX_PORT, LN_RX_BIT))
+         {
             lnCurrentByte |= 0x80;
+         }
          return;
       }
 
@@ -330,30 +222,32 @@ ISR(LN_TMR_SIGNAL)                                                             /
 
       // If the Stop bit is not Set then we have a Framing Error
       if (bit_is_clear(LN_RX_PORT, LN_RX_BIT))
+      {
          lnRxBuffer->Stats.RxErrors++;
-
+      }
       else
+      {
          // Put the received byte in the buffer
          addByteLnBuf(lnRxBuffer, lnCurrentByte);
+      }
 
       lnBitCount = 0;
       lnState = LN_ST_CD_BACKOFF;
    }
 
    // Are we in the TX State
-   if (lnState == LN_ST_TX)
+   else if (lnState == LN_ST_TX)
    {
       // To get to this point we have already begun the TX cycle so we need to 
       // first check for a Collision. For now we will simply check that TX and RX
       // ARE NOT THE SAME as our circuit requires the TX signal to be INVERTED
       // If they are THE SAME then we have a Collision
 
-#ifdef LN_SW_UART_TX_NON_INVERTED
-      // if you want to use the UART TX pin:
+#     ifdef LN_SW_UART_TX_NON_INVERTED
       if (((LN_TX_PORT >> LN_TX_BIT) & 0x01) != ((LN_RX_PORT >> LN_RX_BIT) & 0x01))
-#else    // inverted is the normal case, just a NPN between TX pin and LN:
+#     else
       if (((LN_TX_PORT >> LN_TX_BIT) & 0x01) == ((LN_RX_PORT >> LN_RX_BIT) & 0x01))
-#endif
+#     endif
       {
          lnBitCount = 0;
          lnState = LN_ST_TX_COLLISION;
@@ -368,31 +262,35 @@ ISR(LN_TMR_SIGNAL)                                                             /
       }
       // When the Data Bits are done, generate stop-bit
       else if (lnBitCount == 9)
-         LN_SW_UART_SET_TX_HIGH
-            // Any more bytes in buffer
-            else
-      if (++lnTxIndex < lnTxLength)
       {
-         // Setup for the next byte
-         lnBitCount = 0;
-         lnCurrentByte = lnTxData->data[lnTxIndex];
-
-         // Begin the Start Bit
-         LN_SW_UART_SET_TX_LOW
-            // Get the Current Timer1 Count and Add the offset for the Compare target
-            // added adjustment value for bugfix (Olaf Funke)
-            lnCompareTarget = LN_TMR_COUNT_REG + LN_TIMER_TX_RELOAD_PERIOD - LN_TIMER_TX_RELOAD_ADJUST;
-         LN_TMR_OUTP_CAPT_REG = lnCompareTarget;
+      	LN_SW_UART_SET_TX_HIGH
       }
+      // Any more bytes in buffer
       else
       {
-         // Successfully Sent all bytes in the buffer
-         // so set the Packet Status to Done
-         lnTxSuccess = 1;
+         if (++lnTxIndex < lnTxLength)
+         {
+            // Setup for the next byte
+            lnBitCount = 0;
+            lnCurrentByte = lnTxData->data[lnTxIndex];
 
-         // Begin CD Backoff state
-         lnBitCount = 0;
-         lnState = LN_ST_CD_BACKOFF;
+            // Begin the Start Bit
+            LN_SW_UART_SET_TX_LOW
+               // Get the Current Timer1 Count and Add the offset for the Compare target
+               // added adjustment value for bugfix (Olaf Funke)
+               lnCompareTarget = LN_TMR_COUNT_REG + LN_TIMER_TX_RELOAD_PERIOD - LN_TIMER_TX_RELOAD_ADJUST;
+            LN_TMR_OUTP_CAPT_REG = lnCompareTarget;
+         }
+         else
+         {
+            // Successfully Sent all bytes in the buffer
+            // so set the Packet Status to Done
+            lnTxSuccess = 1;
+
+            // Begin CD Backoff state
+            lnBitCount = 0;
+            lnState = LN_ST_CD_BACKOFF;
+         }
       }
    }
 
@@ -403,17 +301,17 @@ ISR(LN_TMR_SIGNAL)                                                             /
       {
          // Pull the TX Line low to indicate Collision
          LN_SW_UART_SET_TX_LOW
-#ifdef COLLISION_MONITOR
-            cbi(COLLISION_MONITOR_PORT, COLLISION_MONITOR_BIT);
-#endif
+#        ifdef COLLISION_MONITOR
+         cbi(COLLISION_MONITOR_PORT, COLLISION_MONITOR_BIT);
+#        endif
       }
       else if (lnBitCount >= LN_COLLISION_TICKS)
       {
          // Release the TX Line
          LN_SW_UART_SET_TX_HIGH
-#ifdef COLLISION_MONITOR
-            sbi(COLLISION_MONITOR_PORT, COLLISION_MONITOR_BIT);
-#endif
+#        ifdef COLLISION_MONITOR
+         sbi(COLLISION_MONITOR_PORT, COLLISION_MONITOR_BIT);
+#        endif
 
          lnBitCount = 0;
          lnState = LN_ST_CD_BACKOFF;
@@ -444,50 +342,20 @@ ISR(LN_TMR_SIGNAL)                                                             /
 
 void initLocoNetHardware(LnBuf * RxBuffer)
 {
-#ifdef COLLISION_MONITOR
+#  ifdef COLLISION_MONITOR
    sbi(COLLISION_MONITOR_DDR, COLLISION_MONITOR_BIT);
    sbi(COLLISION_MONITOR_PORT, COLLISION_MONITOR_BIT);
-#endif
-#ifdef STARTBIT_MONITOR
+#  endif
+#  ifdef STARTBIT_MONITOR
    sbi(STARTBIT_MONITOR_DDR, STARTBIT_MONITOR_BIT);
    sbi(STARTBIT_MONITOR_PORT, STARTBIT_MONITOR_BIT);
-#endif
+#  endif
 
    lnRxBuffer = RxBuffer;
 
    // Set the TX line to Inactive
-   LN_SW_UART_SET_TX_HIGH                  sbi(LN_TX_DDR, LN_TX_BIT);
-
-/*** [DH040609] added ifdef for different PCB. Value defined in sysdef.h ****/
-
-/*** [DH040609] added OmniPort Board definitions for OmniLinx Project */
-#if defined BOARD_OMNIPORT_OMNILINX
-   // OmniPort OmniLinx Project
-   // Setup comparitors, etc
-   // enable the Analog Comparator Muliplexor
-   SFIOR |= (1 << ACME);
-   // turn off ADC
-   ADCSRA &= ~(1 << ADEN);
-   // turn on comparitor, bandgap, output, input capture
-   ACSR |= (1 << ACBG) | (1 << ACO) | (1 << ACIC);
-   ADMUX |= (1 << REFS0) | (1 << REFS1) | 1;
-   // choose internal 2.56V source and Chl1
-   TCCR1B = (TCCR1B & 0xF8) | (1 << ICES1) | LN_TMR_PRESCALER;
-   // Set Rising Edge and Timer Clock Source
-#elif defined wBOARD_FREDI
-   // Enable Analog Comparator to Trigger the Input Capture unit
-   ACSR = (1 << ACI) | (1 << ACIS1) | (1 << ACIS0) | (1 << ACIC);
-#else
-   // First Enable the Analog Comparitor Power, 
-   // Set the mode to Falling Edge
-   // Enable Analog Comparator to Trigger the Input Capture unit
-   // ACSR = (1<<ACI) | (1<<ACIS1) | (1<<ACIC) ;
-
-   // Turn off the Analog Comparator
-   ACSR = 1 << ACD;
-   // Enable Noise Canceller
-   TCCR1B |= (1 << ICNC1);
-#endif
+   LN_SW_UART_SET_TX_HIGH;
+   sbi(LN_TX_DDR, LN_TX_BIT);
 
    lnState = LN_ST_IDLE;
 
@@ -522,34 +390,42 @@ LN_STATUS sendLocoNetPacketTry(lnMsg * TxData, unsigned char ucPrioDelay)
       ucPrioDelay = LN_BACKOFF_MAX;
 
    // if priority delay was waited now, declare net as free for this try
-   cli();                                                                      // disabling interrupt to avoid
+   // disabling interrupt to avoid
+   cli();
    // confusion by ISR changing lnState
    // while we want to do it
    if (lnState == LN_ST_CD_BACKOFF)
    {
-      if (lnBitCount >= ucPrioDelay)                                           // Likely we don't want to wait as long
-         // as
-      {                                                                        // the timer ISR waits its maximum
-         // delay.
+      // Likely we don't want to wait as long as the timer ISR waits its maximum
+      if (lnBitCount >= ucPrioDelay)
+      {
          lnState = LN_ST_IDLE;
          cbi(LN_TMR_INT_ENABLE_REG, LN_TMR_INT_ENABLE_BIT);
       }
    }
-   sei();                                                                      // a delayed start bit interrupt will
-   // happen now,
+   sei();
+   // a delayed start bit interrupt will happen now,
    // a delayed timer interrupt was stalled
 
    // If the Network is not Idle, don't start the packet
    if (lnState == LN_ST_CD_BACKOFF)
    {
-      if (lnBitCount < LN_CARRIER_TICKS)                                       // in carrier detect timer?
+      // in carrier detect timer?
+      if (lnBitCount < LN_CARRIER_TICKS)
+      {
          return LN_CD_BACKOFF;
+      }
       else
+      {
          return LN_PRIO_BACKOFF;
+      }
    }
 
    if (lnState != LN_ST_IDLE)
-      return LN_NETWORK_BUSY;                                                  // neither idle nor backoff -> busy
+   {
+      // neither idle nor backoff -> busy
+      return LN_NETWORK_BUSY;
+   }
 
    // We need to do this with interrupts off.
    // The last time we check for free net until sending our start bit
@@ -561,12 +437,14 @@ LN_STATUS sendLocoNetPacketTry(lnMsg * TxData, unsigned char ucPrioDelay)
    {
       // first we disabled it, than before sending the start bit, we found out
       // that somebody was faster by examining the start bit interrupt request flag
+      // receive now what our rival is sending
       sbi(LN_SB_INT_ENABLE_REG, LN_SB_INT_ENABLE_BIT);
-      sei();                                                                   // receive now what our rival is sending
+      sei();
       return LN_NETWORK_BUSY;
    }
 
-   LN_SW_UART_SET_TX_LOW                                                       // Begin the Start Bit
+   LN_SW_UART_SET_TX_LOW
+      // Begin the Start Bit
       // Get the Current Timer1 Count and Add the offset for the Compare target
       // added adjustment value for bugfix (Olaf Funke)
       lnCompareTarget = LN_TMR_COUNT_REG + LN_TIMER_TX_RELOAD_PERIOD - LN_TIMER_TX_RELOAD_ADJUST;
@@ -607,5 +485,6 @@ LN_STATUS sendLocoNetPacketTry(lnMsg * TxData, unsigned char ucPrioDelay)
       return LN_COLLISION;
    }
 
-   return LN_UNKNOWN_ERROR;                                                    // everything else is an error
+   // everything else is an error
+   return LN_UNKNOWN_ERROR;
 }

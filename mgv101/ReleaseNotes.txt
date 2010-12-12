@@ -1,5 +1,13 @@
+Version 1.74
+ * Added a Loconet Tx buffer. Data received from TCPIP is put into a Locnet intermediate transmit buffer. 
+   The buffer tries to transmit the data each main loop. By this a potential blocking while loop in the
+   TCPIP receive part is removed.
+ * Loconet receive data processing changed. 
+ * Some double actions in the code are put together in routine EthLocBufferTcpIpConnectionEnded().
+ * Loconet bit time hard coded.     
+
 Version 1.73
- * Added code so fuses don't have to be set in case a Mgea168 is used out of the box. 
+ * Added code so fuses don't have to be set in case a Mega168 is used out of the box. 
    If not out of the box, make sure to select 8Mhz internal clock and CLKDIV needs to be active. 
    
 Version 1.72

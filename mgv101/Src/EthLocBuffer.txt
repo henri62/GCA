@@ -24,6 +24,7 @@ The used Ethernet software is from http://www.ulrichradig.de/home/index.php/avr/
 - Retransmit flag is added.
 - Added en- or disable of retransmit when transmitted packets does not receive an ACK. 
 - Added functions to set Mac and Ip address from the application instead of using defines. 
+- Some code cleanup. 
 
 @section Building Building the code. 
 - Download WINAVR version 20070122 at http://sourceforge.net/projects/winavr/files/WinAVR/20070122/ <br>
@@ -31,6 +32,7 @@ The used Ethernet software is from http://www.ulrichradig.de/home/index.php/avr/
 - Open the Programmers NotePad project file MGV101.pnproj. Programmers NotePad is an installation option of WinAvr. 
 - Select Tools->Make All
 - Flash the generated hex file EtLocBuf.hex into the Atmel microcontroller. 
+- Set fuses of the Mega168 need to be set to internal 8Mhz and CLKDIV active. 
 
 @section IpAddress IpAddress selection.
 The IP address for the MGV101 is FIXED. For now 3 Ip Addresses can be selected using the jumpers. 
@@ -61,6 +63,8 @@ See also
 @section Connection Connection
 Some network interfaces have an autodetection regarding the connection. If the MGV101 <br>
 is not reqognized, use a cross cable or a router / switch.<br>
+Try to use a direct connection to MGV101. Using MGV101 on a network connection with a lot of data <br>
+might cause package loss... 
 
 @section Disclaimer Disclaimer
 - The software is as is. I'm not responsible in any way for errors in this <br>

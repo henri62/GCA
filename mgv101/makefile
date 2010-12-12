@@ -34,10 +34,10 @@ $(APPLICATION).hex : $(APPLICATION).out
 	@echo "Expl.: data=initialized data, bss=uninitialized data, text=code"
 	@echo " "
 
-$(APPLICATION).out : Main.o EthLocBuffer.o enc28j60.o stack.o UserIo.o ln_buf.o ln_sw_uart.o ln_interface.o
+$(APPLICATION).out : Main.o EthLocBuffer.o enc28j60.o stack.o UserIo.o ln_buf.o ln_sw_uart.o ln_interface.o LoconetTxBuffer.o
 	$(CC) $(CFLAGS) -mno-interrupts -o $(OUTPUTDIR)/$(APPLICATION).out -Wl,-Map,$(OUTPUTDIR)/$(APPLICATION).map \
 	$(OUTPUTDIR)/Main.o $(OUTPUTDIR)/EthLocBuffer.o $(OUTPUTDIR)/enc28j60.o $(OUTPUTDIR)/stack.o \
-	$(OUTPUTDIR)/UserIo.o $(OUTPUTDIR)/ln_buf.o $(OUTPUTDIR)/ln_sw_uart.o $(OUTPUTDIR)/ln_interface.o
+	$(OUTPUTDIR)/UserIo.o $(OUTPUTDIR)/ln_buf.o $(OUTPUTDIR)/ln_sw_uart.o $(OUTPUTDIR)/ln_interface.o $(OUTPUTDIR)/LoconetTxBuffer.o
 	 
 #-------------------
 Main.o : $(APPSRC)/Main.c
@@ -54,6 +54,9 @@ stack.o : $(NETWSRC)/stack.c
 #-------------------
 UserIo.o : $(APPSRC)/UserIo.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/UserIo.o $(APPSRC)/UserIo.c 
+#-------------------
+LoconetTxBuffer.o : $(APPSRC)/LoconetTxBuffer.c 
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/LoconetTxBuffer.o $(APPSRC)/LoconetTxBuffer.c 
 #-------------------
 ln_sw_uart.o : $(LOCONETSRC)/ln_sw_uart.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/ln_sw_uart.o $(LOCONETSRC)/ln_sw_uart.c 
@@ -75,7 +78,7 @@ usbasp: all
 #-------------------
 # Use the MySmartLight programmer  
 mysmart: all
-	avrdude  -p $(MCU) -i 70 -P com2 -c stk500v2 -U flash:w:$(APPLICATION).hex
+	avrdude  -p $(MCU) -P com2 -c stk500v2 -U flash:w:$(APPLICATION).hex
 
 #-------------------
 # Use the Fboot booloader 
