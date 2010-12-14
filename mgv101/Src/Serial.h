@@ -1,23 +1,23 @@
 
 /**
  *******************************************************************************************
- * @file       LoconetTxBuffer.h
- * @ingroup    LoconetTxBuffer
- * @defgroup   LoconetTxBuffer
+ * @file       Serial.h
+ * @ingroup    Serial
+ * @defgroup   Serial Serial : Simple serial transmit routine.
  * @author     Robert Evers
- * @attention  Header file for LoconetTxBuffer.
  *******************************************************************************************
  */
 
-#ifndef LOCONET_TX_BUFFER
-#define LOCONET_TX_BUFFER
+#ifndef SERIAL_H
+#define SERIAL_H
 
 /*
  *******************************************************************************************
  * Standard include files
  *******************************************************************************************
  */
-#include "loconet.h"
+
+#include <inttypes.h>
 
 /* 
  *******************************************************************************************
@@ -42,8 +42,8 @@
   * Prototypes
   *******************************************************************************************
   */
-extern void                             LoconetTxBufferInit(void);
-extern void                             LoconetTxBufferMain(void);
-extern uint8_t                          LoconetTxBufferSet(lnMsg * DataPtr);
 
-#endif   /* LOCONET_TX_BUFFER */
+extern void                             SerialInit(void);
+extern void                             SerialTransmit(char *Data);
+
+#endif   /* SERIAL_H */

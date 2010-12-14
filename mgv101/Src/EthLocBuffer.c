@@ -16,10 +16,10 @@
 #include <inttypes.h>
 #include <string.h>
 #include "stack.h"
+#include "Serial.h"
 #include "UserIo.h"
 #include "enc28j60.h"
 #include "ln_sw_uart.h"
-#include "LoconetTxBuffer.h"
 #include "EthLocBuffer.h"
 
 /*
@@ -33,6 +33,7 @@
 #define ETH_LOC_BUFFER_MAX_LOCONET_TX     20                                  /**< Max number of tries * LN_TX_RETRIES_MAX !! */
 #define ETH_LOC_BUFFER_BUFFER_TCP_PORT    1235                                /**< Port to listen / write */
 #define ETH_LOC_BUFFER_LINK_DOWN_TIME     2000 / USER_IO_TIMER_OVERFLOW_TIME  /**< No link present (anymore). */
+#define ETH_LOC_BUFFER_NO_RR_CONNECTION   255                                 /**< No connection to RocRail */
 /*
  *******************************************************************************************
  * Types
@@ -70,8 +71,8 @@ static uint8_t    EthLocBufferTcpLoconetDataLenght;   /**< Copy of length last r
  */
 static void EthLocBufferTcpIpConnectionEnded(void)
 {
-   EthLocBufferTcpIpIndex = 255;
-   EthLocBufferTcpContinue = 255;
+   EthLocBufferTcpIpIndex = ETH_LOC_BUFFER_NO_RR_CONNECTION;
+   EthLocBufferTcpContinue = 0;
 
    /* Blink TCPIP led indicating no connection is present to RocRail */
    UserIoSetLed(userIoLed4, userIoLedSetOff);
@@ -124,7 +125,7 @@ static void EthLocBufferVerifyLinkStatus(void)
          if (EthLocBufferTcpIpLinkStatus == 1)
          {
             /* If a connection from RocRail was present transmit off command on Loconet. */
-            if (EthLocBufferTcpIpIndex != 255)
+            if (EthLocBufferTcpIpIndex != ETH_LOC_BUFFER_NO_RR_CONNECTION)
             {
                tcp_index_del(EthLocBufferTcpIpIndex);
                EthLocBufferTcpIpConnectionEnded();
@@ -192,7 +193,7 @@ static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
    if (RxLength != 0)
    {
       /* If a connection to us is present then transmit new data */
-      if (EthLocBufferTcpIpIndex != 255)
+      if (EthLocBufferTcpIpIndex != ETH_LOC_BUFFER_NO_RR_CONNECTION)
       {
          EthLocBufferTcpContinue = 0;
          EthLocBufferTcpLoconetDataLenght = RxLength;
@@ -221,10 +222,10 @@ static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
 static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
 {
    uint8_t                                 OpCode = 0;
+   uint8_t                                 LoconetTxCnt = 0;
    uint8_t                                 OpcodeFamily = 0;
-   uint8_t                                 TxBufferSetStatus = 0;
-
    lnMsg                                   LocoNetSendPacket;
+   LN_STATUS                               LoconetTxStatus = LN_RETRY_ERROR;
 
    if ((tcp_entry[TcpFpIndex].status & PSH_FLAG) == PSH_FLAG)
    {
@@ -265,20 +266,29 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
          /* Copy the data so it can be transmitted to the Loconet */
          memcpy(LocoNetSendPacket.data, &eth_buffer[TCP_DATA_START_FIX], LocoNetSendPacket.sz.mesg_size);
 
-         if (EthLocBufferTcpIpIndex == 255)
+         if (EthLocBufferTcpIpIndex == ETH_LOC_BUFFER_NO_RR_CONNECTION)
          {
             EthLocBufferTcpIpIndex = TcpFpIndex;
          }
 
          do
          {
-            TxBufferSetStatus = LoconetTxBufferSet(&LocoNetSendPacket);
+            LoconetTxCnt++;
+            LoconetTxStatus = sendLocoNetPacket(&LocoNetSendPacket);
          }
-         while (TxBufferSetStatus != 1);
+         while ((LoconetTxStatus != LN_DONE) && (LoconetTxCnt <= ETH_LOC_BUFFER_MAX_LOCONET_TX));
 
-         /* Message probably transmitted, ack the TCP/IP data */
-         tcp_entry[TcpFpIndex].status = ACK_FLAG;
-         create_new_tcp_packet(0, TcpFpIndex);
+         /* If message if transmitted (LN_DONE) then transmit an ACk, else do transmit nothing. RocRail will transmit
+          * data again a retransmit because no ACk was received */
+         if (LoconetTxStatus == LN_DONE)
+         {
+            tcp_entry[TcpFpIndex].status = ACK_FLAG;
+            create_new_tcp_packet(0, TcpFpIndex);
+         }
+         else
+         {
+            SerialTransmit("LoconetTx error \r\n");
+         }
       }
    }
    else if ((tcp_entry[TcpFpIndex].status & RETRY_FLAG) == RETRY_FLAG)
@@ -337,7 +347,7 @@ void EthLocBufferInit(void)
    initLocoNet(&EthLocBufferLocoNet);
 
    /* Set used variables to initial values */
-   EthLocBufferTcpIpIndex = 255;
+   EthLocBufferTcpIpIndex = ETH_LOC_BUFFER_NO_RR_CONNECTION;
    EthLocBufferTcpContinue = 0;
    EthLocBufferTcpLoconetDataLenght = 0;
 }
@@ -367,7 +377,7 @@ void EthLocBufferMain(void)
    }
 
    /* If no TCPIP connection discard all received Loconet data */
-   if (EthLocBufferTcpIpIndex == 255)
+   if (EthLocBufferTcpIpIndex == ETH_LOC_BUFFER_NO_RR_CONNECTION)
    {
       RxPacket = recvLocoNetPacket();
       if (RxPacket)

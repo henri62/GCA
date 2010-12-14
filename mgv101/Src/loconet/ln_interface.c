@@ -51,7 +51,7 @@ lnMsg                                  *recvLocoNetPacket(void)
    return recvLnMsg(pstLnRxBuffer);
 }
 
-#define   LN_TX_RETRIES_MAX  5
+#define   LN_TX_RETRIES_MAX  25
 // this function should be moved to a hardware independant module
 LN_STATUS sendLocoNetPacket(lnMsg * punTxData)
 {

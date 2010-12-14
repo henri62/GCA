@@ -57,19 +57,18 @@
 *****************************************************************************/
 
 #include <string.h>
+#include <stdio.h>
 
 #ifndef __BORLANDC__
 #include <avr/interrupt.h>
 #endif
 
+#include "Serial.h"
 #include "ln_buf.h"
 
 #define		LN_BUF_OPC_WRAP_AROUND	(byte)0x00                                 // Special character to indcate a buffer
                                                                                // wrap
 #define		LN_CHECKSUM_SEED		 		(byte)0xFF
-
-byte ln_buf_rx_buffer[25];
-byte ln_buf_rx_buffer_cnt;
 
 void initLnBuf(LnBuf * Buffer)
 {
@@ -81,12 +80,16 @@ lnMsg                                  *recvLnMsg(LnBuf * Buffer)
    byte                                    newByte;
    byte                                    tempSize;
    lnMsg                                  *tempMsg;
+   char LogData[5];
 
    while (Buffer->ReadIndex != Buffer->WriteIndex)
    {
       newByte = Buffer->Buf[Buffer->ReadIndex];
       Buffer->ln_buf_process[Buffer->ln_buf_process_cnt]=newByte;
       Buffer->ln_buf_process_cnt++;
+
+      sprintf(LogData,"0x%02X ",newByte);
+      SerialTransmit(LogData);
 
       // Check if this is the beginning of a new packet
       if (newByte & (byte) 0x80)
@@ -143,13 +146,15 @@ lnMsg                                  *recvLnMsg(LnBuf * Buffer)
             // Set the return packet pointer
             tempMsg = (lnMsg *) Buffer->ln_buf_process;
             Buffer->Stats.RxPackets++;
-            Buffer->ln_buf_process_cnt=0;
+            SerialTransmit("\r\n\0");
          }
          else
          {
             Buffer->Stats.RxErrors++;
-            ln_buf_rx_buffer_cnt = 0;
+            SerialTransmit("LnBuf Error! \r\n\0");
          }
+
+         Buffer->ln_buf_process_cnt=0;
 
          // Whatever the case advance the ReadPacketIndex to the beginning of the
          // next packet to be received

@@ -224,6 +224,7 @@ ISR(LN_TMR_SIGNAL)                                                             /
       if (bit_is_clear(LN_RX_PORT, LN_RX_BIT))
       {
          lnRxBuffer->Stats.RxErrors++;
+         addByteLnBuf(lnRxBuffer, lnCurrentByte);
       }
       else
       {
@@ -351,6 +352,7 @@ void initLocoNetHardware(LnBuf * RxBuffer)
    sbi(STARTBIT_MONITOR_PORT, STARTBIT_MONITOR_BIT);
 #  endif
 
+   initLnBuf(RxBuffer);
    lnRxBuffer = RxBuffer;
 
    // Set the TX line to Inactive

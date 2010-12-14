@@ -34,10 +34,10 @@ $(APPLICATION).hex : $(APPLICATION).out
 	@echo "Expl.: data=initialized data, bss=uninitialized data, text=code"
 	@echo " "
 
-$(APPLICATION).out : Main.o EthLocBuffer.o enc28j60.o stack.o UserIo.o ln_buf.o ln_sw_uart.o ln_interface.o LoconetTxBuffer.o
+$(APPLICATION).out : Main.o EthLocBuffer.o enc28j60.o stack.o UserIo.o ln_buf.o ln_sw_uart.o ln_interface.o Serial.o
 	$(CC) $(CFLAGS) -mno-interrupts -o $(OUTPUTDIR)/$(APPLICATION).out -Wl,-Map,$(OUTPUTDIR)/$(APPLICATION).map \
 	$(OUTPUTDIR)/Main.o $(OUTPUTDIR)/EthLocBuffer.o $(OUTPUTDIR)/enc28j60.o $(OUTPUTDIR)/stack.o \
-	$(OUTPUTDIR)/UserIo.o $(OUTPUTDIR)/ln_buf.o $(OUTPUTDIR)/ln_sw_uart.o $(OUTPUTDIR)/ln_interface.o $(OUTPUTDIR)/LoconetTxBuffer.o
+	$(OUTPUTDIR)/UserIo.o $(OUTPUTDIR)/ln_buf.o $(OUTPUTDIR)/ln_sw_uart.o $(OUTPUTDIR)/ln_interface.o $(OUTPUTDIR)/Serial.o
 	 
 #-------------------
 Main.o : $(APPSRC)/Main.c
@@ -55,8 +55,8 @@ stack.o : $(NETWSRC)/stack.c
 UserIo.o : $(APPSRC)/UserIo.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/UserIo.o $(APPSRC)/UserIo.c 
 #-------------------
-LoconetTxBuffer.o : $(APPSRC)/LoconetTxBuffer.c 
-	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/LoconetTxBuffer.o $(APPSRC)/LoconetTxBuffer.c 
+Serial.o : $(APPSRC)/Serial.c 
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/Serial.o $(APPSRC)/Serial.c 
 #-------------------
 ln_sw_uart.o : $(LOCONETSRC)/ln_sw_uart.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/ln_sw_uart.o $(LOCONETSRC)/ln_sw_uart.c 
