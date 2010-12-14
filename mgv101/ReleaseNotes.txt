@@ -1,3 +1,9 @@
+Version 1.75
+ * Removed LoconetTxBuffer. Caused instable behaviour. 
+ * Added logging by means of simple serial port logging for testing purposes.
+ * If Loconet data could not be transmitted from TCPIP->Loconet NO Ack is transmitted. 
+   In this case RocRail will retransmit he data not acked...  
+ 
 Version 1.74
  * Added a Loconet Tx buffer. Data received from TCPIP is put into a Locnet intermediate transmit buffer. 
    The buffer tries to transmit the data each main loop. By this a potential blocking while loop in the
