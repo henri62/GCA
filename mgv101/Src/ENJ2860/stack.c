@@ -96,6 +96,9 @@ void stack_init (void)
    arp_gratuitous_tmr_cnt = 0;
    arp_gratuitous_tx_cnt = 0;
 
+   memset(tcp_entry,0,sizeof(tcp_entry));
+   memset(arp_entry,0,sizeof(arp_entry));
+
    /* NIC Initialisieren */
    enc_init();
 }
@@ -297,7 +300,10 @@ void check_packet (void)
                 }
                 else
                 {
-                    if( ip->IP_Proto == PROT_TCP ) tcp_socket_process();
+                    if( ip->IP_Proto == PROT_TCP )
+                    {
+                       tcp_socket_process();
+                    }
                 }
             }
         }
@@ -738,6 +744,7 @@ void tcp_entry_add (unsigned char *buffer)
 {
     unsigned long result32;
     unsigned char index;
+    unsigned char filled = 0;
 
     struct TCP_Header *tcp;
     struct IP_Header  *ip;
@@ -768,8 +775,10 @@ void tcp_entry_add (unsigned char *buffer)
         }
     }
   
+    index = 0;
+
     //Freien Eintrag finden
-    for (index = 0;index<(MAX_TCP_ENTRY);index++)
+     while((index<(MAX_TCP_ENTRY)) && (filled == 0))
     {
         if(tcp_entry[index].ip == 0)
         {
@@ -784,6 +793,11 @@ void tcp_entry_add (unsigned char *buffer)
             tcp_entry[index].error_count = 0;
             tcp_entry[index].first_ack   = 0;
             memcpy(tcp_entry[index].EnetPacketDest, &ethernet->EnetPacketSrc[0], sizeof(tcp_entry[index].EnetPacketDest));
+            filled =1;
+        }
+        else
+        {
+           index++;
         }
     }
 }
@@ -840,14 +854,14 @@ void tcp_socket_process(void)
 	ip = (struct IP_Header *)&eth_buffer[IP_OFFSET];
 
 	//TCP DestPort mit Portanwendungsliste durchführen
-	while (TCP_PORT_TABLE[port_index].port && TCP_PORT_TABLE[port_index].port!=(htons(tcp->TCP_DestPort)))
+	while ((port_index <MAX_APP_ENTRY) && (TCP_PORT_TABLE[port_index].port!=(htons(tcp->TCP_DestPort))))
 	{ 
 		port_index++;
 	}
 	
 	// Wenn index zu gross, dann beenden keine vorhandene Anwendung für Port
 	//Geht von einem Client was aus? Will eine Clientanwendung einen Port öffnen?
-	if (!TCP_PORT_TABLE[port_index].port)
+	if (port_index >= MAX_APP_ENTRY)
 	{ 
 		//Keine vorhandene Anwendung eingetragen! (ENDE)
 		return;

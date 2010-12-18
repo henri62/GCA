@@ -1,3 +1,8 @@
+Version 1.76
+ * Ethernet stack some improvements. COnnecting to RocRail should now works at first time. 
+ * Serial logging dis- enable it with define.
+ * Loconet bittime decreased with 1. 
+ 
 Version 1.75
  * Removed LoconetTxBuffer. Caused instable behaviour. 
  * Added logging by means of simple serial port logging for testing purposes.

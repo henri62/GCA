@@ -80,7 +80,9 @@ lnMsg                                  *recvLnMsg(LnBuf * Buffer)
    byte                                    newByte;
    byte                                    tempSize;
    lnMsg                                  *tempMsg;
+#  ifdef SERIAL_ENABLED
    char LogData[5];
+#  endif
 
    while (Buffer->ReadIndex != Buffer->WriteIndex)
    {
@@ -88,8 +90,10 @@ lnMsg                                  *recvLnMsg(LnBuf * Buffer)
       Buffer->ln_buf_process[Buffer->ln_buf_process_cnt]=newByte;
       Buffer->ln_buf_process_cnt++;
 
+#     ifdef SERIAL_ENABLED
       sprintf(LogData,"0x%02X ",newByte);
       SerialTransmit(LogData);
+#     endif
 
       // Check if this is the beginning of a new packet
       if (newByte & (byte) 0x80)
@@ -146,12 +150,16 @@ lnMsg                                  *recvLnMsg(LnBuf * Buffer)
             // Set the return packet pointer
             tempMsg = (lnMsg *) Buffer->ln_buf_process;
             Buffer->Stats.RxPackets++;
+#           ifdef SERIAL_ENABLED
             SerialTransmit("\r\n\0");
+#           endif
          }
          else
          {
             Buffer->Stats.RxErrors++;
+#           ifdef SERIAL_ENABLED
             SerialTransmit("LnBuf Error! \r\n\0");
+#           endif
          }
 
          Buffer->ln_buf_process_cnt=0;

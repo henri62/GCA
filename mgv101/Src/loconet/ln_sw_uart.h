@@ -11,7 +11,7 @@
 ** The bit period is then the clock frequency / LocoNet Baud rate
 */
 
-#define LN_BIT_PERIOD       (482)
+#define LN_BIT_PERIOD       (481)
 
 typedef enum
 {

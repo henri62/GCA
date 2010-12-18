@@ -79,53 +79,48 @@ extern                                  "C"
 #  error LN_BUF_SIZE is byte, max 255 !
 #endif
 
-   typedef struct
-   {
-      byte                                    RxPackets;
-      byte                                    RxErrors;
-      byte                                    TxPackets;
-      byte                                    TxError;
-      byte                                    Collisions;
-   } LnBufStats;
+typedef struct
+{
+   byte                                    RxPackets;
+   byte                                    RxErrors;
+   byte                                    TxPackets;
+   byte                                    TxError;
+   byte                                    Collisions;
+} LnBufStats;
 
-   typedef struct
-   {
-      byte                                    Buf[LN_BUF_SIZE];
-      byte                                    ln_buf_process[20];
-      byte                                    ln_buf_process_cnt;
-      byte                                    WriteIndex;
-      byte                                    ReadIndex;
-      byte                                    ReadPacketIndex;
-      byte                                    CheckSum;
-      byte                                    ReadExpLen;
-      LnBufStats                              Stats;
-   } LnBuf;
+typedef struct
+{
+   byte                                    Buf[LN_BUF_SIZE];
+   byte                                    ln_buf_process[20];
+   byte                                    ln_buf_process_cnt;
+   byte                                    WriteIndex;
+   byte                                    ReadIndex;
+   byte                                    ReadPacketIndex;
+   byte                                    CheckSum;
+   byte                                    ReadExpLen;
+   LnBufStats                              Stats;
+} LnBuf;
 
-   void                                    initLnBuf(LnBuf * Buffer);
-   lnMsg                                  *recvLnMsg(LnBuf * Buffer);
-   byte                                    getLnMsgSize(volatile lnMsg * newMsg);
+void                                    initLnBuf(LnBuf * Buffer);
+lnMsg                                  *recvLnMsg(LnBuf * Buffer);
+byte                                    getLnMsgSize(volatile lnMsg * newMsg);
 
-#ifdef __BORLANDC__
-   void                                    addByteLnBuf(LnBuf * Buffer, byte newByte);
-   void                                    addMsgLnBuf(LnBuf * Buffer, volatile lnMsg * newMsg);
-#else
-   static inline void                      addByteLnBuf(LnBuf * Buffer, byte newByte)
-   {
-      Buffer->Buf[Buffer->WriteIndex++] = newByte;
-      if (Buffer->WriteIndex >= LN_BUF_SIZE)
-         Buffer->WriteIndex = 0;
-   }
+static inline void                      addByteLnBuf(LnBuf * Buffer, byte newByte)
+{
+   Buffer->Buf[Buffer->WriteIndex++] = newByte;
+   if (Buffer->WriteIndex >= LN_BUF_SIZE)
+      Buffer->WriteIndex = 0;
+}
 
-   static inline void                      addMsgLnBuf(LnBuf * Buffer, volatile lnMsg * newMsg)
-   {
-      byte                                    Index;
-      byte                                    Length;
+static inline void                      addMsgLnBuf(LnBuf * Buffer, volatile lnMsg * newMsg)
+{
+   byte                                    Index;
+   byte                                    Length;
 
-      Length = getLnMsgSize(newMsg);
-      for (Index = 0; Index < Length; Index++)
-         addByteLnBuf(Buffer, newMsg->data[Index]);
-   }
-#endif
+   Length = getLnMsgSize(newMsg);
+   for (Index = 0; Index < Length; Index++)
+      addByteLnBuf(Buffer, newMsg->data[Index]);
+}
 
 #ifdef __cplusplus
 }

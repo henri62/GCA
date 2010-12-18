@@ -287,7 +287,9 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
          }
          else
          {
+#           ifdef SERIAL_ENABLED
             SerialTransmit("LoconetTx error \r\n");
+#           endif
          }
       }
    }

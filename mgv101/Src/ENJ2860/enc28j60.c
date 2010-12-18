@@ -32,6 +32,7 @@
 |
 `-----------------------------------------------------------------------------------------*/
 
+#include <util/delay.h>
 #include "enc28j60.h"
 
 //-----------------------------------------------------------------------------
@@ -129,23 +130,6 @@ static unsigned char                    enc_configdata[] PROGMEM = {
 
 //-----------------------------------------------------------------------------
 
-static void usdelay(unsigned int us)
-{
-   while (us--)
-   {
-      // 4 times * 4 cycles gives 16 cyles = 1 us with 16 MHz clocking
-      unsigned char                           i = 4;
-
-      // this while loop executes with exact 4 cycles:
-      while (i--)
-      {
-         asm volatile                            ("nop");
-      }
-   }
-}
-
-//-----------------------------------------------------------------------------
-
 static inline void spi_init(void)
 {
    // configure pins MOSI, SCK as output
@@ -160,7 +144,7 @@ static inline void spi_init(void)
    SPCR = (1 << SPE) | (1 << MSTR);
    SPSR = (1 << SPI2X);
 
-   usdelay(10000);
+   _delay_ms(10);
 }
 
 static inline void spi_put(unsigned char value)
@@ -180,12 +164,14 @@ static inline unsigned char spi_get(void)
 
 static inline void enc_reset(void)
 {
+   _delay_ms(10);
+
    enc_select();
    spi_put(ENC_SPI_OP_SC);
    enc_deselect();
 
    // errata #2: wait for at least 300 us
-   usdelay(1000);
+   _delay_ms(100);
 }
 
 static void enc_clrbits_reg(unsigned char reg, unsigned char bits)
@@ -276,7 +262,7 @@ static unsigned int enc_read_phyreg(unsigned char phyreg)
 
    enc_write_reg(ENC_REG_MIREGADR, phyreg);
    enc_write_reg(ENC_REG_MICMD, (1 << ENC_BIT_MIIRD));
-   usdelay(10);
+   _delay_us(10);
    while (enc_read_reg(ENC_REG_MISTAT) & (1 << ENC_BIT_BUSY));
    enc_write_reg(ENC_REG_MICMD, 0x00);
    value = (((unsigned int)enc_read_reg(ENC_REG_MIRDH)) << 8);
@@ -290,7 +276,7 @@ static void enc_write_phyreg(unsigned char phyreg, unsigned int value)
    enc_write_reg(ENC_REG_MIREGADR, phyreg);
    enc_write_reg(ENC_REG_MIWRL, LO8(value));
    enc_write_reg(ENC_REG_MIWRH, HI8(value));
-   usdelay(10);
+   _delay_us(10);
    while (enc_read_reg(ENC_REG_MISTAT) & (1 << ENC_BIT_BUSY));
 }
 
@@ -329,7 +315,7 @@ void enc_send_packet(unsigned int len, unsigned char *buf)
    {
       if (!(enc_read_reg(ENC_REG_ECON1) & (1 << ENC_BIT_TXRTS)))
          break;
-      usdelay(1000);
+      _delay_ms(1);
    }
 
 #ifdef FULL_DUPLEX
@@ -476,9 +462,9 @@ void enc_init(void)
    enc_next_packet_ptr = ENC_RX_BUFFER_START;
 
    // configure the enc interrupt sources
-   enc_write_reg(ENC_REG_EIE, (1 << ENC_BIT_INTIE) | (1 << ENC_BIT_PKTIE)
-                 | (0 << ENC_BIT_DMAIE) | (0 << ENC_BIT_LINKIE)
-                 | (0 << ENC_BIT_TXIE) | (0 << ENC_BIT_WOLIE) | (0 << ENC_BIT_TXERIE) | (0 << ENC_BIT_RXERIE));
+//   enc_write_reg(ENC_REG_EIE, (1 << ENC_BIT_INTIE) | (1 << ENC_BIT_PKTIE)
+//                 | (0 << ENC_BIT_DMAIE) | (0 << ENC_BIT_LINKIE)
+//                 | (0 << ENC_BIT_TXIE) | (0 << ENC_BIT_WOLIE) | (0 << ENC_BIT_TXERIE) | (0 << ENC_BIT_RXERIE));
 
    // enable receive
    enc_setbits_reg(ENC_REG_ECON1, (1 << ENC_BIT_RXEN));

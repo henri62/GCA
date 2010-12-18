@@ -78,7 +78,9 @@ int main(void)
 
    EthLocBufferInit();
 
+#  ifdef SERIAL_ENABLED
    SerialInit();
+#  endif
 
    sei();
 
