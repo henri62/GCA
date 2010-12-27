@@ -54,6 +54,8 @@ DESCRIPTION
     // #define BOARD_PROTO_128
     // #define BOARD_PROTO_128_STEFAN
 
+#define LN_TIMER_TX_RELOAD_ADJUST  20
+
 #define BV(bit) _BV(bit)
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))

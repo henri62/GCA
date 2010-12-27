@@ -19,7 +19,8 @@
 #include "Serial.h"
 #include "UserIo.h"
 #include "enc28j60.h"
-#include "ln_sw_uart.h"
+#include "ln_buf.h"
+#include "ln_interface.h"
 #include "EthLocBuffer.h"
 
 /*
@@ -51,7 +52,6 @@ static uint8_t    EthLocBufferTcpIpIndex;             /**< Index for TcpIp trans
 static uint8_t    EthLocBufferTcpContinue;            /**< Process next Loconet message */
 static lnMsg      EthLocBufferTcpLoconetData;         /**< Copy of last received Loconet data for retry on TCPIP */
 static uint8_t    EthLocBufferTcpIpLinkStatus;        /**< Status of the network link */
-static uint8_t    EthLocBufferTcpLoconetDataLenght;   /**< Copy of length last received Loconet data for retry on TCPIP */
 /* *INDENT-ON* */
 
 /*
@@ -144,7 +144,7 @@ static void EthLocBufferVerifyLinkStatus(void)
 /**
  *******************************************************************************************
  * @fn         static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
- * @brief      Process the content of a received message from the Loconet bus and
+ * @brief      Process the content of a received message from the Loconet bus and try to
  *             forward it on to the TCP/IP.
  * @param      LnPacket  Pointer to Loconet variable.
  * @return     None
@@ -196,10 +196,10 @@ static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
       if (EthLocBufferTcpIpIndex != ETH_LOC_BUFFER_NO_RR_CONNECTION)
       {
          EthLocBufferTcpContinue = 0;
-         EthLocBufferTcpLoconetDataLenght = RxLength;
+         EthLocBufferTcpLoconetData.sz.mesg_size = RxLength;
          memcpy(EthLocBufferTcpLoconetData.data, (char *)LnPacket->data, RxLength);
-
          memcpy(&eth_buffer[TCP_DATA_START_FIX], (char *)LnPacket->data, RxLength);
+
          tcp_entry[EthLocBufferTcpIpIndex].status = ACK_FLAG | PSH_FLAG;
          create_new_tcp_packet(RxLength, EthLocBufferTcpIpIndex);
          tcp_packet_retry_tx_reset(EthLocBufferTcpIpIndex);
@@ -211,7 +211,7 @@ static void EthLocBufferRcvLocoNet(lnMsg * LnPacket)
 /**
  *******************************************************************************************
  * @fn	      static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
- * @brief      Check the content of a received message from the ethernet bus. This function <br>
+ * @brief      Check the content of a received message from the Ethernet bus. This function <br>
  *             is called by the stack if a message is received with out IP address.
  * @param      TcpFpIndex Index of the connection.
  * @return     None
@@ -296,10 +296,10 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
    else if ((tcp_entry[TcpFpIndex].status & RETRY_FLAG) == RETRY_FLAG)
    {
       /* Retransmit last transmitted data */
-      tcp_entry[EthLocBufferTcpIpIndex].status = ACK_FLAG | PSH_FLAG;
-      memcpy(&eth_buffer[TCP_DATA_START_FIX], EthLocBufferTcpLoconetData.data, EthLocBufferTcpLoconetDataLenght);
-      create_new_tcp_packet(EthLocBufferTcpLoconetDataLenght, EthLocBufferTcpIpIndex);
-      tcp_packet_retry_tx_set(EthLocBufferTcpIpIndex);
+      tcp_entry[TcpFpIndex].status = ACK_FLAG | PSH_FLAG;
+      memcpy(&eth_buffer[TCP_DATA_START_FIX], EthLocBufferTcpLoconetData.data, EthLocBufferTcpLoconetData.sz.mesg_size);
+      create_new_tcp_packet(EthLocBufferTcpLoconetData.sz.mesg_size, TcpFpIndex);
+      tcp_packet_retry_tx_set(TcpFpIndex);
    }
    else if (((tcp_entry[TcpFpIndex].status & FIN_FLAG) == FIN_FLAG) ||
             ((tcp_entry[TcpFpIndex].status & RST_FLAG) == RST_FLAG))
@@ -317,7 +317,7 @@ static void EthLocBufferTcpRcvEthernet(unsigned char TcpFpIndex)
    else if ((tcp_entry[TcpFpIndex].status & ACK_FLAG) == ACK_FLAG)
    {
       /* Ack received on last transmitted data. New messages from Loconet if present can be forwarded. */
-      tcp_packet_retry_tx_clear(EthLocBufferTcpIpIndex);
+      tcp_packet_retry_tx_clear(TcpFpIndex);
       EthLocBufferTcpContinue = 1;
    }
 }
@@ -351,7 +351,6 @@ void EthLocBufferInit(void)
    /* Set used variables to initial values */
    EthLocBufferTcpIpIndex = ETH_LOC_BUFFER_NO_RR_CONNECTION;
    EthLocBufferTcpContinue = 0;
-   EthLocBufferTcpLoconetDataLenght = 0;
 }
 
 /**

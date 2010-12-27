@@ -1,6 +1,14 @@
+Version 1.78
+ * Updated used Loconet to status found on http://embeddedloconet.cvs.sourceforge.net/viewvc/embeddedloconet/ date 21-12-2010.
+ * Moved LN_TIMER_TX_RELOAD_ADJUST to sysdef.h and reduced value. 
+ * TcpIp receive handler if data is received use the index forwarded from the stack. 
+
+Version 1.77
+ * Loconet sources now the same as 1.73.  
+
 Version 1.76
- * Ethernet stack some improvements. COnnecting to RocRail should now works at first time. 
- * Serial logging dis- enable it with define.
+ * Ethernet stack some improvements. Connecting to RocRail should now work at first time. 
+ * Serial logging dis- enable with define.
  * Loconet bittime decreased with 1. 
  
 Version 1.75

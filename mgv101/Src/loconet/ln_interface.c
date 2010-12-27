@@ -1,4 +1,3 @@
-
 /****************************************************************************
     Copyright (C) 2006 Stefan Bormann
 
@@ -38,54 +37,78 @@
 
 #include "ln_interface.h"
 
-static LnBuf                           *pstLnRxBuffer;                         // this queue eats received LN messages
 
-void initLocoNet(LnBuf * RxBuffer)
+
+static LnBuf *pstLnRxBuffer;  // this queue eats received LN messages
+
+
+void initLocoNet(LnBuf *RxBuffer)
 {
-   pstLnRxBuffer = RxBuffer;
-   initLocoNetHardware(RxBuffer);
+	pstLnRxBuffer = RxBuffer;
+	initLocoNetHardware(RxBuffer);
 }
 
-lnMsg                                  *recvLocoNetPacket(void)
+
+lnMsg * recvLocoNetPacket( void )
 {
-   return recvLnMsg(pstLnRxBuffer);
+	return recvLnMsg(pstLnRxBuffer);
 }
+
 
 #define   LN_TX_RETRIES_MAX  25
 // this function should be moved to a hardware independant module
-LN_STATUS sendLocoNetPacket(lnMsg * punTxData)
+LN_STATUS sendLocoNetPacket( lnMsg *punTxData )
 {
-   unsigned char                           ucTry;
-   unsigned char                           ucPrioDelay = LN_BACKOFF_INITIAL;
-   LN_STATUS                               enReturn;
-   unsigned char                           ucWaitForEnterBackoff;
+  unsigned char ucTry;
+  unsigned char ucPrioDelay = LN_BACKOFF_INITIAL;
+  LN_STATUS enReturn;
+  unsigned char ucWaitForEnterBackoff;
 
-   for (ucTry = 0; ucTry < LN_TX_RETRIES_MAX; ucTry++)
-   {
+  for (ucTry = 0; ucTry < LN_TX_RETRIES_MAX; ucTry++)
+  {
 
-      // wait previous traffic and than prio delay and than try tx
-      ucWaitForEnterBackoff = 1;
-      // don't want to abort do/while loop before
-      // we did not see the backoff state once
-      do
-      {
-         enReturn = sendLocoNetPacketTry(punTxData, ucPrioDelay);
-         // success?
-         if (enReturn == LN_DONE)
-            return LN_DONE;
+    // wait previous traffic and than prio delay and than try tx
+    ucWaitForEnterBackoff = 1;  // don't want to abort do/while loop before
+    do                          // we did not see the backoff state once
+    {
+      enReturn = sendLocoNetPacketTry(punTxData, ucPrioDelay);
 
-         if (enReturn == LN_PRIO_BACKOFF)
-            // now entered backoff -> next state !=
-            ucWaitForEnterBackoff = 0;
-         // LN_BACKOFF is worth incrementing the try counter
-      }
-      while ((enReturn == LN_CD_BACKOFF) ||                                    // waiting CD backoff
-             (enReturn == LN_PRIO_BACKOFF) ||                                  // waiting master+prio backoff
-             ((enReturn == LN_NETWORK_BUSY) && ucWaitForEnterBackoff));        // or within any traffic unfinished
-      // failed -> next try going to higher prio = smaller prio delay
-      if (ucPrioDelay > LN_BACKOFF_MIN)
-         ucPrioDelay--;
-   }
-   pstLnRxBuffer->Stats.TxError++;
-   return LN_RETRY_ERROR;
+      if (enReturn == LN_DONE)  // success?
+        return LN_DONE;
+
+      if (enReturn == LN_PRIO_BACKOFF)
+        ucWaitForEnterBackoff = 0; // now entered backoff -> next state != LN_BACKOFF is worth incrementing the try counter
+    }
+    while ((enReturn == LN_CD_BACKOFF) ||                             // waiting CD backoff
+           (enReturn == LN_PRIO_BACKOFF) ||                           // waiting master+prio backoff
+           ((enReturn == LN_NETWORK_BUSY) && ucWaitForEnterBackoff)); // or within any traffic unfinished
+    // failed -> next try going to higher prio = smaller prio delay
+    if (ucPrioDelay > LN_BACKOFF_MIN)
+      ucPrioDelay--;
+  }
+  pstLnRxBuffer->Stats.TxError++ ;
+  return LN_RETRY_ERROR;
+}
+
+
+LN_STATUS sendLocoNet4BytePacket( byte OpCode, byte Data1, byte Data2 )
+{
+  lnMsg SendPacket ;
+
+  SendPacket.data[ 0 ] = OpCode ;
+  SendPacket.data[ 1 ] = Data1 ;
+  SendPacket.data[ 2 ] = Data2 ;
+
+  return sendLocoNetPacket( &SendPacket ) ;
+}
+
+LN_STATUS sendLocoNet4BytePacketTry( byte OpCode, byte Data1, byte Data2, byte PrioDelay )
+{
+  lnMsg SendPacket ;
+
+  SendPacket.data[ 0 ] = OpCode ;
+  SendPacket.data[ 1 ] = Data1 ;
+  SendPacket.data[ 2 ] = Data2 ;
+
+  return sendLocoNetPacketTry( &SendPacket, PrioDelay ) ;
 }

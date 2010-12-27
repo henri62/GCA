@@ -1,57 +1,47 @@
-#ifndef _LN_INTERFACE_H_
-#define _LN_INTERFACE_H_
+/****************************************************************************
+    Copyright (C) 2002 Alex Shepherd
 
-#include "sysdef.h"                                                            // #define LOCONET_MASTER, F_CPU
-#include "common_defs.h"
-#include "ln_buf.h"
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-/*
-** TIMER1 is used for the bit period timings. It must be setup so that
-** its prescaler is set to 1 so that the timer runs at the clock frequency.
-** The bit period is then the clock frequency / LocoNet Baud rate
-*/
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-#define LN_BIT_PERIOD       (481)
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-typedef enum
-{
-   LN_CD_BACKOFF = 0,
-   LN_PRIO_BACKOFF,
-   LN_NETWORK_BUSY,
-   LN_DONE,
-   LN_COLLISION,
-   LN_UNKNOWN_ERROR,
-   LN_RETRY_ERROR
-} LN_STATUS;
+*****************************************************************************
 
-// CD Backoff starts after the Stop Bit (Bit 9) and has a minimum or 20 Bit Times
-// but initially starts with an additional 20 Bit Times 
-#define   LN_CARRIER_TICKS      20                                             // carrier detect backoff - all devices
-                                                                               // have to wait this
-#define   LN_MASTER_DELAY        6                                             // non master devices have to wait this
-                                                                               // additionally
-#define   LN_INITIAL_PRIO_DELAY 20                                             // initial attempt adds priority delay
-#define   LN_BACKOFF_MIN      (LN_CARRIER_TICKS + LN_MASTER_DELAY)             // not going below this
-#define   LN_BACKOFF_INITIAL  (LN_BACKOFF_MIN + LN_INITIAL_PRIO_DELAY)         // for the first normal tx attempt
-#define   LN_BACKOFF_MAX      (LN_BACKOFF_INITIAL + 10)                        // lower priority is not supported
+ Title :    LocoNet cccess Software UART library
+ Author:    Alex Shepherd <kiwi64ajs@sourceforge.net>
+ Date:      13-Aug-2002
+ Software:  AVR-GCC with AVR-AS
+ Target:    any AVR device
 
-// Interface to lower layer
-// Must be implemented by hardware level module, ln_sw_uart.c or ln_hw_uart.c or...
-void                                    initLocoNetHardware(LnBuf * RxBuffer);
-LN_STATUS                               sendLocoNetPacketTry(lnMsg * TxData, unsigned char ucPrioDelay);
+DESCRIPTION
 
-// Interface to application
-// Implemented in ln_interface.c
-void                                    initLocoNet(LnBuf * RxBuffer);
-lnMsg                                  *recvLocoNetPacket(void);
-LN_STATUS                               sendLocoNetPacket(lnMsg * TxPacket);
+  Basic routines for interfacing to the LocoNet via any output pin and
+  either the Analog Comparator pins or the Input Capture pin
 
-// Additional functionallity to implement the tight timing requirements for a master
-#ifdef LOCONET_MASTER
+  The receiver uses the Timer1 Input Capture Register and Interrupt to detect
+  the Start Bit and then the Compare A Register for timing the subsequest
+  bit times.
 
-void                                    performLocoNetBusy(char bNewState);
-char                                    sendingLocoNetBusy(void);
+  The Transmitter uses just the Compare A Register for timing all bit times
 
-#endif
+****************************************************************************/
+
+#ifndef _LN_SW_UART_INCLUDED
+#define _LN_SW_UART_INCLUDED
+
+
+// All hardware independent generic interfaces are in loconet/ln_interface.h
+// If this module needs implementation specific headers, place them here!
+
 
 #endif
