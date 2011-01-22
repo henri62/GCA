@@ -1,303 +1,341 @@
-#ifndef _ENC28J60_H_
-#define _ENC28J60_H_
+/************************************************************
+*
+*	This is the general driver for the ENC28J60
+*	I changed some things to make it work with uIP
+*	Some files of uIP have changes too.
+*
+*								edi87 [at] fibertel.com.ar
+*								Jonathan Granade
+*
+************************************************************/
+#ifndef ENC28J60_H
+#define ENC28J60_H
 
-#include <stdio.h>
-#include <avr/io.h>
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-#include "Enc28J60Cfg.h"
+#include "compiler.h"
 
-   // this variable is set during enc_init to the values above.
-extern unsigned char                    mymac[6];
+// ENC28J60 PINS CONFIGURATION
+#define ENC28J60_CONTROL_PORT	PORTB
+#define ENC28J60_CONTROL_DDR	DDRB
+#define ENC28J60_CONTROL_CS		2
 
-   /*************************************************************
-	  public functions prototypes
-	*************************************************************/
+#define ENC28J60_SCK_PIN	5
+#define ENC28J60_MISO_PIN	4
+#define ENC28J60_MOSI_PIN	3
+#define ENC28J60_SS_PIN		4
+//
 
-#define LO8(x) ( (unsigned char) ((x) & 0xFF) )
-#define HI8(x) ( (unsigned char) (((x) >> 8) & 0xFF) )
 
-   // EREVID value, filled with the enc_init() function.
-extern unsigned char                    enc_revid;
+// ENC28J60 Control Registers
+// Control register definitions are a combination of address,
+// bank number, and Ethernet/MAC/PHY indicator bits.
+// - Register address	(bits 0-4)
+// - Bank number		(bits 5-6)
+// - MAC/PHY indicator	(bit 7)
+#define ADDR_MASK	0x1F
+#define BANK_MASK	0x60
+#define SPRD_MASK	0x80
+// All-bank registers
+#define EIE			0x1B
+#define EIR			0x1C
+#define ESTAT		0x1D
+#define ECON2		0x1E
+#define ECON1		0x1F
+// Bank 0 registers
+#define ERDPTL		(0x00|0x00)
+#define ERDPTH		(0x01|0x00)
+#define EWRPTL		(0x02|0x00)
+#define EWRPTH		(0x03|0x00)
+#define ETXSTL		(0x04|0x00)
+#define ETXSTH		(0x05|0x00)
+#define ETXNDL		(0x06|0x00)
+#define ETXNDH		(0x07|0x00)
+#define ERXSTL		(0x08|0x00)
+#define ERXSTH		(0x09|0x00)
+#define ERXNDL		(0x0A|0x00)
+#define ERXNDH		(0x0B|0x00)
+#define ERXRDPTL	(0x0C|0x00)
+#define ERXRDPTH	(0x0D|0x00)
+#define ERXWRPTL	(0x0E|0x00)
+#define ERXWRPTH	(0x0F|0x00)
+#define EDMASTL		(0x10|0x00)
+#define EDMASTH		(0x11|0x00)
+#define EDMANDL		(0x12|0x00)
+#define EDMANDH		(0x13|0x00)
+#define EDMADSTL	(0x14|0x00)
+#define EDMADSTH	(0x15|0x00)
+#define EDMACSL		(0x16|0x00)
+#define EDMACSH		(0x17|0x00)
+// Bank 1 registers
+#define EHT0		(0x00|0x20)
+#define EHT1		(0x01|0x20)
+#define EHT2		(0x02|0x20)
+#define EHT3		(0x03|0x20)
+#define EHT4		(0x04|0x20)
+#define EHT5		(0x05|0x20)
+#define EHT6		(0x06|0x20)
+#define EHT7		(0x07|0x20)
+#define EPMM0		(0x08|0x20)
+#define EPMM1		(0x09|0x20)
+#define EPMM2		(0x0A|0x20)
+#define EPMM3		(0x0B|0x20)
+#define EPMM4		(0x0C|0x20)
+#define EPMM5		(0x0D|0x20)
+#define EPMM6		(0x0E|0x20)
+#define EPMM7		(0x0F|0x20)
+#define EPMCSL		(0x10|0x20)
+#define EPMCSH		(0x11|0x20)
+#define EPMOL		(0x14|0x20)
+#define EPMOH		(0x15|0x20)
+#define EWOLIE		(0x16|0x20)
+#define EWOLIR		(0x17|0x20)
+#define ERXFCON		(0x18|0x20)
+#define EPKTCNT		(0x19|0x20)
+// Bank 2 registers
+#define MACON1		(0x00|0x40|0x80)
+#define MACON2		(0x01|0x40|0x80)
+#define MACON3		(0x02|0x40|0x80)
+#define MACON4		(0x03|0x40|0x80)
+#define MABBIPG		(0x04|0x40|0x80)
+#define MAIPGL		(0x06|0x40|0x80)
+#define MAIPGH		(0x07|0x40|0x80)
+#define MACLCON1	(0x08|0x40|0x80)
+#define MACLCON2	(0x09|0x40|0x80)
+#define MAMXFLL		(0x0A|0x40|0x80)
+#define MAMXFLH		(0x0B|0x40|0x80)
+#define MAPHSUP		(0x0D|0x40|0x80)
+#define MICON		(0x11|0x40|0x80)
+#define MICMD		(0x12|0x40|0x80)
+#define MIREGADR	(0x14|0x40|0x80)
+#define MIWRL		(0x16|0x40|0x80)
+#define MIWRH		(0x17|0x40|0x80)
+#define MIRDL		(0x18|0x40|0x80)
+#define MIRDH		(0x19|0x40|0x80)
+// Bank 3 registers
+#define MAADR1		(0x00|0x60|0x80)
+#define MAADR0		(0x01|0x60|0x80)
+#define MAADR3		(0x02|0x60|0x80)
+#define MAADR2		(0x03|0x60|0x80)
+#define MAADR5		(0x04|0x60|0x80)
+#define MAADR4		(0x05|0x60|0x80)
+#define EBSTSD		(0x06|0x60)
+#define EBSTCON		(0x07|0x60)
+#define EBSTCSL		(0x08|0x60)
+#define EBSTCSH		(0x09|0x60)
+#define MISTAT		(0x0A|0x60|0x80)
+#define EREVID		(0x12|0x60)
+#define ECOCON		(0x15|0x60)
+#define EFLOCON		(0x17|0x60)
+#define EPAUSL		(0x18|0x60)
+#define EPAUSH		(0x19|0x60)
+// PHY registers
+#define PHCON1		0x00
+#define PHSTAT1		0x01
+#define PHHID1		0x02
+#define PHHID2		0x03
+#define PHCON2		0x10
+#define PHSTAT2		0x11
+#define PHIE		0x12
+#define PHIR		0x13
+#define PHLCON		0x14
 
-void                                    enc_init(void);
-void                                    enc_send_packet(unsigned int len, unsigned char *buf);
-unsigned int                            enc_receive_packet(unsigned int bufsize, unsigned char *buf);
-void                                    enc28j60SetMac(unsigned char *MacPtr);
-unsigned char                           enc28j60linkup(void);
+// ENC28J60 EIE Register Bit Definitions
+#define EIE_INTIE		0x80
+#define EIE_PKTIE		0x40
+#define EIE_DMAIE		0x20
+#define EIE_LINKIE		0x10
+#define EIE_TXIE		0x08
+#define EIE_WOLIE		0x04
+#define EIE_TXERIE		0x02
+#define EIE_RXERIE		0x01
+// ENC28J60 EIR Register Bit Definitions
+#define EIR_PKTIF		0x40
+#define EIR_DMAIF		0x20
+#define EIR_LINKIF		0x10
+#define EIR_TXIF		0x08
+#define EIR_WOLIF		0x04
+#define EIR_TXERIF		0x02
+#define EIR_RXERIF		0x01
+// ENC28J60 ESTAT Register Bit Definitions
+#define ESTAT_INT		0x80
+#define ESTAT_LATECOL	0x10
+#define ESTAT_RXBUSY	0x04
+#define ESTAT_TXABRT	0x02
+#define ESTAT_CLKRDY	0x01
+// ENC28J60 ECON2 Register Bit Definitions
+#define ECON2_AUTOINC	0x80
+#define ECON2_PKTDEC	0x40
+#define ECON2_PWRSV		0x20
+#define ECON2_VRPS		0x08
+// ENC28J60 ECON1 Register Bit Definitions
+#define ECON1_TXRST		0x80
+#define	ECON1_RXRST		0x40
+#define ECON1_DMAST		0x20
+#define ECON1_CSUMEN	0x10
+#define ECON1_TXRTS		0x08
+#define	ECON1_RXEN		0x04
+#define ECON1_BSEL1		0x02
+#define ECON1_BSEL0		0x01
+// ENC28J60 MACON1 Register Bit Definitions
+#define MACON1_LOOPBK	0x10
+#define MACON1_TXPAUS	0x08
+#define MACON1_RXPAUS	0x04
+#define MACON1_PASSALL	0x02
+#define MACON1_MARXEN	0x01
+// ENC28J60 MACON2 Register Bit Definitions
+#define MACON2_MARST	0x80
+#define MACON2_RNDRST	0x40
+#define MACON2_MARXRST	0x08
+#define MACON2_RFUNRST	0x04
+#define MACON2_MATXRST	0x02
+#define MACON2_TFUNRST	0x01
+// ENC28J60 MACON3 Register Bit Definitions
+#define MACON3_PADCFG2	0x80
+#define MACON3_PADCFG1	0x40
+#define MACON3_PADCFG0	0x20
+#define MACON3_TXCRCEN	0x10
+#define MACON3_PHDRLEN	0x08
+#define MACON3_HFRMLEN	0x04
+#define MACON3_FRMLNEN	0x02
+#define MACON3_FULDPX	0x01
+// ENC28J60 MICMD Register Bit Definitions
+#define MICMD_MIISCAN	0x02
+#define MICMD_MIIRD		0x01
+// ENC28J60 MISTAT Register Bit Definitions
+#define MISTAT_NVALID	0x04
+#define MISTAT_SCAN		0x02
+#define MISTAT_BUSY		0x01
+// ENC28J60 PHY PHCON1 Register Bit Definitions
+#define	PHCON1_PRST		0x8000
+#define	PHCON1_PLOOPBK	0x4000
+#define	PHCON1_PPWRSV	0x0800
+#define	PHCON1_PDPXMD	0x0100
+// ENC28J60 PHY PHSTAT1 Register Bit Definitions
+#define	PHSTAT1_PFDPX	0x1000
+#define	PHSTAT1_PHDPX	0x0800
+#define	PHSTAT1_LLSTAT	0x0004
+#define	PHSTAT1_JBSTAT	0x0002
+// ENC28J60 PHY PHCON2 Register Bit Definitions
+#define PHCON2_FRCLINK	0x4000
+#define PHCON2_TXDIS	0x2000
+#define PHCON2_JABBER	0x0400
+#define PHCON2_HDLDIS	0x0100
+// ENC28J60 ERXCON bits
+#define ENC_BIT_UCEN    0x80
+#define ENC_BIT_ANDOR   0x40
+#define ENC_BIT_CRCEN   0x20
+#define ENC_BIT_PMEN    0x10
+#define ENC_BIT_MPEN    0x08
+#define ENC_BIT_HTEN    0x04
+#define ENC_BIT_MCEN    0x02
+#define ENC_BIT_BCEN    0x01
 
-   /*************************************************************
-	  enc buffer configuration
-	*************************************************************/
 
-   // rx buffer 0x1A00 = 6656 bytes
-#define ENC_RX_BUFFER_START  0x0000
-#define ENC_RX_BUFFER_END    0x19FF
-   // tx buffer 0x0600 = 1536 bytes
-#define ENC_TX_BUFFER_START  0x1A00
-#define ENC_TX_BUFFER_END    0x1FFF
+// ENC28J60 Packet Control Byte Bit Definitions
+#define PKTCTRL_PHUGEEN		0x08
+#define PKTCTRL_PPADEN		0x04
+#define PKTCTRL_PCRCEN		0x02
+#define PKTCTRL_POVERRIDE	0x01
 
-   /*************************************************************
-	  ENC registers and bit definitions
-	*************************************************************/
+// SPI operation codes
+#define ENC28J60_READ_CTRL_REG	0x00
+#define ENC28J60_READ_BUF_MEM	0x3A
+#define ENC28J60_WRITE_CTRL_REG	0x40
+#define ENC28J60_WRITE_BUF_MEM	0x7A
+#define ENC28J60_BIT_FIELD_SET	0x80
+#define ENC28J60_BIT_FIELD_CLR	0xA0
+#define ENC28J60_SOFT_RESET		0xFF
 
-   // Bit 7 is used to flag if there is one dummy read needed
-   // before the register value can be read (see the Read Control
-   // Register command in the enc spec).
-   // Bit 6...5 are used to code in the bank value where this
-   // register is located. The register read and register
-   // functions do automatic bank switching based in these bits.
 
-#define ENC_REG_WAIT_MASK  0x80
-#define ENC_REG_BANK_MASK  0x60
-#define ENC_REG_BANK_SHIFT 5
-#define ENC_REG_ADDR_MASK  0x1F
+// buffer boundaries applied to internal 8K ram
+//	entire available packet buffer space is allocated
+//#define TXSTART_INIT   	0x0000	// start TX buffer at 0
+//#define RXSTART_INIT   	0x0600	// give TX buffer space for one full ethernet frame (~1500 bytes)
+//#define RXSTOP_INIT    	0x1FFF	// receive buffer gets the rest
 
-   /* enc registers bank 0 */
-#define ENC_REG_ERDPTL   (0x00 | 0x00)
-#define ENC_REG_ERDPTH   (0x00 | 0x01)
-#define ENC_REG_EWRPTL   (0x00 | 0x02)
-#define ENC_REG_EWRPTH   (0x00 | 0x03)
-#define ENC_REG_ETXSTL   (0x00 | 0x04)
-#define ENC_REG_ETXSTH   (0x00 | 0x05)
-#define ENC_REG_ETXNDL   (0x00 | 0x06)
-#define ENC_REG_ETXNDH   (0x00 | 0x07)
-#define ENC_REG_ERXSTL   (0x00 | 0x08)
-#define ENC_REG_ERXSTH   (0x00 | 0x09)
-#define ENC_REG_ERXNDL   (0x00 | 0x0A)
-#define ENC_REG_ERXNDH   (0x00 | 0x0B)
-#define ENC_REG_ERXRDPTL (0x00 | 0x0C)
-#define ENC_REG_ERXRDPTH (0x00 | 0x0D)
-#define ENC_REG_ERXWRPTL (0x00 | 0x0E)
-#define ENC_REG_ERXWRPTH (0x00 | 0x0F)
-#define ENC_REG_EDMASTL  (0x00 | 0x10)
-#define ENC_REG_EDMASTH  (0x00 | 0x11)
-#define ENC_REG_EDMANDL  (0x00 | 0x12)
-#define ENC_REG_EDMANDH  (0x00 | 0x13)
-#define ENC_REG_EDMADSTL (0x00 | 0x14)
-#define ENC_REG_EDMADSTH (0x00 | 0x15)
-#define ENC_REG_EDMACSL  (0x00 | 0x16)
-#define ENC_REG_EDMACSH  (0x00 | 0x17)
+#define TXSTART_INIT   	0x1A00	// start TX buffer at 0
+#define RXSTART_INIT   	0x0000	// give TX buffer space for one full ethernet frame (~1500 bytes)
+#define RXSTOP_INIT    	0x19FF	// receive buffer gets the rest
 
-   /* enc registers bank 1 */
-#define ENC_REG_EHT0     (0x20 | 0x00)
-#define ENC_REG_EHT1     (0x20 | 0x01)
-#define ENC_REG_EHT2     (0x20 | 0x02)
-#define ENC_REG_EHT3     (0x20 | 0x03)
-#define ENC_REG_EHT4     (0x20 | 0x04)
-#define ENC_REG_EHT5     (0x20 | 0x05)
-#define ENC_REG_EHT6     (0x20 | 0x06)
-#define ENC_REG_EHT7     (0x20 | 0x07)
-#define ENC_REG_EPMM0    (0x20 | 0x08)
-#define ENC_REG_EPMM1    (0x20 | 0x09)
-#define ENC_REG_EPMM2    (0x20 | 0x0A)
-#define ENC_REG_EPMM3    (0x20 | 0x0B)
-#define ENC_REG_EPMM4    (0x20 | 0x0C)
-#define ENC_REG_EPMM5    (0x20 | 0x0D)
-#define ENC_REG_EPMM6    (0x20 | 0x0E)
-#define ENC_REG_EPMM7    (0x20 | 0x0F)
-#define ENC_REG_EPMCSL   (0x20 | 0x10)
-#define ENC_REG_EPMCSH   (0x20 | 0x11)
-#define ENC_REG_EPMOL    (0x20 | 0x14)
-#define ENC_REG_EPMOH    (0x20 | 0x15)
-#define ENC_REG_EWOLIE   (0x20 | 0x16)
-#define ENC_BIT_UCWOLIE 7
-#define ENC_BIT_AWOLIE  6
-#define ENC_BIT_PMWOLIE 4
-#define ENC_BIT_MPWOLIE 3
-#define ENC_BIT_HTWOLIE 2
-#define ENC_BIT_MCWOLIE 1
-#define ENC_BIT_BCWOLIE 0
-#define ENC_REG_EWOLIR   (0x20 | 0x17)
-#define ENC_BIT_UCWOLIF 7
-#define ENC_BIT_AWOLIF  6
-#define ENC_BIT_PMWOLIF 4
-#define ENC_BIT_MPWOLIF 3
-#define ENC_BIT_HTWOLIF 2
-#define ENC_BIT_MCWOLIF 1
-#define ENC_BIT_BCWOLIF 0
-#define ENC_REG_ERXFCON  (0x20 | 0x18)
-#define ENC_BIT_UCEN    7
-#define ENC_BIT_ANDOR   6
-#define ENC_BIT_CRCEN   5
-#define ENC_BIT_PMEN    4
-#define ENC_BIT_MPEN    3
-#define ENC_BIT_HTEN    2
-#define ENC_BIT_MCEN    1
-#define ENC_BIT_BCEN    0
-#define ENC_REG_EPKTCNT  (0x20 | 0x19)
+//#define TXSTART_INIT   	0x40
+//#define RXSTART_INIT   	0x46
+//#define RXSTOP_INIT    	0x60
 
-   /* enc registers bank 2 */
-#define ENC_REG_MACON1   (0x80 | 0x40 | 0x00)
-#define ENC_BIT_LOOPBK  4
-#define ENC_BIT_TXPAUS  3
-#define ENC_BIT_RXPAUS  2
-#define ENC_BIT_PASSALL 1
-#define ENC_BIT_MARXEN  0
-#define ENC_REG_MACON2   (0x80 | 0x40 | 0x01)
-#define ENC_BIT_MARST   7
-#define ENC_BIT_RNDRST  6
-#define ENC_BIT_MARXRST 3
-#define ENC_BIT_RFUNRST 2
-#define ENC_BIT_MATXRST 1
-#define ENC_BIT_TFUNRST 0
-#define ENC_REG_MACON3   (0x80 | 0x40 | 0x02)
-#define ENC_BIT_PADCFG2 7
-#define ENC_BIT_PADCFG1 6
-#define ENC_BIT_PADCFG0 5
-#define ENC_BIT_TXCRCEN 4
-#define ENC_BIT_PHDRLEN 3
-#define ENC_BIT_HFRMEN  2
-#define ENC_BIT_FRMLNEN 1
-#define ENC_BIT_FULDPX  0
-#define ENC_REG_MACON4   (0x80 | 0x40 | 0x03)
-#define ENC_BIT_DEFER   6
-#define ENC_BIT_BPEN    5
-#define ENC_BIT_NOBKOFF 4
-#define ENC_BIT_LONGPRE 1
-#define ENC_BIT_PUREPRE 0
-#define ENC_REG_MABBIPG  (0x80 | 0x40 | 0x04)
-#define ENC_REG_MAIPGL   (0x80 | 0x40 | 0x06)
-#define ENC_REG_MAIPGH   (0x80 | 0x40 | 0x07)
-#define ENC_REG_MACLCON1 (0x80 | 0x40 | 0x08)
-#define ENC_REG_MACLCON2 (0x80 | 0x40 | 0x09)
-#define ENC_REG_MAMXFLL  (0x80 | 0x40 | 0x0A)
-#define ENC_REG_MAMXFLH  (0x80 | 0x40 | 0x0B)
-#define ENC_REG_MAPHSUP  (0x80 | 0x40 | 0x0D)
-#define ENC_BIT_RSTINTFC 7
-#define ENC_BIT_RSTRMII  3
-#define ENC_REG_MICON    (0x80 | 0x40 | 0x11)
-#define ENC_BIT_RSTMII  7
-#define ENC_REG_MICMD    (0x80 | 0x40 | 0x12)
-#define ENC_BIT_MIISCAN 1
-#define ENC_BIT_MIIRD   0
-#define ENC_REG_MIREGADR (0x80 | 0x40 | 0x14)
-#define ENC_REG_MIWRL    (0x80 | 0x40 | 0x16)
-#define ENC_REG_MIWRH    (0x80 | 0x40 | 0x17)
-#define ENC_REG_MIRDL    (0x80 | 0x40 | 0x18)
-#define ENC_REG_MIRDH    (0x80 | 0x40 | 0x19)
+#define	MAX_FRAMELEN	300	// maximum ethernet frame length
 
-   /* enc registers bank 3 */
-#define ENC_REG_MAADR1   (0x80 | 0x60 | 0x00)
-#define ENC_REG_MAADR0   (0x80 | 0x60 | 0x01)
-#define ENC_REG_MAADR3   (0x80 | 0x60 | 0x02)
-#define ENC_REG_MAADR2   (0x80 | 0x60 | 0x03)
-#define ENC_REG_MAADR5   (0x80 | 0x60 | 0x04)
-#define ENC_REG_MAADR4   (0x80 | 0x60 | 0x05)
-#define ENC_REG_EBSTSD   (0x60 | 0x06)
-#define ENC_REG_EBSTCON  (0x60 | 0x07)
-#define ENC_BIT_PSV2    7
-#define ENC_BIT_PSV1    6
-#define ENC_BIT_PSV0    5
-#define ENC_BIT_PSEL    4
-#define ENC_BIT_TMSEL1  3
-#define ENC_BIT_TMSEL0  2
-#define ENC_BIT_TME     1
-#define ENC_BIT_BISTST  0
-#define ENC_REG_EBSTCSL  (0x60 | 0x08)
-#define ENC_REG_EBSTCSH  (0x60 | 0x09)
-#define ENC_REG_MISTAT   (0x80 | 0x60 | 0x0A)
-#define ENC_BIT_NVALID  2
-#define ENC_BIT_SCAN    1
-#define ENC_BIT_BUSY    0
-#define ENC_REG_EREVID   (0x60 | 0x12)
-#define ENC_REG_ECOCON   (0x60 | 0x15)
-#define ENC_BIT_COCON2  2
-#define ENC_BIT_COCON1  1
-#define ENC_BIT_COCON0  0
-#define ENC_REG_EFLOCON  (0x60 | 0x17)
-#define ENC_BIT_FULDPXS 2
-#define ENC_BIT_FCEN1   1
-#define ENC_BIT_FCEN0   0
-#define ENC_REG_EPAUSL   (0x60 | 0x18)
-#define ENC_REG_EPAUSH   (0x60 | 0x19)
+// Ethernet constants
+#define ETHERNET_MIN_PACKET_LENGTH	0x3C
+#define ETHERNET_HEADER_LENGTH		0x0E
 
-   /* enc registers common in all banks */
-#define ENC_REG_EIE      (0x00 | 0x1B)
-#define ENC_BIT_INTIE   7
-#define ENC_BIT_PKTIE   6
-#define ENC_BIT_DMAIE   5
-#define ENC_BIT_LINKIE  4
-#define ENC_BIT_TXIE    3
-#define ENC_BIT_WOLIE   2
-#define ENC_BIT_TXERIE  1
-#define ENC_BIT_RXERIE  0
-#define ENC_REG_EIR      (0x00 | 0x1C)
-#define ENC_BIT_PKTIF   6
-#define ENC_BIT_DMAIF   5
-#define ENC_BIT_LINKIF  4
-#define ENC_BIT_TXIF    3
-#define ENC_BIT_WOLIF   2
-#define ENC_BIT_TXERIF  1
-#define ENC_BIT_RXERIF  0
-#define ENC_REG_ESTAT    (0x00 | 0x1D)
-#define ENC_BIT_INT     7
-#define ENC_BIT_LATECOL 4
-#define ENC_BIT_RXBUSY  2
-#define ENC_BIT_TXABRT  1
-#define ENC_BIT_CLKRDY  0
-#define ENC_REG_ECON2    (0x00 | 0x1E)
-#define ENC_BIT_AUTOINC 7
-#define ENC_BIT_PKTDEC  6
-#define ENC_BIT_PWRSV   5
-#define ENC_BIT_VRPS    3
-#define ENC_REG_ECON1    (0x00 | 0x1F)
-#define ENC_BIT_TXRST   7
-#define ENC_BIT_RXRST   6
-#define ENC_BIT_DMAST   5
-#define ENC_BIT_CSUMEN  4
-#define ENC_BIT_TXRTS   3
-#define ENC_BIT_RXEN    2
-#define ENC_BIT_BSEL1   1
-#define ENC_BIT_BSEL0   0
+/*
+// MAC address for this interface
+#ifdef ETHADDR0
+#define ENC28J60_MAC0 ETHADDR0
+#define ENC28J60_MAC1 ETHADDR1
+#define ENC28J60_MAC2 ETHADDR2
+#define ENC28J60_MAC3 ETHADDR3
+#define ENC28J60_MAC4 ETHADDR4
+#define ENC28J60_MAC5 ETHADDR5
+#else
+#define ENC28J60_MAC0 '0'
+#define ENC28J60_MAC1 'F'
+#define ENC28J60_MAC2 'F'
+#define ENC28J60_MAC3 'I'
+#define ENC28J60_MAC4 'C'
+#define ENC28J60_MAC5 'E'
+#endif
+*/
 
-   /* phy registers */
-#define ENC_REG_PHCON1   0x00
-#define ENC_BIT_PRST    15
-#define ENC_BIT_PLOOPBK 14
-#define ENC_BIT_PPWRSV  11
-#define ENC_BIT_PDPXMD  8
-#define ENC_REG_PHSTAT1  0x01
-#define ENC_BIT_PFDPX   12
-#define ENC_BIT_PHDPX   11
-#define ENC_BIT_LLSTAT  2
-#define ENC_BIT_JBSTAT  1
-#define ENC_REG_PHID1    0x02
-#define ENC_REG_PHID2    0x03
-#define ENC_REG_PHCON2   0x10
-#define ENC_BIT_FRCLNK  14
-#define ENC_BIT_TXDIS   13
-#define ENC_BIT_JABBER  10
-#define ENC_BIT_HDLDIS  8
-#define ENC_REG_PHSTAT2  0x11
-#define ENC_BIT_TXSTAT  13
-#define ENC_BIT_RXSTAT  12
-#define ENC_BIT_COLSTAT 11
-#define ENC_BIT_LSTAT   10
-#define ENC_BIT_DPXSTAT 9
-#define ENC_BIT_PLRITY  4
-#define ENC_REG_PHIE     0x12
-#define ENC_BIT_PLNKIE  4
-#define ENC_BIT_PGEIE   1
-#define ENC_REG_PHIR     0x13
-#define ENC_BIT_PLNKIF  4
-#define ENC_BIT_PGIF    2
-#define ENC_REG_PHLCON   0x14
-#define ENC_BIT_LACFG0  8
-#define ENC_BIT_LBCFG0  4
-#define ENC_BIT_LFRQ0   2
-#define ENC_BIT_STRCH   1
+//! do a ENC28J60 read operation
+u8 enc28j60ReadOp(u8 op, u8 address);
+//! do a ENC28J60 write operation
+void enc28j60WriteOp(u8 op, u8 address, u8 data);
+//! read the packet buffer memory
+void enc28j60ReadBuffer(u16 len, u8* data);
+//! write the packet buffer memory
+void enc28j60WriteBuffer(u16 len, u8* data);
+//! set the register bank for register at address
+void enc28j60SetBank(u8 address);
+//! read ax88796 register
+u8 enc28j60Read(u8 address);
+//! write ax88796 register
+void enc28j60Write(u8 address, u8 data);
+//! read a PHY register
+u16 enc28j60PhyRead(u8 address);
+//! write a PHY register
+void enc28j60PhyWrite(u8 address, u16 data);
 
-   /*************************************************************
-	  SPI commands known by the ENC
-	*************************************************************/
+//! initialize the ethernet interface for transmit/receive
+void enc28j60Init(void);
 
-#define ENC_SPI_OP_RCR    0x00
-#define ENC_SPI_OP_RBM    0x3A
-#define ENC_SPI_OP_WCR    0x40
-#define ENC_SPI_OP_WBM    0x7A
-#define ENC_SPI_OP_BFS    0x80
-#define ENC_SPI_OP_BFC    0xA0
-#define ENC_SPI_OP_SC     0xFF
+//dummy ?
+void enc28j60BeginPacketSend(unsigned int packetLength);
+void enc28j60EndPacketSend(void);
+//
 
-#endif   // #ifndef _ENC28j60_H_
+//! Packet transmit function.
+/// Sends a packet on the network.  It is assumed that the packet is headed by a valid ethernet header.
+/// \param len		Length of packet in bytes.
+/// \param packet	Pointer to packet data.
+void enc28j60PacketSend(unsigned char* packet, unsigned int len);
+void enc28j60PacketSend2(unsigned int len1, unsigned char* packet1, unsigned int len2, unsigned char* packet2);
+
+//! Packet receive function.
+/// Gets a packet from the network receive buffer, if one is available.
+/// The packet will by headed by an ethernet header.
+/// \param	maxlen	The maximum acceptable length of a retrieved packet.
+/// \param	packet	Pointer where packet data should be stored.
+/// \return Packet length in bytes if a packet was retrieved, zero otherwise.
+unsigned int enc28j60BeginPacketReceive(void);
+void enc28j60EndPacketReceive(void);
+void enc28j60PacketReceive(unsigned char* packet, unsigned int maxlen);
+
+//! execute procedure for recovering from a receive overflow
+/// this should be done when the receive memory fills up with packets
+void enc28j60ReceiveOverflowRecover(void);
+
+//! formatted print of important ENC28J60 registers
+void enc28j60RegDump(void);
+
+void nicSetMacAddress(u8* macaddr);
+
+#endif

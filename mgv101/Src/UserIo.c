@@ -16,7 +16,6 @@
 #include <inttypes.h>
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
-#include "stack.h"
 #include "UserIo.h"
 
 /*
@@ -198,7 +197,7 @@ void UserIoMain(void)
       UserIoTcpIpCnt++;
       if (UserIoTcpIpCnt >= USER_IO_TCP_IP_TIME)
       {
-         eth.timer = 1;
+//         eth.timer = 1;
       }
 
       UserIoTcpIpLinkCnt++;

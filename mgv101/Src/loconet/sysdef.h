@@ -57,6 +57,10 @@ DESCRIPTION
 #define LN_TIMER_TX_RELOAD_ADJUST  20
 
 #define BV(bit) _BV(bit)
+#ifndef cbi
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif
 #endif

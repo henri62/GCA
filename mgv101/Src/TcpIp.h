@@ -1,15 +1,16 @@
 
 /**
  *******************************************************************************************
- * @file       Serial.h
- * @ingroup    Serial
- * @defgroup   Serial Serial : Simple serial transmit routine.
+ * @file       TcpIp.h
+ * @ingroup    TcpIp
+ * @defgroup   TpcIp TpcIp : Handle the uIP stack items.
+ * @brief      Routines to manage uIP.
  * @author     Robert Evers
  *******************************************************************************************
  */
 
-#ifndef SERIAL_H
-#define SERIAL_H
+#ifndef TCP_IP_H
+#define TCP_IP_H
 
 /*
  *******************************************************************************************
@@ -24,8 +25,6 @@
  * Macro definitions
  *******************************************************************************************
  */
-
-//#define SERIAL_ENABLED    1
 
 /* 
  *******************************************************************************************
@@ -45,7 +44,7 @@
   *******************************************************************************************
   */
 
-extern void                             SerialInit(void);
-extern void                             SerialTransmit(char *Data);
+extern void                             TcpIpInit(void);
+extern void                             TcpIpMain(void);
 
 #endif   /* SERIAL_H */

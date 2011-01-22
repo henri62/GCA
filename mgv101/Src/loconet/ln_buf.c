@@ -62,6 +62,7 @@
 #endif
 
 #include "ln_buf.h"
+#include "UserIo.h"
 
 #define		LN_BUF_OPC_WRAP_AROUND	(byte)0x00		// Special character to indcate a buffer wrap
 #define		LN_CHECKSUM_SEED		 		(byte)0xFF
@@ -209,8 +210,10 @@ lnMsg *recvLnMsg( LnBuf *Buffer )
 				Buffer->Stats.RxPackets++ ;
 			}
 			else
+			{
 				Buffer->Stats.RxErrors++ ;
-
+				UserIoSetLed(userIoLed6,userIoLedSetToggle);
+			}
 				// Whatever the case advance the ReadPacketIndex to the beginning of the
 				// next packet to be received
 			Buffer->ReadPacketIndex = Buffer->ReadIndex ;

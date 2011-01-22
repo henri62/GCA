@@ -34,10 +34,11 @@ $(APPLICATION).hex : $(APPLICATION).out
 	@echo "Expl.: data=initialized data, bss=uninitialized data, text=code"
 	@echo " "
 
-$(APPLICATION).out : Main.o EthLocBuffer.o enc28j60.o stack.o UserIo.o ln_buf.o ln_sw_uart.o ln_interface.o Serial.o
+$(APPLICATION).out : Main.o EthLocBuffer.o enc28j60.o uip.o uip_arch.o uip_arp.o nic.o delay.o UserIo.o ln_buf.o ln_sw_uart.o\
+    ln_interface.o TcpIp.o 
 	$(CC) $(CFLAGS) -mno-interrupts -o $(OUTPUTDIR)/$(APPLICATION).out -Wl,-Map,$(OUTPUTDIR)/$(APPLICATION).map \
-	$(OUTPUTDIR)/Main.o $(OUTPUTDIR)/EthLocBuffer.o $(OUTPUTDIR)/enc28j60.o $(OUTPUTDIR)/stack.o \
-	$(OUTPUTDIR)/UserIo.o $(OUTPUTDIR)/ln_buf.o $(OUTPUTDIR)/ln_sw_uart.o $(OUTPUTDIR)/ln_interface.o $(OUTPUTDIR)/Serial.o
+	$(OUTPUTDIR)/Main.o $(OUTPUTDIR)/EthLocBuffer.o $(OUTPUTDIR)/enc28j60.o $(OUTPUTDIR)/uip.o $(OUTPUTDIR)/uip_arch.o $(OUTPUTDIR)/uip_arp.o $(OUTPUTDIR)/delay.o \
+	$(OUTPUTDIR)/nic.o $(OUTPUTDIR)/UserIo.o $(OUTPUTDIR)/ln_buf.o $(OUTPUTDIR)/ln_sw_uart.o $(OUTPUTDIR)/ln_interface.o $(OUTPUTDIR)/TcpIp.o
 	 
 #-------------------
 Main.o : $(APPSRC)/Main.c
@@ -46,17 +47,29 @@ Main.o : $(APPSRC)/Main.c
 EthLocBuffer.o : $(APPSRC)/EthLocBuffer.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/EthLocBuffer.o $(APPSRC)/EthLocBuffer.c 
 #-------------------
+TcpIp.o : $(APPSRC)/TcpIp.c 
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/TcpIp.o $(APPSRC)/TcpIp.c 
+#-------------------
 enc28j60.o : $(NETWSRC)/enc28j60.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/enc28j60.o $(NETWSRC)/enc28j60.c 
 #-------------------
-stack.o : $(NETWSRC)/stack.c 
-	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/stack.o $(NETWSRC)/stack.c 
+uip.o : $(NETWSRC)/uip.c
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/uip.o $(NETWSRC)/uip.c 
+#-------------------
+uip_arch.o : $(NETWSRC)/uip_arch.c
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/uip_arch.o $(NETWSRC)/uip_arch.c 
+#-------------------
+uip_arp.o : $(NETWSRC)/uip_arp.c
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/uip_arp.o $(NETWSRC)/uip_arp.c 
+#-------------------
+nic.o : $(NETWSRC)/nic.c
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/nic.o $(NETWSRC)/nic.c 
+#-------------------
+delay.o : $(NETWSRC)/delay.c
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/delay.o $(NETWSRC)/delay.c 
 #-------------------
 UserIo.o : $(APPSRC)/UserIo.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/UserIo.o $(APPSRC)/UserIo.c 
-#-------------------
-Serial.o : $(APPSRC)/Serial.c 
-	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/Serial.o $(APPSRC)/Serial.c 
 #-------------------
 ln_sw_uart.o : $(LOCONETSRC)/ln_sw_uart.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/ln_sw_uart.o $(LOCONETSRC)/ln_sw_uart.c 

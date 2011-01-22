@@ -1,3 +1,19 @@
+Version 1.82
+ * TPCIP stack changed to uIP.   
+
+Version 1.81
+ * Retransmission parameter for ENC28J60 set to 10. 
+ * If a Loconet message from TCPIP to Loconet bus was not transmitted successfully no ACK is
+   transmitted. As a consequence RocRail will retransmit (restored change of 1.75).
+ * Enabled the MAC filtering option of the ENC. Only broadcast messages and messages with the MGV101
+   MAC address are accepted by the ENC28J60. This should reduce the overhead for the Atmel when non MGV101 data is received.  
+
+Version 1.80
+ * Loconet Bittime define restored... 
+
+Version 1.79
+ * ALL sources exclusing the Loconet files are put back to version 1.73.  
+
 Version 1.78
  * Updated used Loconet to status found on http://embeddedloconet.cvs.sourceforge.net/viewvc/embeddedloconet/ date 21-12-2010.
  * Moved LN_TIMER_TX_RELOAD_ADJUST to sysdef.h and reduced value. 

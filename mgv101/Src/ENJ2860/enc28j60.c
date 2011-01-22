@@ -1,501 +1,481 @@
+/*! \file enc28j60.c \brief Microchip ENC28J60 Ethernet Interface Driver. */
+//*****************************************************************************
+//
+// File Name	: 'enc28j60.c'
+// Title		: Microchip ENC28J60 Ethernet Interface Driver
+// Author		: Pascal Stang (c)2005
+// Created		: 9/22/2005
+// Revised		: 9/22/2005
+// Version		: 0.1
+// Target MCU	: Atmel AVR series
+// Editor Tabs	: 4
+//
+// Description	: This driver provides initialization and transmit/receive
+//	functions for the Microchip ENC28J60 10Mb Ethernet Controller and PHY.
+// This chip is novel in that it is a full MAC+PHY interface all in a 28-pin
+// chip, using an SPI interface to the host processor.
+//
+//*****************************************************************************
 
-/*
-,-----------------------------------------------------------------------------------------.
-|
-| Ethernet device driver for the enc28j60
-|
-| Author: Harald Freudenberger haraldfreude@arcor.de
-| Date:   2009/03/16
-|
-| The base of this code was an enc28j60 device driver by Simon Schulz (avr@auctionant.de)
-| and modifications done by eProfi (2007/08/19).
-|
-|-----------------------------------------------------------------------------------------
-|
-| License:
-| This program is free software; you can redistribute it and/or modify it under
-| the terms of the GNU General Public License as published by the Free Software
-| Foundation; either version 2 of the License, or (at your option) any later
-| version.
-| This program is distributed in the hope that it will be useful, but
-|
-| WITHOUT ANY WARRANTY;
-|
-| without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-| PURPOSE. See the GNU General Public License for more details.
-|
-| You should have received a copy of the GNU General Public License along with
-| this program; if not, write to the Free Software Foundation, Inc., 51
-| Franklin St, Fifth Floor, Boston, MA 02110, USA
-|
-| http://www.gnu.de/gpl-ger.html
-|
-`-----------------------------------------------------------------------------------------*/
-
+/************************************************************
+*
+*	This is the general driver for the ENC28J60
+*	I changed some things to make it work with uIP
+*	Some files of uIP have changes too.
+*
+*								edi87 [at] fibertel.com.ar
+*								Jonathan Granade
+*
+************************************************************/
 #include <util/delay.h>
+#include "compiler.h"
 #include "enc28j60.h"
+#include "uip.h"
 
-//-----------------------------------------------------------------------------
+u8 Enc28j60Bank;
+u16 NextPacketPtr;
 
-unsigned char                           mymac[6];
-
-//-----------------------------------------------------------------------------
-
-static volatile unsigned char           enc_cur_bank = 0;
-static volatile unsigned int            enc_next_packet_ptr = 0;
-
-static unsigned char                    enc_configdata[] PROGMEM = {
-
-   // enc registers
-
-   // tx buffer
-   ENC_REG_ETXSTL, LO8(ENC_TX_BUFFER_START),
-   ENC_REG_ETXSTH, HI8(ENC_TX_BUFFER_START),
-   ENC_REG_ETXNDL, LO8(ENC_TX_BUFFER_END),
-   ENC_REG_ETXNDH, HI8(ENC_TX_BUFFER_END),
-
-   // rx buffer
-   ENC_REG_ERXSTL, LO8(ENC_RX_BUFFER_START),
-   ENC_REG_ERXSTH, HI8(ENC_RX_BUFFER_START),
-   ENC_REG_ERXNDL, LO8(ENC_RX_BUFFER_END),
-   ENC_REG_ERXNDH, HI8(ENC_RX_BUFFER_END),
-
-   // push mac out of reset
-   ENC_REG_MACON2, 0x00,
-
-   // No filtering..
-   ENC_REG_ERXFCON, 0,
-
-   // mac receive enable, rx and tx pause control frames enable
-   ENC_REG_MACON1, (1 << ENC_BIT_MARXEN) | (1 << ENC_BIT_RXPAUS) | (1 << ENC_BIT_TXPAUS),
-
-#ifdef FULL_DUPLEX
-   // mac auto padding of small packets, add crc, frame length check, full duplex
-   ENC_REG_MACON3, (1 << ENC_BIT_TXCRCEN) | (1 << ENC_BIT_FRMLNEN),
-#else
-   // mac auto padding of small packets, add crc, frame length check, half duplex
-   ENC_REG_MACON3, (1 << ENC_BIT_PADCFG0) | (1 << ENC_BIT_PADCFG1) | (1 << ENC_BIT_TXCRCEN) | (1 << ENC_BIT_FRMLNEN),
-#endif
-
-   // max framelength 1518
-   ENC_REG_MAMXFLL, LO8(1518),
-   ENC_REG_MAMXFLH, HI8(1518),
-
-#ifdef FULL_DUPLEX
-   // back-to-back inter packet gap delay time (0x15 for full duplex)
-   ENC_REG_MABBIPG, 0x15,
-#else
-   // back-to-back inter packet gap delay time (0x12 for half duplex)
-   ENC_REG_MABBIPG, 0x12,
-#endif
-
-   // non back-to-back inter packet gap delay time (should be 0x12)
-   ENC_REG_MAIPGL, 0x12,
-
-#ifndef FULL_DUPLEX
-   // non back-to-back inter packet gap delay time high (should be 0x0C for half duplex)
-   ENC_REG_MAIPGH, 0x0C,
-#endif
-
-   // disable CLKOUT pin
-   ENC_REG_ECOCON, 0x00,
-
-   // end of enc registers marker
-   0xFF, 0xFF,
-
-   // now the phy registers (with 2 bytes data each)
-
-#ifdef FULL_DUPLEX
-   // set the PDPXMD full duplex mode bit on the phy
-#define ENC_REG_PHCON1_VALUE (0x0000 | (1 << ENC_BIT_PDPXMD))
-   ENC_REG_PHCON1, HI8(ENC_REG_PHCON1_VALUE), LO8(ENC_REG_PHCON1_VALUE),
-#endif
-
-#ifndef FULL_DUPLEX
-   // in half duplex do not loop back transmitted data
-#define ENC_REG_PHCON2_VALUE (0x0000 | (1 << ENC_BIT_HDLDIS))
-   ENC_REG_PHCON2, HI8(ENC_REG_PHCON2_VALUE), LO8(ENC_REG_PHCON2_VALUE),
-#endif
-
-   // leds: leda (yellow) rx and tx activity, stretch to 40ms
-   // ledb (green) link status
-#define ENC_REG_PHCON_VALUE (0x0000 | (1 << ENC_BIT_STRCH) \
-			     | (7 << ENC_BIT_LACFG0)               \
-			     | (4 << ENC_BIT_LBCFG0))
-   ENC_REG_PHLCON, HI8(ENC_REG_PHCON_VALUE), LO8(ENC_REG_PHCON_VALUE),
-
-   // end of config data marker
-   0xFF, 0xFF
-};
-
-//-----------------------------------------------------------------------------
-
-static inline void spi_init(void)
+void nicSetMacAddress(u8* macaddr)
 {
-   // configure pins MOSI, SCK as output
-   SPI_DDR |= (1 << SPI_MOSI) | (1 << SPI_SCK);
-   // pull SCK high
-   SPI_PORT |= (1 << SPI_SCK);
-
-   // configure pin MISO as input
-   SPI_DDR &= ~(1 << SPI_MISO);
-
-   // SPI: enable, master, positive clock phase, msb first, SPI speed fosc/2
-   SPCR = (1 << SPE) | (1 << MSTR);
-   SPSR = (1 << SPI2X);
-
-   _delay_ms(10);
+   // write MAC address
+   // NOTE: MAC address in ENC28J60 is byte-backward
+   enc28j60Write(MAADR5, *macaddr++);
+   enc28j60Write(MAADR4, *macaddr++);
+   enc28j60Write(MAADR3, *macaddr++);
+   enc28j60Write(MAADR2, *macaddr++);
+   enc28j60Write(MAADR1, *macaddr++);
+   enc28j60Write(MAADR0, *macaddr++);
 }
 
-static inline void spi_put(unsigned char value)
+u8 enc28j60ReadOp(u8 op, u8 address)
 {
-   SPDR = value;
-   while (!(SPSR & (1 << SPIF)));
+	u8 data;
+   
+	// assert CS
+	ENC28J60_CONTROL_PORT &= ~(1<<ENC28J60_CONTROL_CS);
+	
+	// issue read command
+	SPDR = op | (address & ADDR_MASK);
+	while(!(SPSR & (1<<SPIF)));
+	// read data
+	SPDR = 0x00;
+	while(!(SPSR & (1<<SPIF)));
+	// do dummy read if needed
+	if(address & 0x80)
+	{
+		SPDR = 0x00;
+		while(!(SPSR & (1<<SPIF)));
+	}
+	data = SPDR;
+	
+	// release CS
+	ENC28J60_CONTROL_PORT |= (1<<ENC28J60_CONTROL_CS);
+
+	return data;
 }
 
-static inline unsigned char spi_get(void)
+void enc28j60WriteOp(u8 op, u8 address, u8 data)
 {
-   unsigned char                           value = SPDR;
+	// assert CS
+	ENC28J60_CONTROL_PORT &= ~(1<<ENC28J60_CONTROL_CS);
 
-   return value;
+	// issue write command
+	SPDR = op | (address & ADDR_MASK);
+	while(!(SPSR & (1<<SPIF)));
+	// write data
+	SPDR = data;
+	while(!(SPSR & (1<<SPIF)));
+
+	// release CS
+	ENC28J60_CONTROL_PORT |= (1<<ENC28J60_CONTROL_CS);
 }
 
-//-----------------------------------------------------------------------------
-
-static inline void enc_reset(void)
+void enc28j60ReadBuffer(u16 len, u8* data)
 {
-   _delay_ms(10);
-
-   enc_select();
-   spi_put(ENC_SPI_OP_SC);
-   enc_deselect();
-
-   // errata #2: wait for at least 300 us
-   _delay_ms(100);
+	// assert CS
+	ENC28J60_CONTROL_PORT &= ~(1<<ENC28J60_CONTROL_CS);
+	
+	// issue read command
+	SPDR = ENC28J60_READ_BUF_MEM;
+	while(!(SPSR & (1<<SPIF)));
+	while(len--)
+	{
+		// read data
+		SPDR = 0x00;
+		while(!(SPSR & (1<<SPIF)));
+		*data++ = SPDR;
+	}	
+	// release CS
+	ENC28J60_CONTROL_PORT |= (1<<ENC28J60_CONTROL_CS);
 }
 
-static void enc_clrbits_reg(unsigned char reg, unsigned char bits)
+void enc28j60WriteBuffer(u16 len, u8* data)
 {
-   // no automatic bank switching in this function !!!
-
-   unsigned char                           addr = reg & ENC_REG_ADDR_MASK;
-
-   enc_select();
-   spi_put(ENC_SPI_OP_BFC | addr);
-   spi_put(bits);
-   enc_deselect();
+	// assert CS
+	ENC28J60_CONTROL_PORT &= ~(1<<ENC28J60_CONTROL_CS);
+	
+	// issue write command
+	SPDR = ENC28J60_WRITE_BUF_MEM;
+	while(!(SPSR & (1<<SPIF)));
+	while(len--)
+	{
+		// write data
+		SPDR = *data++;
+		while(!(SPSR & (1<<SPIF)));
+	}	
+	// release CS
+	ENC28J60_CONTROL_PORT |= (1<<ENC28J60_CONTROL_CS);
 }
 
-static void enc_setbits_reg(unsigned char reg, unsigned char bits)
+void enc28j60SetBank(u8 address)
 {
-   // no automatic bank switching in this function !!!
-
-   unsigned char                           addr = reg & ENC_REG_ADDR_MASK;
-
-   enc_select();
-   spi_put(ENC_SPI_OP_BFS | addr);
-   spi_put(bits);
-   enc_deselect();
+	// set the bank (if needed)
+	if((address & BANK_MASK) != Enc28j60Bank)
+	{
+		// set the bank
+		enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, (ECON1_BSEL1|ECON1_BSEL0));
+		enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, (address & BANK_MASK)>>5);
+		Enc28j60Bank = (address & BANK_MASK);
+	}
 }
 
-static unsigned char enc_read_reg(unsigned char reg)
+u8 enc28j60Read(u8 address)
 {
-   unsigned char                           value;
-   unsigned char                           addr = reg & ENC_REG_ADDR_MASK;
-
-   if (addr < 0x1A)
-   {
-      unsigned char                           bank = (reg & ENC_REG_BANK_MASK) >> ENC_REG_BANK_SHIFT;
-
-      if (bank != enc_cur_bank)
-      {
-         // need to switch bank first
-         enc_clrbits_reg(ENC_REG_ECON1, 0x03 << ENC_BIT_BSEL0);
-         if (bank)
-         {
-            enc_setbits_reg(ENC_REG_ECON1, bank << ENC_BIT_BSEL0);
-         }
-         enc_cur_bank = bank;
-      }
-   }
-
-   enc_select();
-   spi_put(ENC_SPI_OP_RCR | addr);
-   spi_put(0x00);
-   if (reg & ENC_REG_WAIT_MASK)
-      spi_put(0x00);
-   value = spi_get();
-   enc_deselect();
-
-   return value;
+	// set the bank
+	enc28j60SetBank(address);
+	// do the read
+	return enc28j60ReadOp(ENC28J60_READ_CTRL_REG, address);
 }
 
-static void enc_write_reg(unsigned char reg, unsigned char value)
+void enc28j60Write(u8 address, u8 data)
 {
-   unsigned char                           addr = reg & ENC_REG_ADDR_MASK;
-
-   if (addr < 0x1A)
-   {
-      unsigned char                           bank = (reg & ENC_REG_BANK_MASK) >> ENC_REG_BANK_SHIFT;
-
-      if (bank != enc_cur_bank)
-      {
-         // need to switch bank first
-         enc_clrbits_reg(ENC_REG_ECON1, 0x03 << ENC_BIT_BSEL0);
-         if (bank)
-         {
-            enc_setbits_reg(ENC_REG_ECON1, bank << ENC_BIT_BSEL0);
-         }
-         enc_cur_bank = bank;
-      }
-   }
-
-   enc_select();
-   spi_put(ENC_SPI_OP_WCR | addr);
-   spi_put(value);
-   enc_deselect();
+	// set the bank
+	enc28j60SetBank(address);
+	// do the write
+	enc28j60WriteOp(ENC28J60_WRITE_CTRL_REG, address, data);
 }
 
-static unsigned int enc_read_phyreg(unsigned char phyreg)
+u16 enc28j60PhyRead(u8 address)
 {
-   unsigned int                            value;
+	u16 data;
 
-   enc_write_reg(ENC_REG_MIREGADR, phyreg);
-   enc_write_reg(ENC_REG_MICMD, (1 << ENC_BIT_MIIRD));
-   _delay_us(10);
-   while (enc_read_reg(ENC_REG_MISTAT) & (1 << ENC_BIT_BUSY));
-   enc_write_reg(ENC_REG_MICMD, 0x00);
-   value = (((unsigned int)enc_read_reg(ENC_REG_MIRDH)) << 8);
-   value |= ((unsigned int)enc_read_reg(ENC_REG_MIRDL));
+	// Set the right address and start the register read operation
+	enc28j60Write(MIREGADR, address);
+	enc28j60Write(MICMD, MICMD_MIIRD);
 
-   return value;
+	// wait until the PHY read completes
+	while(enc28j60Read(MISTAT) & MISTAT_BUSY);
+
+	// quit reading
+	enc28j60Write(MICMD, 0x00);
+	
+	// get data value
+	data  = enc28j60Read(MIRDL);
+	data |= enc28j60Read(MIRDH);
+	// return the data
+	return data;
 }
 
-static void enc_write_phyreg(unsigned char phyreg, unsigned int value)
+void enc28j60PhyWrite(u8 address, u16 data)
 {
-   enc_write_reg(ENC_REG_MIREGADR, phyreg);
-   enc_write_reg(ENC_REG_MIWRL, LO8(value));
-   enc_write_reg(ENC_REG_MIWRH, HI8(value));
-   _delay_us(10);
-   while (enc_read_reg(ENC_REG_MISTAT) & (1 << ENC_BIT_BUSY));
+	// set the PHY register address
+	enc28j60Write(MIREGADR, address);
+	
+	// write the PHY data
+	enc28j60Write(MIWRL, data);	
+	enc28j60Write(MIWRH, data>>8);
+
+	// wait until the PHY write completes
+	while(enc28j60Read(MISTAT) & MISTAT_BUSY);
 }
 
-static void enc_read_buf(unsigned char *buf, unsigned int len)
+void enc28j60Init(void)
 {
-   enc_select();
-   spi_put(ENC_SPI_OP_RBM);
-   for (; len > 0; len--, buf++)
-   {
-      spi_put(0x00);
-      *buf = spi_get();
-   }
-   enc_deselect();
+	// initialize I/O
+	sbi(ENC28J60_CONTROL_DDR, ENC28J60_CONTROL_CS);
+	sbi(ENC28J60_CONTROL_PORT, ENC28J60_CONTROL_CS);
+
+	// setup SPI I/O pins
+	sbi(PORTB, ENC28J60_SCK_PIN);	// set SCK hi
+	sbi(DDRB, ENC28J60_SCK_PIN);	// set SCK as output
+	cbi(DDRB, ENC28J60_MISO_PIN);	// set MISO as input
+	sbi(DDRB, ENC28J60_MOSI_PIN);	// set MOSI as output
+	sbi(DDRB, ENC28J60_SS_PIN);	// SS must be output for Master mode to work
+	// initialize SPI interface
+	// master mode
+	sbi(SPCR, MSTR);
+	sbi(SPSR, SPI2X);
+	sbi(SPCR, SPE);
+
+	// perform system reset
+	enc28j60WriteOp(ENC28J60_SOFT_RESET, 0, ENC28J60_SOFT_RESET);
+	// check CLKRDY bit to see if reset is complete
+	_delay_ms(10);
+
+	// do bank 0 stuff
+	// initialize receive buffer
+	// 16-bit transfers, must write low byte first
+	// set receive buffer start address
+	NextPacketPtr = RXSTART_INIT;
+	enc28j60Write(ERXSTL, RXSTART_INIT&0xFF);
+	enc28j60Write(ERXSTH, RXSTART_INIT>>8);
+	// set receive pointer address
+	enc28j60Write(ERXRDPTL, RXSTART_INIT&0xFF);
+	enc28j60Write(ERXRDPTH, RXSTART_INIT>>8);
+	// set receive buffer end
+	// ERXND defaults to 0x1FFF (end of ram)
+	enc28j60Write(ERXNDL, RXSTOP_INIT&0xFF);
+	enc28j60Write(ERXNDH, RXSTOP_INIT>>8);
+	// set transmit buffer start
+	// ETXST defaults to 0x0000 (beginnging of ram)
+	enc28j60Write(ETXSTL, TXSTART_INIT&0xFF);
+	enc28j60Write(ETXSTH, TXSTART_INIT>>8);
+
+	// do bank 2 stuff
+	// enable MAC receive
+	enc28j60Write(MACON1, MACON1_MARXEN|MACON1_TXPAUS|MACON1_RXPAUS);
+	// bring MAC out of reset
+	enc28j60Write(MACON2, 0x00);
+
+	// enable automatic padding and CRC operations
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, MACON3, MACON3_PADCFG0|MACON3_TXCRCEN|MACON3_FRMLNEN);
+//	enc28j60Write(MACON3, MACON3_PADCFG0|MACON3_TXCRCEN|MACON3_FRMLNEN);
+	// set inter-frame gap (non-back-to-back)
+	enc28j60Write(MAIPGL, 0x12);
+	enc28j60Write(MAIPGH, 0x0C);
+	// set inter-frame gap (back-to-back)
+	enc28j60Write(MABBIPG, 0x12);
+	// Set the maximum packet size which the controller will accept
+	enc28j60Write(MAMXFLL, MAX_FRAMELEN&0xFF);	
+	enc28j60Write(MAMXFLH, MAX_FRAMELEN>>8);
+
+	// do bank 3 stuff
+	// write MAC address
+	// NOTE: MAC address in ENC28J60 is byte-backward
+	enc28j60Write(MAADR5, UIP_ETHADDR0);
+	enc28j60Write(MAADR4, UIP_ETHADDR1);
+	enc28j60Write(MAADR3, UIP_ETHADDR2);
+	enc28j60Write(MAADR2, UIP_ETHADDR3);
+	enc28j60Write(MAADR1, UIP_ETHADDR4);
+	enc28j60Write(MAADR0, UIP_ETHADDR5);
+
+   // MAC filtering an retry
+   enc28j60Write(MACLCON1, 10);
+   enc28j60Write(ERXFCON, ENC_BIT_UCEN | ENC_BIT_BCEN);
+
+
+	// no loopback of transmitted frames
+	enc28j60PhyWrite(PHCON2, PHCON2_HDLDIS);
+
+	// switch to bank 0
+	enc28j60SetBank(ECON1);
+	// enable interrutps
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, EIE, EIE_INTIE|EIE_PKTIE);
+	// enable packet reception
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_RXEN);
+	enc28j60PhyWrite(PHLCON, (1 << 1)| (7 << 8) | (4 << 4));
 }
 
-static void enc_write_buf(unsigned char *buf, unsigned int len)
+void enc28j60BeginPacketSend(unsigned int packetLength)
 {
-   enc_select();
-   spi_put(ENC_SPI_OP_WBM);
-   for (; len > 0; len--, buf++)
-   {
-      spi_put(*buf);
-   }
-   enc_deselect();
 }
 
-//-----------------------------------------------------------------------------
-
-void enc_send_packet(unsigned int len, unsigned char *buf)
+void enc28j60PacketSend(unsigned char * packet, unsigned int len)
 {
-   unsigned char                           ctrl = 0;
-   unsigned int                            ms = 100;
+	//Errata: Transmit Logic reset
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
 
-   // wait up to 100 ms for the previos tx to finish
-   while (ms--)
-   {
-      if (!(enc_read_reg(ENC_REG_ECON1) & (1 << ENC_BIT_TXRTS)))
-         break;
-      _delay_ms(1);
-   }
+	// Set the write pointer to start of transmit buffer area
+	enc28j60Write(EWRPTL, TXSTART_INIT&0xff);
+	enc28j60Write(EWRPTH, TXSTART_INIT>>8);
+	// Set the TXND pointer to correspond to the packet size given
+	enc28j60Write(ETXNDL, (TXSTART_INIT+len));
+	enc28j60Write(ETXNDH, (TXSTART_INIT+len)>>8);
 
-#ifdef FULL_DUPLEX
-   // reset tx logic if TXRTS bit is still on
-   if (enc_read_reg(ENC_REG_ECON1) & (1 << ENC_BIT_TXRTS))
-   {
-#else
-   // errata #12: reset tx logic
-   if (1)
-   {
-#endif
-      enc_setbits_reg(ENC_REG_ECON1, (1 << ENC_BIT_TXRST));
-      enc_clrbits_reg(ENC_REG_ECON1, (1 << ENC_BIT_TXRST));
-   }
+	// write per-packet control byte
+	enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
 
-   // setup write pointer
-   enc_write_reg(ENC_REG_EWRPTL, LO8(ENC_TX_BUFFER_START));
-   enc_write_reg(ENC_REG_EWRPTH, HI8(ENC_TX_BUFFER_START));
+	// copy the packet into the transmit buffer
+	enc28j60WriteBuffer(len, packet);
 
-   // end pointer (points to last byte) to start + len
-   enc_write_reg(ENC_REG_ETXNDL, LO8(ENC_TX_BUFFER_START + len));
-   enc_write_reg(ENC_REG_ETXNDH, HI8(ENC_TX_BUFFER_START + len));
-
-   // enc requires 1 control byte before the package
-   enc_write_buf(&ctrl, 1);
-
-   // copy packet to enc buffer
-   enc_write_buf(buf, len);
-
-   // clear TXIF flag
-   enc_clrbits_reg(ENC_REG_EIR, (1 << ENC_BIT_TXIF));
-
-   // start transmission by setting the TXRTS bit
-   enc_setbits_reg(ENC_REG_ECON1, (1 << ENC_BIT_TXRTS));
+	// send the contents of the transmit buffer onto the network
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
+}
+	
+void enc28j60EndPacketSend(void)
+{
+//
 }
 
-unsigned int enc_receive_packet(unsigned int bufsize, unsigned char *buf)
+void enc28j60PacketSend2(unsigned int len1, unsigned char* packet1, unsigned int len2, unsigned char* packet2)
 {
-   unsigned char                           rxheader[6];
-   unsigned int                            len, status;
-   unsigned char                           u;
+	//Errata: Transmit Logic reset
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
 
-   // check rx packet counter
-   u = enc_read_reg(ENC_REG_EPKTCNT);
-   if (u == 0)
-   {
-      // packetcounter is 0, there is nothing to receive, go back
-      return 0;
-   }
+	// Set the write pointer to start of transmit buffer area
+	enc28j60Write(EWRPTL, TXSTART_INIT&0xff);
+	enc28j60Write(EWRPTH, TXSTART_INIT>>8);
+	// Set the TXND pointer to correspond to the packet size given
+	enc28j60Write(ETXNDL, (TXSTART_INIT+len1+len2));
+	enc28j60Write(ETXNDH, (TXSTART_INIT+len1+len2)>>8);
 
-   // set read pointer to next packet
-   enc_write_reg(ENC_REG_ERDPTL, LO8(enc_next_packet_ptr));
-   enc_write_reg(ENC_REG_ERDPTH, HI8(enc_next_packet_ptr));
+	// write per-packet control byte
+	enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
 
-   // read enc rx packet header
-   enc_read_buf(rxheader, sizeof(rxheader));
-   enc_next_packet_ptr = rxheader[0];
-   enc_next_packet_ptr |= ((unsigned)(rxheader[1])) << 8;
-   len = rxheader[2];
-   len |= ((unsigned)(rxheader[3])) << 8;
-   status = rxheader[4];
-   status |= ((unsigned)(rxheader[5])) << 8;
-
-   // added by Sjors: reset the ENC when needed
-   // If the receive OK bit is not 1 or the zero bit is not zero, or the packet is larger then the buffer, reset the
-   // enc chip and SPI
-   if ((!(status & (1 << 7))) || (status & 0x8000))
-   {
-      enc_init();
-   }
-   // ENC_DEBUG("enc_receive: status=%4x\n", (unsigned) status);
-
-   // skip the checksum (4 bytes) at the end of the buffer
-   len -= 4;
-
-   // if the application buffer is to small, we just truncate
-   if (len > bufsize)
-   {
-      len = bufsize;
-   }
-
-   enc_read_buf(buf, len);
-
-   // adjust the ERXRDPT pointer (= free this packet in rx buffer)
-   if (enc_next_packet_ptr - 1 > ENC_RX_BUFFER_END || enc_next_packet_ptr - 1 < ENC_RX_BUFFER_START)
-   {
-      enc_write_reg(ENC_REG_ERXRDPTL, LO8(ENC_RX_BUFFER_END));
-      enc_write_reg(ENC_REG_ERXRDPTH, HI8(ENC_RX_BUFFER_END));
-   }
-   else
-   {
-      enc_write_reg(ENC_REG_ERXRDPTL, LO8(enc_next_packet_ptr - 1));
-      enc_write_reg(ENC_REG_ERXRDPTH, HI8(enc_next_packet_ptr - 1));
-   }
-
-   // trigger a decrement of the rx packet counter
-   // this will clear PKTIF if EPKTCNT reaches 0
-   enc_setbits_reg(ENC_REG_ECON2, (1 << ENC_BIT_PKTDEC));
-
-   return len;
+	// copy the packet into the transmit buffer
+	enc28j60WriteBuffer(len1, packet1);
+	if(len2>0) enc28j60WriteBuffer(len2, packet2);
+	
+	// send the contents of the transmit buffer onto the network
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
 }
 
-//-----------------------------------------------------------------------------
-
-void enc_init(void)
+unsigned int enc28j60BeginPacketReceive(void)
 {
-   int                                     i = 0;
-   unsigned int                            u;
-   unsigned char                           r, d;
+	u16 rxstat;
+	u16 len;
 
-   // config enc chip select as output and deselect enc
-   ENC_DDR |= (1 << ENC_CS);
-   ENC_PORT |= (1 << ENC_CS);
+	// check if a packet has been received and buffered
+	if( !(enc28j60Read(EIR) & EIR_PKTIF) )
+		return 0;
+	
+	// Make absolutely certain that any previous packet was discarded	
+	//if( WasDiscarded == FALSE)
+	//	MACDiscardRx();
 
-   // init spi
-   spi_init();
+	// Set the read pointer to the start of the received packet
+	enc28j60Write(ERDPTL, (NextPacketPtr));
+	enc28j60Write(ERDPTH, (NextPacketPtr)>>8);
+	// read the next packet pointer
+	NextPacketPtr  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+	NextPacketPtr |= enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0)<<8;
+	// read the packet length
+	len  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+	len |= enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0)<<8;
+	// read the receive status
+	rxstat  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+	rxstat |= enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0)<<8;
 
-   // send a reset command via spi to the enc
-   enc_reset();
-
-   // setup enc registers according to the enc_configdata struct
-   while (1)
-   {
-      r = pgm_read_byte(&enc_configdata[i++]);
-      d = pgm_read_byte(&enc_configdata[i++]);
-      if (r == 0xFF && d == 0xFF)
-         break;
-      enc_write_reg(r, d);
-   }
-   // now the phy registers
-   while (1)
-   {
-      r = pgm_read_byte(&enc_configdata[i++]);
-      d = pgm_read_byte(&enc_configdata[i++]);
-      if (r == 0xFF && d == 0xFF)
-         break;
-      u = (((unsigned int)d) << 8);
-      d = pgm_read_byte(&enc_configdata[i++]);
-      u |= d;
-      enc_write_phyreg(r, u);
-   }
-
-   // setup receive next packet pointer
-   enc_next_packet_ptr = ENC_RX_BUFFER_START;
-
-   // configure the enc interrupt sources
-//   enc_write_reg(ENC_REG_EIE, (1 << ENC_BIT_INTIE) | (1 << ENC_BIT_PKTIE)
-//                 | (0 << ENC_BIT_DMAIE) | (0 << ENC_BIT_LINKIE)
-//                 | (0 << ENC_BIT_TXIE) | (0 << ENC_BIT_WOLIE) | (0 << ENC_BIT_TXERIE) | (0 << ENC_BIT_RXERIE));
-
-   // enable receive
-   enc_setbits_reg(ENC_REG_ECON1, (1 << ENC_BIT_RXEN));
-
-   // the enc interrupt on the atmega is still disabled
-   // needs to get enabled with ETH_INT_ENABLE;
+	// limit retrieve length
+	// (we reduce the MAC-reported length by 4 to remove the CRC)
+//	if(len>maxlen) len=maxlen;
+//	if(len<=0) return 0;
+//	else return len;
+	return len;
 }
 
-void enc28j60SetMac(unsigned char *MacPtr)
+void enc28j60PacketReceive(unsigned char * packet, unsigned int maxlen)
 {
-  unsigned char Index;
-
-  enc_write_reg(ENC_REG_MAADR5, MacPtr[0]);
-  enc_write_reg(ENC_REG_MAADR4, MacPtr[1]);
-  enc_write_reg(ENC_REG_MAADR3, MacPtr[2]);
-  enc_write_reg(ENC_REG_MAADR2, MacPtr[2]);
-  enc_write_reg(ENC_REG_MAADR1, MacPtr[4]);
-  enc_write_reg(ENC_REG_MAADR0, MacPtr[5]);
-
-  for (Index = 0; Index < 6; Index++)
-  {
-     mymac[Index] = MacPtr[Index];
-  }
+	// copy the packet from the receive buffer
+	enc28j60ReadBuffer(maxlen, packet);
 }
 
-unsigned char enc28j60linkup(void)
+void enc28j60EndPacketReceive(void)
 {
-        // bit 10 (= bit 3 in upper reg)
-   return(enc_read_phyreg(ENC_REG_PHSTAT2) && 4);
+	// Move the RX read pointer to the start of the next received packet
+	// This frees the memory we just read out
+	enc28j60Write(ERXRDPTL, (NextPacketPtr));
+	enc28j60Write(ERXRDPTH, (NextPacketPtr)>>8);
+
+	// decrement the packet counter indicate we are done with this packet
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON2, ECON2_PKTDEC);
 }
 
-//-----------------------------------------------------------------------------
+void enc28j60ReceiveOverflowRecover(void)
+{
+	// receive buffer overflow handling procedure
+
+	// recovery completed
+}
+
+void enc28j60RegDump(void)
+{
+//	unsigned char macaddr[6];
+//	result = ax88796Read(TR);
+	
+//	rprintf("Media State: ");
+//	if(!(result & AUTOD))
+//		rprintf("Autonegotiation\r\n");
+//	else if(result & RST_B)
+//		rprintf("PHY in Reset   \r\n");
+//	else if(!(result & RST_10B))
+//		rprintf("10BASE-T       \r\n");
+//	else if(!(result & RST_TXB))
+//		rprintf("100BASE-T      \r\n");
+/*				
+	rprintf("RevID: 0x%x\r\n", enc28j60Read(EREVID));
+
+	rprintfProgStrM("Cntrl: ECON1 ECON2 ESTAT  EIR  EIE\r\n");
+	rprintfProgStrM("         ");
+	rprintfu8(enc28j60Read(ECON1));
+	rprintfProgStrM("    ");
+	rprintfu8(enc28j60Read(ECON2));
+	rprintfProgStrM("    ");
+	rprintfu8(enc28j60Read(ESTAT));
+	rprintfProgStrM("    ");
+	rprintfu8(enc28j60Read(EIR));
+	rprintfProgStrM("   ");
+	rprintfu8(enc28j60Read(EIE));
+	rprintfCRLF();
+
+	rprintfProgStrM("MAC  : MACON1  MACON2  MACON3  MACON4  MAC-Address\r\n");
+	rprintfProgStrM("        0x");
+	rprintfu8(enc28j60Read(MACON1));
+	rprintfProgStrM("    0x");
+	rprintfu8(enc28j60Read(MACON2));
+	rprintfProgStrM("    0x");
+	rprintfu8(enc28j60Read(MACON3));
+	rprintfProgStrM("    0x");
+	rprintfu8(enc28j60Read(MACON4));
+	rprintfProgStrM("   ");
+	rprintfu8(enc28j60Read(MAADR5));
+	rprintfu8(enc28j60Read(MAADR4));
+	rprintfu8(enc28j60Read(MAADR3));
+	rprintfu8(enc28j60Read(MAADR2));
+	rprintfu8(enc28j60Read(MAADR1));
+	rprintfu8(enc28j60Read(MAADR0));
+	rprintfCRLF();
+
+	rprintfProgStrM("Rx   : ERXST  ERXND  ERXWRPT ERXRDPT ERXFCON EPKTCNT MAMXFL\r\n");
+	rprintfProgStrM("       0x");
+	rprintfu8(enc28j60Read(ERXSTH));
+	rprintfu8(enc28j60Read(ERXSTL));
+	rprintfProgStrM(" 0x");
+	rprintfu8(enc28j60Read(ERXNDH));
+	rprintfu8(enc28j60Read(ERXNDL));
+	rprintfProgStrM("  0x");
+	rprintfu8(enc28j60Read(ERXWRPTH));
+	rprintfu8(enc28j60Read(ERXWRPTL));
+	rprintfProgStrM("  0x");
+	rprintfu8(enc28j60Read(ERXRDPTH));
+	rprintfu8(enc28j60Read(ERXRDPTL));
+	rprintfProgStrM("   0x");
+	rprintfu8(enc28j60Read(ERXFCON));
+	rprintfProgStrM("    0x");
+	rprintfu8(enc28j60Read(EPKTCNT));
+	rprintfProgStrM("  0x");
+	rprintfu8(enc28j60Read(MAMXFLH));
+	rprintfu8(enc28j60Read(MAMXFLL));
+	rprintfCRLF();
+
+	rprintfProgStrM("Tx   : ETXST  ETXND  MACLCON1 MACLCON2 MAPHSUP\r\n");
+	rprintfProgStrM("       0x");
+	rprintfu8(enc28j60Read(ETXSTH));
+	rprintfu8(enc28j60Read(ETXSTL));
+	rprintfProgStrM(" 0x");
+	rprintfu8(enc28j60Read(ETXNDH));
+	rprintfu8(enc28j60Read(ETXNDL));
+	rprintfProgStrM("   0x");
+	rprintfu8(enc28j60Read(MACLCON1));
+	rprintfProgStrM("     0x");
+	rprintfu8(enc28j60Read(MACLCON2));
+	rprintfProgStrM("     0x");
+	rprintfu8(enc28j60Read(MAPHSUP));
+	rprintfCRLF();
+*/
+}
+
 
 

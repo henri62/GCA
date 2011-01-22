@@ -23,6 +23,8 @@
  *******************************************************************************************
  */
 
+#define ETH_LOC_BUFFER_BUFFER_TCP_PORT    1235        /**< Port to listen / write */
+
 /*
  *******************************************************************************************
  * Types
@@ -43,5 +45,6 @@
 
 extern void                             EthLocBufferInit(void);
 extern void                             EthLocBufferMain(void);
+extern void                             EthLocBufferTcpRcvEthernet(void);
 
 #endif   // ETH_LOC_BUF

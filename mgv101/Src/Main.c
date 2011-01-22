@@ -16,8 +16,8 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <util/delay.h>
+#include "TcpIp.h"
 #include "UserIo.h"
-#include "Serial.h"
 #include "enc28j60.h"
 #include "EthLocBuffer.h"
 
@@ -48,6 +48,7 @@
  * Prototypes
  *******************************************************************************************
  */
+int                                     main(void);
 
 /*
  *******************************************************************************************
@@ -66,7 +67,7 @@
 
 int main(void)
 {
-   /* Set clock speed to "no pre-scaler" */
+   // Set clock speed to "no pre-scaler"
    CLKPR = (1 << CLKPCE);
    CLKPR = 0;
    _delay_ms(12);
@@ -76,11 +77,8 @@ int main(void)
    UserIoSetLed(userIoLed4, userIoLedSetBlink);
    UserIoSetLed(userIoLed5, userIoLedSetBlink);
 
+   TcpIpInit();
    EthLocBufferInit();
-
-#  ifdef SERIAL_ENABLED
-   SerialInit();
-#  endif
 
    sei();
 
@@ -88,5 +86,6 @@ int main(void)
    {
       UserIoMain();
       EthLocBufferMain();
+      TcpIpMain();
    }
 }
