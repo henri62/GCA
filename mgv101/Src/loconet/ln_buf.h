@@ -70,7 +70,7 @@ extern "C" {
 #include "loconet.h"
 
 #ifndef LN_BUF_SIZE
-#define LN_BUF_SIZE 128
+#define LN_BUF_SIZE 254
 #endif
 
 typedef struct

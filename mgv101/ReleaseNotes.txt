@@ -1,3 +1,22 @@
+Version 1.87
+ * Loconet buffer size set to 250, after update version 1.78 it was not put back.
+ * uIP update time to 14 msec. 
+
+Version 1.86
+ * uIP stack update timer interrupt driven.
+ * uIP stack update set to 12 msec.
+
+Version 1.85
+ * If an ACK is received from RocRail then it's checked if data is present in the Loconet buffer.
+   If data is present it's transmitted.
+ * uIP stack update time set to 24 msec. Lower values cause retransmit and disrupted communications. 
+
+Version 1.84
+ * Refresh of stack every 2 msec. This is done to get the Loconet query data to the PC with RocRail.    
+
+Version 1.83
+ * Refresh of stack cycle timechanged for faster interaction. 
+
 Version 1.82
  * TPCIP stack changed to uIP.   
 

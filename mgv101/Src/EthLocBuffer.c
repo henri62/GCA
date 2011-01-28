@@ -178,7 +178,7 @@ void EthLocBufferProcessLoconet(void)
       if (RxPacket)
       {
          /* Something received from Loconet interface, process it */
-         //UserIoSetLed(userIoLed6, userIoLedSetFlash);
+         // UserIoSetLed(userIoLed6, userIoLedSetFlash);
          EthLocBufferRcvLocoNet(RxPacket);
       }
    }
@@ -236,6 +236,7 @@ void EthLocBufferTcpRcvEthernet(void)
    uint8_t                                 OpcodeFamily = 0;
    LN_STATUS                               TxStatus = LN_DONE;
    lnMsg                                   LocoNetSendPacket;
+   lnMsg                                  *RxPacket;
 
    if (uip_timedout() || uip_aborted() || uip_closed() || uip_closed())
    {
@@ -245,8 +246,7 @@ void EthLocBufferTcpRcvEthernet(void)
 
    if (uip_connected())
    {
-      /* If connection to RocRail present allow forwarding of Loconet data from
-       Loconet bus to TCPIP. */
+      /* If connection to RocRail present allow forwarding of Loconet data from Loconet bus to TCPIP. */
       EthLocBufferTcpContinue = 1;
       EthLocBufferTcpIpRocRail = 1;
       UserIoSetLed(userIoLed5, userIoLedSetOff);
@@ -254,8 +254,22 @@ void EthLocBufferTcpRcvEthernet(void)
 
    if (uip_acked())
    {
-      /* Previous message to RocRail acked, allow new Loconet data to be forwarded from Loconet bus to TCPIP */
-      EthLocBufferTcpContinue = 1;
+      RxPacket = recvLocoNetPacket();
+      if (RxPacket)
+      {
+         /* Something received from Loconet interface, process it */
+         // UserIoSetLed(userIoLed6, userIoLedSetFlash);
+         EthLocBufferRcvLocoNet(RxPacket);
+         if (EthLocBufferTcpContinue == 0)
+         {
+            EthLocBufferTcpContinue = 2;
+            uip_send(EthLocBufferTcpLoconetData.data, EthLocBufferTcpLoconetDataLength);
+         }
+      }
+      else
+      {
+         EthLocBufferTcpContinue = 1;
+      }
    }
 
    if (uip_rexmit())
@@ -316,10 +330,9 @@ void EthLocBufferTcpRcvEthernet(void)
 
       if (EthLocBufferTcpContinue == 2)
       {
-         /* A message is received but no ack on previous transmitted message. For some reason
-          * uIP does not detect this or assumes an error... So retransmit.. And this situation occurs
-          * sometimes when MGV101 transmits data and RR also transmits data...
-          */
+         /* A message is received but no ack on previous transmitted message. For some reason uIP does not detect this
+          * or assumes an error... So retransmit.. And this situation occurs sometimes when MGV101 transmits data and
+          * RR also transmits data... */
          uip_send(EthLocBufferTcpLoconetData.data, EthLocBufferTcpLoconetDataLength);
       }
    }

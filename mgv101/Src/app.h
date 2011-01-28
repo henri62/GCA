@@ -16,5 +16,4 @@
 
 #define UIP_APPCALL     EthLocBufferTcpRcvEthernet
 
-
 #endif

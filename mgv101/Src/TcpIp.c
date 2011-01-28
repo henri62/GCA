@@ -26,9 +26,12 @@
  * Macro definitions
  *******************************************************************************************
  */
+
+/* *INDENT-OFF* */
 #define TCP_IP_BUF               ((struct uip_eth_hdr *)&uip_buf[0]) /**< uIP buffer location */
-#define TCP_IP_TMR_OVERRUN        8                                  /**< Rounded timer overrun in msec */
-#define TCP_IP_CNT_TIME           48 / TCP_IP_TMR_OVERRUN            /**< uIP update time */
+#define TCP_IP_TMR_OVERRUN        2                                  /**< Rounded timer overrun in msec */
+#define TCP_IP_CNT_TIME           14 / TCP_IP_TMR_OVERRUN            /**< uIP update time */
+#define TCP_IP_ARP_CNT_TIME       10000 / TCP_IP_CNT_TIME            /**< Arp update every ~10msec */
 
 /*
  *******************************************************************************************
@@ -42,7 +45,9 @@
  *******************************************************************************************
  */
 uint8_t TcpIpUipTimerCounter;                   /**< uIP periodic counter. */
-uint8_t TcpIpUipArpTimerCounter;                /**< uIP Arp periodic counter */
+uint16_t TcpIpUipArpTimerCounter;                /**< uIP Arp periodic counter */
+
+/* *INDENT-OFF* */
 /*
  *******************************************************************************************
  * Prototypes
@@ -54,6 +59,12 @@ uint8_t TcpIpUipArpTimerCounter;                /**< uIP Arp periodic counter */
  * Routines implementation
  *******************************************************************************************
  */
+
+SIGNAL(SIG_OVERFLOW0)
+{
+   sei();
+   TcpIpUipTimerCounter++;
+}
 
 /**
  *******************************************************************************************
@@ -80,7 +91,8 @@ void TcpIpInit(void)
    TcpIpUipTimerCounter = 0;
    TcpIpUipArpTimerCounter = 0;
 
-   TCCR0B = (1 << CS02);
+   TCCR0B = (1 << CS01) | (1<<CS00);
+   TIMSK0 |= (1<<TOIE0);
 }
 
 /**
@@ -98,12 +110,8 @@ void TcpIpMain(void)
    uip_len = nic_poll();
    if (uip_len == 0)
    {
-      if (TIFR0 & (1 << TOV0))
-      {
-         TIFR0 |= (1 << TOV0);
-         TcpIpUipTimerCounter++;
          // If timed out, call periodic function for each connection
-         if (TcpIpUipTimerCounter > TCP_IP_CNT_TIME)
+         if (TcpIpUipTimerCounter >= TCP_IP_CNT_TIME)
          {
             TcpIpUipTimerCounter = 0;
             for (Index = 0; Index < UIP_CONNS; Index++)
@@ -117,13 +125,12 @@ void TcpIpMain(void)
             }
 
             /* Call the ARP timer function every ~10 seconds. */
-            if (++TcpIpUipArpTimerCounter >= 200)
+            if (++TcpIpUipArpTimerCounter >= TCP_IP_ARP_CNT_TIME)
             {
                uip_arp_timer();
                TcpIpUipArpTimerCounter = 0;
             }
          }
-      }
    }
    else                                                                        // packet received
    {
