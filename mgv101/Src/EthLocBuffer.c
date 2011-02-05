@@ -169,7 +169,7 @@ void EthLocBufferProcessLoconet(void)
       RxPacket = recvLocoNetPacket();
       if (RxPacket)
       {
-         // UserIoSetLed(userIoLed6, userIoLedSetFlash);
+         UserIoSetLed(userIoLed6, userIoLedSetFlash);
       }
    }
    else if (EthLocBufferTcpContinue == 1)
@@ -178,7 +178,7 @@ void EthLocBufferProcessLoconet(void)
       if (RxPacket)
       {
          /* Something received from Loconet interface, process it */
-         // UserIoSetLed(userIoLed6, userIoLedSetFlash);
+         UserIoSetLed(userIoLed6, userIoLedSetFlash);
          EthLocBufferRcvLocoNet(RxPacket);
       }
    }

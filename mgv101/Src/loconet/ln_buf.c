@@ -212,7 +212,6 @@ lnMsg *recvLnMsg( LnBuf *Buffer )
 			else
 			{
 				Buffer->Stats.RxErrors++ ;
-				UserIoSetLed(userIoLed6,userIoLedSetToggle);
 			}
 				// Whatever the case advance the ReadPacketIndex to the beginning of the
 				// next packet to be received

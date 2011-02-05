@@ -1,9 +1,9 @@
 
 /**
  *******************************************************************************************
- * @file 		UserIo.c                                         
+ * @file       UserIo.c
  * @ingroup     UserIo                                                 
- * @attention	
+ * @attention
  *******************************************************************************************
  */
 
@@ -28,10 +28,10 @@
 
 #define USER_IO_BLINK_RATE                1000 / USER_IO_TIMER_OVERFLOW_TIME  /**< Led blink rate is msec */
 #define USER_IO_FLASH_TIME                50 / USER_IO_TIMER_OVERFLOW_TIME    /**< Led flash time */
-#define USER_IO_TCP_IP_TIME               50 / USER_IO_TIMER_OVERFLOW_TIME    /**< TCPIP timer  */
 
-#define USER_IO_EEP_IP_ADDRES_BASE        0                                   /**< Ip address location in EEPROM */
-#define USER_IO_EEP_IP_ADDRES_LENGTH      4                                   /**< Ip address length */
+#define USER_IO_EEP_IP_BASE_ADDRES        0                                   /**< Ip address location in EEPROM */
+#define USER_IO_EEP_IP_BASE_NETMASK       3                                   /**< Netmask location in EEPROM */
+#define USER_IO_EEP_IP_BASE_GATEWAY       6                                   /**< Gateway location in EEPROM */
 
 /*
  *******************************************************************************************
@@ -54,8 +54,6 @@ typedef struct
  */
 
 TUserIoLedStat    UserIoLedStat[userIoLedMax];           /**< Led status array */
-uint8_t           UserIoTcpIpCnt;                        /**< Timer counter for TcpIp retry */
-uint16_t          UserIoTcpIpLinkCnt;                    /**< Timer counter for TcpIp link status */
 
 /* *INDENT-ON* */
 
@@ -88,8 +86,6 @@ void UserIoInit(void)
    }
    /* Set timer 2, timer overrun ~4,08 msec @ 8Mhz */
    TCCR2B |= (1 << CS22) | (1 << CS20);
-
-   UserIoTcpIpCnt = 0;
 }
 
 /**
@@ -135,7 +131,7 @@ TUserIoJumperStatus UserIoGetJumperStatus(TUserIoJumper Jumper)
  * @brief      Main routine of userIo. Check if timer overrun, if yes check
  *             if a led is in blink mode.
  * @return     None
- * @attention	- 
+ * @attention  -
  *******************************************************************************************
  */
 void UserIoMain(void)
@@ -193,14 +189,6 @@ void UserIoMain(void)
             }
          }
       }
-
-      UserIoTcpIpCnt++;
-      if (UserIoTcpIpCnt >= USER_IO_TCP_IP_TIME)
-      {
-//         eth.timer = 1;
-      }
-
-      UserIoTcpIpLinkCnt++;
    }
 }
 
@@ -294,7 +282,7 @@ void UserIoSetLed(TUserIoLed Led, TUserIoLedSet Set)
  * @param      *IpAddress Pointer to array where IP address must be stored.
  * @param      *NetMask Pointer to array where the NetMask must be stored.
  * @param      *RouterIp Pointer to array where the RouterIp must be stored.
- * @attention	-
+ * @attention  -
  *******************************************************************************************
  */
 void UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * RouterIp)
@@ -310,6 +298,7 @@ void UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * Route
    uint8_t                                 RouterIp_3[4] = { 192, 168, 100, 1 };
 
    uint8_t                                 Jumpers;
+   uint8_t                                 Index;
 
    Jumpers = PINC & 0x07;
 
@@ -329,6 +318,14 @@ void UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * Route
          memcpy(IpAddress, IpAddress_3, sizeof(IpAddress_3));
          memcpy(NetMask, NetMask_3, sizeof(NetMask_3));
          memcpy(RouterIp, RouterIp_3, sizeof(RouterIp_3));
+         break;
+      case 0:
+         for (Index = 0; Index < 4; Index++)
+         {
+            IpAddress[Index] = eeprom_read_byte((uint8_t *) (USER_IO_EEP_IP_BASE_ADDRES + Index));
+            NetMask[Index] = eeprom_read_byte((uint8_t *) (USER_IO_EEP_IP_BASE_NETMASK + Index));
+            RouterIp[Index] = eeprom_read_byte((uint8_t *) (USER_IO_EEP_IP_BASE_GATEWAY + Index));
+         }
          break;
       default:
          memcpy(IpAddress, IpAddress_1, sizeof(IpAddress_1));

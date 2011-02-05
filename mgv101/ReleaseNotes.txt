@@ -1,3 +1,7 @@
+Version 1.88
+ * If all jumpers are set IP settings are read from EEPROM. 
+ * Restored flashing of led if a Loconet message si received from the Loconet bus. 
+
 Version 1.87
  * Loconet buffer size set to 250, after update version 1.78 it was not put back.
  * uIP update time to 14 msec. 
