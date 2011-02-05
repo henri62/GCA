@@ -1,3 +1,10 @@
+Version 206 05-02-2011
+ * Fixed problem is Atmel was programmed and EEPROM has default value 255. 
+
+Version 205 13-11-2010
+ * Initial config reading after programming updated.
+ * Transmit of sensor data changed, with version 203 sometimes instable behaviour.
+
 Version 204 28-11-2010
  * When reading or writing from/to EEPROM interrupts are disbled.
  * If configuration data is received first the data is written into EEPROM and then the response is transmitted.
@@ -6,10 +13,10 @@ Version 204 28-11-2010
  * Jumper moved to pin B3. 
 
 Version 203 03-10-2010
- * Startup behavior after power (connecting to Loconet bus) updated. Only active inputs at power are transmitted.
+ * Startup after power (connecting to Loconet bus) updated. Only active inputs at power are transmitted.
  * Some code clean up. 
  * Global PowerOn / Off of version 201 removed. 
- * Routines remevod for setting pin direction and pin status, replaced by dorect port acces. 
+ * Routines removed for setting pin direction and pin status, replaced by direct port acces. 
 
 Version 202 03-10-2010
  * Minimum input high time set to 40 msec. 

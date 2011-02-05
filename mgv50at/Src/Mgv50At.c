@@ -194,7 +194,6 @@ static LnBuf                  Mgv50AtLocoNet ;            /**< Loconet variable 
 static TMgv50AtConfig         Mgv50AtConfig;              /**< Config of the module */
 static uint8_t                Mgv50AtLocoNetActivity;     /**< Counter for loconet led blink */
 static lnMsg                  Mgv50AtLocoNetSendPacket;   /**< Loconet Tx buffer */
-static uint8_t                Mgv50AtSensorIndex;         /**< Sensor status transmit index */
 
 /* *INDENT-ON* */
 
@@ -339,6 +338,7 @@ void Mgv50AtUpdateEepromDataUnit(TMgv50AtConfig * ConfigPtr)
    cli();
    eeprom_write_word((uint16_t *) (EEP_SETTINGS_BASE_ADDRESS), ConfigPtr->UnitAddress);
    eeprom_write_word((uint16_t *) (EEP_SETTINGS_BLINK_ADDRESS), ConfigPtr->BlinkValue);
+   eeprom_write_byte((uint8_t *) EEP_SETTINGS_INITIAL, 1);
    sei();
 }
 
@@ -367,6 +367,7 @@ void Mgv50AtUpdateEepromData(TMgv50AtConfig * ConfigPtr, uint8_t Index)
                      ConfigPtr->Pin[Index].LocoIoGetal_3);
    eeprom_write_byte((uint8_t *) (EEP_SETTINGS_PIN_DATA_START + (Index * EEP_SETTINGS_PIN_DATA_SIZE) + 6),
                      ConfigPtr->Pin[Index].OutputType);
+   eeprom_write_byte((uint8_t *) EEP_SETTINGS_INITIAL, 1);
    sei();
 }
 
@@ -383,131 +384,112 @@ void Mgv50AtUpdateEepromData(TMgv50AtConfig * ConfigPtr, uint8_t Index)
 void Mgv50AtReportSensor(TMgv50AtConfig * ConfigPtr)
 {
    lnMsg                                   LocoNetSendPacket;
+   uint8_t                                 Index;
 
-   if (ConfigPtr->Pin[Mgv50AtSensorIndex].Type == mgv50AtPinTypeInput)
+   for (Index = 0; Index < MGV50AT_NUMBER_OF_PINS; Index++)
    {
-      if (ConfigPtr->Pin[Mgv50AtSensorIndex].SensorCnt >= MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON)
+      if (ConfigPtr->Pin[Index].Type == mgv50AtPinTypeInput)
       {
-         if (ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit != mgv50AtSensorTransmitOn)
+         if (ConfigPtr->Pin[Index].SensorCnt >= MGV50AT_SENSOR_BLOCK_CNT_SENSOR_ON)
          {
-            LocoNetSendPacket.sd.mesg_size = 4;
-            if ((ConfigPtr->Pin[Mgv50AtSensorIndex].ConfigByte.Input.OpCode) &&
-                (ConfigPtr->Pin[Mgv50AtSensorIndex].ConfigByte.Input.Block))
+            if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitOn)
             {
-               /* Transmit the sensor status on the Loconet bus */
-               LocoNetSendPacket.data[0] = MGV50AT_LOCONET_SENSOR_COMMAND;
-               LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 1) & 0x7F;
-               LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 8;
-               LocoNetSendPacket.data[2] |= 0x10;
-               if (ConfigPtr->Pin[Mgv50AtSensorIndex].Address & 1)
+               if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitSkip)
                {
-                  LocoNetSendPacket.data[2] |= 0x20;
-               }
-            }
-            else
-            {
-               /* Transmit the switch request on the Loconet bus */
-               LocoNetSendPacket.data[0] = MGV50AT_LOCONET_TURNOUT_COMMAND;
-               LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Mgv50AtSensorIndex].Address) & 0x7F;
-               LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 7;
-               LocoNetSendPacket.data[2] |= 0x10;
-            }
-            /* Transmit, if transmit not succeeded it will be performed next time.. */
-            if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
-            {
-               Mgv50AtLocoNetLedStart();
-               /* Transmit the extra opcode of an input (if present) */
-               if (ConfigPtr->Pin[Mgv50AtSensorIndex].OpCodeCmdData[0] != 0)
-               {
-                  LocoNetSendPacket.data[0] = ConfigPtr->Pin[Mgv50AtSensorIndex].OpCodeCmdData[0];
-                  LocoNetSendPacket.data[1] = ConfigPtr->Pin[Mgv50AtSensorIndex].OpCodeCmdData[1];
-                  LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].OpCodeCmdData[2];
+                  LocoNetSendPacket.sd.mesg_size = 4;
+                  if ((ConfigPtr->Pin[Index].ConfigByte.Input.OpCode) && (ConfigPtr->Pin[Index].ConfigByte.Input.Block))
+                  {
+                     /* Transmit the sensor status on the Loconet bus */
+                     LocoNetSendPacket.data[0] = MGV50AT_LOCONET_SENSOR_COMMAND;
+                     LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Index].Address >> 1) & 0x7F;
+                     LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].Address >> 8;
+                     LocoNetSendPacket.data[2] |= 0x10;
+                     if (ConfigPtr->Pin[Index].Address & 1)
+                     {
+                        LocoNetSendPacket.data[2] |= 0x20;
+                     }
+                  }
+                  else
+                  {
+                     /* Transmit the switch request on the Loconet bus */
+                     LocoNetSendPacket.data[0] = MGV50AT_LOCONET_TURNOUT_COMMAND;
+                     LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Index].Address) & 0x7F;
+                     LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].Address >> 7;
+                     LocoNetSendPacket.data[2] |= 0x10;
+                  }
+                  /* Transmit, if transmit not succeeded it will be performed next time.. */
                   if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
                   {
                      Mgv50AtLocoNetLedStart();
-                     ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit = mgv50AtSensorTransmitOn;
-                     Mgv50AtSensorIndex++;
-                     Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
+                     /* Transmit the extra opcode of an input (if present) */
+                     if (ConfigPtr->Pin[Index].OpCodeCmdData[0] != 0)
+                     {
+                        LocoNetSendPacket.data[0] = ConfigPtr->Pin[Index].OpCodeCmdData[0];
+                        LocoNetSendPacket.data[1] = ConfigPtr->Pin[Index].OpCodeCmdData[1];
+                        LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].OpCodeCmdData[2];
+                        if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
+                        {
+                           Mgv50AtLocoNetLedStart();
+                           ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOn;
+                        }
+                     }
+                     else
+                     {
+                        ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOn;
+                     }
                   }
                }
                else
                {
-                  ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit = mgv50AtSensorTransmitOn;
-                  Mgv50AtSensorIndex++;
-                  Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
+                  /* Initial change after power on skipped */
+                  ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOn;
                }
             }
          }
-         else
+         else if (ConfigPtr->Pin[Index].SensorCnt == 0)
          {
-            Mgv50AtSensorIndex++;
-            Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
-         }
-      }
-      else if (ConfigPtr->Pin[Mgv50AtSensorIndex].SensorCnt == 0)
-      {
-         if (ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit != mgv50AtSensorTransmitOff)
-         {
-            if (ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit != mgv50AtSensorTransmitSkip)
+            if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitOff)
             {
-               LocoNetSendPacket.sd.mesg_size = 4;
-               if ((ConfigPtr->Pin[Mgv50AtSensorIndex].ConfigByte.Input.OpCode) &&
-                   (ConfigPtr->Pin[Mgv50AtSensorIndex].ConfigByte.Input.Block))
+               if (ConfigPtr->Pin[Index].Transmit != mgv50AtSensorTransmitSkip)
                {
-                  /* Transmit the sensor status on the loconet bus */
-                  LocoNetSendPacket.data[0] = MGV50AT_LOCONET_SENSOR_COMMAND;
-                  LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 1) & 0x7F;
-                  LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 8;
-                  if (ConfigPtr->Pin[Mgv50AtSensorIndex].Address & 1)
+                  LocoNetSendPacket.sd.mesg_size = 4;
+                  if ((ConfigPtr->Pin[Index].ConfigByte.Input.OpCode) && (ConfigPtr->Pin[Index].ConfigByte.Input.Block))
                   {
-                     LocoNetSendPacket.data[2] |= 0x20;
+                     /* Transmit the sensor status on the loconet bus */
+                     LocoNetSendPacket.data[0] = MGV50AT_LOCONET_SENSOR_COMMAND;
+                     LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Index].Address >> 1) & 0x7F;
+                     LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].Address >> 8;
+                     if (ConfigPtr->Pin[Index].Address & 1)
+                     {
+                        LocoNetSendPacket.data[2] |= 0x20;
+                     }
+                  }
+                  else
+                  {
+                     /* Transmit the switch request on the Loconet bus */
+                     LocoNetSendPacket.data[0] = MGV50AT_LOCONET_TURNOUT_COMMAND;
+                     LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Index].Address) & 0x7F;
+                     LocoNetSendPacket.data[2] = ConfigPtr->Pin[Index].Address >> 7;
+                     LocoNetSendPacket.data[2] |= 0x30;
+                  }
+
+                  /* Transmit, if transmit not succeeded it will be performed next time.. */
+                  if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
+                  {
+                     Mgv50AtLocoNetLedStart();
+                     ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOff;
                   }
                }
                else
                {
-                  /* Transmit the switch request on the Loconet bus */
-                  LocoNetSendPacket.data[0] = MGV50AT_LOCONET_TURNOUT_COMMAND;
-                  LocoNetSendPacket.data[1] = (ConfigPtr->Pin[Mgv50AtSensorIndex].Address) & 0x7F;
-                  LocoNetSendPacket.data[2] = ConfigPtr->Pin[Mgv50AtSensorIndex].Address >> 7;
-                  LocoNetSendPacket.data[2] |= 0x30;
-               }
-
-               /* Transmit, if transmit not succeeded it will be performed next time.. */
-               if (sendLocoNetPacket(&LocoNetSendPacket) == LN_DONE)
-               {
-                  Mgv50AtLocoNetLedStart();
-                  ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit = mgv50AtSensorTransmitOff;
-                  Mgv50AtSensorIndex++;
-                  Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
+                  /* Initial change after power on skipped */
+                  ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitOff;
                }
             }
-            else
-            {
-               /* Initial change after power on skipped */
-               ConfigPtr->Pin[Mgv50AtSensorIndex].Transmit = mgv50AtSensorTransmitOff;
-               Mgv50AtSensorIndex++;
-               Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
-            }
-         }
-         else
-         {
-            Mgv50AtSensorIndex++;
-            Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
          }
       }
-      else
-      {
-         Mgv50AtSensorIndex++;
-         Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
-      }
-   }
-   else
-   {
-      Mgv50AtSensorIndex++;
-      Mgv50AtSensorIndex %= MGV50AT_NUMBER_OF_PINS;
    }
 }
-
 /**
  ******************************************************************************
  * @fn         void Mgv50AtTurnOutHandler(byte * DataPtr, TMgv50AtConfig * ConfigPtr)
@@ -582,7 +564,6 @@ void Mgv50AtSensorReset(TMgv50AtConfig * ConfigPtr)
 {
    uint8_t                                 Index;
 
-   cli();
    for (Index = 0; Index < MGV50AT_NUMBER_OF_PINS; Index++)
    {
       if (ConfigPtr->Pin[Index].Type == mgv50AtPinTypeInput)
@@ -591,8 +572,6 @@ void Mgv50AtSensorReset(TMgv50AtConfig * ConfigPtr)
          ConfigPtr->Pin[Index].Transmit = mgv50AtSensorTransmitIdle;
       }
    }
-   Mgv50AtSensorIndex = 0;
-   sei();
 }
 
 /**
@@ -1286,21 +1265,24 @@ void Mgv50AtInit(void)
 {
    uint8_t                                 Index;
    uint8_t                                 OpCodeIndex;
+   uint8_t                                 EepInitial;
 
    /* Loconet activity led and jumper internal pull up */
    DDRB |= (1 << PB2);
    PORTB |= (1 << PB3);
 
+   EepInitial = eeprom_read_byte((uint8_t *) (EEP_SETTINGS_INITIAL));
+
    /* Read the config from the EEPROM. Value 0xFFFF is assumed as invalid, i.e. default EEPROM data. If detected, a
     * default value will be set. */
    Mgv50AtConfig.UnitAddress = eeprom_read_word((uint16_t *) EEP_SETTINGS_BASE_ADDRESS);
-   if (Mgv50AtConfig.UnitAddress == MGV50AT_INVALID_EEP_DATA_WORD)
+   if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
    {
       Mgv50AtConfig.UnitAddress = MGV50AT_LOCO_IO_DEFAULT_ADDRESS;
    }
 
    Mgv50AtConfig.BlinkValue = eeprom_read_word((uint16_t *) EEP_SETTINGS_BLINK_ADDRESS);
-   if (Mgv50AtConfig.BlinkValue == MGV50AT_INVALID_EEP_DATA_WORD)
+   if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
    {
       Mgv50AtConfig.BlinkValue = MGV50AT_BLINK_TIME;
    }
@@ -1404,37 +1386,37 @@ void Mgv50AtInit(void)
       Mgv50AtConfig.Pin[Index].OutputType =
          eeprom_read_byte((uint8_t *) (EEP_SETTINGS_PIN_DATA_START + (Index * EEP_SETTINGS_PIN_DATA_SIZE) + 6));
 
-      if (Mgv50AtConfig.Pin[Index].Address == MGV50AT_INVALID_EEP_DATA_WORD)
+      if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
       {
          Mgv50AtConfig.Pin[Index].Address = Index;
       }
 
-      if (Mgv50AtConfig.Pin[Index].Type == MGV50AT_INVALID_EEP_DATA_BYTE)
+      if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
       {
          Mgv50AtConfig.Pin[Index].Type = mgv50AtPinTypeInput;
       }
 
-      if (Mgv50AtConfig.Pin[Index].OutputType == MGV50AT_INVALID_EEP_DATA_BYTE)
+      if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
       {
-         Mgv50AtConfig.Pin[Index].Type = mgv50AtOutputTypeNormal;
+         Mgv50AtConfig.Pin[Index].OutputType = mgv50AtOutputTypeNormal;
       }
 
-      if (Mgv50AtConfig.Pin[Index].ConfigByte.ByteValue == MGV50AT_INVALID_EEP_DATA_BYTE)
+      if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
       {
          Mgv50AtConfig.Pin[Index].ConfigByte.ByteValue = MGV50AT_CONFIG_BYTE_DEFAULT;
       }
 
-      if (Mgv50AtConfig.Pin[Index].LocoIoGetal_2 == MGV50AT_INVALID_EEP_DATA_BYTE)
+      if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
       {
-         Mgv50AtConfig.Pin[Index].LocoIoGetal_2 = Mgv50AtConfig.Pin[Index].Address & 0x7F;
+         Mgv50AtConfig.Pin[Index].LocoIoGetal_2 = (Mgv50AtConfig.Pin[Index].Address & 0x7F) >> 1;
       }
 
-      if (Mgv50AtConfig.Pin[Index].LocoIoGetal_3 == MGV50AT_INVALID_EEP_DATA_BYTE)
+      if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
       {
-         Mgv50AtConfig.Pin[Index].LocoIoGetal_3 = (Mgv50AtConfig.Pin[Index].Address >> 9) & 0x7F;
-         if (Index % 2)
+         Mgv50AtConfig.Pin[Index].LocoIoGetal_3 = 0;
+         if (Index & 1)
          {
-            Mgv50AtConfig.Pin[Index].LocoIoGetal_3 |= 0x10;
+            Mgv50AtConfig.Pin[Index].LocoIoGetal_3 |= 0x20;
          }
       }
 
@@ -1476,11 +1458,18 @@ void Mgv50AtInit(void)
       {
          Mgv50AtConfig.Pin[Index].OpCodeCmdData[OpCodeIndex] =
             eeprom_read_byte((uint8_t *) (EEP_SETTINGS_OPCODE_BASE + (Index * EEP_SETTINGS_OPCODE_SIZE) + OpCodeIndex));
-         if (Mgv50AtConfig.Pin[Index].OpCodeCmdData[OpCodeIndex] == MGV50AT_INVALID_EEP_DATA_BYTE)
+         if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
          {
             Mgv50AtConfig.Pin[Index].OpCodeCmdData[OpCodeIndex] = 0;
          }
       }
+   }
+
+   /* If intial EEPROM values store default values */
+   Mgv50AtUpdateEepromDataUnit(&Mgv50AtConfig);
+   for (Index = 0; Index< MGV50AT_NUMBER_OF_PINS; Index++)
+   {
+      Mgv50AtUpdateEepromData(&Mgv50AtConfig,Index);
    }
 
    /* Set timer for reading the sensor inputs, flashing or pulse output. */
