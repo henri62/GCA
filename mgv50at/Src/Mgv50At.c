@@ -490,6 +490,7 @@ void Mgv50AtReportSensor(TMgv50AtConfig * ConfigPtr)
       }
    }
 }
+
 /**
  ******************************************************************************
  * @fn         void Mgv50AtTurnOutHandler(byte * DataPtr, TMgv50AtConfig * ConfigPtr)
@@ -1271,21 +1272,10 @@ void Mgv50AtInit(void)
    DDRB |= (1 << PB2);
    PORTB |= (1 << PB3);
 
+   /* Init loconet */
+   initLocoNet(&Mgv50AtLocoNet);
+
    EepInitial = eeprom_read_byte((uint8_t *) (EEP_SETTINGS_INITIAL));
-
-   /* Read the config from the EEPROM. Value 0xFFFF is assumed as invalid, i.e. default EEPROM data. If detected, a
-    * default value will be set. */
-   Mgv50AtConfig.UnitAddress = eeprom_read_word((uint16_t *) EEP_SETTINGS_BASE_ADDRESS);
-   if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
-   {
-      Mgv50AtConfig.UnitAddress = MGV50AT_LOCO_IO_DEFAULT_ADDRESS;
-   }
-
-   Mgv50AtConfig.BlinkValue = eeprom_read_word((uint16_t *) EEP_SETTINGS_BLINK_ADDRESS);
-   if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
-   {
-      Mgv50AtConfig.BlinkValue = MGV50AT_BLINK_TIME;
-   }
 
    /* Set location of pins and origin of pin data to make life easier during processing of sensor inputs / setting
     * outputs .... */
@@ -1368,6 +1358,19 @@ void Mgv50AtInit(void)
    Mgv50AtConfig.Pin[15].PortOut = &PORTD;
    Mgv50AtConfig.Pin[15].PortDdr = &DDRD;
    Mgv50AtConfig.Pin[15].PortIn = &PIND;
+
+   /* Read the config from the EEPROM. */
+   Mgv50AtConfig.UnitAddress = eeprom_read_word((uint16_t *) EEP_SETTINGS_BASE_ADDRESS);
+   if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
+   {
+      Mgv50AtConfig.UnitAddress = MGV50AT_LOCO_IO_DEFAULT_ADDRESS;
+   }
+
+   Mgv50AtConfig.BlinkValue = eeprom_read_word((uint16_t *) EEP_SETTINGS_BLINK_ADDRESS);
+   if (EepInitial == MGV50AT_INVALID_EEP_DATA_BYTE)
+   {
+      Mgv50AtConfig.BlinkValue = MGV50AT_BLINK_TIME;
+   }
 
    /* Read the pin data from EEPROM and check if it is valid, if not set a default value. Default is input type block,
     * non inverted */
@@ -1476,15 +1479,6 @@ void Mgv50AtInit(void)
    /* Set timer 0, timer overrun ~2,04 msec @ 8Mhz */
    TCCR0 |= (1 << CS00) | (1 << CS01);
    TIMSK |= (1 << TOIE0);
-
-   /* Init loconet */
-   initLocoNet(&Mgv50AtLocoNet);
-
-   /* Now lets wait some time before continuing after supply voltage is applied .. */
-   for (Index = 0; Index < 10; Index++)
-   {
-      _delay_ms(20);
-   }
 }
 
 /**

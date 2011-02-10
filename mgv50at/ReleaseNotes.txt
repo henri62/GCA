@@ -1,3 +1,6 @@
+Version 207 07-02-2011
+ * Init of Loconet module moved to start of application init so MGV50At does not block Loconet bus when powered up.  
+
 Version 206 05-02-2011
  * Fixed problem is Atmel was programmed and EEPROM has default value 255. 
 
