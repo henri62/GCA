@@ -1,3 +1,6 @@
+Version 1.89
+ * Corrected IP offset values.   
+ 
 Version 1.88
  * If all jumpers are set IP settings are read from EEPROM. 
  * Restored flashing of led if a Loconet message si received from the Loconet bus. 

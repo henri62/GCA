@@ -30,8 +30,8 @@
 #define USER_IO_FLASH_TIME                50 / USER_IO_TIMER_OVERFLOW_TIME    /**< Led flash time */
 
 #define USER_IO_EEP_IP_BASE_ADDRES        0                                   /**< Ip address location in EEPROM */
-#define USER_IO_EEP_IP_BASE_NETMASK       3                                   /**< Netmask location in EEPROM */
-#define USER_IO_EEP_IP_BASE_GATEWAY       6                                   /**< Gateway location in EEPROM */
+#define USER_IO_EEP_IP_BASE_NETMASK       4                                   /**< Netmask location in EEPROM */
+#define USER_IO_EEP_IP_BASE_GATEWAY       8                                   /**< Gateway location in EEPROM */
 
 /*
  *******************************************************************************************
