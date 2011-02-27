@@ -282,6 +282,11 @@ void enc28j60BeginPacketSend(unsigned int packetLength)
 
 void enc28j60PacketSend(unsigned char * packet, unsigned int len)
 {
+   while((enc28j60Read(ESTAT) & ESTAT_RXBUSY))
+   {
+      nop();
+   }
+
 	//Errata: Transmit Logic reset
 	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
 	enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
@@ -301,6 +306,12 @@ void enc28j60PacketSend(unsigned char * packet, unsigned int len)
 
 	// send the contents of the transmit buffer onto the network
 	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
+
+	// wait for data to be transmitted
+	while(!(enc28j60Read(EIR) & EIR_TXIF))
+	{
+	   nop();
+	}
 }
 	
 void enc28j60EndPacketSend(void)
@@ -330,6 +341,12 @@ void enc28j60PacketSend2(unsigned int len1, unsigned char* packet1, unsigned int
 	
 	// send the contents of the transmit buffer onto the network
 	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
+
+	// wait for data to be transmitted
+   while(!(enc28j60Read(EIR) & EIR_TXIF))
+   {
+      nop();
+   }
 }
 
 unsigned int enc28j60BeginPacketReceive(void)
@@ -337,6 +354,10 @@ unsigned int enc28j60BeginPacketReceive(void)
 	u16 rxstat;
 	u16 len;
 
+//	if (enc28j60Read(EIR) & EIR_RXERIF)
+//	{
+//	   SerialTransmit("EIR_RXERIF\r\n");
+//	}
 	// check if a packet has been received and buffered
 	if( !(enc28j60Read(EIR) & EIR_PKTIF) )
 		return 0;

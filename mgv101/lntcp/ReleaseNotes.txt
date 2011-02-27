@@ -1,9 +1,16 @@
+Version 1.90
+ * MAC address changed to 0x00.0x4D.0x56.0x31.0x30.0x31
+ * Window size decreased.
+ * Number of connections reduced to 1.   
+ * If no data to be transmitted when polled by uip skip all. 
+ * ENC28J60 added some checks when transmitting data. 
+
 Version 1.89
  * Corrected IP offset values.   
  
 Version 1.88
  * If all jumpers are set IP settings are read from EEPROM. 
- * Restored flashing of led if a Loconet message si received from the Loconet bus. 
+ * Restored flashing of led if a Loconet message is received from the Loconet bus. 
 
 Version 1.87
  * Loconet buffer size set to 250, after update version 1.78 it was not put back.

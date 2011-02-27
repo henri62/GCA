@@ -63,10 +63,12 @@ TCP/IP stack will calculate the checksums, and fill in the necessary
 header fields and finally send the packet back to the peer.
 */
 
+#include <stdio.h>
 #include "uip.h"
 #include "UserIo.h"
 #include "uipopt.h"
 #include "uip_arch.h"
+
 
 /*-----------------------------------------------------------------------------------*/
 /* Variable definitions. */
@@ -483,6 +485,7 @@ uip_add_rcv_nxt(u16_t n)
 void
 uip_process(u8_t flag)
 {
+   char DebugStr[20];
   register struct uip_conn *uip_connr = uip_conn;
 
   uip_appdata = &uip_buf[40 + UIP_LLH_LEN];
@@ -567,6 +570,7 @@ uip_process(u8_t flag)
        uip_len = 0;
        uip_slen = 0;
        uip_flags = UIP_REXMIT;
+       //SerialTransmit("Uip Rt\r\n");
        UIP_APPCALL();
        goto apprexmit;
 
@@ -585,7 +589,10 @@ uip_process(u8_t flag)
    uip_slen = 0;
    uip_flags = UIP_POLL;
    UIP_APPCALL();
+   if (uip_slen != 0)
+   {
    goto appsend;
+   }
       }
     }
     goto drop;
@@ -1057,6 +1064,15 @@ uip_process(u8_t flag)
       BUF->seqno[1] != uip_connr->rcv_nxt[1] ||
       BUF->seqno[2] != uip_connr->rcv_nxt[2] ||
       BUF->seqno[3] != uip_connr->rcv_nxt[3])) {
+
+//      char DebugStr[20];
+//      SerialTransmit("Ack != seq");
+//      sprintf(DebugStr,"%02x %02x %02x %02x ",BUF->seqno[0],BUF->seqno[1],BUF->seqno[2],BUF->seqno[3]);
+//      SerialTransmit(DebugStr);
+//      sprintf(DebugStr,"%02x %02x %02x %02x ",uip_connr->rcv_nxt[0],uip_connr->rcv_nxt[1],uip_connr->rcv_nxt[2],uip_connr->rcv_nxt[3]);
+//      SerialTransmit(DebugStr);
+//      SerialTransmit("\r\n");
+
     goto tcp_send_ack;
   }
 
@@ -1065,11 +1081,14 @@ uip_process(u8_t flag)
      the outstanding data, calculate RTT estimations, and reset the
      retransmission timer. */
   if((BUF->flags & TCP_ACK) && uip_outstanding(uip_connr)) {
+     //sprintf(DebugStr,"Ack %02x %02x %02x %02x ",BUF->ackno[0],BUF->ackno[1],BUF->ackno[2],BUF->ackno[3]);
+     //SerialTransmit(DebugStr);
+
     uip_add32(uip_connr->snd_nxt, uip_connr->len);
-    if(BUF->ackno[0] == uip_acc32[0] &&
-       BUF->ackno[1] == uip_acc32[1] &&
-       BUF->ackno[2] == uip_acc32[2] &&
-       BUF->ackno[3] == uip_acc32[3]) {
+    if(BUF->ackno[0] >= uip_acc32[0] &&
+       BUF->ackno[1] >= uip_acc32[1] &&
+       BUF->ackno[2] >= uip_acc32[2] &&
+       BUF->ackno[3] >= uip_acc32[3]) {
       /* Update sequence number. */
       uip_connr->snd_nxt[0] = uip_acc32[0];
       uip_connr->snd_nxt[1] = uip_acc32[1];
@@ -1096,6 +1115,17 @@ uip_process(u8_t flag)
       uip_flags = UIP_ACKDATA;
       /* Reset the retransmission timer. */
       uip_connr->timer = uip_connr->rto;
+    }
+    else
+    {
+//      SerialTransmit("rx outst :");
+//      sprintf(DebugStr,"%02x %02x %02x %02x ",BUF->ackno[0],BUF->ackno[1],BUF->ackno[2],BUF->ackno[3]);
+//      SerialTransmit(DebugStr);
+//      sprintf(DebugStr,"%02x %02x %02x %02x ",uip_acc32[0],uip_acc32[1],uip_acc32[2],uip_acc32[3]);
+//      SerialTransmit(DebugStr);
+//      sprintf(DebugStr,"%02x %02x %02x %02x\r\n ",uip_appdata[0],uip_appdata[1],uip_appdata[2],uip_appdata[3]);
+//      SerialTransmit(DebugStr);
+//      SerialTransmit("\r\n");
     }
 
   }

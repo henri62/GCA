@@ -180,10 +180,10 @@ typedef unsigned short uip_stats_t;
  */
 #define UIP_FIXEDETHADDR 0
 
-#define UIP_ETHADDR0    0x4D  /**< The first octet of the Ethernet
+#define UIP_ETHADDR0    0x00  /**< The first octet of the Ethernet
 				 address if UIP_FIXEDETHADDR is
 				 1. \hideinitializer */
-#define UIP_ETHADDR1    0x47  /**< The second octet of the Ethernet
+#define UIP_ETHADDR1    0x4D  /**< The second octet of the Ethernet
 				 address if UIP_FIXEDETHADDR is
 				 1. \hideinitializer */
 #define UIP_ETHADDR2    0x56  /**< The third octet of the Ethernet
@@ -307,7 +307,7 @@ typedef unsigned short uip_stats_t;
  *
  * \hideinitializer
  */
-#define UIP_CONNS       3
+#define UIP_CONNS       1
 
 /**
  * The maximum number of simultaneously listening TCP ports.
@@ -327,7 +327,7 @@ typedef unsigned short uip_stats_t;
  *
  * \hideinitializer
  */
-#define UIP_RECEIVE_WINDOW   1000
+#define UIP_RECEIVE_WINDOW   16
 
 /**
  * Determines if support for TCP urgent data notification should be

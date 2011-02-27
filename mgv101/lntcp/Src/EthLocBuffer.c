@@ -237,6 +237,7 @@ void EthLocBufferTcpRcvEthernet(void)
    LN_STATUS                               TxStatus = LN_DONE;
    lnMsg                                   LocoNetSendPacket;
    lnMsg                                  *RxPacket;
+   //char                                    DebugStr[20];
 
    if (uip_timedout() || uip_aborted() || uip_closed() || uip_closed())
    {
@@ -254,6 +255,7 @@ void EthLocBufferTcpRcvEthernet(void)
 
    if (uip_acked())
    {
+      //SerialTransmit("Ack\r\n");
       RxPacket = recvLocoNetPacket();
       if (RxPacket)
       {
@@ -276,6 +278,7 @@ void EthLocBufferTcpRcvEthernet(void)
    {
       /* Retransmit last transmitted data */
       uip_send(EthLocBufferTcpLoconetData.data, EthLocBufferTcpLoconetDataLength);
+      //SerialTransmit("Ret\r\n");
    }
 
    if (uip_newdata())
@@ -325,14 +328,20 @@ void EthLocBufferTcpRcvEthernet(void)
                TxMaxCnt++;
             }
             while ((TxStatus != LN_DONE) && (TxMaxCnt < ETH_LOC_BUFFER_MAX_LOCONET_TX));
+
+//            sprintf(DebugStr, "%02x %02x %02x %02x\r\n ", uip_appdata[0], uip_appdata[1], uip_appdata[2],
+//                    uip_appdata[3]);
+            //SerialTransmit(DebugStr);
          }
       }
 
+      //SerialTransmit("Rx\r\n");
       if (EthLocBufferTcpContinue == 2)
       {
          /* A message is received but no ack on previous transmitted message. For some reason uIP does not detect this
           * or assumes an error... So retransmit.. And this situation occurs sometimes when MGV101 transmits data and
           * RR also transmits data... */
+         //SerialTransmit("Rx rt\r\n");
          uip_send(EthLocBufferTcpLoconetData.data, EthLocBufferTcpLoconetDataLength);
       }
    }
@@ -342,6 +351,7 @@ void EthLocBufferTcpRcvEthernet(void)
       /* If Loconet data present from Loconet bus transmit it... */
       if (EthLocBufferTcpContinue == 0)
       {
+         //SerialTransmit("Tx\r\n");
          EthLocBufferTcpContinue = 2;
          uip_send(EthLocBufferTcpLoconetData.data, EthLocBufferTcpLoconetDataLength);
       }

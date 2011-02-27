@@ -17,6 +17,7 @@
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 #include "TcpIp.h"
+#include "Serial.h"
 #include "UserIo.h"
 #include "enc28j60.h"
 #include "EthLocBuffer.h"
@@ -79,6 +80,8 @@ int main(void)
 
    TcpIpInit();
    EthLocBufferInit();
+
+   //SerialInit();
 
    sei();
 
