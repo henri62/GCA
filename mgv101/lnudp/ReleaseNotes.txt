@@ -1,0 +1,148 @@
+ Version 2.00
+ * UDP back instead of TCPIP. TCPIP still having problems with messages transmitted at the same time.
+   Sometimes this resulted is disconnecting from the TCPIP connection. 
+ * UDP data is transmitted twice for improved stability.
+ 
+ Version 1.90
+ * MAC address changed to 0x00.0x4D.0x56.0x31.0x30.0x31
+ * Window size decreased.
+ * Number of connections reduced to 1.   
+ * If no data to be transmitted when polled by uip skip all. 
+ * ENC28J60 added some checks when transmitting data. 
+
+Version 1.89
+ * Corrected IP offset values.   
+ 
+Version 1.88
+ * If all jumpers are set IP settings are read from EEPROM. 
+ * Restored flashing of led if a Loconet message si received from the Loconet bus. 
+
+Version 1.87
+ * Loconet buffer size set to 250, after update version 1.78 it was not put back.
+ * uIP update time to 14 msec. 
+
+Version 1.86
+ * uIP stack update timer interrupt driven.
+ * uIP stack update set to 12 msec.
+
+Version 1.85
+ * If an ACK is received from RocRail then it's checked if data is present in the Loconet buffer.
+   If data is present it's transmitted.
+ * uIP stack update time set to 24 msec. Lower values cause retransmit and disrupted communications. 
+
+Version 1.84
+ * Refresh of stack every 2 msec. This is done to get the Loconet query data to the PC with RocRail.    
+
+Version 1.83
+ * Refresh of stack cycle timechanged for faster interaction. 
+
+Version 1.82
+ * TPCIP stack changed to uIP.   
+
+Version 1.81
+ * Retransmission parameter for ENC28J60 set to 10. 
+ * If a Loconet message from TCPIP to Loconet bus was not transmitted successfully no ACK is
+   transmitted. As a consequence RocRail will retransmit (restored change of 1.75).
+ * Enabled the MAC filtering option of the ENC. Only broadcast messages and messages with the MGV101
+   MAC address are accepted by the ENC28J60. This should reduce the overhead for the Atmel when non MGV101 data is received.  
+
+Version 1.80
+ * Loconet Bittime define restored... 
+
+Version 1.79
+ * ALL sources exclusing the Loconet files are put back to version 1.73.  
+
+Version 1.78
+ * Updated used Loconet to status found on http://embeddedloconet.cvs.sourceforge.net/viewvc/embeddedloconet/ date 21-12-2010.
+ * Moved LN_TIMER_TX_RELOAD_ADJUST to sysdef.h and reduced value. 
+ * TcpIp receive handler if data is received use the index forwarded from the stack. 
+
+Version 1.77
+ * Loconet sources now the same as 1.73.  
+
+Version 1.76
+ * Ethernet stack some improvements. Connecting to RocRail should now work at first time. 
+ * Serial logging dis- enable with define.
+ * Loconet bittime decreased with 1. 
+ 
+Version 1.75
+ * Removed LoconetTxBuffer. Caused instable behaviour. 
+ * Added logging by means of simple serial port logging for testing purposes.
+ * If Loconet data could not be transmitted from TCPIP->Loconet NO Ack is transmitted. 
+   In this case RocRail will retransmit he data not acked...  
+ 
+Version 1.74
+ * Added a Loconet Tx buffer. Data received from TCPIP is put into a Locnet intermediate transmit buffer. 
+   The buffer tries to transmit the data each main loop. By this a potential blocking while loop in the
+   TCPIP receive part is removed.
+ * Loconet receive data processing changed. 
+ * Some double actions in the code are put together in routine EthLocBufferTcpIpConnectionEnded().
+ * Loconet bit time hard coded.     
+
+Version 1.73
+ * Added code so fuses don't have to be set in case a Mega168 is used out of the box. 
+   If not out of the box, make sure to select 8Mhz internal clock and CLKDIV needs to be active. 
+   
+Version 1.72
+ * Change of 1.71 slightly changed again. If long messages where received the MGV101 didn't
+   do anything more. Buffer is read so the 28J60 is not put into reset. 
+ * 3 Gratitiuos ARP packets are transmitted as soon as a link is discovered. By this MGV101
+   announces itself to the network. 
+ * If a ping command is received the Loconet indication led will flash. 
+ * Padding disabled of ENC28J60.
+ * After all retries to transmit data on TCPIP data failed MGV101 transmits a TCPIP message with
+   the FIN flag set.
+ * If the link is down for ~2 seconds and a connection to RocRail was present or if retransmit 
+   maximum is reached GlobalPowerOff is transmitted on the Loconet bus. 
+
+Version 1.71
+ * If a TCP/IP packet is received larger compared to the TCP/IP receive buffer of the Atmel the
+   ENC28J60 was put in reset. Changed this into reading the data out of the ENC28J60 buffer but not
+   storing it.  
+
+Version 1.7
+ * Padding enabled of ENC28J60. By this network messages with a size lower 64 are filled up to 64.
+ * Non used items (for example UDP) removed from stack.c 
+ * ENC driver cleaned up.
+ * If connection was ended by RocRail MGV101 did not see this, fixed this. After connection is ended 
+   the run led and the TCPIP led will blink simultaniously.   
+
+Version 1.6 16-10-2010
+ * Jumpers can be used to select a FIXED IP address for the MGV101. 
+    * No jumpers set is 192.168.0.200
+    * Jumper on PC0 (JP1) is 192.168.1.200
+    * Jumper on PC1 (JP2) is 192.168.100.88
+    * All other combinations default to 192.168.0.200
+ * If no valid IP data is received / connection not present the ethernet led (LED 5) will blink to indicate no connection.
+   With connection the connection to RocRail is ment, not if MGV101 is connected to the nework. If connection is 
+   present can be observed on the leds of the macjack.  
+ * Added a fix, after certain message types the target mac address was incorrect. 
+    
+Version 1.5 14-10-2010
+ * IP address set fixed to 192.168.100.88. 
+
+Version 1.4 13-10-2010
+ * UDP is replaced by TCP/IP. 
+ * Used TCPIP stack is now from http://www.ulrichradig.de/home/index.php/avr/eth_m32_ex  
+ * Generated hex file renamed to MGV101.hex 
+
+Version 1.3 04-08-2010
+ * ENC handling updated. The status register is examined after a message is transmitted. If transmit
+   fails, it's retried to transmit the message. 
+ * Sometimes messages transmitted on the ethernet bus get lost (although ENC handling was updated). 
+   The ENC28J60 tells us the message was transmitted succesfully, but WireShark and RocRail received nothing. 
+   This causes troubles with sensor messages. As temp work around added transmitting sensor messages twice.
+ * UserIo IP routines removed / simplified. 
+  
+Version 1.2 21-07-2010
+ * Removed ALL serial logging and serial output for user.  
+ * The loconet receive buffer is increased to 600 bytes. Buffer variables for buffer changed to 16 bits for this.  
+ * Non used functions removed. 
+ * Added extra loop for transmitting loconet data. 
+
+Version 1.1 13-07-2010
+ * Added extra logging option using jumper 2. Loconet data and UDP data are forwarded on the serial port. 
+ * The echo in the Loconet driver is removed. 
+
+Version 1.0 28-06-2010
+ * Initial version. 

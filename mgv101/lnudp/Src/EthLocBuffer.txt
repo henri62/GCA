@@ -1,0 +1,46 @@
+/**
+@mainpage MGV101  EthernetLoconet Buffer  
+@ingroup EthLocBuffer
+
+@section Introduction Introduction
+The MGV101 EthernetLoconetBuffer is a device acting as a gateway between Loconet and the network connection 
+of a PC. This eliminates the use of a serial usb converter, which sometimes gives troubles.<br> 
+Now just connect the MGV101 to your PC or router, setup RocRail for MGV101 and have fun!<br>
+
+@section Connection 
+Some network interfaces have an autodetection regarding the connection. If the MGV101 <br>
+is not reqognized, use a cross cable or a router / switch.<br>
+On Windows, youm must disable the wireless interface! 
+
+\image html mgv101.jpg
+
+@section Software Overview. 
+Routine \ref EthLocBufferMain checks if any data is present in the ethernet interface or LocoNet.<br>
+Depending on the data type, ethernet data is or Loconet data is forwarded to the Loconet or Ethernet bus.<br> 
+If you want to examine the software, start in \ref main. The software itself is not complicated and well documented to my opinion.
+ 
+@section External Software Modules. 
+For Loconet the Loconet driver is used from http://sourceforge.net/projects/embeddedloconet/  <br>
+- The MGV101 is added as option to the driver. <br>
+- The receive buffer is adapted, instead of max 255 bytes now up to 16K may be used (assuming te Atmel is able to handle this...). 
+- Non used function are removed. 
+
+The used Ethernet software is from http://www.tuxgraphics.org/common/src2/article09051/ <br> 
+- The used file is http://www.tuxgraphics.org/common/src2/article09051/eth_tcp_client_server-4.2.tar.gz 
+- The driver is slightly modified for transmitting unicast messages. 
+- Error handling is added for transmitting messages. 
+
+@section Building the code. 
+- Download WINAVR version 20070122 at http://sourceforge.net/projects/winavr/files/WinAVR/20070122/ <br>
+  Other versions may also be used, but tested is with the 20070122 version. 
+- Open the Programmers NotePad project file MGV101.pnproj. Programmers NotePad is an installation option of WinAvr. 
+- Select Tools->Make All
+- Flash the generated hex file EtLocBuf.hex into the Atmel microcontroller. 
+
+@section Disclaimer 
+- The software is as is. I'm not responsible in any way for errors in this <br>
+software or damage to your property when using this software. Feel free <br>
+to update / modify / improve the software. 
+- Loconet is a trademark of Digitrax Inc. http://www.digitrax.com/
+- The MGV101 is (will / can ?) not tested against all available Loconet devices.  
+*/ 
