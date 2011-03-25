@@ -1,0 +1,150 @@
+/*
+ Modelspoorgroep Venlo MGV81 Firmware
+
+ Copyright (C) Ewout Prangsma <ewout@prangsma.net>
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#include "device.h"
+
+#define CONF_WORD 0x3f38
+
+// --------------------------------------------------------
+// Configuration bits 
+// CP1:0     11 Code protection off
+// DEBUG     1  In circuit debugger disabled
+// WRT       0  Unprotected program memory masy not be writter to by EECON control
+// CPD       1  Code protection off
+// LVP       0  Low voltage programming disable (since no resistor found on MGV50)
+// BODEN     1  Brown out reset enabled
+// PWRTE     0 Powerup timer enabled
+// WDTE      0 Watch dog timer disable
+// FOSC1:0   00 INTOSC (4MHz)
+// --------------------------------------------------------
+
+unsigned int at 0x2007 CONFIG = 0x3D70;
+
+static struct {
+        unsigned char servo1:1;
+        unsigned char servo2:1;
+        unsigned char servo3:1;
+        unsigned char servo4:1;
+} actual_positions = { 0, 0, 0, 0 };
+
+static unsigned char angle_left[4] = { 0, 0, 0, 0 };
+static unsigned char angle_right[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
+
+static void InitializeIO() 
+{
+	TRISA = 0x01;
+    // Set PORTB 0..3 as INPUT, 4..7 as OUTPUT
+	TRISB = 0x0F;
+}
+
+/*
+Wait for a given number of nano seconds
+*/
+static void WaitNS(unsigned int nanos) 
+{
+        nanos = 0xFFFF - nanos;
+        
+        // Program timer1
+        TMR1L = nanos & 0xFF;
+        TMR1H = nanos >> 8;
+                
+        // Enable timer
+        TMR1IF = 0;
+        TMR1ON = 1;
+                
+        // Wait until timer overflow
+        while (!TMR1IF) { /* wait */ }
+        TMR1ON = 0;
+}
+
+/*
+Move servo (0..3) to given position (1=left, 0=right)
+*/
+static void MoveServo(unsigned char index, unsigned char position) 
+{
+        unsigned char angle;
+        unsigned char angle_stop;     
+        unsigned char output_mask;
+        int pulse_length;
+        unsigned char delay;
+        
+        // Initialize
+        output_mask = OUTPUT(index);           
+        if (position != 0) {
+                // Move left
+                angle = angle_right[index];
+                angle_stop = angle_left[index];
+        } else {
+                // Move right
+                angle = angle_left[index];
+                angle_stop = angle_right[index];
+        }
+        
+        // Start moving
+        while (angle != angle_stop) {
+                // Calculate length of pulse (pulse is measured in in 1ns intervals) (1ms=angle 0, 2ms=angle 255)
+                pulse_length = angle;
+                pulse_length *= 4;
+                pulse_length += 1000;
+                
+                // Start pulse
+                PORTB ^= output_mask;
+
+                // Wait the pulse
+                WaitNS(pulse_length);
+                
+                // End pusle
+                PORTB ^= output_mask;
+                
+                // Wait 60ms
+                WaitNS(60000);
+                
+                if (angle < angle_stop) { angle++; }
+                else { angle--; }
+                
+                // Wait a while
+                for (delay = 0; delay != 50; delay++) {
+                        WaitNS(1000);
+                }
+        }                
+}
+
+#define DETECT_INPUT_CHANGE(input, actual, port) { tmp = (input); if (tmp != (actual_positions.actual)) { actual_positions.actual = tmp; MoveServo(port, tmp); } }
+
+/* Main loop */
+void main() 
+{
+        unsigned char tmp;
+        
+	// Initialize
+	InitializeIO();  
+
+        // Perform main loop for ever
+	while (1) {
+	        // Detect change in input
+	        DETECT_INPUT_CHANGE(INPUT1, servo1, 0)
+	        DETECT_INPUT_CHANGE(INPUT2, servo2, 1)
+	        DETECT_INPUT_CHANGE(INPUT3, servo3, 2)
+	        DETECT_INPUT_CHANGE(INPUT4, servo4, 3)
+	        
+	
+
+	}
+}

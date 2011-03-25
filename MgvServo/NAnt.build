@@ -1,0 +1,97 @@
+﻿<?xml version="1.0"?>
+<project name="MGV81" default="build" basedir=".">
+
+	<property name="basedir" value="${project::get-base-directory()}"/>
+	<property name="builddir" value="${basedir}\Build"/>
+	<property name="srcdir" value="${basedir}\src"/>
+
+	<property name="sdcc" value="sdcc.exe"/>
+
+        <target name="clean" description="remove all generated files">
+		<delete dir="${builddir}" />
+        </target>
+
+	<target name="prepare">
+		<mkdir dir="${builddir}"/>
+	</target>
+
+	<target name="compile" depends="clean, prepare">
+		<!-- Compile -->
+		<foreach item="String" property="model" delim="," in="MGV81_V1,MGV81_V1_2,MGV136">
+			<!-- Set device -->
+			<property name="device" value="16F628a" overwrite="true"/>
+			<property name="device" value="16F648a" overwrite="true" if="${model=='MGV136'}"/>
+			<property name="device" value="16F648a" overwrite="true"/> <!-- Force a 16F648 -->
+
+			<!-- Build -->
+			<mkdir dir="${builddir}\${model}\obj"/>
+			<foreach item="File" property="filename">
+				<in>
+					<items basedir="${srcdir}">
+						<include name="*.c"/>
+					</items>
+				</in>
+				<do>
+					<exec program="${sdcc}">
+						<arg value="-D${model}"/>
+						<arg value="-mpic14"/>
+						<arg value="-p${device}"/>
+						<arg value="-o"/>
+						<arg value="${builddir}\${model}\obj\${path::get-file-name-without-extension(filename)}.o"/>
+						<arg value="-c"/>
+						<arg value="${filename}"/>
+					</exec>
+				</do>
+			</foreach>
+			<!-- Link -->
+			<exec program="${sdcc}">
+				<arg value="-mpic14"/>
+				<arg value="-p${device}"/>
+				<arg value="-Wl-c"/>
+				<arg value="-Wl-m"/>
+				<!-- arg value="-Wl-r"/ -->
+				<arg value="-o"/>
+				<arg value="${builddir}\${model}\${model}.hex"/>
+				<arg value="${builddir}\${model}\obj\main.o"/>
+				<arg value="${builddir}\${model}\obj\isr.o"/>
+				<arg value="${builddir}\${model}\obj\eeprom.o"/>
+			</exec>
+		</foreach>
+
+		<!-- MGV137 -->
+		<property name="device" value="16F628a" overwrite="true"/>
+		<property name="model" value="MGV137" overwrite="true"/>
+		<mkdir dir="${builddir}\${model}\obj"/>
+		<exec program="${sdcc}">
+			<arg value="-mpic14"/>
+			<arg value="-p${device}"/>
+			<arg value="-o"/>
+			<arg value="${builddir}\${model}\obj\main.o"/>
+			<arg value="-c"/>
+			<arg value="${basedir}\${model}\main.c"/>
+		</exec>
+		<!-- Link -->
+		<exec program="${sdcc}">
+			<arg value="-mpic14"/>
+			<arg value="-p${device}"/>
+			<arg value="-Wl-c"/>
+			<arg value="-Wl-m"/>
+			<!-- arg value="-Wl-r"/ -->
+			<arg value="-o"/>
+			<arg value="${builddir}\${model}\${model}.hex"/>
+			<arg value="${builddir}\${model}\obj\main.o"/>
+		</exec>
+	</target>
+
+        <target name="build" depends="compile" description="Compile">
+        </target>
+
+	<target name="dist" depends="build" description="Build distribution">
+		<zip zipfile="${builddir}\MgvServo.zip">
+			<fileset basedir="${builddir}">
+				<include name="**/*.hex"/>
+			</fileset>
+		</zip>
+	</target>
+
+</project>
