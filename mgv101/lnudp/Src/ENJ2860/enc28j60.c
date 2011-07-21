@@ -282,44 +282,62 @@ uint8_t enc28j60linkup(void)
    return (enc28j60PhyReadH(PHSTAT2) && 4);
 }
 
-uint8_t enc28j60PacketSend(uint16_t len, uint8_t * packet)
-{
-   uint8_t                                 Result = 1;
-   uint8_t                                 EncStat;
+/*
+In Half-Duplex mode, a hardware transmission
+abort – caused by excessive collisions, a late collision or excessive deferrals – may stall the internal
+transmit logic. The next packet transmit initiated by
+the host controller may never succeed. That is,
+ECON1.TXRTS could remain set indefinitely.
 
-   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
-   enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
-
-   // Set the write pointer to start of transmit buffer area
-   enc28j60Write(EWRPTL, TXSTART_INIT & 0xFF);
-   enc28j60Write(EWRPTH, TXSTART_INIT >> 8);
-   // Set the TXND pointer to correspond to the packet size given
-   enc28j60Write(ETXNDL, (TXSTART_INIT + len) & 0xFF);
-   enc28j60Write(ETXNDH, (TXSTART_INIT + len) >> 8);
-   // write per-packet control byte (0x00 means use macon3 settings)
-   enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
-   // copy the packet into the transmit buffer
-   enc28j60WriteBuffer(len, packet);
-   // send the contents of the transmit buffer onto the network
-   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
-
-   // Now lets wait for end of transmission
    while (enc28j60Read(ECON1) & ECON1_TXRTS)
    {
       nop();
    }
 
-   EncStat = enc28j60Read(ESTAT);
-   // Now check if an error was present
-   if ((EncStat & ESTAT_TXABRT) || (EncStat & ESTAT_LATECOL))
-   {
-      // Error! Reset all status bits...
-      Result = 0;
-      enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ESTAT, ESTAT_TXABRT);
-      enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ESTAT, ESTAT_LATECOL);
-   }
+will randomly fail and thus locking up the avr   
+*/
 
-   return (Result);
+void enc28j60PacketSend(uint16_t len, uint8_t * packet)
+{
+	uint16_t	AttemptCounter = 0;
+	while((enc28j60Read(ESTAT) & ESTAT_RXBUSY))
+	{
+	  nop();
+	}
+
+	//Errata: Transmit Logic reset
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
+
+	// Set the write pointer to start of transmit buffer area
+	enc28j60Write(EWRPTL, TXSTART_INIT&0xff);
+	enc28j60Write(EWRPTH, TXSTART_INIT>>8);
+	// Set the TXND pointer to correspond to the packet size given
+	enc28j60Write(ETXNDL, (TXSTART_INIT+len));
+	enc28j60Write(ETXNDH, (TXSTART_INIT+len)>>8);
+
+	// write per-packet control byte
+	enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
+
+	// copy the packet into the transmit buffer
+	enc28j60WriteBuffer(len, packet);
+
+	// send the contents of the transmit buffer onto the network
+	enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
+
+	// wait for data to be transmitted
+	while(!(enc28j60Read(EIR) & EIR_TXIF) && (++AttemptCounter < 1000) )
+	{
+	   nop();
+	}
+	
+	/* 10. Module: Transmit Logic */
+	/*
+	if( (enc28j60Read(EIR) & EIR_TXERIF) || AttemptCounter>=1000 )
+	{
+		enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRTS);
+	}
+*/	
 }
 
 // just probe if there might be a packet

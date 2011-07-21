@@ -18,6 +18,7 @@
 #undef NTP_client
 // a spontanious sending UDP client
 #define UDP_client
+
 //
 
 // to send out a ping:

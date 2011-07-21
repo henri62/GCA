@@ -25,7 +25,7 @@
 #include "net.h"
 #include "enc28j60.h"
 #include "ip_config.h"
-
+#include "Serial.h"
 static uint8_t                          wwwport_l = 80;                        // server port
 static uint8_t                          wwwport_h = 0;                         // Note: never use same as
 
@@ -94,7 +94,7 @@ static uint8_t                          seqnum = 0xa;                          /
 const char                              arpreqhdr[] PROGMEM = { 0, 1, 8, 0, 6, 4, 0, 1 };
 
 #if defined (NTP_client) ||  defined (WOL_client) || defined (UDP_client) || defined (TCP_client) || defined (PING_client)
-const char                              iphdr[] PROGMEM = { 0x45, 0, 0, 0x82, 0, 0, 0x40, 0, 0x20 };  // 0x82 is the
+const char                              iphdr[] PROGMEM = { 0x45, 0, 0, 0x82, 0, 0, 0x40, 0, 0xFF };  // 0x82 is the
 
                                                                                                       // total len on
                                                                                                       // ip, 0x20 is
@@ -235,16 +235,7 @@ uint8_t eth_type_is_arp_and_my_ip(uint8_t * buf, uint16_t len)
    return (1);
 }
 
-uint8_t CheckForMultiCast(uint8_t * IpAddress)
-{
-   uint8_t                                 Result = 0;
 
-   if ((IpAddress[0] == 224) && (IpAddress[1] == 0) && (IpAddress[2] == 0) && (IpAddress[3] == 1))
-   {
-      Result = 1;
-   }
-   return (Result);
-}
 
 uint8_t eth_type_is_ip_and_my_ip(uint8_t * buf, uint16_t len)
 {
@@ -253,30 +244,27 @@ uint8_t eth_type_is_ip_and_my_ip(uint8_t * buf, uint16_t len)
    // eth+ip+udp header is 42
    if (len < 42)
    {
-      return (0);
+      return 0;
    }
    if (buf[ETH_TYPE_H_P] != ETHTYPE_IP_H_V || buf[ETH_TYPE_L_P] != ETHTYPE_IP_L_V)
    {
-      return (0);
+      return 0;
    }
    if (buf[IP_HEADER_LEN_VER_P] != 0x45)
    {
       // must be IP V4 and 20 byte header
-      return (0);
+      return 0;
    }
-   if (CheckForMultiCast(&buf[IP_DST_P]) == 1)
-   {
-      return (1);
-   }
+
    while (i < 4)
    {
       if (buf[IP_DST_P + i] != ipaddr[i])
       {
-         return (0);
+         return 0;
       }
       i++;
    }
-   return (1);
+   return 1;
 }
 
 // make a return eth header from a received eth packet
@@ -342,7 +330,7 @@ void fill_ip_hdr_checksum_udp(uint8_t * buf)
    buf[IP_CHECKSUM_P + 1] = 0;
    buf[IP_FLAGS_P] = 0x40;                                                     // don't fragment
    buf[IP_FLAGS_P + 1] = 0;                                                    // fragement offset
-   buf[IP_TTL_P] = 1;                                                          // ttl
+   buf[IP_TTL_P] = 0xFF;                                                          // ttl
    // calculate the checksum:
    ck = checksum(&buf[IP_P], IP_HEADER_LEN, 0);
    buf[IP_CHECKSUM_P] = ck >> 8;
@@ -895,12 +883,10 @@ void send_udp_prepare(uint8_t * buf, uint16_t sport, uint8_t * dip, uint16_t dpo
    // 
 }
 
-uint8_t send_udp_transmit(uint8_t * buf, uint8_t datalen)
+void send_udp_transmit(uint8_t * buf, uint8_t datalen)
 {
    uint16_t                                ck;
-   uint8_t                                 Index = 0;
-   uint8_t                                 Result = 0;
-
+	
    buf[IP_TOTLEN_L_P] = IP_HEADER_LEN + UDP_HEADER_LEN + datalen;
    fill_ip_hdr_checksum_udp(buf);
    buf[UDP_LEN_L_P] = UDP_HEADER_LEN + datalen;
@@ -908,21 +894,14 @@ uint8_t send_udp_transmit(uint8_t * buf, uint8_t datalen)
    ck = checksum(&buf[IP_SRC_P], 16 + datalen, 1);
    buf[UDP_CHECKSUM_H_P] = ck >> 8;
    buf[UDP_CHECKSUM_L_P] = ck & 0xff;
-   do
-   {
-      Result = enc28j60PacketSend(UDP_HEADER_LEN + IP_HEADER_LEN + ETH_HEADER_LEN + datalen, buf);
-      Index++;
-   }
-   while ((Result != 1) && (Index < 3));
+   		
+   enc28j60PacketSend(UDP_HEADER_LEN + IP_HEADER_LEN + ETH_HEADER_LEN + datalen, buf); /* Result */
 
-   return (Result);
 }
 
-uint8_t send_udp(uint8_t * buf, char *data, uint8_t datalen, uint16_t sport, uint8_t * dip, uint16_t dport)
+void send_udp(uint8_t * buf, char *data, uint8_t datalen, uint16_t sport, uint8_t * dip, uint16_t dport)
 {
    send_udp_prepare(buf, sport, dip, dport);
-   uint8_t                                 Result = 0;
-
    // limit the length:
    if (datalen > 220)
    {
@@ -930,9 +909,8 @@ uint8_t send_udp(uint8_t * buf, char *data, uint8_t datalen, uint16_t sport, uin
    }
    // copy the data:
    memcpy(&buf[UDP_DATA_P], &data[0], datalen);
-   Result = send_udp_transmit(buf, datalen);
-
-   return (Result);
+   send_udp_transmit(buf, datalen);
+   
 }
 #endif   // UDP_client
 
@@ -1391,7 +1369,7 @@ uint8_t packetloop_icmp_checkreply(uint8_t * buf, uint8_t * ip_monitoredhost)
 // of the tcp data if there is tcp data part
 uint16_t packetloop_icmp_tcp(uint8_t * buf, uint16_t plen)
 {
-   uint16_t                                len;
+/*  uint16_t                                len; */
 
 #if defined (TCP_client)
    uint8_t                                 send_fin = 0;
@@ -1421,6 +1399,7 @@ uint16_t packetloop_icmp_tcp(uint8_t * buf, uint16_t plen)
 #endif
       return (0);
    }
+      
 #endif   // NTP_client||UDP_client||TCP_client||PING_client
    // arp is broadcast if unknown but a host may also
    // verify the mac address by sending it to 
@@ -1445,11 +1424,13 @@ uint16_t packetloop_icmp_tcp(uint8_t * buf, uint16_t plen)
       return (0);
 
    }
+   
    // check if ip packets are for us:
    if (eth_type_is_ip_and_my_ip(buf, plen) == 0)
    {
       return (0);
    }
+  
    if (buf[IP_PROTO_P] == IP_PROTO_ICMP_V && buf[ICMP_TYPE_P] == ICMP_TYPE_ECHOREQUEST_V)
    {
       if (icmp_callback)
@@ -1460,6 +1441,7 @@ uint16_t packetloop_icmp_tcp(uint8_t * buf, uint16_t plen)
       make_echo_reply_from_request(buf, plen);
       return (0);
    }
+ 
    if (plen < 54 && buf[IP_PROTO_P] != IP_PROTO_TCP_V)
    {
       // smaller than the smallest TCP packet and not tcp port
@@ -1585,41 +1567,49 @@ uint16_t packetloop_icmp_tcp(uint8_t * buf, uint16_t plen)
    }
 #endif   // WWW_client||TCP_client
    // 
+    
    // tcp port web server start
-   if (buf[TCP_DST_PORT_H_P] == wwwport_h && buf[TCP_DST_PORT_L_P] == wwwport_l)
-   {
-      if (buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
-      {
-         make_tcp_synack_from_syn(buf);
-         // make_tcp_synack_from_syn does already send the syn,ack
-         return (0);
-      }
-      if (buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
-      {
-         info_data_len = get_tcp_data_len(buf);
-         // we can possibly have no data, just ack:
-         // Here we misuse plen for something else to save a variable.
-         // plen is now the position of start of the tcp user data.
-         if (info_data_len == 0)
-         {
-            if (buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V)
-            {
-               // finack, answer with ack
-               make_tcp_ack_from_any(buf, 0, 0);
-            }
-            // just an ack with no data, wait for next packet
-            return (0);
-         }
-         // Here we misuse len for something else to save a variable
-         len = TCP_DATA_START;                                                 // TCP_DATA_START is a formula
-         // check for data corruption
-         if (len > plen - 8)
-         {
-            return (0);
-         }
-         return (len);
-      }
-   }
+// if (buf[TCP_DST_PORT_H_P] == wwwport_h && buf[TCP_DST_PORT_L_P] == wwwport_l)
+// {
+// 
+//    if (buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V)
+//    {
+//
+//       make_tcp_synack_from_syn(buf);
+//       // make_tcp_synack_from_syn does already send the syn,ack
+//       return (0);
+//    }
+// 
+//    if (buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
+//    {
+//       info_data_len = get_tcp_data_len(buf);
+//       // we can possibly have no data, just ack:
+//       // Here we misuse plen for something else to save a variable.
+//       // plen is now the position of start of the tcp user data.
+//       if (info_data_len == 0)
+//       {
+//          if (buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V)
+//          {
+//		
+//             // finack, answer with ack
+//             make_tcp_ack_from_any(buf, 0, 0);
+//          }
+//          // just an ack with no data, wait for next packet
+//	
+//          return (0);
+//       }
+//       // Here we misuse len for something else to save a variable
+//       len = TCP_DATA_START;                                                 // TCP_DATA_START is a formula
+//       // check for data corruption
+//       if (len > plen - 8)
+//       {
+//          return (0);
+//       }
+//	 
+//       return (len);
+//    }
+// }
+    
    return (0);
 }
 

@@ -14,7 +14,7 @@ NETWINC = Src/ENJ2860
 LOCONETSRC = Src/LocoNet
 LOCONETINC = Src/LocoNet
 
-CFLAGS=-g -mmcu=$(MCU) -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \
+CFLAGS=-g -mmcu=$(MCU) -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums --std=c99 \
 		  -ffunction-sections -fdata-sections -Wall -Wstrict-prototypes -Os -DF_CPU=8000000\
 		  -I$(APPINC) -I$(LIBINC) -I$(NETWINC) -I$(LOCONETINC)
 ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp -Wall
@@ -36,14 +36,17 @@ $(APPLICATION).hex : $(APPLICATION).out
 	@echo "Expl.: data=initialized data, bss=uninitialized data, text=code"
 	@echo " "
 
-$(APPLICATION).out : Main.o EthLocBuffer.o enc28j60.o ip_arp_udp_tcp.o UserIo.o ln_buf.o ln_sw_uart.o ln_interface.o
+$(APPLICATION).out : Main.o Serial.o EthLocBuffer.o enc28j60.o ip_arp_udp_tcp.o UserIo.o ln_buf.o ln_sw_uart.o ln_interface.o
 	$(CC) $(CFLAGS) -mno-interrupts -o $(OUTPUTDIR)/$(APPLICATION).out -Wl,-Map,$(OUTPUTDIR)/$(APPLICATION).map \
 	$(OUTPUTDIR)/Main.o $(OUTPUTDIR)/EthLocBuffer.o $(OUTPUTDIR)/enc28j60.o $(OUTPUTDIR)/ip_arp_udp_tcp.o \
-	$(OUTPUTDIR)/UserIo.o $(OUTPUTDIR)/ln_buf.o $(OUTPUTDIR)/ln_sw_uart.o $(OUTPUTDIR)/ln_interface.o
+	$(OUTPUTDIR)/UserIo.o $(OUTPUTDIR)/ln_buf.o $(OUTPUTDIR)/ln_sw_uart.o $(OUTPUTDIR)/ln_interface.o $(OUTPUTDIR)/Serial.o
 	 
 #-------------------
 Main.o : $(APPSRC)/Main.c
 	$(CC) $(CFLAGS) -Os -c -o $(OUTPUTDIR)/Main.o $(APPSRC)/Main.c
+#-------------------
+Serial.o : $(APPSRC)/Serial.c
+	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/Serial.o $(APPSRC)/Serial.c
 #-------------------
 EthLocBuffer.o : $(APPSRC)/EthLocBuffer.c 
 	$(CC) $(CFLAGS) -c -o $(OUTPUTDIR)/EthLocBuffer.o $(APPSRC)/EthLocBuffer.c 

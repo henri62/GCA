@@ -91,10 +91,10 @@ extern uint16_t           UserIoTcpIpLinkCnt;
  *******************************************************************************************
  */
 
-extern void                             UserIoInit(void);
-extern void                             UserIoMain(void);
+extern void                             userio_init(void);
 extern TUserIoJumperStatus              UserIoGetJumperStatus(TUserIoJumper Jumper);
-extern void                             UserIoSetLed(TUserIoLed Led, TUserIoLedSet Set);
-extern void                             UserIoIpSettingsGet(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * RouterIp);
-
+extern void                             userio_set_led(TUserIoLed Led, TUserIoLedSet Set);
+extern void                             userio_get_settings(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * MacAddress, uint8_t * MyId);
+extern void                             userio_set_id(uint8_t * newId);
+extern void 							userio_set_ip(uint8_t * IpAddress, uint8_t * NetMask, uint8_t * MacAddress);
 #endif   // USER_IO_H

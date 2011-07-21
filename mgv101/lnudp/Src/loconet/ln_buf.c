@@ -62,7 +62,7 @@
 #endif
 
 #include "ln_buf.h"
-#include "UserIo.h"
+#include <util/atomic.h>
 
 #define		LN_BUF_OPC_WRAP_AROUND	(byte)0x00		// Special character to indcate a buffer wrap
 #define		LN_CHECKSUM_SEED		 		(byte)0xFF
@@ -98,7 +98,7 @@ lnMsg *recvLnMsg( LnBuf *Buffer )
 	byte	lastWriteIndex ;
 	byte	tempSize ;
 	lnMsg *tempMsg ;
-
+	
 	while( Buffer->ReadIndex != Buffer->WriteIndex )
 	{
 
@@ -146,7 +146,10 @@ lnMsg *recvLnMsg( LnBuf *Buffer )
 					// so we need to disable interrupts, update WriteIndex, enable interrupts,
 					// move all the data and then fix the ReadIndexes.
 #ifndef __BORLANDC__
-				cli();
+
+
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+			{
 #endif
 					// Take a copy of the WriteIndex for later when we move the data
 				lastWriteIndex = Buffer->WriteIndex ;
@@ -158,7 +161,8 @@ lnMsg *recvLnMsg( LnBuf *Buffer )
 
 					// Enable interrupts again so we can receive more data etc
 #ifndef __BORLANDC__
-				sei();
+			}
+
 #endif
 				
 					// First check if we have to move new data at the buginning of
@@ -225,7 +229,7 @@ lnMsg *recvLnMsg( LnBuf *Buffer )
 			// Packet not complete so add the current byte to the checksum
 		Buffer->CheckSum ^= newByte ;
 	}
-
+	
 	return NULL ;
 }
 

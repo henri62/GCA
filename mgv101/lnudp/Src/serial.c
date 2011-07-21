@@ -1,9 +1,8 @@
 
 /**
  *******************************************************************************************
- * @file 		main.c                                         
- * @ingroup     Main
- * @defgroup	Main Main : Main appliocation of the MGV101 Ethernet Loconet buffer.  
+ * @file       Serial.c
+ * @ingroup    Serial
  * @author		Robert Evers                                                      
  *******************************************************************************************
  */
@@ -13,16 +12,9 @@
  * Standard include files
  *******************************************************************************************
  */
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
-#include <util/delay.h>
-#include "UserIo.h"
-#include "enc28j60.h"
-#include "EthLocBuffer.h"
-
-#ifndef F_CPU
-# 	error F_CPU NOT DEFINED!!!
-#endif
+#include <avr/io.h>
+#include <inttypes.h>
+#include "Serial.h"
 
 /*
  *******************************************************************************************
@@ -47,42 +39,51 @@
  * Prototypes
  *******************************************************************************************
  */
-int                                     main(void);
 
 /*
  *******************************************************************************************
  * Routines implementation
  *******************************************************************************************
  */
-
+#ifdef DEBUG
 /**
  *******************************************************************************************
- * @fn	    	void main(void)		
- * @brief   	Main routine of MGV101 Ethernet Loconet  application.
+ * @fn	    	void serial_init(void)
+ * @brief   	Init  serial port for transmit at 19200 baud at 8<hz clock.
  * @return		None
  * @attention	
  *******************************************************************************************
  */
 
-int main(void)
+void serial_init(void)
 {
-   // Set clock speed to "no pre-scaler"
-   CLKPR = (1 << CLKPCE);
-   CLKPR = 0;
-   _delay_ms(12);
-
-   /* Set run led */
-   UserIoInit();
-   UserIoSetLed(userIoLed4, userIoLedSetBlink);
-
-   /* Init the Ethernet Loconet interface */
-   EthLocBufferInit();
-
-   sei();
-
-   while (1)
-   {
-      UserIoMain();
-      EthLocBufferMain();
-   }
+   UCSR0A = 0;
+   UCSR0B = 0;
+   UCSR0C = 0;
+   UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+   UBRR0H = 0;
+   UBRR0L = 25;
+   UCSR0B |= (1 << TXEN0);
 }
+
+/**
+ *******************************************************************************************
+ * @fn         void serial_transmit(char *data)
+ * @brief      Transmt a string on the serial port.
+ * @param      Data Pointer to null terminated string with data.
+ * @return     None
+ * @attention
+ *******************************************************************************************
+ */
+void serial_transmit(char *data)
+{
+   while (*data)
+   {
+      while (!(UCSR0A & (1 << UDRE0)));
+      UDR0 = *data;
+      data++;
+   }
+  
+}
+
+#endif
