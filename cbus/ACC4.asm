@@ -1,21 +1,89 @@
    	TITLE		"Source for CAN accessory decoder using CBUS"
-; filename ACC4_2f.asm
-; use with ACC4_2 pcb rev A
+; filename ACC4_p.asm
+; use with CANACC4 pcb rev C
 
-;ACC4_2 is a modified version of ACC4_h for use with a 12V system
-;Incorporates drive for the voltage doubler
-;Changes 07/06/10
-;RA4 is the doubler drive. Uses the LPINT for a 50Hz square wave
-;RA0 is the charge cutoff. Hi is run, low is off.
-;Tested 07/06/10. Works OK
-; 28/02/11 version b, added Id for CANACC4_2
-; 07/03/11 version c
-;			Boot command only works with NN of zero
-;  			Read parameters by index now works in SLiM mode with NN of zero
-; version d clear NN_temph and NN_templ in slimset
-; 18/03/11 version e - set number of event to zero in enclear
+; CANACC4 is a basic 'consumer only' turnout driver with 4 output pairs.
+; small model learning mode using the digital inputs for switch detection.
 
-;end of comments for ACC4_2
+; SLiM / FLiM version  17/12/09
+; Incorporates the bootloader
+; this code is for 18F2480 
+; Uses 4 MHz resonator and PLL for 16 MHz clock
+; The setup timer is TMR3. Used during self enumeration.
+; CAN bit rate of 125 Kbits/sec
+; Standard frame only
+
+; CAN rate at 125000 
+
+
+
+
+; DIL switch positions
+
+;	1	Output select LSB
+;	2	Outpot select MSB
+;	3	Polarity of output
+;	4	Learn
+;	5	Unlearn /reset
+;	6	Not used
+
+
+;Flash timer is TMR0.  
+
+;node number release frame <0x51><NN hi><NN lo>
+;keep alive frame  <0x52><NN hi><NN lo>
+;set learn mode <0x53><NN hi><NN lo>
+;out of learn mode <0x54><NN hi><NN lo>
+;clear all events <0x55><NN hi><NN lo>  Valid only if in learn mode
+;read no. of events left <0x56><NN hi><NN lo>
+;set event in learn mode  <0xD2><EN1><EN2><EN3><EN4><EVI><EV>  uses EV indexing
+;The EV sent will overwrite the existing one
+;read event variable in learn mode <0xB2><EN1><EN2><EN3><EN4><EVI>
+;unset event in learn mode <0x95><EN1><EN2><EN3><EN4>
+;reply to 0xB2. <0xD3><EN1><EN2><EN3><EN4><EVI><EV>
+;Also sent if attempt to read / write too many EVs. Returns with EVI = 0 in that case
+
+;read node parameters <0x10> Only works in setup mode. Sends string of 7 bytes as 
+;<0xEF><para1><para2><para3><para4><para5><para6><para7>
+
+; 0x72 and 0xF2 response to read stored ENs by index. Response is F2
+; 0x57 to read all events. Response is F2
+; 0x73	to read individual parameters. Response is 9B
+; 0x58 to read number of stored events. Response is 73
+; Error messages with OPC 0x6F 
+; set NV  in learn mode (0x96)
+; read NV (0x71)by NV index
+; reply to read NV (0x97) 
+;
+;this code assumes a two byte EV. EVI = 1 and EVI = 2
+;not enough EEPROM space for more, assuming 32 events max.
+;EV1 sets which outputs are active  (1 in each bit position is active)
+;EV2 sets the polarity of each active output. A 1 bit is reverse.
+;The node has 8 NVs, one for each output timer.
+;Increments are in 10mSec intervals. 0 is continuous, 255 is 2.55 secs.
+;SLiM default values are 5 (50 msec)
+;Mods to bootloader for LEDs and WDT
+;Rev B, Blocks any non-supported frames in SLiM
+;Allows reboot in SLiM
+;Change test sequence for RTR response
+;Mods to unlearn in FLiM  now rev c
+;block zero length rames
+;in Can enum response test TXB2CON,TXREQ is zero before transmitting frame
+;check TXB2CON,TXREQ before loading new ID
+;change version to "e".  02/03/10
+;prevent error messages in unset (OPC 0x95)  Rev f  (17/03/10)
+;Rev g. Change to enum process  23/03/10
+;Rev h. Clear of RX buffer overflow flags
+;Rev k. Boot only works with NN of zero in SLiM mode
+;       Read Params by index works with NN of zero in SLiM mode
+;No rev l
+;Rev m	clear NN_temph and NN_templ in slimset
+;Rev n  set number of events to zero in enclear
+;Rev p	clear shadow event ram in enclear and send WRACK after NNCLR and EVLRN
+
+;end of comments for ACC4
+
+
 
 ;	
 ; Assembly options
@@ -80,15 +148,15 @@ SCMD_REQ	equ	0x9A
 EN_NUM  equ	.32		;number of allowed events
 EV_NUM  equ 2		;number of allowed EVs per event
 NV_NUM	equ	.16		;number of allowed NVs for node (provisional)
-ACC4_2_ID equ 8
+ACC4_ID equ 1
 
 Modstat equ 1		;address in EEPROM
 
 ;module parameters  change as required
 
 Para1	equ	.165	;manufacturer number
-Para2	equ	 "F"	;for now
-Para3	equ	ACC4_2_ID
+Para2	equ	 "P"	;for now
+Para3	equ	ACC4_ID
 Para4	equ EN_NUM		;node descriptors (temp values)
 Para5	equ EV_NUM
 Para6	equ NV_NUM
@@ -217,6 +285,12 @@ Para7	equ 0
 	NN_templ
 	ENtemp1			;number of events
 	Dlc				;data length for CAN TX
+	
+	
+	
+	
+
+	
 	
 	Rx0con			;start of receive packet 0
 	Rx0sidh
@@ -385,11 +459,28 @@ Para7	equ 0
 ;**********************************************************************************
 
 
+
+
+	
+
+
+
+
+
+
 ;	processor uses  4 MHz. Resonator with HSPLL to give a clock of 16MHz
 
 ;********************************************************************************
 
 
+
+
+
+	
+
+	
+	
+	;
 
 ;****************************************************************
 ;	This is the bootloader
@@ -1171,7 +1262,8 @@ lpint	movwf	W_tempL				;used for output timers
 		movlw	0x78				;Timer 1 lo byte. (adjust if needed)
 		movwf	TMR1L				;reset timer 1
 		clrf	PIR1				;clear all timer flags
-		btg		PORTA,4				;doubler drive
+;		movf	PORTC,F
+;		bz		lpend				;all off so do nothing
 		
 	
 lp1		clrf	Timout
@@ -1211,7 +1303,6 @@ dobit	xorwf	Timout,F				;clear bit in Timout
 		movwf	Timtemp
 		comf	Timtemp,W
 		andwf	PORTC,F					;turn off output
-		bsf		PORTA,0					;charger back on
 donot	tstfsz	Timout					;any more outputs to turn off?
 		bra		off2	
 		
@@ -1393,17 +1484,16 @@ readEV	btfss	Datmode,4
 
 evns1	call	thisNN				;read event numbers
 		sublw	0
-		bnz		notNNx
+		bnz		evns3
 		call	evns2
 		bra		main2
-;evns3	goto	notNN
+evns3	goto	notNN
 
 reval	call	thisNN				;read event numbers
 		sublw	0
 		bnz		notNNx
 		call	evsend
 		bra		main2
-		
 notNNx	goto	notNN
 
 go_on_x goto	go_on
@@ -1413,12 +1503,7 @@ params	btfss	Datmode,2		;only in setup mode
 		call	parasend
 		bra		main2
 		
-setNV	call	thisNN
-		sublw	0
-		bnz		notNNx			;not this node
-		call	putNV
-		bra		main2
-
+setNVx	goto	setNV
 		
 ;********************************************************************		
 	
@@ -1481,7 +1566,7 @@ packet	movlw	CMD_ON			;on command?
 		bz		readNVx
 		movlw	0x96			;set NV
 		subwf	Rx0d0,W
-		bz		setNV
+		bz		setNVx
 		movlw	0x57			;is it read events
 		subwf	Rx0d0,W
 		bz		readENx
@@ -1508,7 +1593,7 @@ evns	goto	evns1
 		bra		main2
 
 reboot	btfss	Mode,1
-		bra		reboots			;j if SLiM mode
+		bra		reboots
 		call	thisNN
 		sublw	0
 		bnz		notNN
@@ -1517,16 +1602,15 @@ reboot1	movlw	0xFF
 		movlw	0xFF
 		call	eewrite			;set last EEPROM byte to 0xFF
 		reset					;software reset to bootloader
-
-reboots
-		movf	Rx0d1,w			; NN must be zero
+		
+reboots	movf	Rx0d1,w
 		addwf	Rx0d2,w
 		bz		reboot1
 		bra		notNN
-	
-para1a	
+		
+para1a
 		btfss	Mode,1			;FLiM mode?
-		bra		para1s			; j if SLiM mode
+		bra		para1s			;j if SLiM mode
 		call	thisNN			;read parameter by index
 		sublw	0
 		bnz		notNN
@@ -1538,7 +1622,8 @@ para1s
 		addwf	Rx0d2,w
 		bnz		notNN
 		call	para1rd
-		; fall thro'	
+		;fall thro'
+		
 main2	bcf		Datmode,0
 		goto	main			;loop
 		
@@ -1590,7 +1675,7 @@ clrens	call	thisNN
 		bra		clrerr
 		call	enclear
 		movlw	0x59
-		call	nnrel
+		call	nnrel		;send WRACK
 		bra		notln1
 notNN	bra		main2
 clrerr	movlw	2			;not in learn mode
@@ -1631,6 +1716,12 @@ paraerr	movlw	3				;error not in setup mode
 		goto	errmsg
 
 
+
+setNV	call	thisNN
+		sublw	0
+		bnz		notNN			;not this node
+		call	putNV
+		bra		main2
 
 readNV	call	thisNN
 		sublw	0
@@ -1796,11 +1887,9 @@ mod_EVf	movff	Rx0d5,EVtemp	;store EV index
 		movf	EVtemp2,W
 		call	eewrite				;put in
 		movlw	0x59
-		call	nnrel
+		call	nnrel				;send WRACK
 		bra		l_out2
 
-
-			
 
 l_out	bcf		Datmode,4
 ;		bcf		LED_PORT,LED2
@@ -1874,6 +1963,26 @@ un2		bsf		EECON1,RD
 		bcf		Datmode,5
 		
 		bra		l_out1
+				
+
+	
+
+	
+						
+		
+
+
+
+
+
+		
+
+
+		
+
+
+
+		
 
 
 ;***************************************************************************
@@ -2010,7 +2119,7 @@ seten_f	call	en_ram			;put events in RAM
 		goto	main
 
 slimset	bcf		Mode,1
-		clrf	NN_temph
+		clrf 	NN_temph		; set NN to zero
 		clrf	NN_templ
 		;test for clear all events
 		btfss	PORTB,LEARN		;ignore the clear if learn is set
@@ -2083,7 +2192,6 @@ shuffin	movff	Rx0sidl,IDtempl
 
 do_out	movf	Opbit,W			;Opbit has bit set for corresponding output number
 		call	map				;remaps this bit to correspond with actual output pin.
-		bcf		PORTA,0			;disable charger
 		iorwf	PORTC,F			;set output
 		movf	Opbit,W
 		iorwf	Timset,F		;set to timed for now
@@ -2853,12 +2961,12 @@ enloop	movlw	0
 		incf	EEADR
 		decfsz	Count
 		bra		enloop
-		movlw	LOW ENindex + 1
+		movlw	LOW ENindex+1
 		movwf	EEADR
 		movlw	0
 		call	eewrite
 		
-		;now clear shadow ram
+		;now clear the shadow ram
 		movlw	EN_NUM * 4
 		movwf	Count
 		lfsr	FSR0, EN1
@@ -2867,6 +2975,7 @@ ramloop
 		decfsz	Count
 		bra		ramloop
 		return	
+		
 ;****************************************************************************
 
 nnack	movlw	0x50			;request frame for new NN or ack if not virgin

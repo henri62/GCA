@@ -1,5 +1,5 @@
    	TITLE		"Source for CAN accessory encoder using CBUS"
-; filename ACE3_j.asm		start 10/05/09
+; filename ACE3_t.asm		start 10/05/09
 
 ; A control panel encoder for the FLiM model 
 ; Scans 128 toggles or 64 dual PBs, selected by a jumper
@@ -66,6 +66,24 @@
 ;				A major rewrite of rev h to allow event learning, including short events
 ;				for 'many to many' mode. 02/08/10
 ;				Working in SLiM mode OK. 11/08/10
+;	rev k		Added FLiM mode to rev j.  12/01/11  (not finished yet)
+;	rev m		As rev k with mods to F5 handling and Pointno in snd_inx
+;	rev n		Default switch numbers put back to starting at 1. 02/03/11 (temporary fix. never released)
+;	rev p		As rev m but events are sent as base 1 although stored with index 0
+;			Incoming events also base 1 but stored as base 0.
+;			Applies to both long and short events
+;			Added WRACK frame following any FLASH wrirtes.  (OPC 0x59)
+;	rev q	As rev p but distinguishes table Index from Pointno. 
+;			Correction to para1rd for node number
+;			Correction to restore on double teach in SLiM
+;			Doesn't restore default in FLiM if same event sent twice
+;			Added restore all events to default using OPC NNCLR (0x55) in learn mode
+;   rev r	15/03/11 SLiM mode: Boot cmd uses SLiM NN,
+;				     OPC 0x73 RQNPN works with SLiM NN
+;					 Add FLiM mode test to packet routine
+;					 Remove FLiM mode tests from individual routines
+;	rev s	Correction so responds to RTR in SLiM mode
+;	rev t	Correction to putNN for EEPROM write 10/05/11
 
 
 ; End of comments for ACE3
@@ -152,7 +170,7 @@ M_BIT	equ	 5		;mode toggle or PB
 S_BIT	equ	4
 Modstat equ 1		;address in EEPROM
 Man_no	equ	.165	;manufacturer number
-Ver_no	equ	"H"		;for now
+Ver_no	equ	"T"	;for now
 ACE3_ID	equ 4		; id of ACE3
 Para1	equ	Man_no
 Para2	equ	Ver_no
@@ -377,6 +395,7 @@ NV_NUM	equ	1		;only one NV
 	Bitcng		;bit change in scan
 	Bitcnt		;bit counter in scan
 	Pointno		;calculated point number for scan
+	Index		;pointer to FLASH event table
 	Turn		;direction of changed switch
 	Rowmsk		;row mask
 	PointnL		;low byte of 16 bit point number
@@ -1142,8 +1161,8 @@ back1	clrf	PIR3			;clear all interrupt flags
 
 isRTR	btfsc	Datmode,1		;setup mode?
 		bra		back			;back
-		btfss	Mode,1			;FLiM?
-		bra		back
+;		btfss	Mode,1			;FLiM?  corrected in rev s
+;		bra		back
 		movlb	.15
 isRTR1	btfsc	TXB2CON,TXREQ	;wait till sent
 		bra		isRTR1		
@@ -1223,12 +1242,11 @@ main_a	movlw	B'00110000'		;get NN from switches
 		bra		no_new
 
 setnew	movwf	Atemp
-;		call	putNNs
-;		call	setid1
-;		bra		noflash
+
 		movwf	NN_templ
 		call	newid1
 		call	fill_buf			;reinstate new NN in FLASH buffer
+		call	wrack			;may not need in SLiM?
 no_new	btfsc	M_PORT,M_BIT
 		bra		mset
 		btfss	Mode2,0
@@ -1393,45 +1411,76 @@ main1	btfsc	Datmode,0		;any new CAN frame received?
 		bra		packet			;yes
 
 		bra		do				;look for inputs
+
+;set of jumps here as branches too long
+
+params1	goto	params
+fl_lrn1	goto	fl_lrn
+fl_ulrn1	goto 	fl_ulrn
+
+teach1	btfss	Mode,1			; only valid in SLiM mode
+		goto	teach			; SLiM mode teach
+		bra		main2
+		
+readEV1	goto	readEV
+undo1	goto	undo
 		
 
 								;main packet handling is here
 		
-packet	movlw	0x42			;set NN on 0x42
+packet
+		movlw	0x90			;is it an event to teach?
+		subwf	Rx0d0,W
+		bz		teach1
+		movlw	0x91			;is it an event to teach?
+		subwf	Rx0d0,W
+		bz		teach1
+		movlw	0x98			;is it a short event to teach?
+		subwf	Rx0d0,W
+		bz		teach1
+		movlw	0x99			;is it a short event to teach?
+		subwf	Rx0d0,W
+		bz		teach1
+		movlw	0x5C			;reboot
+		subwf	Rx0d0,W
+		bz		reboot
+		movlw	0x73
+		subwf	Rx0d0,W
+		bz		para1a
+		btfss	Mode,1			; FLiM mode?
+		bra		main2
+		movlw	0x42			;set NN on 0x42
 		subwf	Rx0d0,W
 		bz		setNN
 		movlw	0x10			;read manufacturer
 		subwf	Rx0d0,W
-		bz		params			;read node parameters
-		movlw	0x5C			;reboot
+		bz		params1			;read node parameters
+		movlw	0x53			;FLiM learn mode
 		subwf	Rx0d0,W
-		bz		reboot
-
+		bz		fl_lrn1
+		movlw	0x54			;FLiM out of learn mode
+		subwf	Rx0d0,W
+		bz		fl_ulrn1			
+		movlw	0x72			;read back event by index
+		subwf	Rx0d0,W
+		bz		readEV1
 		movlw	0x96			;set a NV
 		subwf	Rx0d0,W
 		bz		setNV
 		movlw	0x71			;read a NV
 		subwf	Rx0d0,W
 		bz		readNV
-		movlw	0x73
+		movlw	0xF5			;FLiM teach event
 		subwf	Rx0d0,W
-		bz		para1a
-		movlw	0x90			;is it an event to teach?
+		bz		fl_teach
+		movlw	0x55			;clear events back to default
 		subwf	Rx0d0,W
-		bz		teach
-		movlw	0x91			;is it an event to teach?
-		subwf	Rx0d0,W
-		bz		teach
-		movlw	0x98			;is it a short event to teach?
-		subwf	Rx0d0,W
-		bz		teach
-		movlw	0x99			;is it a short event to teach?
-		subwf	Rx0d0,W
-		bz		teach
+		bz		undo1
 		bra		main2
 
-reboot	btfss	Mode,1			;is it FLiM?
-		bra		reboot1
+		
+
+reboot
 		call	thisNN
 		sublw	0
 		bnz		notNN
@@ -1446,7 +1495,6 @@ para1a	call	thisNN			;read parameter by index
 		bnz		notNN
 		call	para1rd
 		bra		main2
-	
 			
 main2	bcf		Datmode,0
 		goto	main			;loop
@@ -1474,7 +1522,8 @@ sendNN	btfss	Datmode,2		;in NN set mode?
 		call	sendTX
 		bra		main2
 		
-setNV	call	thisNN			;set a new NV
+setNV	
+		call	thisNN			;set a new NV
 		sublw	0
 		bnz		notNN
 		movf	Rx0d3,W
@@ -1494,7 +1543,8 @@ setNV	call	thisNN			;set a new NV
 		
 		bra		main2
 
-readNV	call	thisNN			;is it this node?
+readNV
+		call	thisNN			;is it this node?
 		sublw	0
 		bnz		notNN
 		movf	Rx0d3,W
@@ -1520,6 +1570,32 @@ notNX	clrf	Tx1d3			;invalid index
 		clrf	Tx1d4
 		bra		rdNV1
 
+fl_lrn
+		call	thisNN
+		sublw	0
+		bnz		notNN
+		bsf		Mode,4			;set FLiM learn mode
+		bra		main2
+fl_ulrn	btfss	Mode,1			;is it in FLiM?
+		bra		main2
+		call	thisNN
+		sublw	0
+		bnz		notNN
+		bcf		Mode,4			;clear FLiM learn mode
+		bra		main2
+
+fl_teach
+		bra		teach_f				;put new event into FLASH
+
+undo
+		call	thisNN
+		sublw	0
+		bnz		notNN
+		btfss	Mode,4			;is it in FLiM learn?
+		bra		main2
+		call	fill_buf
+		call	wrack
+		bra		main2
 
 notNN	bra		main2			;not here
 
@@ -1537,7 +1613,21 @@ teach	movlw	B'00001100'		;is it learn and button pressed?
 		bsf		PORTB,7			;green steady
 		bra		l_out2
 
+teach_f	btfss	Mode,4			;is it in learn mode?
+		bra		l_out2
+		movff	Rx0d5,Index		;Rx0d7 has index
+		decf	Index,F			;sent as base 1
+	
+		call	learn
+		call	wrack		;send write acknowledge
+		bra		l_out2
 
+readEV	
+		call	thisNN
+		sublw	0
+		bnz		l_out2
+		call	read
+		bra		l_out2
 		
 l_out	bcf		Datmode,4
 		bcf		PORTB,6
@@ -1547,11 +1637,6 @@ l_out2	bcf		Datmode,0
 
 		clrf	PCLATH
 		goto	main2
-		
-
-		
-								
-
 
 	
 do		btfss	Mode,1			;is it FLiM?
@@ -1730,7 +1815,7 @@ not_new	bcf		Mode,0
 		
 		bcf		Mode,1			;not FLiM
 	
-		
+		movf	NN_templ,W
 		call	newid1			;put ID into Tx1buf, TXB2 and ID number store
 		movlw	LOW	Node_st
 		movwf	EEADR
@@ -1738,6 +1823,7 @@ not_new	bcf		Mode,0
 		sublw	0
 		bnz		seten			;table already loaded
 		call	fill_buf
+		call	wrack
 		
 		;
 seten		
@@ -1822,12 +1908,24 @@ putNN	movff	Rx0d1,NN_temph
 		movff	Rx0d2,NN_templ
 		movlw	LOW NodeID
 		movwf	EEADR
+		call	eeread
+		subwf	NN_temph,W
+		bnz		notsame
+		incf	EEADR
+		call	eeread
+		subwf	NN_templ,W
+		bnz		notsame
+		bra		same
+notsame	movlw	LOW NodeID		;only reload table if NN is changed
+		movwf	EEADR
 		movf	Rx0d1,W
 		call	eewrite
 		incf	EEADR
 		movf	Rx0d2,W
 		call	eewrite
-		movlw	Modstat
+		call	fill_buf			;create new FLASH lookup table
+		call	wrack
+same	movlw	Modstat
 		movwf	EEADR
 		movlw	B'00001000'		;Module status has NN set
 		call	eewrite
@@ -1873,26 +1971,7 @@ new_1	btfsc	TXB2CON,TXREQ	;wait till sent
 		iorwf	TXB2SIDH		;set priority
 		clrf	TXB2DLC			;no data, no RTR
 		movlb	0
-;		movlw	LOW NodeID
-;		movwf	EEADR
-;		call	eeread
-;		movwf	NN_temph			;get stored NN
-;;		incf	EEADR
-;		call	eeread
-;		movwf	NN_templ	
-		
-;		movlb	.15				;put ID into TXB2 for enumeration response to RTR
-;		bcf		TXB2CON,TXREQ
-;		clrf	TXB2SIDH
-;		movf	IDtemph,W
-;		movwf	TXB2SIDH
-;		movf	IDtempl,W
-;		movwf	TXB2SIDL
-;		movlw	0xB0
-;		iorwf	TXB2SIDH		;set priority
-;		clrf	TXB2DLC			;no data, no RTR
-;		movlb	0
-;		btfsc	Datmode,3		;already set up?
+
 		return
 		
 nnack	btfss	Mode,1			;FLiM?
@@ -2084,24 +2163,24 @@ change	movwf	Bitcng			;hold the bit change
 		andwf	Bitcng,W
 		bz		bscan
 tog		clrf	Bitcnt			;which bit?
-		clrf	Pointno			;Point number
+		clrf	Index			;table enry
 change1	rrcf	Bitcng,F		;rotate to find which bit changed
 		bc		gotbit
 		incf	Bitcnt,F
 		bra		change1
 		
 gotbit	movf	Ccount,W		;set up to calculate point number
-		movwf	Pointno
-		rlncf	Pointno,F
-		rlncf	Pointno,W		;multiply by 4
+		movwf	Index
+		rlncf	Index,F
+		rlncf	Index,W		;multiply by 4
 		addwf	Bitcnt,W		;add the row number
-		movwf	Pointno			;got the point number
+		movwf	Index			;got the point number
 	
 		movlw	3				;do offset for upper rows
 		cpfsgt	Bitcnt
 		bra		restore			;send CAN packet
 		movlw	.60				;offset
-		addwf	Pointno,F
+		addwf	Index,F
 restore	clrf	Rowmsk			;work out new value for EEPROM
 		bsf		Rowmsk,0		;set rolling bit
 		incf	Bitcnt
@@ -2127,6 +2206,8 @@ sendpkt	btfss	Mode,2			;is it learn mode?
 		bsf		Mode,3			;has got button push
 		return					;yes so don't send
 sndpkt2	call	get_event		;gets event from table into Tx1
+		btfsc	Mode,4			;FLiM learn?
+		goto	snd_inx			;send event with index
 		
 		movf	Tx1d1,F
 		bnz		long
@@ -2140,9 +2221,12 @@ sndpkt2	call	get_event		;gets event from table into Tx1
 		bra		sndpkt4
 turnoff_s	movlw	0x99			;unset command
 		movwf	Tx1d0			;put in CAN frame
-sndpkt4	movff	NN_temph,Tx1d1	;put in node NN for traceability
+sndpkt4	movlw	5
+		movwf	Dlc				;5 byte command
+
+		movff	NN_temph,Tx1d1	;put in node NN for traceability
 		movff	NN_templ,Tx1d2
-		bra		sndpkt3
+		bra	sndpkt3
 
 
 long	btfsc	Turn,0			;which direction?
@@ -2151,17 +2235,17 @@ long	btfsc	Turn,0			;which direction?
 		bra		sndpkt1
 turnoff	movlw	0x91			;unset command
 sndpkt1	movwf	Tx1d0			;put in CAN frame
-		
+		bra		sndpkt4
 
-sndpkt3	movlw	B'00001111'		;clear last priority
+sndpkt3	
+sndpkt6		movlw	B'00001111'		;clear last priority
 		andwf	Tx1sidh,F
 		movlw	B'10110000'		;starting priority
 		iorwf	Tx1sidh,F
 		
 		
 		
-		movlw	5
-		movwf	Dlc				;5 byte command
+	
 		movlw	.10
 		movwf	Latcount
 		call	sendTX			;send CAN frame
@@ -2221,7 +2305,7 @@ n1		btfss	Oldrow,0		;is it still ON
 		movwf	INDF0
 		clrf	Turn			;set direction
 		rlncf	Ccount,W		;double column count
-		movwf	Pointno
+		movwf	Index
 		bra		sendpkt
 r1		btfss	Oldrow,1		;get old row data
 		bra		scan2
@@ -2231,7 +2315,7 @@ r1		btfss	Oldrow,1		;get old row data
 		movwf	INDF0
 		bsf		Turn,0			;set direction
 		rlncf	Ccount,W		;double column count
-		movwf	Pointno
+		movwf	Index
 		bra		sendpkt
 n2		btfss	Oldrow,2		;get old row data
 		bra		scan2
@@ -2241,8 +2325,8 @@ n2		btfss	Oldrow,2		;get old row data
 		movwf	INDF0
 		clrf	Turn			;set direction
 		rlncf	Ccount,W		;double column count
-		movwf	Pointno
-		incf	Pointno
+		movwf	Index
+		incf	Index
 		bra		sendpkt
 r2		btfss	Oldrow,3		;get old EEPROM row data
 		bra		scan2
@@ -2251,8 +2335,8 @@ r2		btfss	Oldrow,3		;get old EEPROM row data
 		movwf	INDF0
 		bsf		Turn,0			;set direction
 		rlncf	Ccount,W		;double column count
-		movwf	Pointno
-		incf	Pointno
+		movwf	Index
+		incf	Index
 		bra		sendpkt
 n3		btfss	Oldrow,4		;get old EEPROM row data
 		bra		scan2
@@ -2265,7 +2349,7 @@ n3		btfss	Oldrow,4		;get old EEPROM row data
 		clrf	Turn			;set direction
 		rlncf	Ccount,W		;double column count
 		addlw	.32				;point no. offset
-		movwf	Pointno
+		movwf	Index
 		bra		sendpkt
 r3		btfss	Oldrow,5		;get old EEPROM row data
 		bra		scan2
@@ -2279,7 +2363,7 @@ r3		btfss	Oldrow,5		;get old EEPROM row data
 		bsf		Turn,0			;set direction
 		rlncf	Ccount,W		;double column count
 		addlw	.32				;point no. offset
-		movwf	Pointno
+		movwf	Index
 		bra		sendpkt
 n4		btfss	Oldrow,6		;get old row data
 		bra		scan2
@@ -2293,8 +2377,8 @@ n4		btfss	Oldrow,6		;get old row data
 		clrf	Turn			;set direction
 		rlncf	Ccount,W		;double column count
 		addlw	.32				;point no. offset
-		movwf	Pointno
-		incf	Pointno
+		movwf	Index
+		incf	Index
 		bra		sendpkt
 r4		btfss	Oldrow,7		;get old row data
 		bra		scan2
@@ -2308,41 +2392,41 @@ r4		btfss	Oldrow,7		;get old row data
 		bsf		Turn,0			;set direction
 		rlncf	Ccount,W		;double column count	
 		addlw	.32				;point no. offset
-		movwf	Pointno
-		incf	Pointno
+		movwf	Index
+		incf	Index
 		bra		sendpkt
 
 n3b		rlncf	Ccount,W		;double column count
 		rlncf	WREG	
 		addlw	.32				;point no. offset
-		movwf	Pointno
+		movwf	Index
 		clrf	Turn			;ON only
 		bra		sendpkt
 
 r3b		rlncf	Ccount,W		;double column count
 		rlncf	WREG	
 		addlw	.32				;point no. offset
-		movwf	Pointno
-		incf	Pointno,F
+		movwf	Index
+		incf	Index,F
 		clrf	Turn			;ON only
 		bra		sendpkt
 
 n4b		rlncf	Ccount,W		;double column count
 		rlncf	WREG	
 		addlw	.32				;point no. offset
-		movwf	Pointno
-		incf	Pointno,F
-		incf	Pointno,F
+		movwf	Index
+		incf	Index,F
+		incf	Index,F
 		clrf	Turn			;ON only
 		bra		sendpkt
 
 r4b		rlncf	Ccount,W		;double column count
 		rlncf	WREG	
 		addlw	.32				;point no. offset
-		movwf	Pointno
-		incf	Pointno,F
-		incf	Pointno,F
-		incf	Pointno,F
+		movwf	Index
+		incf	Index,F
+		incf	Index,F
+		incf	Index,F
 		clrf	Turn			;ON only
 		bra		sendpkt
 
@@ -2370,7 +2454,7 @@ n1c		btfss	Oldrow,0		;is it still ON
 		clrf	Turn			;set direction
 		rlncf	Ccount,W		;double column count
 		rlncf	WREG
-		movwf	Pointno
+		movwf	Index
 		bra		sendpkt
 r1c		btfss	Oldrow,1		;get old row data
 		bra		scan2
@@ -2380,8 +2464,8 @@ r1c		btfss	Oldrow,1		;get old row data
 		bcf		Turn,0			;set direction
 		rlncf	Ccount,W		;double column count
 		rlncf	WREG
-		movwf	Pointno
-		incf	Pointno,F
+		movwf	Index
+		incf	Index,F
 		bra		sendpkt
 n2c		btfss	Oldrow,2		;get old row data
 		bra		scan2
@@ -2392,9 +2476,9 @@ n2c		btfss	Oldrow,2		;get old row data
 		clrf	Turn			;set direction
 		rlncf	Ccount,W		;double column count
 		rlncf	WREG
-		movwf	Pointno
-		incf	Pointno,F
-		incf	Pointno,F
+		movwf	Index
+		incf	Index,F
+		incf	Index,F
 		bra		sendpkt
 r2c		btfss	Oldrow,3		;get old EEPROM row data
 		bra		scan2
@@ -2404,10 +2488,10 @@ r2c		btfss	Oldrow,3		;get old EEPROM row data
 		bcf		Turn,0			;set direction
 		rlncf	Ccount,W		;double column count
 		rlncf	WREG
-		movwf	Pointno
-		incf	Pointno
-		incf	Pointno,F
-		incf	Pointno,F
+		movwf	Index
+		incf	Index
+		incf	Index,F
+		incf	Index,F
 		bra		sendpkt
 n3c		btfss	Oldrow,4		;get old EEPROM row data
 		bra		scan2
@@ -2419,7 +2503,7 @@ n3c		btfss	Oldrow,4		;get old EEPROM row data
 		rlncf	Ccount,W		;double column count
 		rlncf	WREG
 		addlw	.64				;point no. offset
-		movwf	Pointno
+		movwf	Index
 		bra		sendpkt
 r3c		btfss	Oldrow,5		;get old EEPROM row data
 		bra		scan2
@@ -2430,8 +2514,8 @@ r3c		btfss	Oldrow,5		;get old EEPROM row data
 		rlncf	Ccount,W		;double column count
 		rlncf	WREG
 		addlw	.64				;point no. offset
-		movwf	Pointno
-		incf	Pointno,F
+		movwf	Index
+		incf	Index,F
 		bra		sendpkt
 n4c		btfss	Oldrow,6		;get old row data
 		bra		scan2
@@ -2442,9 +2526,9 @@ n4c		btfss	Oldrow,6		;get old row data
 		rlncf	Ccount,W		;double column count
 		rlncf	WREG
 		addlw	.64				;point no. offset
-		movwf	Pointno
-		incf	Pointno,F
-		incf	Pointno,F
+		movwf	Index
+		incf	Index,F
+		incf	Index,F
 		bra		sendpkt
 r4c		btfss	Oldrow,7		;get old row data
 		bra		scan2
@@ -2455,10 +2539,10 @@ r4c		btfss	Oldrow,7		;get old row data
 		rlncf	Ccount,W		;double column count
 		rlncf	WREG	
 		addlw	.64				;point no. offset
-		movwf	Pointno
-		incf	Pointno,F
-		incf	Pointno,F
-		incf	Pointno,F
+		movwf	Index
+		incf	Index,F
+		incf	Index,F
+		incf	Index,F
 		bra		sendpkt
 
 bscan3	movff	Row,Row1			;here for half PB mode
@@ -2502,8 +2586,8 @@ n1a		btfss	Oldrow,4		;is it still ON
 		btfsc	Mode1,0			;on only?
 		rlncf	Ccount,W
 		addlw	.64				;point no. offset
-		movwf	Pointno
-;		incf	Pointno,F
+		movwf	Index
+
 		bra		sendpkt
 r1a		btfss	Oldrow,5		;get old row data
 		bra		scan2
@@ -2518,9 +2602,9 @@ r1a		btfss	Oldrow,5		;get old row data
 		btfsc	Mode1,0			;on ony?
 		rlncf	Ccount,W
 		addlw	.64				;point no. offset
-		movwf	Pointno
+		movwf	Index
 		btfsc	Mode1,0			;on ony?
-		incf	Pointno,F
+		incf	Index,F
 		
 		bra		sendpkt
 n2a		btfss	Oldrow,6		;get old row data
@@ -2537,8 +2621,8 @@ n2a		btfss	Oldrow,6		;get old row data
 		addlw	.64				;point no. offset
 		btfsc	Mode1,0			;on ony?
 		addlw	1
-		movwf	Pointno		
-		incf	Pointno
+		movwf	Index	
+		incf	Index
 		bra		sendpkt
 r2a		btfss	Oldrow,7		;get old EEPROM row data
 		bra		scan2
@@ -2556,12 +2640,21 @@ r2a		btfss	Oldrow,7		;get old EEPROM row data
 		addlw	.64				;point no. offset
 		btfsc	Mode1,0			;on ony?
 		addlw	2
-		movwf	Pointno
-		incf	Pointno
+		movwf	Index		;moves index
+		
 		bra		sendpkt
 
 scan2a	goto	scan2
-	
+
+snd_inx	movlw	0xB0
+		movwf	Tx1d0		;event with data byte
+		rrncf	Index,F		;pointno has been doubled in get_event
+		bcf		Index,7		;clear any carry
+		movff	Index,Tx1d5
+		incf	Tx1d5,F		;pointno is index +1
+		movlw	6
+		movwf	Dlc
+		bra		sndpkt6
 ;********************************************************************
 
 ;	initialise matrix buffer
@@ -2696,6 +2789,8 @@ para1rd	movlw	0x9B
 		movff	Rx0d3,Tx1d3
 		movlw	5
 		movwf	Dlc
+		movff	NN_temph,Tx1d1
+		movff	NN_templ,Tx1d2
 		call	sendTX
 		return	
 
@@ -2746,26 +2841,14 @@ errsub	movwf	Tx1d3		;main eror message send. Error no. in WREG
 		call	sendTX
 		return
 
-;***************************************************************************
 
-;		Sets new Node ID from switches. Called during setup and if any changes while running.
 
-;setid1	movf	Atemp,W
-;		movwf	CANid			;set CAN ID and NN from DIP switches
-;		movwf	NodeID_l
-	
-;		movwf	Tx1d2			;preset NN in Tx buffer
-;		clrf	Tx1d1
-;		call	newid			;put in TXB2 for RTR	
-;		return
-
-;*************************************************************************	
-
-								;learn an EN. 
+		;	learn an EN. 
 		;	set ENcount to event number
 		;	now get table pointer
 
-learn	movff	Pointno,ENtempl		;point no. is index
+learn	movff	Index,ENtempl		;Index for table is base 0
+
 		clrf	ENtemph
 		rlncf	ENtempl,F			;double it for pointing to Table 
 		bcf		STATUS,C
@@ -2809,6 +2892,8 @@ read_block
 		movf	POSTINC2,W			;get old NN
 		subwf	Rx0d4,W
 		bnz		new
+		btfsc	Mode,1				;is it FLiM?
+		bra		new
 		lfsr	FSR2,Flash_buf		;here if same so undo it
 		movf	ENtempl,W
 		andlw	B'00111111'			;64 byte range
@@ -2816,7 +2901,8 @@ read_block
 		movff	NN_temph,POSTINC2	;restore original
 		movff	NN_templ,POSTINC2
 		clrf	POSTINC2
-		movff	Pointno,POSTINC2
+		incf	Index,W
+		movwf	POSTINC2
 		bra		new1
 
 new		lfsr	FSR2,Flash_buf
@@ -2859,7 +2945,7 @@ erase	movf	ENtempl,W			;point to start of block to erase
 		movlw	0xAA
 		movwf	EECON2
 		bsf		EECON1,WR			;erase
-		nop
+er_done		btfsc	EECON1,WR			;check erase is done
 		movlw	B'11000000'
 		movwf	INTCON				;reenable interrupts
 		return
@@ -2897,9 +2983,9 @@ write1	movf	POSTINC2,W
 		movlw	0xAA
 		movwf	EECON2
 		bsf		EECON1,WR			;write back
-		nop
-		nop
-		nop
+wr_done		btfsc	EECON1,WR			;write done?
+		bra	wr_done
+	
 		decfsz	Flcount
 		bra		write				;next block of 8
 		movlw	B'11000000'
@@ -2923,6 +3009,7 @@ c_buf	call	erase
 		decfsz	Count
 		bra		c_buf1	
 		clrf	Count1			;button number
+		incf	Count1			;button numbers start at 1
 		movlw	8
 		movwf	Count2
 		clrf	TBLPTRU			;set to flash start
@@ -2965,15 +3052,15 @@ c_buf1	movlw	.64				;next block to erase
 
 ;****************************************************************
 ;		gets event from FLASH table
-;		Uses Pointno as index
+;		Uses index
 ;		Result in Tx1 buffer
 
 get_event	clrf	TBLPTRU
 			movlw	0x20
 			movwf	TBLPTRH
-			rlcf	Pointno,F
+			rlcf	Index,F
 			bcf		STATUS,C
-			rlcf	Pointno,W
+			rlcf	Index,W
 			bnc		get_1
 			incf	TBLPTRH,F
 get_1		andlw	B'11111100'		;mask ls bits (blocks of 4)
@@ -2991,11 +3078,45 @@ get_1		andlw	B'11111100'		;mask ls bits (blocks of 4)
 			movf	TABLAT,W
 			movwf	Tx1d4
 			
+			
 			nop
 no_inc		return
 
+;***************************************************************
+;			read an event back by index no.
+
+read		movff	Rx0d3,Index
+			decf	Index,F			;index sent as base 1
+			call	get_event
+			movlw	0xF2
+			movwf	Tx1d0			;OPC for answer
+			movff	Rx0d3,Tx1d7		;index
+			movff	Tx1d4,Tx1d6		;shuffle
+			movff	Tx1d3,Tx1d5
+			movff	Tx1d2,Tx1d4
+			movff	Tx1d1,Tx1d3
+			movff	NN_templ,Tx1d2
+			movff	NN_temph,Tx1d1
+			movlw	8
+			movwf	Dlc
+			call	sendTXa
+			return
+
 
 ;****************************************************************
+
+;	write acknowledge CAN frame for FLASH write timing
+
+wrack	movlw	0x59		;set up WRACK frame
+	movwf	Tx1d0
+	movff	NN_temph,Tx1d1
+	movff	NN_templ,Tx1d2
+	movlw	3
+	movwf	Dlc
+	call	sendTXa
+	return
+
+;************************************************************************
 
 	ORG 0x002000			;start of event lookup table in FLASH
 							;64 lines of 8 bytes each. 4 bytes for each 'switch'
