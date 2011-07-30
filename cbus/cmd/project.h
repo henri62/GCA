@@ -72,7 +72,7 @@
 #define FIXED_CAN_ID 0x72
 #define DEFAULT_NN 	0xFFFE
 #define MAJOR_VER 	3
-#define MINOR_VER 	'c'	// Minor version character
+#define MINOR_VER 	'd'	// Minor version character
 
 #define NV_NUM		0	// Number of node variables
 #define EVT_NUM		0	// Number of event variables

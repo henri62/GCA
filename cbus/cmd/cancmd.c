@@ -39,7 +39,9 @@
 //									Change to new major version no. to emphasise change in hardware required (8 MHz resonator)
 // 21/04/11		3b	Mike Bolton		Bootloader modified to intialise CAN timing for 32MHz clock - source file now boot3.asm
 // 26/06/11		3c	Pete Brownlow	Add CAN transmit error checking, timeout if send fails, diagnostic beeps if unable to send on CAN, 
-//									turn off output bridge enable during a short
+//
+// 									turn off output bridge enable during a short
+// 18/07/11		3d	Pete Brownlow	Add code directives to library routines c018c and p18f2580.asm to force them to be linked above bootloader area
 
 #include "project.h"
 
@@ -141,7 +143,9 @@ const rom unsigned char params[7] = {MANU_MERG, MINOR_VER, MODULE_ID, EVT_NUM, E
 
 
 // local function prototypes
+
 void setup(void);
+void __init(void);
 
 /*
  * Interrupt vectors
@@ -252,6 +256,7 @@ void main(void) {
         }  // slot timer flag set
     }
 }
+
 
 void setup(void) {
     unsigned char i;
@@ -401,4 +406,11 @@ void setup(void) {
     // enable interrupts
     INTCONbits.GIEH = 1;
     INTCONbits.GIEL = 1;
+}
+
+// C intialisation - declare a copy here to avoid rts one being used which would link above the bootloader
+
+void __init(void)
+
+{
 }

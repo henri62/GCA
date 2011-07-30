@@ -26,7 +26,9 @@ _asm goto _startup _endasm
 
 }
 
-#pragma code _startup_scn
+// #pragma code _startup_scn
+#pragma code APP
+
 void
 _startup (void)
 {
