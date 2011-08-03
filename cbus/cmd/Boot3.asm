@@ -65,7 +65,7 @@
 
 ;**********************************************************************************
 
-#include	p18F2480.inc
+#include	P18F2480.INC
 
 
 ;	definitions originally in canio.def
