@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/CAN-GCA2.X.${IMAGE_TYPE}.cof
-OUTPUT_BASENAME=CAN-GCA2.X.${IMAGE_TYPE}.cof
-PACKAGE_TOP_DIR=can-gca2.x/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/cangc2.X.${IMAGE_TYPE}.cof
+OUTPUT_BASENAME=cangc2.X.${IMAGE_TYPE}.cof
+PACKAGE_TOP_DIR=cangc2.x/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/can-gca2.x/bin
+makeDirectory ${TMPDIR}/cangc2.x/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/can-gca2.x.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/cangc2.x.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/can-gca2.x.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/cangc2.x.tar *
 checkReturnCode
 
 # Cleanup
