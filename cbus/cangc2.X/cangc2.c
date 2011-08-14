@@ -22,7 +22,12 @@
 #include <p18cxxx.h>
 #include "cbusdefs.h"
 #include "cbus_common.h"
+#include "commands.h"
 #include "cangc2.h"
+
+
+void InterruptServiceHigh(void);
+void InterruptServiceLow(void);
 
 
 #pragma config OSC=HSPLL, FCMEN=OFF, IESO=OFF
@@ -44,6 +49,28 @@ near unsigned char  Latcount;
 const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC2, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
 
 #pragma romdata
+
+//----------------------------------------------------------------------------
+// High priority interrupt vector
+
+#pragma code InterruptVectorHigh = 0x08
+void InterruptVectorHigh (void)
+{
+  _asm
+    goto InterruptServiceHigh //jump to interrupt routine
+  _endasm
+}
+
+//----------------------------------------------------------------------------
+// Low priority interrupt vector
+
+#pragma code InterruptVectorLow = 0x18
+void InterruptVectorLow (void)
+{
+  _asm
+    goto InterruptServiceLow //jump to interrupt routine
+  _endasm
+}
 
 
 /*
@@ -102,6 +129,11 @@ void initIO(void) {
   TRISBbits.TRISB6 = 0; /* LED1 */
   TRISBbits.TRISB7 = 0; /* LED2 */
   TRISAbits.TRISA2 = 1; /* Push button */
+
+  // Set up global interrupts
+  RCONbits.IPEN = 1;          // Enable priority levels on interrupts
+  INTCONbits.GIEL = 1;        // Low priority interrupts allowed
+  INTCONbits.GIEH = 1;        // Interrupting enabled.
 }
 
 
@@ -127,8 +159,34 @@ void initCAN(void) {
 
 
 void main(void) {
-    initIO();
-    initCAN();
+  initIO();
+  initCAN();
 
-    return;
+    // Loop forever
+  while (1) {
+    // Check for Rx packet and setup pointer to it
+    if (ecan_fifo_empty() == 0) {
+      // Decode the new command
+      parse_cmd();
+    }
+  }
+
+}
+
+
+// -------------------- Iterrupt Service Routines --------------------------
+#pragma interrupt InterruptServiceHigh  // "interrupt" pragma also for high priority
+void InterruptServiceHigh(void)
+{
+  // Check to see what caused the interrupt
+  // (Necessary when more than 1 interrupt at a priority level)
+
+}
+
+#pragma interruptlow InterruptServiceLow// "interruptlow" pragma for low priority
+void InterruptServiceLow(void)
+{
+  // Check to see what caused the interrupt
+  // (Necessary when more than 1 interrupt at a priority level)
+
 }
