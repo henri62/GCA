@@ -35,20 +35,15 @@
 
 #pragma udata access VARS
 
+near unsigned char  can_transmit_timeout;
+near unsigned char  can_transmit_failed;
+near unsigned short NN_temp;
+near unsigned char  Latcount;
+
 #pragma romdata parameters
-const rom unsigned char params[7] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC2, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
+const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC2, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
 
 #pragma romdata
-
-
-void setup(void) {
-  TRISBbits.TRISB6 = 0; /* LED1 */
-  TRISBbits.TRISB7 = 0; /* LED2 */
-  TRISAbits.TRISA2 = 1; /* Push button */
-
-  cbus_setup();
-
-}
 
 
 /*
@@ -104,13 +99,36 @@ void initIO(void) {
   cfg = ee_read(EE_PORTCFG + 15);
   TRISCbits.TRISC4 = (cfg & 0x01) ? 1:0;
 
+  TRISBbits.TRISB6 = 0; /* LED1 */
+  TRISBbits.TRISB7 = 0; /* LED2 */
+  TRISAbits.TRISA2 = 1; /* Push button */
 }
 
+
+void initCAN(void) {
+  // Setup ID
+  NN_temp = DEFAULT_NN;
+  Tx1[con] = 0;
+  Tx1[sidh] = 0b10110000 | (FIXED_CAN_ID & 0x78) >>3;
+  Tx1[sidl] = (FIXED_CAN_ID & 0x07) << 5;
+
+  // Setup TXB0 with high priority OPC_HLT
+  TXB0SIDH = 0b01110000 | (FIXED_CAN_ID & 0x78) >>3;
+  TXB0SIDL = (FIXED_CAN_ID & 0x07) << 5;
+  TXB0DLC = 1;
+  TXB0D0 = OPC_HLT;
+
+  // enable interrupts
+  INTCONbits.GIEH = 1;
+  INTCONbits.GIEL = 1;
+  
+  cbus_setup();
+}
 
 
 void main(void) {
     initIO();
-    setup();
+    initCAN();
 
     return;
 }

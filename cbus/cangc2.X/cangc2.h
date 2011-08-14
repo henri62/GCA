@@ -37,6 +37,6 @@
 
 
 
-extern const rom unsigned char params[7];
+extern near unsigned short NN_temp;
 
 #endif

@@ -50,7 +50,7 @@
 
 extern near unsigned char Latcount;
 extern near unsigned short NN_temp;
-
+extern const rom unsigned char params[32];
 
 // DEFINE INPUT AND OUTPUT PINS
 // ??? NOTE - BC1a still wip, ddr and init not yet worked out 
