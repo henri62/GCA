@@ -1,15 +1,6 @@
-//
-// CANCMD Programmer/Command Station (C) 2009 SPROG DCC
-//	web:	http://www.sprog-dcc.co.uk
-//	e-mail:	sprog@sprog-dcc.co.uk
-//
-
-// 06/04/11 Roger Healey - Modify code for OPC_BOOT
-//						 - add thisNN routine
-//						 - add code for OPC_RQNPN
-//						 - add doError for command error response
 #include "project.h"
 #include "cbusdefs.h"
+#include "can_send.h"
 #include "commands.h"
 
 
