@@ -48,6 +48,8 @@ extern const rom unsigned char params[32];
 #define LED1    		PORTBbits.RB6	// canbc1a does not have leds here,
 #define LED2    		PORTBbits.RB7	// but set pins anyway for diagnostics
 
+#define ISR_PIN		PORTCbits.RC6		// (pin 17) For scope debug - set bit when in high priority ISR
 
+#define TMR0_NORMAL	0x91
 
 #endif	// __PROJECT_H

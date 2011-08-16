@@ -38,5 +38,6 @@
 
 
 extern near unsigned short NN_temp;
+extern volatile near unsigned char tmr0_reload;
 
 #endif

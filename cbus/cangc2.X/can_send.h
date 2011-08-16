@@ -3,6 +3,7 @@
 
 extern unsigned char can_transmit_timeout;
 extern unsigned char can_transmit_failed;
+extern unsigned char can_bus_off;
 
 extern void can_opc(unsigned char opc);
 extern void can_tx_nn(unsigned char dlc_val);
