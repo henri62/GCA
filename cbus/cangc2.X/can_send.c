@@ -102,6 +102,7 @@ void sendTX1(void) {
 	while ((TXB1CONbits.TXREQ) && (!can_transmit_failed) && (can_transmit_timeout != 0))
 		;
 	TXB1CONbits.TXREQ = 1;
+  //LED1 = 0;
 }
 		
 #endif	// TX1

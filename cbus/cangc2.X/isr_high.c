@@ -26,8 +26,8 @@ near unsigned short long slot_timer;
 //
 #pragma interrupt isr_high
 void isr_high(void) {
+  LED1 = 1;
     // 13 clocks to get here after interrupt
-	ISR_PIN = 1;		// flag start of ISR
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
 
@@ -56,8 +56,6 @@ void isr_high(void) {
         --can_transmit_timeout;
       }
     }
+  LED1 = 0;
 
-
-
-	ISR_PIN = 0;   // end of ISR
 }

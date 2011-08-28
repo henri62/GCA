@@ -26,6 +26,7 @@
 #include "commands.h"
 #include "cangc2.h"
 #include "isr_high.h"
+#include "can_send.h"
 
 
 
@@ -54,7 +55,7 @@ typedef struct {
   //unsigned short timer;
 } Port;
 
-near Port Ports[16];
+rom Port Ports[16];
 
 #pragma romdata parameters
 const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC2, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
@@ -65,6 +66,7 @@ const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC2, EVT_
 void initIO(void);
 void checkInputs(void);
 void initCAN(void);
+void resetOutputs(void);
 
 /*
  * Interrupt vectors
@@ -101,8 +103,16 @@ void LOW_INT_VECT(void)
 
 #pragma code APP
 void main(void) {
+  int i = 0;
+  unsigned char led1 = LED1;
   initIO();
   initCAN();
+  resetOutputs();
+
+  for (i = 0; i < 5; i++) {
+    Tx1[d0] = OPC_ARST;
+    can_tx(1);
+  }
 
     // Loop forever
   while (1) {
@@ -112,66 +122,61 @@ void main(void) {
       parse_cmd();
     }
     checkInputs();
+    Tx1[d0] = OPC_ARST;
+    can_tx(1);
   }
 
 }
 
-/*
-Port   PICbit  Connector
-2      RA1     J4
-3      RA3     J4
-1      RA0     J4
-4      RA4     J4
-5      RA5     J4
-6      RB0     J4
-7      RB1     J4
-8      RB4     J4
-9      RC0     J3
-10     RC1     J3
-11     RC2     J3
-12     RC3     J3
-13     RC7     J3
-14     RC6     J3
-15     RC5     J3
-16     RC4     J3
- */
 void initIO(void) {
   int idx = 0;
 
-  memset(Ports, 0, sizeof(Port) * 16);
+  INTCON = 0;
+  EECON1 = 0;
 
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  Ports[idx].port = PORTAbits.RA0;
-  TRISAbits.TRISA0 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  Ports[idx].port = PORTAbits.RA1;
-  TRISAbits.TRISA1 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  Ports[idx].port = PORTAbits.RA3;
-  TRISAbits.TRISA3 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  Ports[idx].port = PORTAbits.RA4;
-  TRISAbits.TRISA4 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  Ports[idx].port = PORTAbits.RA5;
-  TRISAbits.TRISA5 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  Ports[idx].port = PORTBbits.RB0;
-  TRISBbits.TRISB0 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  Ports[idx].port = PORTBbits.RB1;
-  TRISBbits.TRISB1 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  Ports[idx].port = PORTBbits.RB4;
-  TRISBbits.TRISB4 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
+  IPR3 = 0;					// All IRQs low priority for now
+  IPR2 = 0;
+  IPR1 = 0;
+  PIE3 = 0b00100001;			// CAN TX error and FIFOWM interrupts
+  PIE2 = 0;
+  PIE1 = 0;
+  INTCON3 = 0;
+  INTCON2 = 0;                // Port B pullups are enabled
+  INTCON = 0;
+  PIR3 = 0;
+  PIR2 = 0;
+  PIR1 = 0;
+  RCONbits.IPEN = 1;			// enable interrupt priority levels
+
+  // Set up TMR0 for DCC bit timing with 58us period prescaler 4:1,
+  // 8 bit mode
+  // T0CON = 0x40;  old value
+  T0CON = 0x41;
+  TMR0L = 0;
+  TMR0H = 0;
+  INTCONbits.TMR0IE = 1;
+  T0CONbits.TMR0ON = 1;
+  INTCON2bits.TMR0IP = 1;
+
+  tmr0_reload = TMR0_NORMAL;
+
+  /*
+  for( idx = 0; idx < 8; idx++ ) {
+    Ports[idx].cfg = 0;
+    Ports[idx].port = 0;
+    Ports[idx].status = 0;
+    ee_write(EE_PORTCFG + idx, 0);
+  }
+
+  for( idx = 8; idx < 16; idx++ ) {
+    Ports[idx].cfg = 0;
+    Ports[idx].port = 0;
+    Ports[idx].status = 0;
+    ee_write(EE_PORTCFG + idx, 0x01);
+  }
+  */
+  idx = 0;
+
   Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
   Ports[idx].port = PORTCbits.RC0;
   TRISCbits.TRISC0 = (Ports[idx].cfg & 0x01) ? 1:0;
@@ -203,10 +208,56 @@ void initIO(void) {
   Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
   Ports[idx].port = PORTCbits.RC4;
   TRISCbits.TRISC4 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].port = PORTAbits.RA0;
+  TRISAbits.TRISA0 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].port = PORTAbits.RA1;
+  TRISAbits.TRISA1 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].port = PORTAbits.RA3;
+  TRISAbits.TRISA3 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].port = PORTAbits.RA4;
+  TRISAbits.TRISA4 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].port = PORTAbits.RA5;
+  TRISAbits.TRISA5 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].port = PORTBbits.RB0;
+  TRISBbits.TRISB0 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].port = PORTBbits.RB4;
+  TRISBbits.TRISB4 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].port = PORTBbits.RB1;
+  TRISBbits.TRISB1 = (Ports[idx].cfg & 0x01) ? 1:0;
 
   TRISBbits.TRISB6 = 0; /* LED1 */
   TRISBbits.TRISB7 = 0; /* LED2 */
   TRISAbits.TRISA2 = 1; /* Push button */
+
+    // Start slot timeout timer
+  slot_timer = ((short long)500000)/58;  // Half second count down for 58uS interrupts
+
+  // Set up TMR0 for DCC bit timing with 58us period prescaler 4:1,
+  // 8 bit mode
+ // T0CON = 0x40;  old value
+  T0CON = 0x41;
+  TMR0L = 0;
+  TMR0H = 0;
+  INTCONbits.TMR0IE = 1;
+  T0CONbits.TMR0ON = 1;
+  INTCON2bits.TMR0IP = 1;
 
   tmr0_reload = TMR0_NORMAL;
 
@@ -238,15 +289,82 @@ void initCAN(void) {
   cbus_setup();
 }
 
+void writeOutput(int idx, unsigned char val) {
+  switch(idx) {
+    case 0: PORT1 = val; break;
+    case 1: PORT2 = val; break;
+    case 2: PORT3 = val; break;
+    case 3: PORT4 = val; break;
+    case 4: PORT5 = val; break;
+    case 5: PORT6 = val; break;
+    case 6: PORT7 = val; break;
+    case 7: PORT8 = val; break;
+    case 8: PORT9 = val; break;
+    case 9: PORT10 = val; break;
+    case 10: PORT11 = val; break;
+    case 11: PORT12 = val; break;
+    case 12: PORT13 = val; break;
+    case 13: PORT14 = val; break;
+    case 14: PORT15 = val; break;
+    case 15: PORT16 = val; break;
+  }
+}
+
+unsigned char readInput(int idx) {
+  switch(idx) {
+    case 0:
+      return PORT1;
+    case 1:
+      return PORT2;
+    case 2:
+      return PORT3;
+    case 3:
+      return PORT4;
+    case 4:
+      return PORT5;
+    case 5:
+      return PORT6;
+    case 6:
+      return PORT7;
+    case 7:
+      return PORT8;
+    case 8:
+      return PORT9;
+    case 9:
+      return PORT10;
+    case 10:
+      return PORT11;
+    case 11:
+      return PORT12;
+    case 12:
+      return PORT13;
+    case 13:
+      return PORT14;
+    case 14:
+      return PORT15;
+    case 15:
+      return PORT16;
+  }
+}
 
 void checkInputs(void) {
   int idx = 0;
   for( idx = 0; idx < 16; idx++ ) {
     if( Ports[idx].cfg & 0x01 ) {
       if( Ports[idx].port != Ports[idx].status ) {
-        Ports[idx].status = Ports[idx].port;
+        Ports[idx].status = readInput(idx);
         // ToDo: Send an OPC.
       }
     }
   }
+}
+
+void resetOutputs(void) {
+  int idx = 0;
+  for( idx = 0; idx < 16; idx++ ) {
+    if( (Ports[idx].cfg & 0x01) == 0 ) {
+        writeOutput(idx, 0);
+    }
+  }
+
 }

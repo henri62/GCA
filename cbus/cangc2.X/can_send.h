@@ -1,9 +1,9 @@
 #ifndef __CAN_SEND_H
 #define __CAN_SEND_H
 
-extern unsigned char can_transmit_timeout;
-extern unsigned char can_transmit_failed;
-extern unsigned char can_bus_off;
+extern near unsigned char can_transmit_timeout;
+extern near unsigned char can_transmit_failed;
+extern near unsigned char can_bus_off;
 
 extern void can_opc(unsigned char opc);
 extern void can_tx_nn(unsigned char dlc_val);
