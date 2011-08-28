@@ -38,16 +38,6 @@ extern const rom unsigned char params[32];
 
 // RA0 is AN0 current sense
 //
-#define SW          	PORTAbits.RA2	// Flim switch
-
-//
-// Port B
-// Note that RB2 and RB3 are canrx and cantx so not used as I/O pins
-//           RB6 and RB7 are used as PGC and PGD but can also drive LEDs
-//
-#define LED1    		PORTBbits.RB6	// canbc1a does not have leds here,
-#define LED2    		PORTBbits.RB7	// but set pins anyway for diagnostics
-
 #define TMR0_NORMAL	0x91
 
 #endif	// __PROJECT_H

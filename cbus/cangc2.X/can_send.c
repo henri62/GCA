@@ -11,6 +11,7 @@
 #include "project.h"
 #include "can_send.h"
 #include "cbusdefs.h"
+#include "io.h"
 
 #pragma code APP
 
@@ -83,6 +84,7 @@ void sendTX1(void) {
 	unsigned char * ptr_fsr1;
 	unsigned char i;
 
+  LED1 = 1;
 	can_transmit_timeout = 2;	// half second intervals
 	can_transmit_failed = 0;
 
@@ -102,7 +104,7 @@ void sendTX1(void) {
 	while ((TXB1CONbits.TXREQ) && (!can_transmit_failed) && (can_transmit_timeout != 0))
 		;
 	TXB1CONbits.TXREQ = 1;
-  //LED1 = 0;
+  LED1 = 0;
 }
 		
 #endif	// TX1

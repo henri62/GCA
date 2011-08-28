@@ -16,7 +16,6 @@
 //
 #pragma interruptlow isr_low
 void isr_low(void) {
-  LED2 = 1;
 
   // If FIFO watermark interrupt is signalled then we send a high
   // priority OPC_HLT to halt the CBUS. The packet has been preloaded
@@ -45,5 +44,4 @@ void isr_low(void) {
   }
 
   PIR3 = 0; // clear interrupts
-  LED2 = 0;
 }
