@@ -2,6 +2,7 @@
 #include "cbusdefs.h"
 #include "can_send.h"
 #include "commands.h"
+#include "cangc2.h"
 #include "io.h"
 
 
@@ -54,7 +55,28 @@ void parse_cmd(void) {
       }
       break;
 
+    case OPC_SNN:
+    {
+      if( Wait4NN ) {
+        NN_temp = rx_ptr->d1 * 256 + rx_ptr->d2;
+        ee_write(EE_NN, rx_ptr->d2);
+        ee_write(EE_NN+1, rx_ptr->d1);
+        Wait4NN = 0;
+        LED2 = 0;
+      }
+      break;
+    }
+
     case OPC_RQNP:
+      Tx1[d0] = OPC_PARAMS;
+      Tx1[d1] = params[0];
+      Tx1[d2] = params[1];
+      Tx1[d3] = params[2];
+      Tx1[d4] = params[3];
+      Tx1[d5] = params[4];
+      Tx1[d6] = params[5];
+      Tx1[d7] = params[6];
+      can_tx(8);
       break;
 
     case OPC_BOOT:

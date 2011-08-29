@@ -22,8 +22,7 @@
 #define __CANGC2_H
 
 
-#define MAJOR_VER 1
-#define MINOR_VER 0
+#define VERSION 1
 #define EVT_NUM 16
 #define EVperEVT 2
 #define NV_NUM 16
@@ -61,6 +60,7 @@
 
 
 extern near unsigned short NN_temp;
+extern near unsigned char Wait4NN;
 extern volatile near unsigned char tmr0_reload;
 
 #endif

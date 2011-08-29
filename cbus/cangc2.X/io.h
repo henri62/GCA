@@ -45,5 +45,6 @@ void doTimedOff(void);
 void checkInputs(void);
 void resetOutputs(void);
 unsigned char checkFlimSwitch(void);
+void doLEDs(void);
 
 #endif	// __IO_H

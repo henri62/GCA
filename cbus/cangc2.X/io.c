@@ -11,8 +11,8 @@
 
 void setupIO(void) {
   int idx = 0;
-  unsigned char swON = 0;
 
+  // all digital I/O
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
   
@@ -20,7 +20,8 @@ void setupIO(void) {
   TRISBbits.TRISB7 = 0; /* LED2 */
   TRISAbits.TRISA2 = 1; /* Push button */
 
-  swON = !SW;
+  LED1 = 0;
+  LED2 = 0;
 
   for( idx = 0; idx < 8; idx++ ) {
     Ports[idx].cfg = 0x00;
@@ -28,7 +29,7 @@ void setupIO(void) {
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
     Ports[idx].addr = idx + 1;
-    if( swON )
+    if( checkFlimSwitch() )
       ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
@@ -38,7 +39,7 @@ void setupIO(void) {
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
     Ports[idx].addr = idx + 1;
-    if( swON )
+    if( checkFlimSwitch() )
       ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
@@ -184,7 +185,7 @@ void checkInputs(void) {
       if( val != Ports[idx].status ) {
         Ports[idx].status = val;
         if( (Ports[idx].cfg & 0x02) && val == 0 ) {
-          Ports[idx].timer = 2;
+          Ports[idx].timer = 4; // 2 seconds
           Ports[idx].timedoff = 1;
         }
         else if( (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
@@ -213,4 +214,13 @@ void resetOutputs(void) {
     }
   }
 
+}
+
+
+static unsigned char __LED2 = 1;
+void doLEDs(void) {
+  if( Wait4NN ) {
+    LED2 = __LED2;
+    __LED2 ^= 1;
+  }
 }

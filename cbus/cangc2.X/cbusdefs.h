@@ -10,7 +10,7 @@
 
 // 06/04/11 Roger Healey - Add OPC_CMDERR response codes
 
-// Manufacturers
+// Manufacturers (NMRA)
 
 #define MANU_MERG		165
 #define MANU_ROCRAIL		70

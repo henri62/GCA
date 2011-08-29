@@ -49,13 +49,23 @@ near unsigned char  can_transmit_timeout;
 near unsigned char  can_transmit_failed;
 near unsigned char  can_bus_off;
 near unsigned short NN_temp;
+near unsigned char  Wait4NN;
 near unsigned char  Latcount;
 volatile near unsigned char tmr0_reload;
 
 
+  /*
+    Para 1 Manufacturer number as allocated by the NMRA
+    Para 2 Module version number or code
+    Para 3 Module identifier
+    Para 4 Number of events allowed
+    Para 5 Number of event variables per event
+    Para 6 Number of node variables
+    Para 7 Not yet allocated.
+  */
 
 #pragma romdata parameters
-const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC2, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
+const rom unsigned char params[32] = {MANU_ROCRAIL, VERSION, MTYP_CANGC2, EVT_NUM, EVperEVT, NV_NUM, 0};
 
 #pragma romdata
 
@@ -101,6 +111,7 @@ void LOW_INT_VECT(void)
 #pragma code APP
 void main(void) {
   unsigned char swTrig = 0;
+  Wait4NN = 0;
 
   NN_temp  = ee_read(EE_NN);
   NN_temp += ee_read(EE_NN+1) * 256;
@@ -127,10 +138,17 @@ void main(void) {
     }
     else if( !checkFlimSwitch() && swTrig) {
       swTrig = 0;
-      Tx1[d0] = OPC_NNACK;
-      Tx1[d1] = NN_temp / 256;
-      Tx1[d2] = NN_temp % 256;
-      can_tx(3);
+      if( Wait4NN ) {
+        Wait4NN = 0;
+        LED2 = 0;
+      }
+      else {
+        Tx1[d0] = OPC_NNACK;
+        Tx1[d1] = NN_temp / 256;
+        Tx1[d2] = NN_temp % 256;
+        can_tx(3);
+        Wait4NN = 1;
+      }
     }
   }
 

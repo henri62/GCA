@@ -50,8 +50,9 @@ void isr_high(void) {
     // Slot timeout and other timers - every half second
     //
     if (--slot_timer == 0) {
-        slot_timer = ((short long)500000)/58;
+        slot_timer = ((short long)250000)/58;
         doIOTimers();
+        doLEDs();
 
       if (can_transmit_timeout != 0) {
         --can_transmit_timeout;
