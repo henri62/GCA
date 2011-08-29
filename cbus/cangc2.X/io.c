@@ -46,31 +46,6 @@ void setupIO(void) {
   idx = 0;
 
   Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  TRISCbits.TRISC0 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  TRISCbits.TRISC1 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  TRISCbits.TRISC2 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  TRISCbits.TRISC3 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  TRISCbits.TRISC7 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  TRISCbits.TRISC6 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  TRISCbits.TRISC5 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
-  TRISCbits.TRISC4 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
   TRISAbits.TRISA0 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
   Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
@@ -93,7 +68,32 @@ void setupIO(void) {
   idx++;
   Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
   TRISBbits.TRISB1 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
   
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  TRISCbits.TRISC0 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  TRISCbits.TRISC1 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  TRISCbits.TRISC2 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  TRISCbits.TRISC3 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  TRISCbits.TRISC7 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  TRISCbits.TRISC6 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  TRISCbits.TRISC5 = (Ports[idx].cfg & 0x01) ? 1:0;
+  idx++;
+  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  TRISCbits.TRISC4 = (Ports[idx].cfg & 0x01) ? 1:0;
+
 }
 
 void writeOutput(int idx, unsigned char val) {

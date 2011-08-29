@@ -122,7 +122,7 @@ void main(void) {
   if( NN_temp == 0 )
     NN_temp = DEFAULT_NN;
 
-  // Loop forever
+  // Loop forever (nothing lasts forever...)
   while (1) {
     // Check for Rx packet and setup pointer to it
     if (ecan_fifo_empty() == 0) {
