@@ -29,6 +29,7 @@
 typedef struct {
   unsigned char cfg;
   unsigned char status;
+  int addr;
   //unsigned short timer;
 } Port;
 

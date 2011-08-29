@@ -2,6 +2,7 @@
 #include "cbusdefs.h"
 #include "can_send.h"
 #include "commands.h"
+#include "io.h"
 
 
 #pragma udata access VARS
@@ -19,6 +20,32 @@ void cmd_cv(void);
 void parse_cmd(void) {
   //mode_word.s_full = 0;
   switch (rx_ptr->d0) {
+
+    case OPC_ACON:
+    case OPC_ASON:
+    {
+      int addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      int i = 0;
+      for( i = 0; i < 16; i++) {
+        if( Ports[i].addr == addr ) {
+          writeOutput(i, 1);
+        }
+      }
+      break;
+    }
+
+    case OPC_ACOF:
+    case OPC_ASOF:
+    {
+      int addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      int i = 0;
+      for( i = 0; i < 16; i++) {
+        if( Ports[i].addr == addr ) {
+          writeOutput(i, 0);
+        }
+      }
+      break;
+    }
 
     case OPC_RQNPN:
       // Request to read a parameter

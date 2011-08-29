@@ -13,13 +13,15 @@ void setupIO(void) {
   for( idx = 0; idx < 8; idx++ ) {
     Ports[idx].cfg = 0x00;
     Ports[idx].status = 0;
-    ee_write(EE_PORTCFG + idx, 0);
+    Ports[idx].addr = idx + 1;
+    //ee_write(EE_PORTCFG + idx, 0);
   }
 
   for( idx = 8; idx < 16; idx++ ) {
     Ports[idx].cfg = 0x01;
     Ports[idx].status = 0;
-    ee_write(EE_PORTCFG + idx, 0x01);
+    Ports[idx].addr = idx + 1;
+    //ee_write(EE_PORTCFG + idx, 0x01);
   }
 
   idx = 0;

@@ -169,18 +169,6 @@ else
 	cat ${OBJECTDIR}/isr_low.o.temp >> ${OBJECTDIR}/isr_low.o.d
 endif
 	${RM} __temp_cpp_output__
-${OBJECTDIR}/can_send.o: can_send.c  nbproject/Makefile-${CND_CONF}.mk
-	${RM} ${OBJECTDIR}/can_send.o.d 
-	${MKDIR} ${OBJECTDIR} 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/can_send.o   can_send.c  > ${OBJECTDIR}/can_send.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/can_send.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/can_send.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
-	${MP_CPP}  -MMD ${OBJECTDIR}/can_send.o.temp can_send.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
-	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/can_send.o.d
-ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
-	cat ${OBJECTDIR}/can_send.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/can_send.o.d
-else
-	cat ${OBJECTDIR}/can_send.o.temp >> ${OBJECTDIR}/can_send.o.d
-endif
-	${RM} __temp_cpp_output__
 ${OBJECTDIR}/cbus_common.o: cbus_common.c  nbproject/Makefile-${CND_CONF}.mk
 	${RM} ${OBJECTDIR}/cbus_common.o.d 
 	${MKDIR} ${OBJECTDIR} 
@@ -191,6 +179,18 @@ ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
 	cat ${OBJECTDIR}/cbus_common.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/cbus_common.o.d
 else
 	cat ${OBJECTDIR}/cbus_common.o.temp >> ${OBJECTDIR}/cbus_common.o.d
+endif
+	${RM} __temp_cpp_output__
+${OBJECTDIR}/can_send.o: can_send.c  nbproject/Makefile-${CND_CONF}.mk
+	${RM} ${OBJECTDIR}/can_send.o.d 
+	${MKDIR} ${OBJECTDIR} 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/can_send.o   can_send.c  > ${OBJECTDIR}/can_send.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/can_send.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/can_send.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
+	${MP_CPP}  -MMD ${OBJECTDIR}/can_send.o.temp can_send.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
+	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/can_send.o.d
+ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
+	cat ${OBJECTDIR}/can_send.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/can_send.o.d
+else
+	cat ${OBJECTDIR}/can_send.o.temp >> ${OBJECTDIR}/can_send.o.d
 endif
 	${RM} __temp_cpp_output__
 ${OBJECTDIR}/commands.o: commands.c  nbproject/Makefile-${CND_CONF}.mk
@@ -266,18 +266,6 @@ else
 	cat ${OBJECTDIR}/isr_low.o.temp >> ${OBJECTDIR}/isr_low.o.d
 endif
 	${RM} __temp_cpp_output__
-${OBJECTDIR}/can_send.o: can_send.c  nbproject/Makefile-${CND_CONF}.mk
-	${RM} ${OBJECTDIR}/can_send.o.d 
-	${MKDIR} ${OBJECTDIR} 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/can_send.o   can_send.c  > ${OBJECTDIR}/can_send.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/can_send.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/can_send.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
-	${MP_CPP}  -MMD ${OBJECTDIR}/can_send.o.temp can_send.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
-	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/can_send.o.d
-ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
-	cat ${OBJECTDIR}/can_send.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/can_send.o.d
-else
-	cat ${OBJECTDIR}/can_send.o.temp >> ${OBJECTDIR}/can_send.o.d
-endif
-	${RM} __temp_cpp_output__
 ${OBJECTDIR}/cbus_common.o: cbus_common.c  nbproject/Makefile-${CND_CONF}.mk
 	${RM} ${OBJECTDIR}/cbus_common.o.d 
 	${MKDIR} ${OBJECTDIR} 
@@ -288,6 +276,18 @@ ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
 	cat ${OBJECTDIR}/cbus_common.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/cbus_common.o.d
 else
 	cat ${OBJECTDIR}/cbus_common.o.temp >> ${OBJECTDIR}/cbus_common.o.d
+endif
+	${RM} __temp_cpp_output__
+${OBJECTDIR}/can_send.o: can_send.c  nbproject/Makefile-${CND_CONF}.mk
+	${RM} ${OBJECTDIR}/can_send.o.d 
+	${MKDIR} ${OBJECTDIR} 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/can_send.o   can_send.c  > ${OBJECTDIR}/can_send.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/can_send.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/can_send.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
+	${MP_CPP}  -MMD ${OBJECTDIR}/can_send.o.temp can_send.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
+	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/can_send.o.d
+ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
+	cat ${OBJECTDIR}/can_send.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/can_send.o.d
+else
+	cat ${OBJECTDIR}/can_send.o.temp >> ${OBJECTDIR}/can_send.o.d
 endif
 	${RM} __temp_cpp_output__
 ${OBJECTDIR}/commands.o: commands.c  nbproject/Makefile-${CND_CONF}.mk

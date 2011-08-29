@@ -190,8 +190,12 @@ void checkInputs(void) {
       if( val != Ports[idx].status ) {
         Ports[idx].status = val;
         // ToDo: Send an OPC.
-        Tx1[d0] = OPC_ACK;
-        can_tx(1);
+        Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
+        Tx1[d1] = 0;
+        Tx1[d2] = 0;
+        Tx1[d3] = Ports[idx].addr / 256;
+        Tx1[d4] = Ports[idx].addr % 256;
+        can_tx(5);
         LED2 = val;
       }
     }
