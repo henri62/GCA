@@ -29,6 +29,17 @@ void parse_cmd(void) {
 
     default: break;
   }
+
+    Nop();
+    rx_ptr->con = 0;
+    if (can_bus_off) {
+      // At least one buffer is now free
+      can_bus_off = 0;
+      PIE3bits.FIFOWMIE = 1;
+      can_bus_on();
+    }
+
+
 }
 
 void doRqnpn(unsigned int idx) {

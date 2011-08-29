@@ -190,7 +190,7 @@ void checkInputs(void) {
       if( val != Ports[idx].status ) {
         Ports[idx].status = val;
         // ToDo: Send an OPC.
-        Tx1[d0] = OPC_ARST;
+        Tx1[d0] = OPC_ACK;
         can_tx(1);
         LED2 = val;
       }
@@ -202,7 +202,7 @@ void resetOutputs(void) {
   int idx = 0;
   for( idx = 0; idx < 16; idx++ ) {
     if( (Ports[idx].cfg & 0x01) == 0 ) {
-        writeOutput(idx, idx%2);
+        writeOutput(idx, 0);
     }
   }
 
