@@ -58,9 +58,11 @@ void parse_cmd(void) {
     case OPC_SNN:
     {
       if( Wait4NN ) {
-        NN_temp = rx_ptr->d1 * 256 + rx_ptr->d2;
-        ee_write(EE_NN, rx_ptr->d2);
-        ee_write(EE_NN+1, rx_ptr->d1);
+        unsigned char nnH = rx_ptr->d1;
+        unsigned char nnL = rx_ptr->d2;
+        NN_temp = nnH * 256 + nnL;
+        ee_write(EE_NN, nnH);
+        ee_write(EE_NN+1, nnL);
         Wait4NN = 0;
         LED2 = 0;
       }

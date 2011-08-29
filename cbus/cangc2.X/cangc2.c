@@ -33,7 +33,7 @@
 
 #pragma config OSC=HSPLL, FCMEN=OFF, IESO=OFF
 #pragma config PWRT=ON, BOREN=BOHW, BORV=2, WDT = OFF, WDTPS=256
-#pragma config MCLRE=ON, LPT1OSC=OFF, PBADEN=OFF, DEBUG=OFF
+#pragma config MCLRE=OFF, LPT1OSC=OFF, PBADEN=OFF, DEBUG=OFF
 #pragma config XINST=OFF, BBSIZ=1024, LVP=OFF, STVREN=OFF
 #pragma config CP0=OFF, CP1=OFF, CPB=OFF, CPD=OFF
 #pragma config WRT0=OFF, WRT1=OFF, WRTB=OFF, WRTC=OFF, WRTD=OFF
@@ -113,14 +113,14 @@ void main(void) {
   unsigned char swTrig = 0;
   Wait4NN = 0;
 
-  NN_temp  = ee_read(EE_NN);
-  NN_temp += ee_read(EE_NN+1) * 256;
-  if( NN_temp == 0 )
-    NN_temp = DEFAULT_NN;
-  
   initIO();
   initCAN();
   resetOutputs();
+
+  NN_temp  = ee_read(EE_NN) * 256;
+  NN_temp += ee_read(EE_NN+1);
+  if( NN_temp == 0 )
+    NN_temp = DEFAULT_NN;
 
   // Loop forever
   while (1) {

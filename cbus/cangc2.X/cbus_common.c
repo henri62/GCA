@@ -142,22 +142,21 @@ unsigned char ee_read(unsigned char addr) {
  * ee_write - write to data EEPROM
  */
 void ee_write(unsigned char addr, unsigned char data) {
-  EEADR = addr;
-  EEDATA = data;
-  EECON1bits.EEPGD = 0; /* Point to DATA memory */
-  EECON1bits.CFGS = 0; /* Access program FLASH or Data EEPROM memory */
-  EECON1bits.WREN = 1; /* Enable writes */
-  INTCONbits.GIE = 0; /* Disable Interrupts */
-  EECON2 = 0x55;
-  EECON2 = 0xAA;
-  EECON1bits.WR = 1;
-  _asm nop
-  nop _endasm
-  INTCONbits.GIE = 1; /* Enable Interrupts */
+  INTCONbits.GIE = 0; // Disable interupts
+
+  EECON1bits.EEPGD = 0; // Select the EEPROM memory
+  EECON1bits.CFGS = 0; // Access the EEPROM memory
+  EECON1bits.WREN = 1; // Enable writing
+  EEADR = addr; // Set the address
+  EEDATA = data; // Set the data
+  EECON2 = 0x55; // Write initiate sequence
+  EECON2 = 0xaa; // Write initiate sequence
+  EECON1bits.WR = 1; // Start writing
   while (!PIR2bits.EEIF)
-    ;
-  PIR2bits.EEIF = 0;
-  EECON1bits.WREN = 0; /* Disable writes */
+  ; // Wait for write to finish
+  PIR2bits.EEIF = 0; // Clear EEIF bit
+
+  INTCONbits.GIE = 1; // Enable interupts
 }
 
 /*
