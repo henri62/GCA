@@ -54,6 +54,20 @@ void parse_cmd(void) {
       }
       break;
 
+    case OPC_RQNP:
+      break;
+
+    case OPC_BOOT:
+    // Enter bootloader mode if NN matches
+      if (thisNN() == 1)
+      {
+        ee_write((unsigned char)(&bootflag), 0xFF);
+        Reset();
+      }
+      break;
+
+
+
     default: break;
   }
 

@@ -100,6 +100,13 @@ void LOW_INT_VECT(void)
 
 #pragma code APP
 void main(void) {
+  unsigned char swTrig = 0;
+
+  NN_temp  = ee_read(EE_NN);
+  NN_temp += ee_read(EE_NN+1) * 256;
+  if( NN_temp == 0 )
+    NN_temp = DEFAULT_NN;
+  
   initIO();
   initCAN();
   resetOutputs();
@@ -111,8 +118,20 @@ void main(void) {
       // Decode the new command
       parse_cmd();
     }
+
     checkInputs();
     doTimedOff();
+
+    if( checkFlimSwitch() && !swTrig ) {
+      swTrig = 1;
+    }
+    else if( !checkFlimSwitch() && swTrig) {
+      swTrig = 0;
+      Tx1[d0] = OPC_NNACK;
+      Tx1[d1] = NN_temp / 256;
+      Tx1[d2] = NN_temp % 256;
+      can_tx(3);
+    }
   }
 
 }

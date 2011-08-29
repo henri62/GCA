@@ -22,7 +22,7 @@
 
     
 #define FIXED_CAN_ID 0x72
-#define DEFAULT_NN   0xFFFE
+#define DEFAULT_NN   0xFFEE
 
 
 extern near unsigned char Latcount;

@@ -11,6 +11,16 @@
 
 void setupIO(void) {
   int idx = 0;
+  unsigned char swON = 0;
+
+  ADCON0 = 0x00;
+  ADCON1 = 0x0F;
+  
+  TRISBbits.TRISB6 = 0; /* LED1 */
+  TRISBbits.TRISB7 = 0; /* LED2 */
+  TRISAbits.TRISA2 = 1; /* Push button */
+
+  swON = !SW;
 
   for( idx = 0; idx < 8; idx++ ) {
     Ports[idx].cfg = 0x00;
@@ -18,7 +28,8 @@ void setupIO(void) {
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
     Ports[idx].addr = idx + 1;
-    ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
+    if( swON )
+      ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
   for( idx = 8; idx < 16; idx++ ) {
@@ -27,7 +38,8 @@ void setupIO(void) {
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
     Ports[idx].addr = idx + 1;
-    ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
+    if( swON )
+      ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
   idx = 0;
@@ -80,11 +92,6 @@ void setupIO(void) {
   idx++;
   Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
   TRISBbits.TRISB1 = (Ports[idx].cfg & 0x01) ? 1:0;
-
-
-  TRISBbits.TRISB6 = 0; /* LED1 */
-  TRISBbits.TRISB7 = 0; /* LED2 */
-  TRISAbits.TRISA2 = 1; /* Push button */
   
 }
 
@@ -164,6 +171,11 @@ void doTimedOff(void) {
 }
 
 
+unsigned char checkFlimSwitch(void) {
+  unsigned char val = SW;
+  return !val;
+}
+
 void checkInputs(void) {
   int idx = 0;
   for( idx = 0; idx < 16; idx++ ) {
@@ -172,9 +184,11 @@ void checkInputs(void) {
       if( val != Ports[idx].status ) {
         Ports[idx].status = val;
         if( (Ports[idx].cfg & 0x02) && val == 0 ) {
-        //if( val == 0 ) {
           Ports[idx].timer = 2;
           Ports[idx].timedoff = 1;
+        }
+        else if( (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
+          Ports[idx].timer = 2; // reload timer
         }
         else {
           // Send an OPC.
