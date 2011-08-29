@@ -23,6 +23,7 @@
     
 #define FIXED_CAN_ID 0x72
 #define DEFAULT_NN   0xFFEE
+#define DEFAULT_SOD  4711
 
 
 extern near unsigned char Latcount;

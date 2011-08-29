@@ -31,11 +31,13 @@
 #define EE_MAGIC 0
 #define EE_PORTCFG 2
 #define EE_NN EE_PORTCFG + 16
+#define EE_SOD EE_NN + 2
 
 // values
 #define MAGIC 93
 
 extern near unsigned short NN_temp;
+extern near unsigned short SOD;
 extern near unsigned char Wait4NN;
 extern volatile near unsigned char tmr0_reload;
 

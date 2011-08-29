@@ -22,6 +22,15 @@ void parse_cmd(void) {
   //mode_word.s_full = 0;
   switch (rx_ptr->d0) {
 
+    case OPC_ASRQ:
+    {
+      int addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      if( SOD == addr ) {
+        checkInputs(1);
+      }
+      break;
+    }
+      
     case OPC_ACON:
     case OPC_ASON:
     {

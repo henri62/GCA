@@ -41,7 +41,7 @@ void writeOutput(int port, unsigned char val);
 unsigned char readInput(int port);
 void doIOTimers(void);
 void doTimedOff(void);
-void checkInputs(void);
+void checkInputs(unsigned char sod);
 void resetOutputs(void);
 unsigned char checkFlimSwitch(void);
 void doLEDs(void);

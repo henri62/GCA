@@ -177,29 +177,33 @@ unsigned char checkFlimSwitch(void) {
   return !val;
 }
 
-void checkInputs(void) {
+void checkInputs(unsigned char sod) {
   int idx = 0;
   for( idx = 0; idx < 16; idx++ ) {
     if( Ports[idx].cfg & 0x01 ) {
       unsigned char val = readInput(idx);
-      if( val != Ports[idx].status ) {
+      if( sod || val != Ports[idx].status ) {
         Ports[idx].status = val;
-        if( (Ports[idx].cfg & 0x02) && val == 0 ) {
+        if( !sod && (Ports[idx].cfg & 0x02) && val == 0 ) {
           Ports[idx].timer = 4; // 2 seconds
           Ports[idx].timedoff = 1;
         }
-        else if( (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
+        else if( !sod && (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
           Ports[idx].timer = 2; // reload timer
         }
         else {
           // Send an OPC.
-          Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
+          if( sod )
+            Tx1[d0] = val ? OPC_ARSPO:OPC_ARSPN;
+          else
+            Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
           Tx1[d1] = 0;
           Tx1[d2] = 0;
           Tx1[d3] = Ports[idx].addr / 256;
           Tx1[d4] = Ports[idx].addr % 256;
           can_tx(5);
-          LED2 = val;
+          //LED2 = val;
+          dely();
         }
       }
     }

@@ -49,6 +49,7 @@ near unsigned char  can_transmit_timeout;
 near unsigned char  can_transmit_failed;
 near unsigned char  can_bus_off;
 near unsigned short NN_temp;
+near unsigned short SOD;
 near unsigned char  Wait4NN;
 near unsigned char  Latcount;
 volatile near unsigned char tmr0_reload;
@@ -71,7 +72,6 @@ const rom unsigned char params[32] = {MANU_ROCRAIL, VERSION, MTYP_CANGC2, EVT_NU
 
 
 void initIO(void);
-void checkInputs(void);
 void initCAN(void);
 void resetOutputs(void);
 
@@ -122,6 +122,13 @@ void main(void) {
   if( NN_temp == 0 )
     NN_temp = DEFAULT_NN;
 
+  /*
+  SOD  = ee_read(EE_SOD) * 256;
+  SOD += ee_read(EE_SOD+1);
+  if( SOD == 0 )
+    */
+    SOD = DEFAULT_SOD;
+
   // Loop forever (nothing lasts forever...)
   while (1) {
     // Check for Rx packet and setup pointer to it
@@ -130,7 +137,7 @@ void main(void) {
       parse_cmd();
     }
 
-    checkInputs();
+    checkInputs(0);
     doTimedOff();
 
     if( checkFlimSwitch() && !swTrig ) {
