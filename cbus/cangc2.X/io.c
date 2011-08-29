@@ -3,7 +3,9 @@
 #include <stdio.h>
 
 #include "cbus_common.h"
+#include "cbusdefs.h"
 #include "cangc2.h"
+#include "can_send.h"
 #include "io.h"
 
 
@@ -13,15 +15,19 @@ void setupIO(void) {
   for( idx = 0; idx < 8; idx++ ) {
     Ports[idx].cfg = 0x00;
     Ports[idx].status = 0;
+    Ports[idx].timedoff = 0;
+    Ports[idx].timer = 0;
     Ports[idx].addr = idx + 1;
-    //ee_write(EE_PORTCFG + idx, 0);
+    ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
   for( idx = 8; idx < 16; idx++ ) {
-    Ports[idx].cfg = 0x01;
+    Ports[idx].cfg = 0x01 | 0x02;
     Ports[idx].status = 0;
+    Ports[idx].timedoff = 0;
+    Ports[idx].timer = 0;
     Ports[idx].addr = idx + 1;
-    //ee_write(EE_PORTCFG + idx, 0x01);
+    ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
   idx = 0;
@@ -123,6 +129,74 @@ unsigned char readInput(int idx) {
     case 14: val = PORT15; break;
     case 15: val = PORT16; break;
   }
-  return val;
+  return !val;
 }
 
+
+void doIOTimers(void) {
+  int i = 0;
+  for( i = 0; i < 16; i++ ) {
+    if( Ports[i].timedoff ) {
+      if( Ports[i].timer > 0 ) {
+        Ports[i].timer--;
+      }
+    }
+  }
+}
+
+void doTimedOff(void) {
+  int i = 0;
+  for( i = 0; i < 16; i++ ) {
+    if( Ports[i].timedoff ) {
+      if( Ports[i].timer == 0 ) {
+        Ports[i].timedoff = 0;
+        // Send an OPC.
+        Tx1[d0] = OPC_ASOF;
+        Tx1[d1] = 0;
+        Tx1[d2] = 0;
+        Tx1[d3] = Ports[i].addr / 256;
+        Tx1[d4] = Ports[i].addr % 256;
+        can_tx(5);
+        LED2 = 0;
+      }
+    }
+  }
+}
+
+
+void checkInputs(void) {
+  int idx = 0;
+  for( idx = 0; idx < 16; idx++ ) {
+    if( Ports[idx].cfg & 0x01 ) {
+      unsigned char val = readInput(idx);
+      if( val != Ports[idx].status ) {
+        Ports[idx].status = val;
+        if( (Ports[idx].cfg & 0x02) && val == 0 ) {
+        //if( val == 0 ) {
+          Ports[idx].timer = 2;
+          Ports[idx].timedoff = 1;
+        }
+        else {
+          // Send an OPC.
+          Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
+          Tx1[d1] = 0;
+          Tx1[d2] = 0;
+          Tx1[d3] = Ports[idx].addr / 256;
+          Tx1[d4] = Ports[idx].addr % 256;
+          can_tx(5);
+          LED2 = val;
+        }
+      }
+    }
+  }
+}
+
+void resetOutputs(void) {
+  int idx = 0;
+  for( idx = 0; idx < 16; idx++ ) {
+    if( (Ports[idx].cfg & 0x01) == 0 ) {
+        writeOutput(idx, 0);
+    }
+  }
+
+}

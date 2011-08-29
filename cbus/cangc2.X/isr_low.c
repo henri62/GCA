@@ -8,6 +8,7 @@
 
 #include "project.h"
 #include "can_send.h"
+#include "io.h"
 
 #pragma code APP
 

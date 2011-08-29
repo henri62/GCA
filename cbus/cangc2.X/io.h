@@ -30,7 +30,8 @@ typedef struct {
   unsigned char cfg;
   unsigned char status;
   int addr;
-  //unsigned short timer;
+  unsigned char timedoff;
+  int timer;
 } Port;
 
 extern ram Port Ports[16];
@@ -39,5 +40,9 @@ extern ram Port Ports[16];
 void setupIO(void);
 void writeOutput(int port, unsigned char val);
 unsigned char readInput(int port);
+void doIOTimers(void);
+void doTimedOff(void);
+void checkInputs(void);
+void resetOutputs(void);
 
 #endif	// __IO_H

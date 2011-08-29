@@ -112,6 +112,7 @@ void main(void) {
       parse_cmd();
     }
     checkInputs();
+    doTimedOff();
   }
 
 }
@@ -182,32 +183,3 @@ void initCAN(void) {
 }
 
 
-void checkInputs(void) {
-  int idx = 0;
-  for( idx = 0; idx < 16; idx++ ) {
-    if( (Ports[idx].cfg & 0x01) == 0x01 ) {
-      unsigned char val = readInput(idx);
-      if( val != Ports[idx].status ) {
-        Ports[idx].status = val;
-        // ToDo: Send an OPC.
-        Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
-        Tx1[d1] = 0;
-        Tx1[d2] = 0;
-        Tx1[d3] = Ports[idx].addr / 256;
-        Tx1[d4] = Ports[idx].addr % 256;
-        can_tx(5);
-        LED2 = val;
-      }
-    }
-  }
-}
-
-void resetOutputs(void) {
-  int idx = 0;
-  for( idx = 0; idx < 16; idx++ ) {
-    if( (Ports[idx].cfg & 0x01) == 0 ) {
-        writeOutput(idx, 0);
-    }
-  }
-
-}

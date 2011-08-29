@@ -8,6 +8,7 @@
 #include "isr_high.h"
 #include "cangc2.h"
 #include "can_send.h"
+#include "io.h"
 
 #pragma udata access VARS
 near unsigned short long slot_timer;
@@ -50,9 +51,11 @@ void isr_high(void) {
     //
     if (--slot_timer == 0) {
         slot_timer = ((short long)500000)/58;
+        doIOTimers();
 
       if (can_transmit_timeout != 0) {
         --can_transmit_timeout;
       }
     }
+
 }
