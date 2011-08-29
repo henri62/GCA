@@ -13,9 +13,6 @@
 // Manufacturers (NMRA)
 
 #define MANU_MERG		165
-#define MANU_ROCRAIL		70
-
-
 // Module types
 
 #define MTYP_SLIM        0  // default NN for SLiM nodes
@@ -31,7 +28,10 @@
 #define MTYP_CANCMD      10 // CANCMD command station
 #define MTYP_CANBC1a	 11 // BC1a command station
 
-#define MTYP_CANGC2	 99 // 16 I/O
+
+#define MANU_ROCRAIL		70
+// Module types
+#define MTYP_CANGC2	 2 // 16 I/O
 
 
 //  CBUS opcodes list
