@@ -26,11 +26,14 @@
 
 
 typedef struct {
-  unsigned char cfg;
-  unsigned char status;
-  int addr;
-  unsigned char timedoff;
-  int timer;
+  byte   cfg;
+  byte   status;
+  ushort addr;
+  byte   timedoff;
+  ushort timer;
+  ushort evtnn;
+  ushort evtid;
+  byte   evtinv;
 } Port;
 
 extern ram Port Ports[16];

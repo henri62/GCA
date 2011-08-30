@@ -1,6 +1,6 @@
 #include "project.h"
 #include "cbusdefs.h"
-#include "can_send.h"
+#include "utils.h"
 #include "commands.h"
 #include "cangc2.h"
 #include "io.h"
@@ -70,8 +70,8 @@ void parse_cmd(void) {
         unsigned char nnH = rx_ptr->d1;
         unsigned char nnL = rx_ptr->d2;
         NN_temp = nnH * 256 + nnL;
-        ee_write(EE_NN, nnH);
-        ee_write(EE_NN+1, nnL);
+        eeWrite(EE_NN, nnH);
+        eeWrite(EE_NN+1, nnL);
         Wait4NN = 0;
         LED2 = 0;
       }
@@ -94,7 +94,7 @@ void parse_cmd(void) {
     // Enter bootloader mode if NN matches
       if (thisNN() == 1)
       {
-        ee_write((unsigned char)(&bootflag), 0xFF);
+        eeWrite((unsigned char)(&bootflag), 0xFF);
         Reset();
       }
       break;

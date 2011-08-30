@@ -7,7 +7,6 @@
 #include "project.h"
 #include "isr_high.h"
 #include "cangc2.h"
-#include "can_send.h"
 #include "io.h"
 
 #pragma udata access VARS

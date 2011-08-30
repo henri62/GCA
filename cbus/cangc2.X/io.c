@@ -2,10 +2,10 @@
 #include <p18cxxx.h>
 #include <stdio.h>
 
-#include "cbus_common.h"
+#include "cbus.h"
+#include "utils.h"
 #include "cbusdefs.h"
 #include "cangc2.h"
-#include "can_send.h"
 #include "io.h"
 
 
@@ -30,7 +30,7 @@ void setupIO(void) {
     Ports[idx].timer = 0;
     Ports[idx].addr = idx + 1;
     if( checkFlimSwitch() )
-      ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
+      eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
   for( idx = 8; idx < 16; idx++ ) {
@@ -40,58 +40,58 @@ void setupIO(void) {
     Ports[idx].timer = 0;
     Ports[idx].addr = idx + 1;
     if( checkFlimSwitch() )
-      ee_write(EE_PORTCFG + idx, Ports[idx].cfg);
+      eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
   idx = 0;
 
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISAbits.TRISA0 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISAbits.TRISA1 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISAbits.TRISA3 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISAbits.TRISA4 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISAbits.TRISA5 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISBbits.TRISB0 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISBbits.TRISB4 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISBbits.TRISB1 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
   
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISCbits.TRISC0 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISCbits.TRISC1 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISCbits.TRISC2 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISCbits.TRISC3 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISCbits.TRISC7 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISCbits.TRISC6 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISCbits.TRISC5 = (Ports[idx].cfg & 0x01) ? 1:0;
   idx++;
-  Ports[idx].cfg = ee_read(EE_PORTCFG + idx);
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
   TRISCbits.TRISC4 = (Ports[idx].cfg & 0x01) ? 1:0;
 
 }
@@ -203,7 +203,7 @@ void checkInputs(unsigned char sod) {
           Tx1[d4] = (Ports[idx].addr % 256) & 0xFF;
           can_tx(5);
           //LED2 = val;
-          dely();
+          delay();
         }
       }
     }

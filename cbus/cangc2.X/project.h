@@ -18,12 +18,16 @@
 // 06/04/11 Roger Healey - Put CANCMD constants inside #ifdef
 //  					 - Add MODULE_ID as MTYP_CANCMD		
 
-#include "cbus_common.h"
+#include "cbus.h"
 
     
 #define FIXED_CAN_ID 0x72
 #define DEFAULT_NN   0xFFEE
 #define DEFAULT_SOD  4711
+
+
+typedef unsigned short ushort;
+typedef unsigned char byte;
 
 
 extern near unsigned char Latcount;

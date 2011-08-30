@@ -22,11 +22,11 @@
 #include <p18cxxx.h>
 #include <stdio.h>
 #include "cbusdefs.h"
-#include "cbus_common.h"
+#include "cbus.h"
+#include "utils.h"
 #include "commands.h"
 #include "cangc2.h"
 #include "isr_high.h"
-#include "can_send.h"
 #include "io.h"
 
 
@@ -117,14 +117,14 @@ void main(void) {
   initCAN();
   resetOutputs();
 
-  NN_temp  = ee_read(EE_NN) * 256;
-  NN_temp += ee_read(EE_NN+1);
+  NN_temp  = eeRead(EE_NN) * 256;
+  NN_temp += eeRead(EE_NN+1);
   if( NN_temp == 0 )
     NN_temp = DEFAULT_NN;
 
   /*
-  SOD  = ee_read(EE_SOD) * 256;
-  SOD += ee_read(EE_SOD+1);
+  SOD  = eeRead(EE_SOD) * 256;
+  SOD += eeRead(EE_SOD+1);
   if( SOD == 0 )
     */
     SOD = DEFAULT_SOD;
