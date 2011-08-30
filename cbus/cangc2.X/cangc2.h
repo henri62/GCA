@@ -29,9 +29,9 @@
 
 // EEPROM addresses
 #define EE_MAGIC 0
-#define EE_PORTCFG 2
-#define EE_NN EE_PORTCFG + 16
+#define EE_NN 2
 #define EE_SOD EE_NN + 2
+#define EE_PORTCFG EE_SOD + 2
 
 // values
 #define MAGIC 93
