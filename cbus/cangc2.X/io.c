@@ -160,10 +160,10 @@ void doTimedOff(void) {
         Ports[i].timedoff = 0;
         // Send an OPC.
         Tx1[d0] = OPC_ASOF;
-        Tx1[d1] = 0;
-        Tx1[d2] = 0;
-        Tx1[d3] = Ports[i].addr / 256;
-        Tx1[d4] = Ports[i].addr % 256;
+        Tx1[d1] = (NN_temp / 256) & 0xFF;
+        Tx1[d2] = (NN_temp % 256) & 0xFF;
+        Tx1[d3] = (Ports[i].addr / 256) & 0xFF;
+        Tx1[d4] = (Ports[i].addr % 256) & 0xFF;
         can_tx(5);
         LED2 = 0;
       }
@@ -197,10 +197,10 @@ void checkInputs(unsigned char sod) {
             Tx1[d0] = val ? OPC_ARSPO:OPC_ARSPN;
           else
             Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
-          Tx1[d1] = 0;
-          Tx1[d2] = 0;
-          Tx1[d3] = Ports[idx].addr / 256;
-          Tx1[d4] = Ports[idx].addr % 256;
+          Tx1[d1] = (NN_temp / 256) & 0xFF;
+          Tx1[d2] = (NN_temp % 256) & 0xFF;
+          Tx1[d3] = (Ports[idx].addr / 256) & 0xFF;
+          Tx1[d4] = (Ports[idx].addr % 256) & 0xFF;
           can_tx(5);
           //LED2 = val;
           dely();
