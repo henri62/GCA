@@ -26,7 +26,7 @@
 #include "utils.h"
 #include "commands.h"
 #include "cangc2.h"
-#include "isr_high.h"
+#include "isr.h"
 #include "io.h"
 
 

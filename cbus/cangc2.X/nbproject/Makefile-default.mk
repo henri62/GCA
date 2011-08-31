@@ -32,7 +32,7 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/Boot3.o ${OBJECTDIR}/c018.o ${OBJECTDIR}/cangc2.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr_high.o ${OBJECTDIR}/isr_low.o ${OBJECTDIR}/utils.o
+OBJECTFILES=${OBJECTDIR}/Boot3.o ${OBJECTDIR}/c018.o ${OBJECTDIR}/cangc2.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o
 
 
 CFLAGS=
@@ -133,6 +133,18 @@ else
 	cat ${OBJECTDIR}/cangc2.o.temp >> ${OBJECTDIR}/cangc2.o.d
 endif
 	${RM} __temp_cpp_output__
+${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
+	${RM} ${OBJECTDIR}/isr.o.d 
+	${MKDIR} ${OBJECTDIR} 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c  > ${OBJECTDIR}/isr.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/isr.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/isr.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
+	${MP_CPP}  -MMD ${OBJECTDIR}/isr.o.temp isr.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
+	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/isr.o.d
+ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
+	cat ${OBJECTDIR}/isr.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/isr.o.d
+else
+	cat ${OBJECTDIR}/isr.o.temp >> ${OBJECTDIR}/isr.o.d
+endif
+	${RM} __temp_cpp_output__
 ${OBJECTDIR}/io.o: io.c  nbproject/Makefile-${CND_CONF}.mk
 	${RM} ${OBJECTDIR}/io.o.d 
 	${MKDIR} ${OBJECTDIR} 
@@ -143,18 +155,6 @@ ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
 	cat ${OBJECTDIR}/io.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/io.o.d
 else
 	cat ${OBJECTDIR}/io.o.temp >> ${OBJECTDIR}/io.o.d
-endif
-	${RM} __temp_cpp_output__
-${OBJECTDIR}/isr_high.o: isr_high.c  nbproject/Makefile-${CND_CONF}.mk
-	${RM} ${OBJECTDIR}/isr_high.o.d 
-	${MKDIR} ${OBJECTDIR} 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr_high.o   isr_high.c  > ${OBJECTDIR}/isr_high.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/isr_high.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/isr_high.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
-	${MP_CPP}  -MMD ${OBJECTDIR}/isr_high.o.temp isr_high.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
-	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/isr_high.o.d
-ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
-	cat ${OBJECTDIR}/isr_high.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/isr_high.o.d
-else
-	cat ${OBJECTDIR}/isr_high.o.temp >> ${OBJECTDIR}/isr_high.o.d
 endif
 	${RM} __temp_cpp_output__
 ${OBJECTDIR}/cbus.o: cbus.c  nbproject/Makefile-${CND_CONF}.mk
@@ -179,18 +179,6 @@ ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
 	cat ${OBJECTDIR}/utils.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/utils.o.d
 else
 	cat ${OBJECTDIR}/utils.o.temp >> ${OBJECTDIR}/utils.o.d
-endif
-	${RM} __temp_cpp_output__
-${OBJECTDIR}/isr_low.o: isr_low.c  nbproject/Makefile-${CND_CONF}.mk
-	${RM} ${OBJECTDIR}/isr_low.o.d 
-	${MKDIR} ${OBJECTDIR} 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr_low.o   isr_low.c  > ${OBJECTDIR}/isr_low.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/isr_low.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/isr_low.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
-	${MP_CPP}  -MMD ${OBJECTDIR}/isr_low.o.temp isr_low.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
-	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/isr_low.o.d
-ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
-	cat ${OBJECTDIR}/isr_low.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/isr_low.o.d
-else
-	cat ${OBJECTDIR}/isr_low.o.temp >> ${OBJECTDIR}/isr_low.o.d
 endif
 	${RM} __temp_cpp_output__
 ${OBJECTDIR}/commands.o: commands.c  nbproject/Makefile-${CND_CONF}.mk
@@ -230,6 +218,18 @@ else
 	cat ${OBJECTDIR}/cangc2.o.temp >> ${OBJECTDIR}/cangc2.o.d
 endif
 	${RM} __temp_cpp_output__
+${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
+	${RM} ${OBJECTDIR}/isr.o.d 
+	${MKDIR} ${OBJECTDIR} 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c  > ${OBJECTDIR}/isr.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/isr.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/isr.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
+	${MP_CPP}  -MMD ${OBJECTDIR}/isr.o.temp isr.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
+	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/isr.o.d
+ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
+	cat ${OBJECTDIR}/isr.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/isr.o.d
+else
+	cat ${OBJECTDIR}/isr.o.temp >> ${OBJECTDIR}/isr.o.d
+endif
+	${RM} __temp_cpp_output__
 ${OBJECTDIR}/io.o: io.c  nbproject/Makefile-${CND_CONF}.mk
 	${RM} ${OBJECTDIR}/io.o.d 
 	${MKDIR} ${OBJECTDIR} 
@@ -240,18 +240,6 @@ ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
 	cat ${OBJECTDIR}/io.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/io.o.d
 else
 	cat ${OBJECTDIR}/io.o.temp >> ${OBJECTDIR}/io.o.d
-endif
-	${RM} __temp_cpp_output__
-${OBJECTDIR}/isr_high.o: isr_high.c  nbproject/Makefile-${CND_CONF}.mk
-	${RM} ${OBJECTDIR}/isr_high.o.d 
-	${MKDIR} ${OBJECTDIR} 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr_high.o   isr_high.c  > ${OBJECTDIR}/isr_high.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/isr_high.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/isr_high.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
-	${MP_CPP}  -MMD ${OBJECTDIR}/isr_high.o.temp isr_high.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
-	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/isr_high.o.d
-ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
-	cat ${OBJECTDIR}/isr_high.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/isr_high.o.d
-else
-	cat ${OBJECTDIR}/isr_high.o.temp >> ${OBJECTDIR}/isr_high.o.d
 endif
 	${RM} __temp_cpp_output__
 ${OBJECTDIR}/cbus.o: cbus.c  nbproject/Makefile-${CND_CONF}.mk
@@ -276,18 +264,6 @@ ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
 	cat ${OBJECTDIR}/utils.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/utils.o.d
 else
 	cat ${OBJECTDIR}/utils.o.temp >> ${OBJECTDIR}/utils.o.d
-endif
-	${RM} __temp_cpp_output__
-${OBJECTDIR}/isr_low.o: isr_low.c  nbproject/Makefile-${CND_CONF}.mk
-	${RM} ${OBJECTDIR}/isr_low.o.d 
-	${MKDIR} ${OBJECTDIR} 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr_low.o   isr_low.c  > ${OBJECTDIR}/isr_low.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/isr_low.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/isr_low.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
-	${MP_CPP}  -MMD ${OBJECTDIR}/isr_low.o.temp isr_low.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
-	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/isr_low.o.d
-ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
-	cat ${OBJECTDIR}/isr_low.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/isr_low.o.d
-else
-	cat ${OBJECTDIR}/isr_low.o.temp >> ${OBJECTDIR}/isr_low.o.d
 endif
 	${RM} __temp_cpp_output__
 ${OBJECTDIR}/commands.o: commands.c  nbproject/Makefile-${CND_CONF}.mk
