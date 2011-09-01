@@ -210,6 +210,8 @@ void checkInputs(unsigned char sod) {
   }
 }
 
+
+
 void resetOutputs(void) {
   int idx = 0;
   for( idx = 0; idx < 16; idx++ ) {
@@ -219,6 +221,56 @@ void resetOutputs(void) {
   }
 
 }
+
+
+void saveOutputStates(void) {
+  int idx = 0;
+  byte o1 = 0;
+  byte o2 = 0;
+
+  for( idx = 0; idx < 8; idx++ ) {
+    if( (Ports[idx].cfg & 0x01) == 0 ) {
+      byte o = !readInput(idx);
+      o1 += o << idx;
+    }
+  }
+  eeWrite(EE_PORTSTAT + 0, o1);
+
+  for( idx = 8; idx < 16; idx++ ) {
+    if( (Ports[idx].cfg & 0x01) == 0 ) {
+      byte o = !readInput(idx);
+      o2 += o << idx;
+    }
+  }
+  eeWrite(EE_PORTSTAT + 1, o2);
+  
+
+}
+
+
+
+void restoreOutputStates(void) {
+  int idx = 0;
+  byte o1 = eeRead(EE_PORTSTAT + 0);
+  byte o2 = eeRead(EE_PORTSTAT + 1);
+
+  for( idx = 0; idx < 8; idx++ ) {
+    if( (Ports[idx].cfg & 0x01) == 0 ) {
+      byte o = (o1 >> idx) & 0x01;
+      writeOutput(idx, o);
+    }
+  }
+
+  for( idx = 8; idx < 16; idx++ ) {
+    if( (Ports[idx].cfg & 0x01) == 0 ) {
+      byte o = (o2 >> idx) & 0x01;
+      writeOutput(idx, o);
+    }
+  }
+
+
+}
+
 
 
 static unsigned char __LED2 = 1;

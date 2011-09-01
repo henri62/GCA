@@ -99,7 +99,9 @@ void parse_cmd(void) {
       }
       break;
 
-
+    case OPC_RTOF:
+      saveOutputStates();
+      break;
 
     default: break;
   }

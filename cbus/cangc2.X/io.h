@@ -48,5 +48,7 @@ void checkInputs(unsigned char sod);
 void resetOutputs(void);
 unsigned char checkFlimSwitch(void);
 void doLEDs(void);
+void saveOutputStates(void);
+void restoreOutputStates(void);
 
 #endif	// __IO_H

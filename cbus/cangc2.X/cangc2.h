@@ -29,9 +29,13 @@
 
 // EEPROM addresses
 #define EE_MAGIC 0
-#define EE_NN 2
-#define EE_SOD EE_NN + 2
-#define EE_PORTCFG EE_SOD + 2
+#define EE_NN 2                         // 2 bytes node number of this unit
+#define EE_SOD EE_NN + 2                // 2 bytes start off day address to report all input states
+#define EE_PORTCFG EE_SOD + 2           // 16 * 1 byte port configuration
+#define EE_PORTNN EE_PORTCFG + 16       // 16 * 2 bytes event node number
+#define EE_PORTADDR EE_PORTNN + 32      // 16 * 2 bytes event address (device id)
+#define EE_PORTACT EE_PORTADDR + 32     // 16 * 2 bytes event variable
+#define EE_PORTSTAT EE_PORTACT + 32     // 2 bytes port output status saved at power off command
 
 // values
 #define MAGIC 93

@@ -115,7 +115,7 @@ void main(void) {
 
   initIO();
   initCAN();
-  resetOutputs();
+  restoreOutputStates();
 
   NN_temp  = eeRead(EE_NN) * 256;
   NN_temp += eeRead(EE_NN+1);
