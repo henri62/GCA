@@ -32,6 +32,7 @@ void setupIO(void) {
     Ports[idx].status = 0;
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
+    Ports[idx].evtnn = 0;
     Ports[idx].addr = idx + 1;
     if( checkFlimSwitch() )
       eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);
@@ -43,6 +44,7 @@ void setupIO(void) {
     Ports[idx].status = 0;
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
+    Ports[idx].evtnn = 0;
     Ports[idx].addr = idx + 1;
     if( checkFlimSwitch() )
       eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);

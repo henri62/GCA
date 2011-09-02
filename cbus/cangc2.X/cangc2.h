@@ -23,9 +23,9 @@
 
 
 #define VERSION 1
-#define EVT_NUM 16
-#define EVperEVT 2
-#define NV_NUM 16
+#define EVT_NUM 17
+#define EVperEVT 0
+#define NV_NUM 17
 
 // EEPROM addresses
 #define EE_MAGIC 0
@@ -43,6 +43,7 @@
 
 // node var 1
 #define CFG_SAVEOUTPUT 0x01
+#define CFG_SHORTEVENTS 0x02
 
 
 

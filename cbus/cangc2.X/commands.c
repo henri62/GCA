@@ -34,11 +34,15 @@ void parse_cmd(void) {
     case OPC_ACON:
     case OPC_ASON:
     {
-      int addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
+      ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
       int i = 0;
       for( i = 0; i < 16; i++) {
         if( Ports[i].addr == addr ) {
-          writeOutput(i, 1);
+          if( NV1 & CFG_SHORTEVENTS )
+            writeOutput(i, 1);
+          else if(Ports[i].evtnn == nn)
+            writeOutput(i, 1);
         }
       }
       break;
@@ -47,11 +51,15 @@ void parse_cmd(void) {
     case OPC_ACOF:
     case OPC_ASOF:
     {
-      int addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
+      ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
       int i = 0;
       for( i = 0; i < 16; i++) {
         if( Ports[i].addr == addr ) {
-          writeOutput(i, 0);
+          if( NV1 & CFG_SHORTEVENTS )
+            writeOutput(i, 0);
+          else if(Ports[i].evtnn == nn)
+            writeOutput(i, 0);
         }
       }
       break;
@@ -140,6 +148,36 @@ void parse_cmd(void) {
           Ports[nvnr-2].cfg = rx_ptr->d4;
           eeWrite(EE_PORTCFG + (nvnr-2), Ports[nvnr-2].cfg);
         }
+      }
+      break;
+
+    case OPC_NERD:
+      if( thisNN() ) {
+        int i = 0;
+        // port events
+        for( i = 0; i < 16; i++) {
+          Tx1[d0] = OPC_ENRSP;
+          Tx1[d1] = (NN_temp / 256) & 0xFF;
+          Tx1[d2] = (NN_temp % 256) & 0xFF;
+          Tx1[d3] = Ports[i].evtnn / 256;
+          Tx1[d4] = Ports[i].evtnn % 256;
+          Tx1[d5] = Ports[i].addr / 256;
+          Tx1[d6] = Ports[i].addr % 256;
+          Tx1[d7] = i;
+          can_tx(8);
+          delay();
+        }
+        // start of day event
+        Tx1[d0] = OPC_ENRSP;
+        Tx1[d1] = (NN_temp / 256) & 0xFF;
+        Tx1[d2] = (NN_temp % 256) & 0xFF;
+        Tx1[d3] = 0;
+        Tx1[d4] = 0;
+        Tx1[d5] = SOD / 256;
+        Tx1[d6] = SOD % 256;
+        Tx1[d7] = i;
+        can_tx(8);
+        delay();
       }
       break;
 

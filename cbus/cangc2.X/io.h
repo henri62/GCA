@@ -39,8 +39,6 @@ typedef struct {
   byte   timedoff;
   ushort timer;
   ushort evtnn;
-  ushort evtid;
-  byte   evtinv;
 } Port;
 
 extern ram Port Ports[16];
