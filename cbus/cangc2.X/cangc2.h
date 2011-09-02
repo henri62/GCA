@@ -29,6 +29,7 @@
 
 // EEPROM addresses
 #define EE_MAGIC 0
+#define EE_NV 1                         // 1 byte configuration
 #define EE_NN 2                         // 2 bytes node number of this unit
 #define EE_SOD EE_NN + 2                // 2 bytes start off day address to report all input states
 #define EE_PORTCFG EE_SOD + 2           // 16 * 1 byte port configuration
@@ -40,7 +41,14 @@
 // values
 #define MAGIC 93
 
+// node var 1
+#define CFG_SAVEOUTPUT 0x01
+
+
+
+
 extern near unsigned short NN_temp;
+extern near unsigned char NV1;
 extern near unsigned short SOD;
 extern near unsigned char Wait4NN;
 extern volatile near unsigned char tmr0_reload;

@@ -23,8 +23,12 @@ void setupIO(void) {
   LED1 = 0;
   LED2 = 0;
 
+
+  // following presets are written to eeprom if the flim switch is preshed at boot
+
+  // preset port 1-8 as output
   for( idx = 0; idx < 8; idx++ ) {
-    Ports[idx].cfg = 0x00;
+    Ports[idx].cfg = PORTCFG_OUT;
     Ports[idx].status = 0;
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
@@ -33,8 +37,9 @@ void setupIO(void) {
       eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);
   }
 
+  // preset port 9-16 as input with off delay
   for( idx = 8; idx < 16; idx++ ) {
-    Ports[idx].cfg = 0x01 | 0x02;
+    Ports[idx].cfg = PORTCFG_IN | PORTCFG_OFFDELAY;
     Ports[idx].status = 0;
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
@@ -45,69 +50,71 @@ void setupIO(void) {
 
   idx = 0;
 
+  // setup port 1-8
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISAbits.TRISA0 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISAbits.TRISA0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISAbits.TRISA1 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISAbits.TRISA1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISAbits.TRISA3 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISAbits.TRISA3 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISAbits.TRISA4 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISAbits.TRISA4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISAbits.TRISA5 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISAbits.TRISA5 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISBbits.TRISB0 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISBbits.TRISB0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISBbits.TRISB4 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISBbits.TRISB4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISBbits.TRISB1 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISBbits.TRISB1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
-  
+
+  // setup port 9-16
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISCbits.TRISC0 = (Ports[idx].cfg & 0x01) ? 1:0;
-  idx++;
-  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISCbits.TRISC1 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISCbits.TRISC0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISCbits.TRISC2 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISCbits.TRISC1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISCbits.TRISC3 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISCbits.TRISC2 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISCbits.TRISC7 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISCbits.TRISC3 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISCbits.TRISC6 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISCbits.TRISC7 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISCbits.TRISC5 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISCbits.TRISC6 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
   idx++;
   Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-  TRISCbits.TRISC4 = (Ports[idx].cfg & 0x01) ? 1:0;
+  TRISCbits.TRISC5 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
+  idx++;
+  Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
+  TRISCbits.TRISC4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
 
 }
 
 void writeOutput(int idx, unsigned char val) {
   switch(idx) {
-    case 0: PORT1 = val; break;
-    case 1: PORT2 = val; break;
-    case 2: PORT3 = val; break;
-    case 3: PORT4 = val; break;
-    case 4: PORT5 = val; break;
-    case 5: PORT6 = val; break;
-    case 6: PORT7 = val; break;
-    case 7: PORT8 = val; break;
-    case 8: PORT9 = val; break;
-    case 9: PORT10 = val; break;
+    case  0: PORT1  = val; break;
+    case  1: PORT2  = val; break;
+    case  2: PORT3  = val; break;
+    case  3: PORT4  = val; break;
+    case  4: PORT5  = val; break;
+    case  5: PORT6  = val; break;
+    case  6: PORT7  = val; break;
+    case  7: PORT8  = val; break;
+    case  8: PORT9  = val; break;
+    case  9: PORT10 = val; break;
     case 10: PORT11 = val; break;
     case 11: PORT12 = val; break;
     case 12: PORT13 = val; break;
@@ -120,16 +127,16 @@ void writeOutput(int idx, unsigned char val) {
 unsigned char readInput(int idx) {
   unsigned char val = 0;
   switch(idx) {
-    case 0: val = PORT1; break;
-    case 1: val = PORT2; break;
-    case 2: val = PORT3; break;
-    case 3: val = PORT4; break;
-    case 4: val = PORT5; break;
-    case 5: val = PORT6; break;
-    case 6: val = PORT7; break;
-    case 7: val = PORT8; break;
-    case 8: val = PORT9; break;
-    case 9: val = PORT10; break;
+    case 0:  val = PORT1;  break;
+    case 1:  val = PORT2;  break;
+    case 2:  val = PORT3;  break;
+    case 3:  val = PORT4;  break;
+    case 4:  val = PORT5;  break;
+    case 5:  val = PORT6;  break;
+    case 6:  val = PORT7;  break;
+    case 7:  val = PORT8;  break;
+    case 8:  val = PORT9;  break;
+    case 9:  val = PORT10; break;
     case 10: val = PORT11; break;
     case 11: val = PORT12; break;
     case 12: val = PORT13; break;
@@ -273,7 +280,7 @@ void restoreOutputStates(void) {
 
 
 
-static unsigned char __LED2 = 1;
+static unsigned char __LED2 = 0;
 void doLEDs(void) {
   if( Wait4NN ) {
     LED2 = __LED2;

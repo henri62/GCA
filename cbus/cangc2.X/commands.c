@@ -100,8 +100,36 @@ void parse_cmd(void) {
       break;
 
     case OPC_RTOF:
-      saveOutputStates();
+      if( NV1 & CFG_SAVEOUTPUT ) {
+        saveOutputStates();
+      }
       break;
+
+    case OPC_NVRD:
+      if( thisNN() ) {
+        byte nvnr = rx_ptr->d3;
+        if( nvnr == 1 ) {
+          Tx1[d0] = OPC_NVANS;
+          Tx1[d1] = (NN_temp / 256) & 0xFF;
+          Tx1[d2] = (NN_temp % 256) & 0xFF;
+          Tx1[d3] = nvnr;
+          Tx1[d4] = NV1;
+          can_tx(5);
+          delay();
+        }
+      }
+      break;
+
+    case OPC_NVSET:
+      if( thisNN() ) {
+        byte nvnr = rx_ptr->d3;
+        if( nvnr == 1 ) {
+          NV1 = rx_ptr->d4;
+          eeWrite(EE_NV, NV1);
+        }
+      }
+      break;
+
 
     default: break;
   }

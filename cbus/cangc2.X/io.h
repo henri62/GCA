@@ -25,6 +25,13 @@
 #define PORT16  PORTCbits.RC4
 
 
+// port config
+#define PORTCFG_IO          0x01   // port I/O mask
+#define PORTCFG_IN          0x01
+#define PORTCFG_OUT         0x00
+#define PORTCFG_OFFDELAY    0x02   // input 2 seconds off delay for occupancy detectors
+
+
 typedef struct {
   byte   cfg;
   byte   status;

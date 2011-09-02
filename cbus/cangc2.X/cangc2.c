@@ -52,6 +52,8 @@ near unsigned short NN_temp;
 near unsigned short SOD;
 near unsigned char  Wait4NN;
 near unsigned char  Latcount;
+near unsigned char  NV1;
+
 volatile near unsigned char tmr0_reload;
 
 
@@ -113,6 +115,8 @@ void main(void) {
   unsigned char swTrig = 0;
   Wait4NN = 0;
 
+  NV1 = eeRead(EE_NV);
+
   initIO();
   initCAN();
   restoreOutputStates();
@@ -150,6 +154,7 @@ void main(void) {
         LED2 = 0;
       }
       else {
+        LED2 = 1;
         Tx1[d0] = OPC_NNACK;
         Tx1[d1] = NN_temp / 256;
         Tx1[d2] = NN_temp % 256;
