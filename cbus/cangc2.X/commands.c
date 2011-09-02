@@ -39,10 +39,19 @@ void parse_cmd(void) {
       int i = 0;
       for( i = 0; i < 16; i++) {
         if( Ports[i].addr == addr ) {
-          if( NV1 & CFG_SHORTEVENTS )
+          byte act = FALSE;
+          if( NV1 & CFG_SHORTEVENTS ) {
             writeOutput(i, 1);
-          else if(Ports[i].evtnn == nn)
+            act = TRUE;
+          }
+          else if(Ports[i].evtnn == nn) {
             writeOutput(i, 1);
+            act = TRUE;
+          }
+          if( act && Ports[i].cfg & PORTCFG_PULSE ) {
+            Ports[i].timedoff = TRUE;
+            Ports[i].timer = 1;
+          }
         }
       }
       break;
@@ -147,6 +156,37 @@ void parse_cmd(void) {
         else if( nvnr < 18 ) {
           Ports[nvnr-2].cfg = rx_ptr->d4;
           eeWrite(EE_PORTCFG + (nvnr-2), Ports[nvnr-2].cfg);
+        }
+      }
+      break;
+
+    case OPC_NNLRN:
+      if( thisNN() ) {
+        isLearning = TRUE;
+      }
+      break;
+
+    case OPC_NNULN:
+      if( thisNN() ) {
+        isLearning = FALSE;
+      }
+      break;
+
+    case OPC_EVLRN:
+      if( isLearning ) {
+        ushort evtnn = rx_ptr->d1 * 256 + rx_ptr->d2;
+        ushort addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
+        byte idx = rx_ptr->d5;
+        byte val = rx_ptr->d6;
+        if( idx < 16 ) {
+          Ports[idx].evtnn = evtnn;
+          Ports[idx].addr = addr;
+          eeWriteShort(EE_PORTNN + (2*idx), evtnn);
+          eeWriteShort(EE_PORTADDR + (2*idx), addr);
+        }
+        if( idx == 16 ) {
+          SOD = addr;
+          eeWriteShort(EE_SOD, SOD);
         }
       }
       break;

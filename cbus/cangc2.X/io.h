@@ -30,6 +30,7 @@
 #define PORTCFG_IN          0x01
 #define PORTCFG_OUT         0x00
 #define PORTCFG_OFFDELAY    0x02   // input 2 seconds off delay for occupancy detectors
+#define PORTCFG_PULSE       0x02   // output 0.5 seconds pulse length
 
 
 typedef struct {

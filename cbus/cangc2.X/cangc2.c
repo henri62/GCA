@@ -53,6 +53,7 @@ near unsigned short SOD;
 near unsigned char  Wait4NN;
 near unsigned char  Latcount;
 near unsigned char  NV1;
+near unsigned char  isLearning;
 
 volatile near unsigned char tmr0_reload;
 
@@ -113,7 +114,8 @@ void LOW_INT_VECT(void)
 #pragma code APP
 void main(void) {
   unsigned char swTrig = 0;
-  Wait4NN = 0;
+  Wait4NN = FALSE;
+  isLearning = FALSE;
 
   NV1 = eeRead(EE_NV);
 

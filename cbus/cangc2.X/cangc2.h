@@ -52,6 +52,7 @@ extern near unsigned short NN_temp;
 extern near unsigned char NV1;
 extern near unsigned short SOD;
 extern near unsigned char Wait4NN;
+extern near unsigned char isLearning;
 extern volatile near unsigned char tmr0_reload;
 
 #endif

@@ -25,6 +25,10 @@
 #define DEFAULT_NN   0xFFEE
 #define DEFAULT_SOD  4711
 
+#define TRUE 1
+#define FALSE 0
+#define PORT_ON 1
+#define PORT_OFF 0
 
 typedef unsigned short ushort;
 typedef unsigned char byte;
