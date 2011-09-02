@@ -169,6 +169,7 @@ void parse_cmd(void) {
     case OPC_NNULN:
       if( thisNN() ) {
         isLearning = FALSE;
+        LED2 = PORT_OFF;
       }
       break;
 
