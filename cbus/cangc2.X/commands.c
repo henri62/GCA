@@ -117,6 +117,15 @@ void parse_cmd(void) {
           can_tx(5);
           delay();
         }
+        else if( nvnr < 18 ) {
+          Tx1[d0] = OPC_NVANS;
+          Tx1[d1] = (NN_temp / 256) & 0xFF;
+          Tx1[d2] = (NN_temp % 256) & 0xFF;
+          Tx1[d3] = nvnr;
+          Tx1[d4] = Ports[nvnr-2].cfg;
+          can_tx(5);
+          delay();
+        }
       }
       break;
 
@@ -126,6 +135,10 @@ void parse_cmd(void) {
         if( nvnr == 1 ) {
           NV1 = rx_ptr->d4;
           eeWrite(EE_NV, NV1);
+        }
+        else if( nvnr < 18 ) {
+          Ports[nvnr-2].cfg = rx_ptr->d4;
+          eeWrite(EE_PORTCFG + (nvnr-2), Ports[nvnr-2].cfg);
         }
       }
       break;
