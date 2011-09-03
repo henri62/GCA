@@ -143,6 +143,24 @@ void parse_cmd(void) {
           can_tx(5);
           delay();
         }
+        else if( nvnr == 18 ) {
+          Tx1[d0] = OPC_NVANS;
+          Tx1[d1] = (NN_temp / 256) & 0xFF;
+          Tx1[d2] = (NN_temp % 256) & 0xFF;
+          Tx1[d3] = nvnr;
+          Tx1[d4] = getPortStates(0); // port status 1-8
+          can_tx(5);
+          delay();
+        }
+        else if( nvnr == 19 ) {
+          Tx1[d0] = OPC_NVANS;
+          Tx1[d1] = (NN_temp / 256) & 0xFF;
+          Tx1[d2] = (NN_temp % 256) & 0xFF;
+          Tx1[d3] = nvnr;
+          Tx1[d4] = getPortStates(1); // port status 9-16
+          can_tx(5);
+          delay();
+        }
       }
       break;
 

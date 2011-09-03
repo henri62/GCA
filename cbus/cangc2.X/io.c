@@ -222,7 +222,6 @@ void resetOutputs(void) {
         writeOutput(idx, 0);
     }
   }
-
 }
 
 
@@ -283,3 +282,29 @@ void doLEDs(void) {
     __LED2 ^= 1;
   }
 }
+
+byte getPortStates(int group) {
+  int idx = 0;
+  byte o1 = 0;
+  byte o2 = 0;
+
+  if( group == 0 ) {
+    for( idx = 0; idx < 8; idx++ ) {
+      byte o = !readInput(idx);
+      o1 += o << idx;
+    }
+    return o1;
+  }
+
+  if( group == 1 ) {
+    for( idx = 8; idx < 16; idx++ ) {
+      byte o = !readInput(idx);
+      o2 += o << idx;
+    }
+    return o2;
+  }
+
+  return 0;
+}
+
+

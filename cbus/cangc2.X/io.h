@@ -57,5 +57,6 @@ void doLEDs(void);
 void saveOutputStates(void);
 void restoreOutputStates(void);
 void configPort(int idx );
+byte getPortStates(int group);
 
 #endif	// __IO_H
