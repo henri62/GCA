@@ -290,7 +290,12 @@ byte getPortStates(int group) {
 
   if( group == 0 ) {
     for( idx = 0; idx < 8; idx++ ) {
-      byte o = !readInput(idx);
+      byte o = 0;
+      if( (Ports[idx].cfg & 0x01) == 0 )
+        o = !readInput(idx);
+      else
+        o = readInput(idx);
+
       o1 += o << idx;
     }
     return o1;
@@ -298,8 +303,12 @@ byte getPortStates(int group) {
 
   if( group == 1 ) {
     for( idx = 8; idx < 16; idx++ ) {
-      byte o = !readInput(idx);
-      o2 += o << idx;
+      byte o = 0;
+      if( (Ports[idx].cfg & 0x01) == 0 )
+        o = !readInput(idx);
+      else
+        o = readInput(idx);
+      o2 += o << (idx-8);
     }
     return o2;
   }
