@@ -156,6 +156,7 @@ void parse_cmd(void) {
         else if( nvnr < 18 ) {
           Ports[nvnr-2].cfg = rx_ptr->d4;
           eeWrite(EE_PORTCFG + (nvnr-2), Ports[nvnr-2].cfg);
+          configPort(nvnr-2);
         }
       }
       break;

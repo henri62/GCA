@@ -65,43 +65,33 @@ void setupIO(void) {
     Ports[idx].addr = eeReadShort(EE_PORTADDR + (2*idx));
   }
 
-  idx = 0;
+  for( idx = 0; idx < 16; idx++ )
+    configPort(idx);
 
+}
+
+void configPort(int idx ) {
   // setup port 1-8
-  TRISAbits.TRISA0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISAbits.TRISA1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISAbits.TRISA3 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISAbits.TRISA4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISAbits.TRISA5 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISBbits.TRISB0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISBbits.TRISB4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISBbits.TRISB1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
+  switch(idx) {
+    case 0: TRISAbits.TRISA0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 1: TRISAbits.TRISA1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 2: TRISAbits.TRISA3 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 3: TRISAbits.TRISA4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 4: TRISAbits.TRISA5 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 5: TRISBbits.TRISB0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 6: TRISBbits.TRISB4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 7: TRISBbits.TRISB1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
 
   // setup port 9-16
-  TRISCbits.TRISC0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISCbits.TRISC1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISCbits.TRISC2 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISCbits.TRISC3 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISCbits.TRISC7 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISCbits.TRISC6 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISCbits.TRISC5 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-  idx++;
-  TRISCbits.TRISC4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT;
-
+    case 8: TRISCbits.TRISC0 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 9: TRISCbits.TRISC1 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 10: TRISCbits.TRISC2 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 11: TRISCbits.TRISC3 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 12: TRISCbits.TRISC7 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 13: TRISCbits.TRISC6 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 14: TRISCbits.TRISC5 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+    case 15: TRISCbits.TRISC4 = (Ports[idx].cfg & PORTCFG_IO) ? PORTCFG_IN:PORTCFG_OUT; break;
+  }
 }
 
 void writeOutput(int idx, unsigned char val) {
