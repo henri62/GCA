@@ -58,5 +58,6 @@ void saveOutputStates(void);
 void restoreOutputStates(void);
 void configPort(int idx );
 byte getPortStates(int group);
+void setOutput(ushort nn, ushort addr, byte on);
 
 #endif	// __IO_H

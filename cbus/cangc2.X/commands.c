@@ -36,24 +36,7 @@ void parse_cmd(void) {
     {
       ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
       ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      int i = 0;
-      for( i = 0; i < 16; i++) {
-        if( Ports[i].addr == addr ) {
-          byte act = FALSE;
-          if( NV1 & CFG_SHORTEVENTS ) {
-            writeOutput(i, 1);
-            act = TRUE;
-          }
-          else if(Ports[i].evtnn == nn) {
-            writeOutput(i, 1);
-            act = TRUE;
-          }
-          if( act && Ports[i].cfg & PORTCFG_PULSE ) {
-            Ports[i].timedoff = TRUE;
-            Ports[i].timer = 1;
-          }
-        }
-      }
+      setOutput(nn, addr, 1);
       break;
     }
 
@@ -62,15 +45,7 @@ void parse_cmd(void) {
     {
       ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
       ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      int i = 0;
-      for( i = 0; i < 16; i++) {
-        if( Ports[i].addr == addr ) {
-          if( NV1 & CFG_SHORTEVENTS )
-            writeOutput(i, 0);
-          else if(Ports[i].evtnn == nn)
-            writeOutput(i, 0);
-        }
-      }
+      setOutput(nn, addr, 0);
       break;
     }
 

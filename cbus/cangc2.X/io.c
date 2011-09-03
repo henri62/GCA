@@ -207,6 +207,8 @@ void checkInputs(unsigned char sod) {
           can_tx(5);
           //LED2 = val;
           delay();
+          // check if an output is consumer of this event
+          setOutput(NN_temp, Ports[idx].addr, val);
         }
       }
     }
@@ -317,3 +319,25 @@ byte getPortStates(int group) {
 }
 
 
+void setOutput(ushort nn, ushort addr, byte on) {
+  int i = 0;
+  for( i = 0; i < 16; i++) {
+    if( (Ports[i].cfg & 0x01) == 0 ) {
+      if( Ports[i].addr == addr ) {
+        byte act = FALSE;
+        if( NV1 & CFG_SHORTEVENTS ) {
+          writeOutput(i, on);
+          act = TRUE;
+        }
+        else if(Ports[i].evtnn == nn) {
+          writeOutput(i, on);
+          act = TRUE;
+        }
+        if( on && act && Ports[i].cfg & PORTCFG_PULSE ) {
+          Ports[i].timedoff = TRUE;
+          Ports[i].timer = 1;
+        }
+      }
+    }
+  }
+}
