@@ -164,6 +164,9 @@ void doTimedOff(void) {
           Tx1[d3] = (Ports[i].addr / 256) & 0xFF;
           Tx1[d4] = (Ports[i].addr % 256) & 0xFF;
           can_tx(5);
+          delay();
+          // check if an output is consumer of this event
+          setOutput(NN_temp, Ports[i].addr, 0);
         }
         else {
           writeOutput(i, 0);
