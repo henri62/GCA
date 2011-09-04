@@ -52,7 +52,7 @@ void parse_cmd(void) {
     {
       ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
       ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      setOutput(nn, addr, 0, rx_ptr->d4);
+      setOutput(nn, addr, 0, rx_ptr->d5);
       break;
     }
 
