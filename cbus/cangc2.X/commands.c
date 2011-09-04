@@ -31,12 +31,28 @@ void parse_cmd(void) {
       break;
     }
       
+    case OPC_ACON1:
+    {
+      ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
+      ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      setOutput(nn, addr, 1, rx_ptr->d5);
+      break;
+    }
+
     case OPC_ACON:
     case OPC_ASON:
     {
       ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
       ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      setOutput(nn, addr, 1);
+      setOutput(nn, addr, 1, 0);
+      break;
+    }
+
+    case OPC_ACOF1:
+    {
+      ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
+      ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      setOutput(nn, addr, 0, rx_ptr->d4);
       break;
     }
 
@@ -45,7 +61,7 @@ void parse_cmd(void) {
     {
       ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
       ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      setOutput(nn, addr, 0);
+      setOutput(nn, addr, 0, 0);
       break;
     }
 

@@ -166,7 +166,7 @@ void doTimedOff(void) {
           can_tx(5);
           delay();
           // check if an output is consumer of this event
-          setOutput(NN_temp, Ports[i].addr, 0);
+          setOutput(NN_temp, Ports[i].addr, 0, Ports[i].coil);
         }
         else {
           writeOutput(i, 0);
@@ -211,7 +211,7 @@ void checkInputs(unsigned char sod) {
           //LED2 = val;
           delay();
           // check if an output is consumer of this event
-          setOutput(NN_temp, Ports[idx].addr, val);
+          setOutput(NN_temp, Ports[idx].addr, val, 0);
         }
       }
     }
@@ -322,23 +322,38 @@ byte getPortStates(int group) {
 }
 
 
-void setOutput(ushort nn, ushort addr, byte on) {
+void setOutput(ushort nn, ushort addr, byte on, byte c2) {
   int i = 0;
   for( i = 0; i < 16; i++) {
     if( (Ports[i].cfg & 0x01) == 0 ) {
       if( Ports[i].addr == addr ) {
         byte act = FALSE;
         if( NV1 & CFG_SHORTEVENTS ) {
-          writeOutput(i, on);
-          act = TRUE;
+          if( c2 == 0 )
+            act = TRUE;
+          else if( c2 == 1 && (Ports[i].cfg & PORTCFG_C2) == 0 )
+            act = TRUE;
+          else if( c2 == 2 && (Ports[i].cfg & PORTCFG_C2) == PORTCFG_C2 )
+            act = TRUE;
+
+          if( act )
+            writeOutput(i, on);
         }
         else if(Ports[i].evtnn == nn) {
-          writeOutput(i, on);
-          act = TRUE;
+          if( c2 == 0 )
+            act = TRUE;
+          else if( c2 == 1 && (Ports[i].cfg & PORTCFG_C2) == 0 )
+            act = TRUE;
+          else if( c2 == 2 && (Ports[i].cfg & PORTCFG_C2) == PORTCFG_C2 )
+            act = TRUE;
+
+          if( act )
+            writeOutput(i, on);
         }
         if( on && act && Ports[i].cfg & PORTCFG_PULSE ) {
           Ports[i].timedoff = TRUE;
           Ports[i].timer = 1;
+          Ports[i].coil = c2;
         }
       }
     }
