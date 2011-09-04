@@ -22,7 +22,7 @@
 #define __CANGC2_H
 
 
-#define VERSION 1
+#define VERSION 2
 #define EVT_NUM 17
 #define EVperEVT 0
 #define NV_NUM 17
