@@ -69,7 +69,7 @@ volatile near unsigned char tmr0_reload;
   */
 
 #pragma romdata parameters
-const rom unsigned char params[32] = {MANU_ROCRAIL, VERSION, MTYP_CANGC2, EVT_NUM, EVperEVT, NV_NUM, 0};
+const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC2, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
 
 #pragma romdata
 
