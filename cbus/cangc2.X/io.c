@@ -166,7 +166,7 @@ void doTimedOff(void) {
           can_tx(5);
           delay();
           // check if an output is consumer of this event
-          setOutput(NN_temp, Ports[i].addr, 0, Ports[i].coil);
+          setOutput(NN_temp, Ports[i].addr, 0, 0);
         }
         else {
           writeOutput(i, 0);
