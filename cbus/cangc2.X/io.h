@@ -47,7 +47,7 @@ typedef struct {
 extern ram Port Ports[16];
 
 
-void setupIO(void);
+void setupIO(byte clr);
 void writeOutput(int port, unsigned char val);
 unsigned char readInput(int port);
 void doIOTimers(void);

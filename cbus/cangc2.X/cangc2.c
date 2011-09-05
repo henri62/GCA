@@ -209,7 +209,7 @@ void initIO(void) {
   INTCONbits.GIEL = 1;        // Low priority interrupts allowed
   INTCONbits.GIEH = 1;        // Interrupting enabled.
 
-  setupIO();
+  setupIO(FALSE);
 }
 
 

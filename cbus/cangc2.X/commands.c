@@ -113,6 +113,10 @@ void parse_cmd(void) {
       }
       break;
 
+    case OPC_NNCLR:
+      setupIO(TRUE);
+      break;
+
     case OPC_NVRD:
       if( thisNN() ) {
         byte nvnr = rx_ptr->d3;

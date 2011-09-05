@@ -9,7 +9,7 @@
 #include "io.h"
 
 
-void setupIO(void) {
+void setupIO(byte clr) {
   int idx = 0;
 
   // all digital I/O
@@ -34,7 +34,7 @@ void setupIO(void) {
     Ports[idx].timer = 0;
     Ports[idx].evtnn = 0;
     Ports[idx].addr = idx + 1;
-    if( checkFlimSwitch() ) {
+    if( clr || checkFlimSwitch() ) {
       eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);
       eeWriteShort(EE_PORTNN + (2*idx), Ports[idx].evtnn);
       eeWriteShort(EE_PORTADDR + (2*idx), Ports[idx].addr);
@@ -49,7 +49,7 @@ void setupIO(void) {
     Ports[idx].timer = 0;
     Ports[idx].evtnn = 0;
     Ports[idx].addr = idx + 1;
-    if( checkFlimSwitch() ) {
+    if( clr || checkFlimSwitch() ) {
       eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);
       eeWriteShort(EE_PORTNN + (2*idx), Ports[idx].evtnn);
       eeWriteShort(EE_PORTADDR + (2*idx), Ports[idx].addr);
