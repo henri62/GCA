@@ -1,7 +1,5 @@
 /*
- MERG CBUS
- web:  http://www.sprog-dcc.co.uk
- e-mail: sprog@sprog-dcc.co.uk
+ Copyright (C) MERG CBUS
 
  Rocrail - Model Railroad Software
 
