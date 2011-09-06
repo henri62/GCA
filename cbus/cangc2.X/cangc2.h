@@ -1,4 +1,8 @@
 /*
+ MERG CBUS
+ web:  http://www.sprog-dcc.co.uk
+ e-mail: sprog@sprog-dcc.co.uk
+
  Rocrail - Model Railroad Software
 
  Copyright (C) Rob Versluis <r.j.versluis@rocrail.net>
@@ -17,6 +21,8 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+
 
 #ifndef __CANGC2_H
 #define __CANGC2_H

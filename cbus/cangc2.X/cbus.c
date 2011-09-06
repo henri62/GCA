@@ -1,12 +1,28 @@
 /*
- * Microchip C18 source for common CBUS routines
- *
- * Code based on Mike Bolton's canacc8 for which due credit is given.
- *
- * Modifications and conversion to C18 Copyright (C) 2009 Andrew Crosland
+ MERG CBUS
+ web:  http://www.sprog-dcc.co.uk
+ e-mail: sprog@sprog-dcc.co.uk
 
- * Changed for 8 MHz resonator to double the clock. Mike Bolton  19/04/11
- */
+ Rocrail - Model Railroad Software
+
+ Copyright (C) Rob Versluis <r.j.versluis@rocrail.net>
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 3
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+
 
 #include "project.h"
 #include "cbus.h"
