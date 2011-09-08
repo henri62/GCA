@@ -369,7 +369,7 @@ void setOutput(ushort nn, ushort addr, byte on) {
 
         if( on && act && Ports[i].cfg & PORTCFG_PULSE ) {
           Ports[i].timedoff = TRUE;
-          Ports[i].timer = 1;
+          Ports[i].timer = 10;
         }
       }
     }

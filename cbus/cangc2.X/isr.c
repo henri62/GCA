@@ -28,6 +28,7 @@
 
 #pragma udata access VARS
 near unsigned short long slot_timer;
+near unsigned short long io_timer;
 
 #pragma code APP
 
@@ -63,11 +64,18 @@ void isr_high(void) {
 
 
     //
-    // Slot timeout and other timers - every half second
+    // IO timeout and other timers - 50ms
+    //
+    if (--io_timer == 0) {
+      io_timer = ((short long)25000)/58;
+      doIOTimers();
+    }
+
+    //
+    // Slot timeout and other timers - 500ms
     //
     if (--slot_timer == 0) {
         slot_timer = ((short long)250000)/58;
-        doIOTimers();
         doLEDs();
 
       if (can_transmit_timeout != 0) {

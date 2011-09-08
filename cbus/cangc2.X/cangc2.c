@@ -204,7 +204,8 @@ void initIO(void) {
 
 
     // Start slot timeout timer
-  slot_timer = ((short long)500000)/58;  // Half second count down for 58uS interrupts
+  slot_timer = ((short long)250000)/58;  // 500ms
+  io_timer = ((short long)25000)/58;  // 50ms
 
   // Set up global interrupts
   RCONbits.IPEN = 1;          // Enable priority levels on interrupts

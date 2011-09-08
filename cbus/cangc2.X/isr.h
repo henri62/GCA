@@ -36,6 +36,7 @@ extern unsigned short sum;
 extern unsigned short ave;
 
 extern unsigned near short long slot_timer;
+extern unsigned near short long io_timer;
 
 #define __ISR_H
 #endif
