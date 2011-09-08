@@ -217,7 +217,7 @@ void checkInputs(unsigned char sod) {
       if( sod || val != Ports[idx].status ) {
         Ports[idx].status = val;
         if( !sod && (Ports[idx].cfg & 0x02) && val == 0 ) {
-          Ports[idx].timer = 4; // 2 seconds
+          Ports[idx].timer = 40; // 2 seconds
           Ports[idx].timedoff = 1;
         }
         else if( !sod && (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
