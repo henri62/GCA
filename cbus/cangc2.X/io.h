@@ -54,7 +54,7 @@
 #define PORTCFG_OUT         0x00
 #define PORTCFG_OFFDELAY    0x02   // input 2 seconds off delay for occupancy detectors
 #define PORTCFG_PULSE       0x02   // output 0.5 seconds pulse length
-#define PORTCFG_C2          0x04   // coil 2
+#define PORTCFG_INV         0x04   // invert
 
 
 typedef struct {
@@ -63,7 +63,6 @@ typedef struct {
   ushort addr;
   byte   timedoff;
   ushort timer;
-  byte   coil;
   ushort evtnn;
 } Port;
 
@@ -83,6 +82,6 @@ void saveOutputStates(void);
 void restoreOutputStates(void);
 void configPort(int idx );
 byte getPortStates(int group);
-void setOutput(ushort nn, ushort addr, byte on, byte c2);
+void setOutput(ushort nn, ushort addr, byte on);
 
 #endif	// __IO_H
