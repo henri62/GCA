@@ -181,7 +181,7 @@ void doTimedOff(void) {
         Ports[i].timedoff = 0;
         if( Ports[i].cfg & PORTCFG_IN ) {
           // Send an OPC.
-          Tx1[d0] = OPC_ASOF;
+          Tx1[d0] = Ports[i].cfg & PORTCFG_INV ? OPC_ASON:OPC_ASOF;
           Tx1[d1] = (NN_temp / 256) & 0xFF;
           Tx1[d2] = (NN_temp % 256) & 0xFF;
           Tx1[d3] = (Ports[i].addr / 256) & 0xFF;
@@ -189,7 +189,7 @@ void doTimedOff(void) {
           can_tx(5);
           delay();
           // check if an output is consumer of this event
-          setOutput(NN_temp, Ports[i].addr, 0);
+          setOutput(NN_temp, Ports[i].addr, Ports[i].cfg & PORTCFG_INV ? 1:0);
         }
         else {
           writeOutput(i, 0);
@@ -211,19 +211,19 @@ void checkInputs(unsigned char sod) {
   for( idx = 0; idx < 16; idx++ ) {
     if( Ports[idx].cfg & 0x01 ) {
       unsigned char val = readInput(idx);
-      if( (Ports[idx].cfg & PORTCFG_INV) == PORTCFG_INV ) {
-        val = !val;
-      }
       if( sod || val != Ports[idx].status ) {
         Ports[idx].status = val;
         if( !sod && (Ports[idx].cfg & 0x02) && val == 0 ) {
           Ports[idx].timer = 40; // 2 seconds
-          Ports[idx].timedoff = 1;
+          Ports[idx].timedoff = TRUE;
         }
         else if( !sod && (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
-          Ports[idx].timer = 2; // reload timer
+          Ports[idx].timer = 40; // reload timer
         }
         else {
+          if( (Ports[idx].cfg & PORTCFG_INV) == PORTCFG_INV ) {
+            val = !val;
+          }
           // Send an OPC.
           if( sod )
             Tx1[d0] = val ? OPC_ARSPO:OPC_ARSPN;
