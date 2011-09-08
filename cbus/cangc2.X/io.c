@@ -362,10 +362,9 @@ void setOutput(ushort nn, ushort addr, byte on) {
         }
 
         if( act ) {
-          if( (Ports[i].cfg & PORTCFG_INV) == 0 )
-            writeOutput(i, on);
-          else
-            writeOutput(i, !on);
+          if( (Ports[i].cfg & PORTCFG_INV) == PORTCFG_INV )
+            on = !on;
+          writeOutput(i, on);
         }
 
         if( on && act && Ports[i].cfg & PORTCFG_PULSE ) {
