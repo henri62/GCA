@@ -368,8 +368,16 @@ void setOutput(ushort nn, ushort addr, byte on) {
         }
 
         if( on && act && Ports[i].cfg & PORTCFG_PULSE ) {
+          byte pulsetime = (NV1 & CFG_PULSETIME_MASK);
           Ports[i].timedoff = TRUE;
-          Ports[i].timer = 10;
+          if(pulsetime == CFG_PULSETIME_250)
+            Ports[i].timer = 5;
+          else if(pulsetime == CFG_PULSETIME_500)
+            Ports[i].timer = 10;
+          else if(pulsetime == CFG_PULSETIME_1000)
+            Ports[i].timer = 20;
+          else if(pulsetime == CFG_PULSETIME_2000)
+            Ports[i].timer = 40;
         }
       }
     }

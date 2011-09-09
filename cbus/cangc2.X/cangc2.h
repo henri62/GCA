@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 1
-#define MINOR_VER 'c'	// Minor version character
+#define MINOR_VER 'd'	// Minor version character
 
 #define EVT_NUM 17
 #define EVperEVT 0
@@ -50,6 +50,11 @@
 // node var 1
 #define CFG_SAVEOUTPUT 0x01
 #define CFG_SHORTEVENTS 0x02
+#define CFG_PULSETIME_MASK 0x0C
+#define CFG_PULSETIME_250 0x00
+#define CFG_PULSETIME_500 0x04
+#define CFG_PULSETIME_1000 0x08
+#define CFG_PULSETIME_2000 0x0C
 
 
 
