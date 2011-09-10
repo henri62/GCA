@@ -25,6 +25,7 @@
 #include "isr.h"
 #include "cangc2.h"
 #include "io.h"
+#include "lissy.h"
 
 #pragma udata access VARS
 near unsigned short long slot_timer;
@@ -47,6 +48,9 @@ void isr_high(void) {
     // 13 clocks to get here after interrupt
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
+
+    // ToDo: If we have 8.3usec cycle we can do Lissy:
+    //checkLissy();
 
     //
     // I/O timeout - 50ms

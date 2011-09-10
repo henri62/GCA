@@ -22,6 +22,8 @@
 
 #include "lissy.h"
 #include "io.h"
+#include "cbusdefs.h"
+#include "cbus.h"
 
 void checkLissy(void) {
   int i = 0;
@@ -29,6 +31,14 @@ void checkLissy(void) {
     if( Ports[i].cfg & PORTCFG_LISSY ) {
       if( lissy(i, readInput(i)) > 0 ) {
         // TODO: Generate an event.
+        Tx1[d0] = OPC_ACON2;
+        Tx1[d1] = (NN_temp / 256) & 0xFF;
+        Tx1[d2] = (NN_temp % 256) & 0xFF;
+        Tx1[d3] = (Ports[i].addr / 256) & 0xFF;
+        Tx1[d4] = (Ports[i].addr % 256) & 0xFF;
+        Tx1[d5] = (LissyPorts[i].lissyaddr / 256) & 0xFF;
+        Tx1[d6] = (LissyPorts[i].lissyaddr % 256) & 0xFF;
+        can_tx(7);
       }
     }
   }
