@@ -73,6 +73,7 @@ typedef struct {
   ushort lissydata;
   byte   lissydatacnt;
   ushort lissyaddr;
+  ushort prevlissyaddr;
 } LissyPort;
 
 extern ram Port Ports[16];

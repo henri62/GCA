@@ -242,6 +242,25 @@ void checkInputs(unsigned char sod) {
       }
     }
   }
+
+
+  for( idx = 0; idx < 8; idx++ ) {
+    if( Ports[idx].cfg & PORTCFG_LISSY ) {
+      if( LissyPorts[idx].lissyaddr != LissyPorts[idx].prevlissyaddr ) {
+        LissyPorts[idx].prevlissyaddr = LissyPorts[idx].lissyaddr;
+        // Generate an event.
+        Tx1[d0] = OPC_ACON2;
+        Tx1[d1] = (NN_temp / 256) & 0xFF;
+        Tx1[d2] = (NN_temp % 256) & 0xFF;
+        Tx1[d3] = (Ports[idx].addr / 256) & 0xFF;
+        Tx1[d4] = (Ports[idx].addr % 256) & 0xFF;
+        Tx1[d5] = (LissyPorts[idx].lissyaddr / 256) & 0xFF;
+        Tx1[d6] = (LissyPorts[idx].lissyaddr % 256) & 0xFF;
+        can_tx(7);
+      }
+    }
+  }
+
 }
 
 
