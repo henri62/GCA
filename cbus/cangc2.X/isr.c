@@ -49,22 +49,7 @@ void isr_high(void) {
     TMR0L = tmr0_reload;
 
     //
-    // TMR0 is enabled all the time and we send a continuous preamble
-    // as required for booster operation. The power may, however, be off
-    // resulting in no actual DCC ooutput
-    //
-    // Outputs are toggled here to set the output to the state
-    // determined during the previous interrupt. This ensures the output
-    // always toggles at the same time relative to the interrupt, regardless
-    // of the route taken through the switch() statement for bit generation.
-    //
-    // This hardware does not use MOSFETs and does not need shoot-through
-    // protection delay
-    //
-
-
-    //
-    // IO timeout and other timers - 50ms
+    // I/O timeout - 50ms
     //
     if (--io_timer == 0) {
       io_timer = ((short long)25000)/58;
@@ -72,7 +57,7 @@ void isr_high(void) {
     }
 
     //
-    // Slot timeout and other timers - 500ms
+    // Timer 500ms
     //
     if (--slot_timer == 0) {
         slot_timer = ((short long)250000)/58;

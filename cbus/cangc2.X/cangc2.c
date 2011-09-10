@@ -44,6 +44,7 @@
 
 
 ram Port Ports[16];
+ram LissyPort LissyPorts[8];
 
 #pragma udata access VARS
 

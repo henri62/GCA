@@ -32,7 +32,7 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/Boot3.o ${OBJECTDIR}/c018.o ${OBJECTDIR}/cangc2.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o
+OBJECTFILES=${OBJECTDIR}/Boot3.o ${OBJECTDIR}/c018.o ${OBJECTDIR}/cangc2.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/lissy.o ${OBJECTDIR}/utils.o
 
 
 CFLAGS=
@@ -121,6 +121,18 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+${OBJECTDIR}/lissy.o: lissy.c  nbproject/Makefile-${CND_CONF}.mk
+	${RM} ${OBJECTDIR}/lissy.o.d 
+	${MKDIR} ${OBJECTDIR} 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/lissy.o   lissy.c  > ${OBJECTDIR}/lissy.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/lissy.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/lissy.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
+	${MP_CPP}  -MMD ${OBJECTDIR}/lissy.o.temp lissy.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
+	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/lissy.o.d
+ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
+	cat ${OBJECTDIR}/lissy.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/lissy.o.d
+else
+	cat ${OBJECTDIR}/lissy.o.temp >> ${OBJECTDIR}/lissy.o.d
+endif
+	${RM} __temp_cpp_output__
 ${OBJECTDIR}/cangc2.o: cangc2.c  nbproject/Makefile-${CND_CONF}.mk
 	${RM} ${OBJECTDIR}/cangc2.o.d 
 	${MKDIR} ${OBJECTDIR} 
@@ -206,6 +218,18 @@ else
 endif
 	${RM} __temp_cpp_output__
 else
+${OBJECTDIR}/lissy.o: lissy.c  nbproject/Makefile-${CND_CONF}.mk
+	${RM} ${OBJECTDIR}/lissy.o.d 
+	${MKDIR} ${OBJECTDIR} 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ou- -ot- -ob- -ow- -op- -or- -od- -opa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/lissy.o   lissy.c  > ${OBJECTDIR}/lissy.err 2>&1 ; if [ $$? -eq 0 ] ; then cat ${OBJECTDIR}/lissy.err | sed 's/\(^.*:.*:\)\(Warning\)\(.*$$\)/\1 \2:\3/g' ; else cat ${OBJECTDIR}/lissy.err | sed 's/\(^.*:.*:\)\(Error\)\(.*$$\)/\1 \2:\3/g' ; exit 1 ; fi
+	${MP_CPP}  -MMD ${OBJECTDIR}/lissy.o.temp lissy.c __temp_cpp_output__ -D __18F2480 -D __18CXX -I /opt/microchip/mplabc18/v3.40/bin/../h  -D__18F2480
+	printf "%s/" ${OBJECTDIR} > ${OBJECTDIR}/lissy.o.d
+ifneq (,$(findstring MINGW32,$(OS_CURRENT)))
+	cat ${OBJECTDIR}/lissy.o.temp | sed -e 's/\\\ /__SPACES__/g' -e's/\\$$/__EOL__/g' -e 's/\\/\//g' -e 's/__SPACES__/\\\ /g' -e 's/__EOL__/\\/g' >> ${OBJECTDIR}/lissy.o.d
+else
+	cat ${OBJECTDIR}/lissy.o.temp >> ${OBJECTDIR}/lissy.o.d
+endif
+	${RM} __temp_cpp_output__
 ${OBJECTDIR}/cangc2.o: cangc2.c  nbproject/Makefile-${CND_CONF}.mk
 	${RM} ${OBJECTDIR}/cangc2.o.d 
 	${MKDIR} ${OBJECTDIR} 

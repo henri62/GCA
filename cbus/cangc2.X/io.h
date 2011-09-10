@@ -55,6 +55,7 @@
 #define PORTCFG_OFFDELAY    0x02   // input 2 seconds off delay for occupancy detectors
 #define PORTCFG_PULSE       0x02   // output 0.5 seconds pulse length
 #define PORTCFG_INV         0x04   // invert
+#define PORTCFG_LISSY       0x08   // Lissy port
 
 
 typedef struct {
@@ -66,7 +67,16 @@ typedef struct {
   ushort evtnn;
 } Port;
 
+typedef struct {
+  byte   gotlissysync;
+  ushort lissysync;
+  ushort lissydata;
+  byte   lissydatacnt;
+  ushort lissyaddr;
+} LissyPort;
+
 extern ram Port Ports[16];
+extern ram LissyPort LissyPorts[8]; // Only room for 8 lissy ports: port 1 to 8.
 
 
 void setupIO(byte clr);
