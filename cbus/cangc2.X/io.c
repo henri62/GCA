@@ -246,7 +246,7 @@ void checkInputs(unsigned char sod) {
 
   for( idx = 0; idx < 8; idx++ ) {
     if( Ports[idx].cfg & PORTCFG_LISSY ) {
-      if( LissyPorts[idx].lissyaddr != LissyPorts[idx].prevlissyaddr ) {
+      if( LissyPorts[idx].lissyaddr > 0 && LissyPorts[idx].lissyaddr != LissyPorts[idx].prevlissyaddr ) {
         LissyPorts[idx].prevlissyaddr = LissyPorts[idx].lissyaddr;
         // Generate an event.
         Tx1[d0] = OPC_ACON2;
