@@ -28,7 +28,7 @@
 
 #define IR_SYNC 0x0003
 #define IR_BIT  0x0003
-#define IR_ZERO 0x0002
+#define IR_ZERO 0x0000
 #define IR_ONE  0x0001
 
 void checkIR(void);
