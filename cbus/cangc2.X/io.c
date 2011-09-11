@@ -249,7 +249,7 @@ void checkInputs(unsigned char sod) {
       if( LissyPorts[idx].lissyaddr > 0 && LissyPorts[idx].lissyaddr != LissyPorts[idx].prevlissyaddr ) {
         LissyPorts[idx].prevlissyaddr = LissyPorts[idx].lissyaddr;
         // Generate an event.
-        Tx1[d0] = OPC_ACDAT;
+        Tx1[d0] = OPC_ACON3;
         Tx1[d1] = (NN_temp / 256) & 0xFF;
         Tx1[d2] = (NN_temp % 256) & 0xFF;
         Tx1[d3] = (Ports[idx].addr / 256) & 0xFF;
