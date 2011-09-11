@@ -25,7 +25,7 @@
 #include "cbusdefs.h"
 #include "cbus.h"
 
-int IR(int lp, byte in);
+void IR(int l, byte in);
 
 void checkIR(void) {
   int i = 0;
@@ -40,7 +40,7 @@ void checkIR(void) {
 /*
  * bit length is 250 micro seconds
  * 11 = sync
- * 00 = 0
+ * 10 = 0
  * 01 = 1
  *
  * <sync> t1 t0 d13 ... d0
@@ -48,30 +48,33 @@ void checkIR(void) {
  * d = data
  */
 
-int IR( int lp, byte in ) {
-  if( !IRPorts[lp].gotIRsync ) {
-    IRPorts[lp].IRsync = IRPorts[lp].IRsync << 1;
-    IRPorts[lp].IRsync |= in;
-    if( (IRPorts[lp].IRsync & IR_SYNC) == IR_SYNC ) {
-      IRPorts[lp].gotIRsync = TRUE;
-      IRPorts[lp].IRaddr = 0;
-      IRPorts[lp].IRdata = 0;
-      IRPorts[lp].IRdatacnt = 0;
+void IR( int p, byte in ) {
+  if( !IRPorts[p].gotsync ) {
+    IRPorts[p].data <<= 1;
+    IRPorts[p].data |= in;
+    if( (IRPorts[p].data & IR_BIT) == IR_SYNC ) {
+      IRPorts[p].gotsync = TRUE;
+      IRPorts[p].addr = 0;
+      IRPorts[p].data = 0;
+      IRPorts[p].datacnt = 0;
     }
   }
   else { // IR data bits
-    IRPorts[lp].IRdatacnt++;
-    IRPorts[lp].IRdata = IRPorts[lp].IRdata << 1;
-    IRPorts[lp].IRdata |= in;
+    IRPorts[p].datacnt++;
+    IRPorts[p].data = IRPorts[p].data << 1;
+    IRPorts[p].data |= in;
 
-    if( IRPorts[lp].IRdatacnt == 16 ) {
-      IRPorts[lp].IRaddr = IRPorts[lp].IRdata;
-      IRPorts[lp].gotIRsync = FALSE;
-      IRPorts[lp].IRsync = 0;
+    if( IRPorts[p].datacnt % 2 == 0 ) {
+      IRPorts[p].addr <<= 1;
+      IRPorts[p].addr |= ((IRPorts[p].data & IR_BIT) == IR_ONE) ? 1:0;
+      IRPorts[p].data = 0;
+    }
+
+    if( IRPorts[p].datacnt == 32 ) {
+      IRPorts[p].gotsync = FALSE;
+      IRPorts[p].data = 0;
     }
 
   }
-
-  return IRPorts[lp].IRaddr;
 
 }

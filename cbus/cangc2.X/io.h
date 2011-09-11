@@ -68,16 +68,15 @@ typedef struct {
 } Port;
 
 typedef struct {
-  byte   gotIRsync;
-  ushort IRsync;
-  ushort IRdata;
-  byte   IRdatacnt;
-  ushort IRaddr;
-  ushort prevIRaddr;
+  byte   gotsync;
+  byte   data;
+  byte   datacnt;
+  ushort addr;
+  ushort prevaddr;
 } IRPort;
 
 extern ram Port Ports[16];
-extern ram IRPort IRPorts[8]; // Only room for 8 IR ports: port 1 to 8.
+extern ram IRPort IRPorts[2];
 
 
 void setupIO(byte clr);
