@@ -36,11 +36,23 @@ void checkIR(void) {
   }
 }
 
+
+/*
+ * bit length is 250 micro seconds
+ * 11 = sync
+ * 00 = 0
+ * 01 = 1
+ *
+ * <sync> t1 t0 d13 ... d0
+ * t = type 0 = decoder address
+ * d = data
+ */
+
 int IR( int lp, byte in ) {
   if( !IRPorts[lp].gotIRsync ) {
     IRPorts[lp].IRsync = IRPorts[lp].IRsync << 1;
     IRPorts[lp].IRsync |= in;
-    if( (IRPorts[lp].IRsync & IR_SYNCMASK) == IR_SYNC ) {
+    if( (IRPorts[lp].IRsync & IR_SYNC) == IR_SYNC ) {
       IRPorts[lp].gotIRsync = TRUE;
       IRPorts[lp].IRaddr = 0;
       IRPorts[lp].IRdata = 0;
@@ -54,9 +66,6 @@ int IR( int lp, byte in ) {
 
     if( IRPorts[lp].IRdatacnt == 16 ) {
       IRPorts[lp].IRaddr = IRPorts[lp].IRdata;
-    }
-
-    if( IRPorts[lp].IRdatacnt >= 18 ) {
       IRPorts[lp].gotIRsync = FALSE;
       IRPorts[lp].IRsync = 0;
     }

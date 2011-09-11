@@ -26,8 +26,7 @@
 
 #include "project.h"
 
-#define IR_SYNCMASK 0x01FF
-#define IR_SYNC 0x0111
+#define IR_SYNC 0x0003
 
 void checkIR(void);
 
