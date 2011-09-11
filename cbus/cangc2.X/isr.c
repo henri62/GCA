@@ -36,7 +36,7 @@ near unsigned short long io_timer;
 //
 // Interrupt Service Routine
 //
-// TMR0 generates a heartbeat every 200uS.
+// TMR0 generates a heartbeat every 250uS.
 //
 #pragma interrupt isr_high
 void isr_high(void) {
@@ -50,7 +50,7 @@ void isr_high(void) {
     // I/O timeout - 50ms
     //
     if (--io_timer == 0) {
-      io_timer = 250;
+      io_timer = 200;
       doIOTimers();
     }
 
@@ -58,7 +58,7 @@ void isr_high(void) {
     // Timer 500ms
     //
     if (--slot_timer == 0) {
-        slot_timer = 2500;
+        slot_timer = 2000;
         doLEDs();
 
       if (can_transmit_timeout != 0) {

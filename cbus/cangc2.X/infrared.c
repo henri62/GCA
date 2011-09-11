@@ -29,7 +29,7 @@ int IR(int lp, byte in);
 
 void checkIR(void) {
   int i = 0;
-  for( i = 0; i < 8; i++ ) {
+  for( i = 0; i < 2; i++ ) {
     if( Ports[i].cfg & PORTCFG_IR ) {
       IR(i, readInput(i));
     }
