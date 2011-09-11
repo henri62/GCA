@@ -20,47 +20,49 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "lissy.h"
+#include "infrared.h"
 #include "io.h"
 #include "cbusdefs.h"
 #include "cbus.h"
 
-void checkLissy(void) {
+int IR(int lp, byte in);
+
+void checkIR(void) {
   int i = 0;
   for( i = 0; i < 8; i++ ) {
-    if( Ports[i].cfg & PORTCFG_LISSY ) {
-      lissy(i, readInput(i));
+    if( Ports[i].cfg & PORTCFG_IR ) {
+      IR(i, readInput(i));
     }
   }
 }
 
-int lissy( int lp, byte in ) {
-  if( !LissyPorts[lp].gotlissysync ) {
-    LissyPorts[lp].lissysync = LissyPorts[lp].lissysync << 1;
-    LissyPorts[lp].lissysync |= in;
-    if( (LissyPorts[lp].lissysync & LISSY_SYNCMASK) == LISSY_SYNC ) {
-      LissyPorts[lp].gotlissysync = TRUE;
-      LissyPorts[lp].lissyaddr = 0;
-      LissyPorts[lp].lissydata = 0;
-      LissyPorts[lp].lissydatacnt = 0;
+int IR( int lp, byte in ) {
+  if( !IRPorts[lp].gotIRsync ) {
+    IRPorts[lp].IRsync = IRPorts[lp].IRsync << 1;
+    IRPorts[lp].IRsync |= in;
+    if( (IRPorts[lp].IRsync & IR_SYNCMASK) == IR_SYNC ) {
+      IRPorts[lp].gotIRsync = TRUE;
+      IRPorts[lp].IRaddr = 0;
+      IRPorts[lp].IRdata = 0;
+      IRPorts[lp].IRdatacnt = 0;
     }
   }
-  else { // lissy data bits
-    LissyPorts[lp].lissydatacnt++;
-    LissyPorts[lp].lissydata = LissyPorts[lp].lissydata << 1;
-    LissyPorts[lp].lissydata |= in;
+  else { // IR data bits
+    IRPorts[lp].IRdatacnt++;
+    IRPorts[lp].IRdata = IRPorts[lp].IRdata << 1;
+    IRPorts[lp].IRdata |= in;
 
-    if( LissyPorts[lp].lissydatacnt == 16 ) {
-      LissyPorts[lp].lissyaddr = LissyPorts[lp].lissydata;
+    if( IRPorts[lp].IRdatacnt == 16 ) {
+      IRPorts[lp].IRaddr = IRPorts[lp].IRdata;
     }
 
-    if( LissyPorts[lp].lissydatacnt >= 18 ) {
-      LissyPorts[lp].gotlissysync = FALSE;
-      LissyPorts[lp].lissysync = 0;
+    if( IRPorts[lp].IRdatacnt >= 18 ) {
+      IRPorts[lp].gotIRsync = FALSE;
+      IRPorts[lp].IRsync = 0;
     }
 
   }
 
-  return LissyPorts[lp].lissyaddr;
+  return IRPorts[lp].IRaddr;
 
 }

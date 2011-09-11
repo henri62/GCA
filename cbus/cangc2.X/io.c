@@ -245,18 +245,18 @@ void checkInputs(unsigned char sod) {
 
 
   for( idx = 0; idx < 8; idx++ ) {
-    if( Ports[idx].cfg & PORTCFG_LISSY ) {
-      if( LissyPorts[idx].lissyaddr > 0 && LissyPorts[idx].lissyaddr != LissyPorts[idx].prevlissyaddr ) {
-        LissyPorts[idx].prevlissyaddr = LissyPorts[idx].lissyaddr;
+    if( Ports[idx].cfg & PORTCFG_IR ) {
+      if( IRPorts[idx].IRaddr > 0 && IRPorts[idx].IRaddr != IRPorts[idx].prevIRaddr ) {
+        IRPorts[idx].prevIRaddr = IRPorts[idx].IRaddr;
         // Generate an event.
         Tx1[d0] = OPC_ACON3;
         Tx1[d1] = (NN_temp / 256) & 0xFF;
         Tx1[d2] = (NN_temp % 256) & 0xFF;
         Tx1[d3] = (Ports[idx].addr / 256) & 0xFF;
         Tx1[d4] = (Ports[idx].addr % 256) & 0xFF;
-        Tx1[d5] = ((LissyPorts[idx].lissyaddr & 0x3FFF) / 256) & 0xFF;
-        Tx1[d6] = ((LissyPorts[idx].lissyaddr & 0x3FFF) % 256) & 0xFF;
-        Tx1[d7] = (LissyPorts[idx].lissyaddr & 0xC0000) >> 14;
+        Tx1[d5] = ((IRPorts[idx].IRaddr & 0x3FFF) / 256) & 0xFF;
+        Tx1[d6] = ((IRPorts[idx].IRaddr & 0x3FFF) % 256) & 0xFF;
+        Tx1[d7] = (IRPorts[idx].IRaddr & 0xC0000) >> 14;
         can_tx(8);
       }
     }

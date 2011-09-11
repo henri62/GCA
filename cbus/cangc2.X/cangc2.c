@@ -44,7 +44,7 @@
 
 
 ram Port Ports[16];
-ram LissyPort LissyPorts[8];
+ram IRPort IRPorts[8];
 
 #pragma udata access VARS
 
@@ -205,8 +205,8 @@ void initIO(void) {
 
 
     // Start slot timeout timer
-  slot_timer = 2000;  // 500ms
-  io_timer = 200;  // 50ms
+  slot_timer = 2500;  // 500ms
+  io_timer = 250;  // 50ms
 
   // Set up global interrupts
   RCONbits.IPEN = 1;          // Enable priority levels on interrupts

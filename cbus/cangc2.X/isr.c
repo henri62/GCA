@@ -25,7 +25,7 @@
 #include "isr.h"
 #include "cangc2.h"
 #include "io.h"
-#include "lissy.h"
+#include "infrared.h"
 
 #pragma udata access VARS
 near unsigned short long slot_timer;
@@ -36,7 +36,7 @@ near unsigned short long io_timer;
 //
 // Interrupt Service Routine
 //
-// TMR0 generates a heartbeat every 250uS.
+// TMR0 generates a heartbeat every 200uS.
 //
 #pragma interrupt isr_high
 void isr_high(void) {
@@ -44,13 +44,13 @@ void isr_high(void) {
     TMR0L = tmr0_reload;
 
     // ToDo: If we have 8.3usec cycle we can do Lissy:
-    //checkLissy();
+    checkIR();
 
     //
     // I/O timeout - 50ms
     //
     if (--io_timer == 0) {
-      io_timer = 200;
+      io_timer = 250;
       doIOTimers();
     }
 
@@ -58,7 +58,7 @@ void isr_high(void) {
     // Timer 500ms
     //
     if (--slot_timer == 0) {
-        slot_timer = 2000;
+        slot_timer = 2500;
         doLEDs();
 
       if (can_transmit_timeout != 0) {

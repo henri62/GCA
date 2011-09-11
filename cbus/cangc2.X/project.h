@@ -61,6 +61,6 @@ extern near unsigned char Latcount;
 extern near unsigned short NN_temp;
 extern const rom unsigned char params[32];
 
-#define TMR0_NORMAL	6
+#define TMR0_NORMAL	56
 
 #endif	// __PROJECT_H

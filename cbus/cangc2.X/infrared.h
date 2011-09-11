@@ -21,15 +21,14 @@
 */
 
 
-#ifndef __LISSY_H
-#define __LISSY_H
+#ifndef __IR_H
+#define __IR_H
 
 #include "project.h"
 
-#define LISSY_SYNCMASK 0x01FF
-#define LISSY_SYNC 0x0111
+#define IR_SYNCMASK 0x01FF
+#define IR_SYNC 0x0111
 
-int lissy(int lp, byte in);
-void checkLissy(void);
+void checkIR(void);
 
 #endif
