@@ -36,16 +36,10 @@ near unsigned short long io_timer;
 //
 // Interrupt Service Routine
 //
-// TMR0 generates a heartbeat every 58uS to generate timing for the DCC bit
-// stream. If no DCC packet to be transmitted then preamble is generated.
-//
-// One bit half cycle is 58usec. Zero bit half cycle is 116usec.
-//
-// A/D readings are stored in RAM.
+// TMR0 generates a heartbeat every 250uS.
 //
 #pragma interrupt isr_high
 void isr_high(void) {
-    // 13 clocks to get here after interrupt
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
 
@@ -56,7 +50,7 @@ void isr_high(void) {
     // I/O timeout - 50ms
     //
     if (--io_timer == 0) {
-      io_timer = ((short long)25000)/58;
+      io_timer = 200;
       doIOTimers();
     }
 
@@ -64,7 +58,7 @@ void isr_high(void) {
     // Timer 500ms
     //
     if (--slot_timer == 0) {
-        slot_timer = ((short long)250000)/58;
+        slot_timer = 2000;
         doLEDs();
 
       if (can_transmit_timeout != 0) {
