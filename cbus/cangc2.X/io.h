@@ -76,7 +76,7 @@ typedef struct {
 } IRPort;
 
 extern ram Port Ports[16];
-extern ram IRPort IRPorts[2];
+extern ram IRPort IRPorts[8];
 
 
 void setupIO(byte clr);

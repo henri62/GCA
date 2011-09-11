@@ -44,7 +44,7 @@
 
 
 ram Port Ports[16];
-ram IRPort IRPorts[2];
+ram IRPort IRPorts[8];
 
 #pragma udata access VARS
 
