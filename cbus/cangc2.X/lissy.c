@@ -51,7 +51,7 @@ int lissy( int lp, byte in ) {
     LissyPorts[lp].lissydata |= in;
 
     if( LissyPorts[lp].lissydatacnt == 16 ) {
-      LissyPorts[lp].lissyaddr = LissyPorts[lp].lissydata & 0x3FFF;
+      LissyPorts[lp].lissyaddr = LissyPorts[lp].lissydata;
     }
 
     if( LissyPorts[lp].lissydatacnt >= 18 ) {

@@ -65,6 +65,15 @@ void cbus_setup(void) {
   RXB0CON = 0b00100100; // Receive valid packets, double buffer RXB0
 #endif
 
+/*
+  In PICs ist 125Kbps mit folgender Einstellung bereitzustellen:
+
+16MHz:
+-------------
+BRGCON1: 0x03
+BRGCON2: 0xDE
+BRGCON3: 0x03
+*/
   /*
    * Baud rate setting.
    * Sync segment is fixed at 1 Tq
