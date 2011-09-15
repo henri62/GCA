@@ -247,6 +247,7 @@ void sendTX1(void) {
 	unsigned char i;
 
   LED1 = 1;
+  led1timer = 20;
 	can_transmit_timeout = 2;	// half second intervals
 	can_transmit_failed = 0;
 
@@ -266,7 +267,6 @@ void sendTX1(void) {
 	while ((TXB1CONbits.TXREQ) && (!can_transmit_failed) && (can_transmit_timeout != 0))
 		;
 	TXB1CONbits.TXREQ = 1;
-  LED1 = 0;
 }
 
 #endif	// TX1

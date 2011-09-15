@@ -57,6 +57,7 @@ near unsigned char  Wait4NN;
 near unsigned char  Latcount;
 near unsigned char  NV1;
 near unsigned char  isLearning;
+near unsigned char  led1timer;
 
 volatile near unsigned char tmr0_reload;
 
@@ -119,6 +120,7 @@ void main(void) {
   unsigned char swTrig = 0;
   Wait4NN = FALSE;
   isLearning = FALSE;
+  led1timer = 0;
 
   NV1 = eeRead(EE_NV);
 
@@ -138,11 +140,14 @@ void main(void) {
     */
     SOD = DEFAULT_SOD;
 
+  LED3 = 1;
   // Loop forever (nothing lasts forever...)
   while (1) {
     // Check for Rx packet and setup pointer to it
     if (ecan_fifo_empty() == 0) {
       // Decode the new command
+      LED1 = 1;
+      led1timer = 20;
       parse_cmd();
     }
 
@@ -207,6 +212,7 @@ void initIO(void) {
     // Start slot timeout timer
   slot_timer = 2000;  // 500ms
   io_timer = 200;  // 50ms
+  led_timer = 20;  // 5ms
 
   // Set up global interrupts
   RCONbits.IPEN = 1;          // Enable priority levels on interrupts

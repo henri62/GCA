@@ -28,6 +28,7 @@
 #define SW      PORTAbits.RA2	// Flim switch
 #define LED1    PORTBbits.RB6
 #define LED2    PORTBbits.RB7
+#define LED3    PORTBbits.RB5
 
 #define PORT1   PORTAbits.RA0
 #define PORT2   PORTAbits.RA1
@@ -77,12 +78,14 @@ typedef struct {
 
 extern ram Port Ports[16];
 extern ram IRPort IRPorts[8];
+extern near unsigned char led1timer;
 
 
 void setupIO(byte clr);
 void writeOutput(int port, unsigned char val);
 unsigned char readInput(int port);
 void doIOTimers(void);
+void doLEDTimers(void);
 void doTimedOff(void);
 void checkInputs(unsigned char sod);
 void resetOutputs(void);

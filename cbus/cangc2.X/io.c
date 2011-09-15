@@ -41,10 +41,12 @@ void setupIO(byte clr) {
   
   TRISBbits.TRISB6 = 0; /* LED1 */
   TRISBbits.TRISB7 = 0; /* LED2 */
+  TRISBbits.TRISB5 = 0; /* LED3 */
   TRISAbits.TRISA2 = 1; /* Push button */
 
   LED1 = 0;
   LED2 = 0;
+  LED3 = 0;
 
 
   // following presets are written to eeprom if the flim switch is preshed at boot
@@ -161,6 +163,14 @@ unsigned char readInput(int idx) {
   return !val;
 }
 
+
+void doLEDTimers(void) {
+  if( led1timer > 0 ) {
+    led1timer--;
+    if( led1timer == 0 )
+      LED1 = 0;
+  }
+}
 
 void doIOTimers(void) {
   int i = 0;

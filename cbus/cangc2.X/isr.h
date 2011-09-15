@@ -37,6 +37,7 @@ extern unsigned short ave;
 
 extern unsigned near short long slot_timer;
 extern unsigned near short long io_timer;
+extern unsigned near short long led_timer;
 
 #define __ISR_H
 #endif

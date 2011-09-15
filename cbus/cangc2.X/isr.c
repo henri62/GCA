@@ -30,6 +30,7 @@
 #pragma udata access VARS
 near unsigned short long slot_timer;
 near unsigned short long io_timer;
+near unsigned short long led_timer;
 
 #pragma code APP
 
@@ -45,6 +46,14 @@ void isr_high(void) {
 
     // ToDo: If we have 8.3usec cycle we can do Lissy:
     checkIR();
+
+    //
+    // I/O timeout - 5ms
+    //
+    if (--led_timer == 0) {
+      led_timer = 20;
+      doLEDTimers();
+    }
 
     //
     // I/O timeout - 50ms
