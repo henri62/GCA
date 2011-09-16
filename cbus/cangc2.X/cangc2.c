@@ -81,7 +81,6 @@ const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC2, EVT_
 
 void initIO(void);
 void initCAN(void);
-void resetOutputs(void);
 
 /*
  * Interrupt vectors
@@ -130,9 +129,13 @@ void main(void) {
   NV1 = eeRead(EE_NV);
 
   initIO();
+  resetOutputs();
   initCAN();
-  restoreOutputStates();
 
+  delay();
+  restoreOutputStates();
+  delay();
+  
   NN_temp  = eeRead(EE_NN) * 256;
   NN_temp += eeRead(EE_NN+1);
   if( NN_temp == 0 )

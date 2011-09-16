@@ -83,7 +83,8 @@ void setupIO(byte clr) {
 
   for( idx = 0; idx < 16; idx++ ) {
     Ports[idx].cfg = eeRead(EE_PORTCFG + idx);
-    Ports[idx].status = eeRead(EE_PORTSTAT + idx);
+    if( (Ports[idx].cfg & PORTCFG_IO) == PORTCFG_OUT )
+      Ports[idx].status = eeRead(EE_PORTSTAT + idx);
     Ports[idx].timedoff = 0;
     Ports[idx].timer = 0;
     Ports[idx].evtnn = eeReadShort(EE_PORTNN + (2*idx));
@@ -219,7 +220,7 @@ unsigned char checkFlimSwitch(void) {
 void checkInputs(unsigned char sod) {
   int idx = 0;
   for( idx = 0; idx < 16; idx++ ) {
-    if( Ports[idx].cfg & 0x01 ) {
+    if( (Ports[idx].cfg & PORTCFG_IO) == PORTCFG_IN ) {
       unsigned char val = readInput(idx);
       if( sod || val != Ports[idx].status ) {
         Ports[idx].status = val;
@@ -254,7 +255,7 @@ void checkInputs(unsigned char sod) {
   }
 
 
-  for( idx = 0; idx < 8; idx++ ) {
+  for( idx = 0; idx < 2; idx++ ) {
     if( Ports[idx].cfg & PORTCFG_IR ) {
       if( IRPorts[idx].addr > 0 && IRPorts[idx].addr != IRPorts[idx].prevaddr ) {
         IRPorts[idx].prevaddr = IRPorts[idx].addr;
