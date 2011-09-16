@@ -61,6 +61,7 @@ void setupIO(byte clr) {
     Ports[idx].addr = idx + 1;
     if( clr || checkFlimSwitch() ) {
       eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);
+      eeWrite(EE_PORTSTAT + idx, 0);
       eeWriteShort(EE_PORTNN + (2*idx), Ports[idx].evtnn);
       eeWriteShort(EE_PORTADDR + (2*idx), Ports[idx].addr);
     }
@@ -76,6 +77,7 @@ void setupIO(byte clr) {
     Ports[idx].addr = idx + 1;
     if( clr || checkFlimSwitch() ) {
       eeWrite(EE_PORTCFG + idx, Ports[idx].cfg);
+      eeWrite(EE_PORTSTAT + idx, 0);
       eeWriteShort(EE_PORTNN + (2*idx), Ports[idx].evtnn);
       eeWriteShort(EE_PORTADDR + (2*idx), Ports[idx].addr);
     }
