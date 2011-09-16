@@ -82,8 +82,10 @@ BRGCON3: 0x03
    * So, for 125kbits/s, bit time = 8us, we need Tq = 500ns
    * Fosc is 32MHz (8MHz + PLL), Tosc is 31.25ns, so we need 1:16 prescaler
    */
+
   // prescaler Tq = 16/Fosc
-  BRGCON1 = 0b00000011;
+  // BRGCON1 = 0b00000111; // 8MHz resonator
+  BRGCON1 = 0b00000011; // 4MHz resonator
   // freely programmable, sample once, phase 1 = 4xTq, prop time = 7xTq
   BRGCON2 = 0b10011110;
   // Wake-up enabled, wake-up filter not used, phase 2 = 4xTq

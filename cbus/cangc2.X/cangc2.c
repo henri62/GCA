@@ -30,6 +30,7 @@
 #include "cangc2.h"
 #include "isr.h"
 #include "io.h"
+#include "project.h"
 
 
 
@@ -118,6 +119,7 @@ void LOW_INT_VECT(void)
 #pragma code APP
 void main(void) {
   unsigned char swTrig = 0;
+  byte l3 = 1;
   Wait4NN = FALSE;
   isLearning = FALSE;
   led1timer = 0;
@@ -140,9 +142,10 @@ void main(void) {
     */
     SOD = DEFAULT_SOD;
 
-  LED3 = 1;
   // Loop forever (nothing lasts forever...)
   while (1) {
+    LED3 = l3;
+    l3 ^= 1;
     // Check for Rx packet and setup pointer to it
     if (ecan_fifo_empty() == 0) {
       // Decode the new command
@@ -198,8 +201,8 @@ void initIO(void) {
 
   // Set up TMR0 for DCC bit timing with 58us period prescaler 4:1,
   // 8 bit mode
-  // T0CON = 0x40;  old value
-  T0CON = 0x41;
+  T0CON = 0x41; //or 4MHz resonat
+  //T0CON = 0x42; //or 8MHz resonat
   TMR0L = 0;
   TMR0H = 0;
   INTCONbits.TMR0IE = 1;
