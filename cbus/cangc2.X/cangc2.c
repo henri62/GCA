@@ -212,6 +212,12 @@ void initIO(void) {
   T0CONbits.TMR0ON = 1;
   INTCON2bits.TMR0IP = 1;
 
+  // clear the fifo receive buffers
+  while (ecan_fifo_empty() == 0) {
+    rx_ptr->con = 0;
+  }
+
+
   tmr0_reload = TMR0_NORMAL;
 
 
