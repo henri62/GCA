@@ -120,6 +120,9 @@ void LOW_INT_VECT(void)
 void main(void) {
   unsigned char swTrig = 0;
   byte l3 = 1;
+
+  lDelay();
+
   Wait4NN = FALSE;
   isLearning = FALSE;
   led1timer = 0;
