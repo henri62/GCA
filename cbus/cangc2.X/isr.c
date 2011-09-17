@@ -87,6 +87,7 @@ void isr_low(void) {
   // If FIFO watermark interrupt is signalled then we send a high
   // priority OPC_HLT to halt the CBUS. The packet has been preloaded
   // in TXB0
+
   if (PIR3bits.FIFOWMIF == 1) {
     TXB0CONbits.TXREQ = 1;
     can_bus_off = 1;

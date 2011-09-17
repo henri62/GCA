@@ -124,6 +124,14 @@ void parse_cmd(void) {
       setupIO(TRUE);
       break;
 
+    case OPC_QNN:
+      Tx1[d0] = OPC_NNACK;
+      Tx1[d1] = (NN_temp / 256) & 0xFF;
+      Tx1[d2] = (NN_temp % 256) & 0xFF;
+      can_tx(3);
+      delay();
+      break;
+
     case OPC_NVRD:
       if( thisNN() ) {
         byte nvnr = rx_ptr->d3;
