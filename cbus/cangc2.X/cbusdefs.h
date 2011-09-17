@@ -126,6 +126,7 @@
 #define OPC_ASRQ	0x9A    // Short rest event
 #define OPC_PARAN   0x9B    // Single node parameter response
 #define OPC_REVAL   0x9C    // Rest read of event variable
+#define OPC_TYPE   0x9D    // Report manufacturer and product ID.
 #define OPC_EXTC3   0x9F    // Extended opcode with 3 data bytes
 
 // Packets with 5 data bytes

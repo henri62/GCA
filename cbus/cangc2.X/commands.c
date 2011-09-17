@@ -125,10 +125,12 @@ void parse_cmd(void) {
       break;
 
     case OPC_QNN:
-      Tx1[d0] = OPC_NNACK;
+      Tx1[d0] = OPC_TYPE;
       Tx1[d1] = (NN_temp / 256) & 0xFF;
       Tx1[d2] = (NN_temp % 256) & 0xFF;
-      can_tx(3);
+      Tx1[d3] = params[0];
+      Tx1[d4] = params[2];
+      can_tx(5);
       delay();
       break;
 
@@ -270,6 +272,8 @@ void parse_cmd(void) {
 void doRqnpn(unsigned int idx) {
   if (idx < 8) {
     Tx1[d0] = OPC_PARAN;
+    Tx1[d1] = (NN_temp / 256) & 0xFF;
+    Tx1[d2] = (NN_temp % 256) & 0xFF;
     Tx1[d3] = idx;
     Tx1[d4] = params[idx - 1];
     can_tx_nn(5);
