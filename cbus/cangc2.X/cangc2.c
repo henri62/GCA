@@ -54,6 +54,7 @@ near unsigned char  can_transmit_failed;
 near unsigned char  can_bus_off;
 near unsigned short NN_temp;
 near unsigned short SOD;
+near unsigned char CANID;
 near unsigned char  Wait4NN;
 near unsigned char  Latcount;
 near unsigned char  NV1;
@@ -130,6 +131,10 @@ void main(void) {
 
   initIO();
   resetOutputs();
+
+  CANID = eeRead(EE_CANID);
+  if( CANID == 0 || CANID == 0xFFFF )
+    CANID = FIXED_CAN_ID;
   initCAN();
 
   delay();
@@ -138,15 +143,14 @@ void main(void) {
   
   NN_temp  = eeRead(EE_NN) * 256;
   NN_temp += eeRead(EE_NN+1);
-  if( NN_temp == 0 )
+  if( NN_temp == 0 || NN_temp == 0xFFFF )
     NN_temp = DEFAULT_NN;
 
-  /*
   SOD  = eeRead(EE_SOD) * 256;
   SOD += eeRead(EE_SOD+1);
-  if( SOD == 0 )
-    */
+  if( SOD == 0 || SOD == 0xFFFF )
     SOD = DEFAULT_SOD;
+
 
   // Loop forever (nothing lasts forever...)
   while (1) {
@@ -240,14 +244,13 @@ void initIO(void) {
 
 void initCAN(void) {
   // Setup ID
-  NN_temp = DEFAULT_NN;
   Tx1[con] = 0;
-  Tx1[sidh] = 0b10110000 | (FIXED_CAN_ID & 0x78) >>3;
-  Tx1[sidl] = (FIXED_CAN_ID & 0x07) << 5;
+  Tx1[sidh] = 0b10110000 | (CANID & 0x78) >>3;
+  Tx1[sidl] = (CANID & 0x07) << 5;
 
   // Setup TXB0 with high priority OPC_HLT
-  TXB0SIDH = 0b01110000 | (FIXED_CAN_ID & 0x78) >>3;
-  TXB0SIDL = (FIXED_CAN_ID & 0x07) << 5;
+  TXB0SIDH = 0b01110000 | (CANID & 0x78) >>3;
+  TXB0SIDL = (CANID & 0x07) << 5;
   TXB0DLC = 1;
   TXB0D0 = OPC_HLT;
 

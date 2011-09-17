@@ -44,7 +44,7 @@
 #include "cbus.h"
 
     
-#define FIXED_CAN_ID 0x72
+#define FIXED_CAN_ID 0x73
 #define DEFAULT_NN   0xFFEE
 #define DEFAULT_SOD  4711
 

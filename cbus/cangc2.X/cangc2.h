@@ -43,6 +43,7 @@
 #define EE_PORTADDR EE_PORTNN + 32      // 16 * 2 bytes event address (device id)
 #define EE_PORTACT EE_PORTADDR + 32     // 16 * 2 bytes event variable
 #define EE_PORTSTAT EE_PORTACT + 32     // 2 bytes port output status saved at power off command
+#define EE_CANID EE_PORTSTAT + 2        // 1 byte CANID
 
 // values
 #define MAGIC 93
@@ -61,6 +62,7 @@
 
 extern near unsigned short NN_temp;
 extern near unsigned char NV1;
+extern near unsigned char CANID;
 extern near unsigned short SOD;
 extern near unsigned char Wait4NN;
 extern near unsigned char isLearning;

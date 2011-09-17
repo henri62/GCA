@@ -181,6 +181,15 @@ void parse_cmd(void) {
           can_tx(5);
           delay();
         }
+        else if( nvnr == 20 ) {
+          Tx1[d0] = OPC_NVANS;
+          Tx1[d1] = (NN_temp / 256) & 0xFF;
+          Tx1[d2] = (NN_temp % 256) & 0xFF;
+          Tx1[d3] = nvnr;
+          Tx1[d4] = CANID; // port status 9-16
+          can_tx(5);
+          delay();
+        }
       }
       break;
 
@@ -196,6 +205,15 @@ void parse_cmd(void) {
           eeWrite(EE_PORTCFG + (nvnr-2), Ports[nvnr-2].cfg);
           configPort(nvnr-2);
         }
+        else if( nvnr == 20 ) {
+          CANID = rx_ptr->d4;
+          eeWrite(EE_CANID, CANID);
+          Tx1[sidh] = 0b10110000 | (CANID & 0x78) >>3;
+          Tx1[sidl] = (CANID & 0x07) << 5;
+          TXB0SIDH = 0b01110000 | (CANID & 0x78) >>3;
+          TXB0SIDL = (CANID & 0x07) << 5;
+        }
+
       }
       break;
 

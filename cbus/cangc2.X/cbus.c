@@ -250,25 +250,26 @@ void sendTX1(void) {
 
   LED1 = 1;
   led1timer = 20;
-	can_transmit_timeout = 2;	// half second intervals
+	can_transmit_timeout = 20;	// half second intervals
 	can_transmit_failed = 0;
 
-	while((TXB1CONbits.TXREQ) && (!can_transmit_failed) && (can_transmit_timeout != 0))
-		;
+	while( TXB1CONbits.TXREQ && can_transmit_failed == 0 && can_transmit_timeout != 0 );
 
+	if( !TXB1CONbits.TXREQ && can_transmit_failed == 0 && can_transmit_timeout != 0 ) {
     // Load TXB1
-	tx_idx = 0;
-	ptr_fsr1 = &TXB1CON;
-	for (i=0; i<14; i++) {
-		*(ptr_fsr1++) = Tx1[tx_idx++];
-	}
+    tx_idx = 0;
+    ptr_fsr1 = &TXB1CON;
+    for (i=0; i<14; i++) {
+      *(ptr_fsr1++) = Tx1[tx_idx++];
+    }
 
-	can_transmit_timeout = 2;	// half second intervals
-	can_transmit_failed = 0;
+    can_transmit_timeout = 20;	// half second intervals
+    can_transmit_failed = 0;
 
-	while ((TXB1CONbits.TXREQ) && (!can_transmit_failed) && (can_transmit_timeout != 0))
-		;
-	TXB1CONbits.TXREQ = 1;
+	  //while( TXB1CONbits.TXREQ && can_transmit_failed == 0 && can_transmit_timeout != 0 );
+
+    TXB1CONbits.TXREQ = 1;
+  }
 }
 
 #endif	// TX1

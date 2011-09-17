@@ -61,6 +61,10 @@ void isr_high(void) {
     if (--io_timer == 0) {
       io_timer = 200;
       doIOTimers();
+
+      if (can_transmit_timeout != 0) {
+        --can_transmit_timeout;
+      }
     }
 
     //
@@ -70,9 +74,6 @@ void isr_high(void) {
         slot_timer = 2000;
         doLEDs();
 
-      if (can_transmit_timeout != 0) {
-        --can_transmit_timeout;
-      }
     }
 
 }
