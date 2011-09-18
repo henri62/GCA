@@ -129,7 +129,6 @@ void parse_cmd(void) {
       Tx1[d1] = (NN_temp / 256) & 0xFF;
       Tx1[d2] = (NN_temp % 256) & 0xFF;
       can_tx(3);
-      delay();
       break;
 
     case OPC_QNTP:
@@ -139,7 +138,6 @@ void parse_cmd(void) {
       Tx1[d3] = params[0];
       Tx1[d4] = params[2];
       can_tx(5);
-      delay();
       break;
 
     case OPC_NVRD:
@@ -152,7 +150,6 @@ void parse_cmd(void) {
           Tx1[d3] = nvnr;
           Tx1[d4] = NV1;
           can_tx(5);
-          delay();
         }
         else if( nvnr < 18 ) {
           Tx1[d0] = OPC_NVANS;
@@ -161,7 +158,6 @@ void parse_cmd(void) {
           Tx1[d3] = nvnr;
           Tx1[d4] = Ports[nvnr-2].cfg;
           can_tx(5);
-          delay();
         }
         else if( nvnr == 18 ) {
           Tx1[d0] = OPC_NVANS;
@@ -170,7 +166,6 @@ void parse_cmd(void) {
           Tx1[d3] = nvnr;
           Tx1[d4] = getPortStates(0); // port status 1-8
           can_tx(5);
-          delay();
         }
         else if( nvnr == 19 ) {
           Tx1[d0] = OPC_NVANS;
@@ -179,7 +174,6 @@ void parse_cmd(void) {
           Tx1[d3] = nvnr;
           Tx1[d4] = getPortStates(1); // port status 9-16
           can_tx(5);
-          delay();
         }
         else if( nvnr == 20 ) {
           Tx1[d0] = OPC_NVANS;
@@ -188,7 +182,6 @@ void parse_cmd(void) {
           Tx1[d3] = nvnr;
           Tx1[d4] = CANID; // port status 9-16
           can_tx(5);
-          delay();
         }
       }
       break;
@@ -264,7 +257,6 @@ void parse_cmd(void) {
           Tx1[d6] = Ports[i].addr % 256;
           Tx1[d7] = i;
           can_tx(8);
-          delay();
         }
         // start of day event
         Tx1[d0] = OPC_ENRSP;
@@ -276,7 +268,6 @@ void parse_cmd(void) {
         Tx1[d6] = SOD % 256;
         Tx1[d7] = i;
         can_tx(8);
-        delay();
       }
       break;
 
@@ -290,7 +281,6 @@ void parse_cmd(void) {
       // At least one buffer is now free
       can_bus_off = 0;
       PIE3bits.FIFOWMIE = 1;
-      can_bus_on();
     }
 
 
@@ -303,7 +293,7 @@ void doRqnpn(unsigned int idx) {
     Tx1[d2] = (NN_temp % 256) & 0xFF;
     Tx1[d3] = idx;
     Tx1[d4] = params[idx - 1];
-    can_tx_nn(5);
+    can_tx(5);
   }
   else {
     doError(CMDERR_INV_PARAM_IDX);
@@ -312,8 +302,10 @@ void doRqnpn(unsigned int idx) {
 
 void doError(unsigned int code) {
   Tx1[d0] = OPC_CMDERR;
+  Tx1[d1] = (NN_temp / 256) & 0xFF;
+  Tx1[d2] = (NN_temp % 256) & 0xFF;
   Tx1[d3] = code;
-  can_tx_nn(4);
+  can_tx(4);
 }
 
 int thisNN() {

@@ -33,16 +33,7 @@ extern near unsigned char can_transmit_timeout;
 extern near unsigned char can_transmit_failed;
 extern near unsigned char can_bus_off;
 
-extern void can_opc(unsigned char opc);
-extern void can_tx_nn(unsigned char dlc_val);
-extern void can_tx(unsigned char dlc_val);
-void can_bus_on(void);
-void can_debug1(unsigned char status);
-void can_debug_dcc(void);
-
-#ifdef TX1
-	void sendTX1(void);
-#endif
+void can_tx(unsigned char dlc_val);
 
 extern rom unsigned char defaultID;
 extern rom unsigned char status;
@@ -58,13 +49,8 @@ extern rom unsigned char bootflag;
 
 void cbus_setup(void);
 
-// Receive buffer
-#ifdef RX0
-	extern near unsigned char Rx0[14];
-#endif
-#ifdef TX1
-	extern near unsigned char Tx1[14];
-#endif
+extern near unsigned char Tx1[14];
+
 enum bufbytes {
 	con=0,
 	sidh,
@@ -82,7 +68,6 @@ enum bufbytes {
 	d7
 };
 
-#ifdef ECAN_MODE_2
 unsigned char ecan_fifo_empty(void);
 
 typedef struct {
@@ -103,6 +88,5 @@ typedef struct {
 } ecan_rx_buffer;
 extern ecan_rx_buffer * rx_ptr;
 
-#endif
 
 #endif	// __CBUS_COMMON_H
