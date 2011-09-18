@@ -1,0 +1,27 @@
+--------------------------------------------------------------------------------
+CAN_ID self enumeration (was CBUS CAN-CAN MODULE)
+
+When a node goes into Enumeration mode it first clears the 112 flags(14 bytes), sets timer 3, 
+sends an RTR frame using the default ID, then waits for the timer to roll over.
+ 
+
+movlw B'10111111' ;fixed node, default ID
+
+movwf Tx1sidh
+
+movlw B'11100000'
+
+movwf Tx1sidl
+
+movlw B'01000000' ;RTR frame
+
+movwf Dlc
+ 
+When any node sees an RTR frame it responds with a normal frame with zero data. (hpint)
+When the Enumerating node sees a normal frame with zero data it extracts the NodeID from the 
+header (shuffin) and sets the flag matching the ID value.
+I don't think (shuffin) is actually used, Mike has duplicated the code within (hpint), 
+it re-arranges the header bits to get the ID into a single byte.
+
+--------------------------------------------------------------------------------
+

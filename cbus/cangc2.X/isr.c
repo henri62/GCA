@@ -28,9 +28,9 @@
 #include "infrared.h"
 
 #pragma udata access VARS
-near unsigned short long slot_timer;
-near unsigned short long io_timer;
-near unsigned short long led_timer;
+near unsigned short led500ms_timer;
+near unsigned short io_timer;
+near unsigned short led_timer;
 
 #pragma code APP
 
@@ -70,8 +70,8 @@ void isr_high(void) {
     //
     // Timer 500ms
     //
-    if (--slot_timer == 0) {
-        slot_timer = 2000;
+    if (--led500ms_timer == 0) {
+        led500ms_timer = 2000;
         doLEDs();
 
     }

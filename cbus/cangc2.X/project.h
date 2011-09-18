@@ -44,8 +44,8 @@
 #include "cbus.h"
 
     
-#define FIXED_CAN_ID 0x73
-#define DEFAULT_NN   0xFFEE
+#define FIXED_CAN_ID 0x7F // use only for enummeration
+#define DEFAULT_NN   255
 #define DEFAULT_SOD  4711
 
 #define TRUE 1

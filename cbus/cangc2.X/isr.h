@@ -35,9 +35,9 @@ extern unsigned short retry_delay;
 extern unsigned short sum;
 extern unsigned short ave;
 
-extern unsigned near short long slot_timer;
-extern unsigned near short long io_timer;
-extern unsigned near short long led_timer;
+extern unsigned near short led500ms_timer;
+extern unsigned near short io_timer;
+extern unsigned near short led_timer;
 
 #define __ISR_H
 #endif

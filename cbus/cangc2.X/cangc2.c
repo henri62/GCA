@@ -132,19 +132,20 @@ void main(void) {
   initIO();
   resetOutputs();
 
+  NN_temp  = eeRead(EE_NN) * 256;
+  NN_temp += eeRead(EE_NN+1);
+  if( NN_temp == 0 || NN_temp == 0xFFFF )
+    NN_temp = DEFAULT_NN;
+
   CANID = eeRead(EE_CANID);
-  if( CANID == 0 || CANID == 0xFFFF )
-    CANID = FIXED_CAN_ID;
+  if( CANID == 0 || CANID == 0xFF )
+    CANID = NN_temp & 0xFF;
   initCAN();
 
   delay();
   restoreOutputStates();
   delay();
   
-  NN_temp  = eeRead(EE_NN) * 256;
-  NN_temp += eeRead(EE_NN+1);
-  if( NN_temp == 0 || NN_temp == 0xFFFF )
-    NN_temp = DEFAULT_NN;
 
   SOD  = eeRead(EE_SOD) * 256;
   SOD += eeRead(EE_SOD+1);
@@ -229,7 +230,7 @@ void initIO(void) {
 
 
     // Start slot timeout timer
-  slot_timer = 2000;  // 500ms
+  led500ms_timer = 2000;  // 500ms
   io_timer = 200;  // 50ms
   led_timer = 20;  // 5ms
 
