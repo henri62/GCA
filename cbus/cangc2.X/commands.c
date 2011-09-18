@@ -244,7 +244,8 @@ void parse_cmd(void) {
         }
         if( idx == 16 ) {
           SOD = addr;
-          eeWriteShort(EE_SOD, SOD);
+          eeWrite(EE_SOD  , addr/256);
+          eeWrite(EE_SOD+1, addr%256);
         }
       }
       break;
