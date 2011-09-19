@@ -649,7 +649,8 @@ setup	clrf	INTCON			;no interrupts yet
 		movwf	RCSTA
 		movlw	B'00001000'		;set BAUDCON to 16 bit
 		movwf	BAUDCON
-		movlw	.15			;.15 Baud = 250000
+;		movlw	.7			;.7 Baud = 500000
+		movlw	.16			;.16 Baud = 230400
 		movwf	SPBRG
 		movlw	0
 		movwf	SPBRGH

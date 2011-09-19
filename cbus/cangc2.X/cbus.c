@@ -200,39 +200,43 @@ unsigned char ecan_fifo_empty(void) {
 /*
  * Send a CAN frame where data bytes have already been loaded
  */
-void can_tx(unsigned char dlc_val) {
+
+void tx(unsigned char dlc_val) {
 	unsigned char tx_idx;
-	unsigned char * ptr_fsr1;
+	unsigned char *ptr_fsr1;
 	unsigned char i;
 
-	can_transmit_timeout = 20;	// 20 * 50ms
-	can_transmit_failed = 0;
-
-  while( TXB1CONbits.TXREQ == 1 && can_transmit_failed == 0 && can_transmit_timeout != 0 );
-
   Tx1[dlc] = dlc_val;				// data length
-	Tx1[sidh] &= 0b00001111;		// clear old priority
-	Tx1[sidh] |= 0b10110000;		// low priority
+	Tx1[sidh] &= 0b00001111;	// clear old priority
+	Tx1[sidh] |= 0b10110000;	// low priority
 	Latcount = 10;
 
-  LED1 = 1;
+  LED1 = PORT_ON;
   led1timer = 20;
 
+  tx_idx = 0;
+  ptr_fsr1 = &TXB1CON;
+  for (i=0; i<14; i++) {
+    *(ptr_fsr1++) = Tx1[tx_idx++];
+  }
 
-	if( !TXB1CONbits.TXREQ && can_transmit_failed == 0 && can_transmit_timeout != 0 ) {
-    // Load TXB1
-    tx_idx = 0;
-    ptr_fsr1 = &TXB1CON;
-    for (i=0; i<14; i++) {
-      *(ptr_fsr1++) = Tx1[tx_idx++];
+  TXB1CONbits.TXREQ = 1;
+
+}
+
+/*
+ * Work around for the hanging problem. See:
+ * http://www.ccsinfo.com/forum/viewtopic.php?t=44066
+ */
+#define can_tbe_0() (!TXB1CONbits.TXREQ)
+void can_tx(unsigned char dlc_val) {
+  byte CANsent = FALSE;
+  can_transmit_failed = 0;
+  while( CANsent == FALSE && can_transmit_failed == 0 ) {
+    if( can_tbe_0() ) {
+      tx(dlc_val);
+      CANsent = TRUE;
     }
-
-    can_transmit_timeout = 20;	// half second intervals
-    can_transmit_failed = 0;
-
-	  //while( TXB1CONbits.TXREQ && can_transmit_failed == 0 && can_transmit_timeout != 0 );
-
-    TXB1CONbits.TXREQ = 1;
   }
 }
 
