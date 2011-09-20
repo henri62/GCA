@@ -23,6 +23,7 @@
 
 #include "project.h"
 #include "cbusdefs.h"
+#include "rocrail.h"
 #include "utils.h"
 #include "commands.h"
 #include "cangc2.h"

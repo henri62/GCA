@@ -24,6 +24,7 @@
 #include <p18cxxx.h>
 #include <stdio.h>
 #include "cbusdefs.h"
+#include "rocrail.h"
 #include "cbus.h"
 #include "utils.h"
 #include "commands.h"
