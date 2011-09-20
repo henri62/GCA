@@ -1,7 +1,7 @@
    	TITLE		"Source for CAN-RS232 interface for CBUS"
-; filename CAN_RSe.asm
-; CAN_RSe is an updated version of CAN_RSd
+; filename canrs.asm
 ; Uses 4 MHz resonator and PLL for 16 MHz clock
+; Uses 8 MHz resonator and PLL for 32 MHz clock
 ; This interface does not have a Node Number and no read / write over the CAN bus.
 
 ; A modified version of CAN_SER with the enumeration in the hpint
@@ -11,7 +11,7 @@
 ; CAN bit rate of 125 Kbits/sec
 ; Standard frame only
 ; Uses 'Gridconnect' protocol for serial
-; Serial BAUD is 115.2KB  (fixed)
+; Serial BAUD is 230.4KB  (fixed)
 
 ;	Tested and working 26/08/07
 
@@ -630,7 +630,8 @@ setup	clrf	INTCON			;no interrupts yet
 		clrf	ECANCON			;CAN mode 0 for now
 		 
 		bsf		CANCON,7		;CAN to config mode
-		movlw	B'00000011'		;set CAN bit rate at 125000 for now
+		movlw	B'00000011'		;set CAN bit rate at 125000 for now (Fosc=16MHz)
+;		movlw	B'00000111'		;set CAN bit rate at 125000 for now (Fosc=32MHz)
 		movwf	BRGCON1
 		movlw	B'10011110'		;set phase 1 etc
 		movwf	BRGCON2
@@ -649,8 +650,8 @@ setup	clrf	INTCON			;no interrupts yet
 		movwf	RCSTA
 		movlw	B'00001000'		;set BAUDCON to 16 bit
 		movwf	BAUDCON
-;		movlw	.7			;.7 Baud = 500000
-		movlw	.16			;.16 Baud = 230400
+		movlw	.16			;.16 Baud = 230400 (Fosc=16MHz)
+;		movlw	.34			;.34 Baud = 230400 (Fosc=32MHz)
 		movwf	SPBRG
 		movlw	0
 		movwf	SPBRGH
