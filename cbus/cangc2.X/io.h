@@ -87,7 +87,7 @@ unsigned char readInput(int port);
 void doIOTimers(void);
 void doLEDTimers(void);
 void doTimedOff(void);
-void checkInputs(unsigned char sod);
+void checkInput(unsigned char idx, unsigned char sod);
 void resetOutputs(void);
 unsigned char checkFlimSwitch(void);
 void doLEDs(void);

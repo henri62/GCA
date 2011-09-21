@@ -221,39 +221,36 @@ unsigned char checkFlimSwitch(void) {
   return !val;
 }
 
-void checkInputs(unsigned char sod) {
-  int idx = 0;
-  for( idx = 0; idx < 16; idx++ ) {
-    if( (Ports[idx].cfg & PORTCFG_IO) == PORTCFG_IN ) {
-      unsigned char val = readInput(idx);
-      if( sod || val != Ports[idx].status ) {
-        Ports[idx].status = val;
-        if( !sod && (Ports[idx].cfg & 0x02) && val == 0 ) {
-          Ports[idx].timer = 40; // 2 seconds
-          Ports[idx].timedoff = TRUE;
+void checkInput(unsigned char idx, unsigned char sod) {
+  if( (Ports[idx].cfg & PORTCFG_IO) == PORTCFG_IN ) {
+    unsigned char val = readInput(idx);
+    if( sod || val != Ports[idx].status ) {
+      Ports[idx].status = val;
+      if( !sod && (Ports[idx].cfg & 0x02) && val == 0 ) {
+        Ports[idx].timer = 40; // 2 seconds
+        Ports[idx].timedoff = TRUE;
+      }
+      else if( !sod && (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
+        Ports[idx].timer = 40; // reload timer
+      }
+      else {
+        if( (Ports[idx].cfg & PORTCFG_INV) == PORTCFG_INV ) {
+          val = !val;
         }
-        else if( !sod && (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
-          Ports[idx].timer = 40; // reload timer
-        }
-        else {
-          if( (Ports[idx].cfg & PORTCFG_INV) == PORTCFG_INV ) {
-            val = !val;
-          }
-          // Send an OPC.
-          if( sod )
-            Tx1[d0] = val ? OPC_ARSPO:OPC_ARSPN;
-          else
-            Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
-          Tx1[d1] = (NN_temp / 256) & 0xFF;
-          Tx1[d2] = (NN_temp % 256) & 0xFF;
-          Tx1[d3] = (Ports[idx].addr / 256) & 0xFF;
-          Tx1[d4] = (Ports[idx].addr % 256) & 0xFF;
-          can_tx(5);
-          //LED2 = val;
-          //delay();
-          // check if an output is consumer of this event
-          setOutput(NN_temp, Ports[idx].addr, val);
-        }
+        // Send an OPC.
+        if( sod )
+          Tx1[d0] = val ? OPC_ARSPO:OPC_ARSPN;
+        else
+          Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
+        Tx1[d1] = (NN_temp / 256) & 0xFF;
+        Tx1[d2] = (NN_temp % 256) & 0xFF;
+        Tx1[d3] = (Ports[idx].addr / 256) & 0xFF;
+        Tx1[d4] = (Ports[idx].addr % 256) & 0xFF;
+        can_tx(5);
+        //LED2 = val;
+        //delay();
+        // check if an output is consumer of this event
+        setOutput(NN_temp, Ports[idx].addr, val);
       }
     }
   }
