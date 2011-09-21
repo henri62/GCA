@@ -189,28 +189,25 @@ void doIOTimers(void) {
   }
 }
 
-void doTimedOff(void) {
-  int i = 0;
-  for( i = 0; i < 16; i++ ) {
-    if( Ports[i].timedoff ) {
-      if( Ports[i].timer == 0 ) {
-        Ports[i].timedoff = 0;
-        if( Ports[i].cfg & PORTCFG_IN ) {
-          // Send an OPC.
-          Tx1[d0] = Ports[i].cfg & PORTCFG_INV ? OPC_ASON:OPC_ASOF;
-          Tx1[d1] = (NN_temp / 256) & 0xFF;
-          Tx1[d2] = (NN_temp % 256) & 0xFF;
-          Tx1[d3] = (Ports[i].addr / 256) & 0xFF;
-          Tx1[d4] = (Ports[i].addr % 256) & 0xFF;
-          can_tx(5);
-          // check if an output is consumer of this event
-          setOutput(NN_temp, Ports[i].addr, Ports[i].cfg & PORTCFG_INV ? 1:0);
-        }
-        else {
-          writeOutput(i, 0);
-        }
-        LED2 = 0;
+void doTimedOff(int i) {
+  if( Ports[i].timedoff ) {
+    if( Ports[i].timer == 0 ) {
+      Ports[i].timedoff = 0;
+      if( Ports[i].cfg & PORTCFG_IN ) {
+        // Send an OPC.
+        Tx1[d0] = Ports[i].cfg & PORTCFG_INV ? OPC_ASON:OPC_ASOF;
+        Tx1[d1] = (NN_temp / 256) & 0xFF;
+        Tx1[d2] = (NN_temp % 256) & 0xFF;
+        Tx1[d3] = (Ports[i].addr / 256) & 0xFF;
+        Tx1[d4] = (Ports[i].addr % 256) & 0xFF;
+        can_tx(5);
+        // check if an output is consumer of this event
+        setOutput(NN_temp, Ports[i].addr, Ports[i].cfg & PORTCFG_INV ? 1:0);
       }
+      else {
+        writeOutput(i, 0);
+      }
+      LED2 = 0;
     }
   }
 }

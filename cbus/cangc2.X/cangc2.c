@@ -62,7 +62,7 @@ near unsigned char  NV1;
 near unsigned char  isLearning;
 near unsigned char  led1timer;
 near unsigned char doSOD;
-near unsigned char inIdx;
+near unsigned char ioIdx;
 
 volatile near unsigned char tmr0_reload;
 
@@ -130,7 +130,7 @@ void main(void) {
   isLearning = FALSE;
   led1timer = 0;
   doSOD = 0;
-  inIdx = 0;
+  ioIdx = 0;
 
   NV1 = eeRead(EE_NV);
 
@@ -170,14 +170,14 @@ void main(void) {
       parse_cmd();
     }
 
-    checkInput(inIdx, doSOD);
-    inIdx++;
-    if( inIdx >= 16 ) {
-      inIdx = 0;
+    checkInput(ioIdx, doSOD);
+    ioIdx++;
+    if( ioIdx >= 16 ) {
+      ioIdx = 0;
       doSOD = 0;
     }
     
-    doTimedOff();
+    doTimedOff(ioIdx);
 
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;

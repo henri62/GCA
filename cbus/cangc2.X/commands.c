@@ -50,7 +50,7 @@ void parse_cmd(void) {
     {
       int addr = rx_ptr->d3 * 256 + rx_ptr->d4;
       if( SOD == addr && doSOD == 0) {
-        inIdx = 0;
+        ioIdx = 0;
         doSOD = 1;
       }
       break;
