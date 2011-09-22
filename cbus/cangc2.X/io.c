@@ -236,7 +236,7 @@ void checkInput(unsigned char idx, unsigned char sod) {
         }
         // Send an OPC.
         if( sod )
-          Tx1[d0] = val ? OPC_ARSPO:OPC_ARSPN;
+          Tx1[d0] = val ? OPC_ARON:OPC_AROF;
         else
           Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
         Tx1[d1] = (NN_temp / 256) & 0xFF;
