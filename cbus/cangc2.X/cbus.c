@@ -232,10 +232,17 @@ void tx(unsigned char dlc_val) {
 void can_tx(unsigned char dlc_val) {
   byte CANsent = FALSE;
   can_transmit_failed = 0;
-  while( CANsent == FALSE && can_transmit_failed == 0 ) {
+  can_transmit_timeout = 20;
+  while( CANsent == FALSE && can_transmit_failed == 0 && can_transmit_timeout > 0 ) {
     if( can_tbe_0() ) {
       tx(dlc_val);
       CANsent = TRUE;
+    }
+    else if (ecan_fifo_empty() == 0) {
+      // Decode the new command
+      LED1 = 1;
+      led1timer = 20;
+      parse_cmd();
     }
   }
 }
