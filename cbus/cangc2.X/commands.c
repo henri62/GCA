@@ -127,19 +127,13 @@ void parse_cmd(void) {
       break;
 
     case OPC_QNN:
-      Tx1[d0] = OPC_NNACK;
-      Tx1[d1] = (NN_temp / 256) & 0xFF;
-      Tx1[d2] = (NN_temp % 256) & 0xFF;
-      can_tx(3);
-      break;
-
-    case OPC_QNTP:
-      Tx1[d0] = OPC_TYPE;
+      Tx1[d0] = OPC_PNN;
       Tx1[d1] = (NN_temp / 256) & 0xFF;
       Tx1[d2] = (NN_temp % 256) & 0xFF;
       Tx1[d3] = params[0];
       Tx1[d4] = params[2];
-      can_tx(5);
+      Tx1[d5] = NV1;
+      can_tx(6);
       break;
 
     case OPC_NVRD:
