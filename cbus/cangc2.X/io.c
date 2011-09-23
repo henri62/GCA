@@ -208,7 +208,7 @@ void doTimedOff(int i) {
       else {
         writeOutput(i, 0);
       }
-      LED2 = 0;
+      //LED2 = 0;
     }
   }
 }

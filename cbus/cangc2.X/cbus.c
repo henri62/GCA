@@ -224,9 +224,7 @@ void canTxQ(CANMsg* msg) {
   }
 
   TXB1CONbits.TXREQ = 1;
-
 }
-
 
 
 void canSendQ(void) {

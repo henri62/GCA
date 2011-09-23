@@ -165,15 +165,16 @@ void main(void) {
 
   // Loop forever (nothing lasts forever...)
   while (1) {
-    LED3 = l3;
+    LED3 = PORT_ON;
     l3 ^= 1;
     // Check for Rx packet and setup pointer to it
-    if (ecan_fifo_empty() == 0) {
+    while (ecan_fifo_empty() == 0) {
       // Decode the new command
       LED1 = 1;
       led1timer = 20;
       parse_cmd();
     }
+    LED3 = PORT_OFF;
 
     checkInput(ioIdx, doSOD);
     doTimedOff(ioIdx);
@@ -191,7 +192,9 @@ void main(void) {
       doEV = 0;
     }
 
+    //LED2 = PORT_ON;
     canSendQ();
+    //LED2 = PORT_OFF;
 
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
