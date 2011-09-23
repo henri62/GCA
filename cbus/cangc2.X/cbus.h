@@ -33,18 +33,9 @@ extern near unsigned char can_transmit_timeout;
 extern near unsigned char can_transmit_failed;
 extern near unsigned char can_bus_off;
 
-void can_tx(unsigned char dlc_val);
-
 extern rom unsigned char defaultID;
 extern rom unsigned char status;
 extern rom unsigned short nodeID;
-
-#ifdef HAS_EVENTS
-	extern rom unsigned short ENindex;
-	extern rom unsigned long ENstart[EN_NUM];
-	extern rom unsigned short EVstart[EN_NUM];
-#endif
-
 extern rom unsigned char bootflag;
 
 void cbus_setup(void);
@@ -88,5 +79,24 @@ typedef struct {
 } ecan_rx_buffer;
 extern ecan_rx_buffer * rx_ptr;
 
+
+
+typedef struct {
+  unsigned char status;
+  unsigned char opc;
+  unsigned char len;
+  unsigned char d[7];
+} CANMsg;
+
+extern ram CANMsg canmsg;
+
+
+#define CANMSG_QSIZE   24
+#define CANMSG_FREE    0x00
+#define CANMSG_OPEN    0x01
+#define CANMSG_PENDING 0x02
+
+unsigned char canQueue(CANMsg* msg);
+void canSendQ(void);
 
 #endif	// __CBUS_COMMON_H

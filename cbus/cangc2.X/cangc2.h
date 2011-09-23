@@ -69,6 +69,8 @@ extern near unsigned char isLearning;
 extern near unsigned char led1timer;
 extern near unsigned char doSOD;
 extern near unsigned char ioIdx;
+extern near unsigned char doEV;
+extern near unsigned char evIdx;
 extern volatile near unsigned char tmr0_reload;
 
 #endif

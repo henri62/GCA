@@ -26,18 +26,17 @@
 #include "cbus.h"
 #include "cbusdefs.h"
 #include "io.h"
+#include "commands.h"
+
+
+ram CANMsg CANMsgs[CANMSG_QSIZE];
+ram CANMsg canmsg;
 
 #pragma romdata EEPROM
 // Ensure newly programmed part is in virgin state
 rom unsigned char defaultID = 0x7F;
 rom unsigned char status = 0;
 rom unsigned short nodeID = 0;
-
-#ifdef HAS_EVENTS
-rom unsigned short ENindex = 0;
-rom event ENstart[EN_NUM];
-rom unsigned short EVstart[EN_NUM];
-#endif
 
 #pragma romdata BOOTFLAG
 rom unsigned char bootflag = 0;
@@ -52,18 +51,12 @@ void cbus_setup(void) {
   while (CANSTATbits.OPMODE2 == 0)
     // Wait for config mode
     ;
-
-#ifdef ECAN_MODE_2
   // Want ECAN mode 2 with FIFO
   ECANCON = 0b10110000; // FIFOWM = 1 (one entry)
   // EWIN default
   BSEL0 = 0; // All buffers to receive so
   // FIFO is 8 deep
   RXB0CON = 0b00000000; // receive valid messages
-#else
-  ECANCON = 0b00010000; // EWIN default
-  RXB0CON = 0b00100100; // Receive valid packets, double buffer RXB0
-#endif
 
 /*
   In PICs ist 125Kbps mit folgender Einstellung bereitzustellen:
@@ -143,18 +136,10 @@ BRGCON3: 0x03
 }
 
 #pragma udata access VARS
-#ifdef RX0
-// Receive buffer
-near unsigned char Rx0[14];
-#endif
-
-#ifdef TX1
 // Transmit buffers
 near unsigned char Tx1[14];
-#endif
 
 
-#ifdef ECAN_MODE_2
 #pragma udata
 ecan_rx_buffer * rx_ptr;
 
@@ -191,24 +176,42 @@ unsigned char ecan_fifo_empty(void) {
   }
 }
 
-#endif
+
+byte canQueue(CANMsg* msg) {
+  int i = 0;
+  int n = 0;
+  for( i = 0; i < CANMSG_QSIZE; i++ ) {
+    if( CANMsgs[i].status == CANMSG_FREE ) {
+      CANMsgs[i].status = CANMSG_OPEN;
+      CANMsgs[i].opc = msg->opc;
+      CANMsgs[i].len = msg->len;
+      for( n = 0; n < 7; n++ ) {
+        CANMsgs[i].d[n] = msg->d[n];
+      }
+      return 1;
+    }
+  }
+  return 0;
+}
 
 
-#ifdef TX1
 
-
-/*
- * Send a CAN frame where data bytes have already been loaded
- */
-
-void tx(unsigned char dlc_val) {
+void canTxQ(CANMsg* msg) {
 	unsigned char tx_idx;
 	unsigned char *ptr_fsr1;
 	unsigned char i;
 
-  Tx1[dlc] = dlc_val;				// data length
+  Tx1[dlc] = msg->len + 1;	// data length + opc
 	Tx1[sidh] &= 0b00001111;	// clear old priority
 	Tx1[sidh] |= 0b10110000;	// low priority
+  Tx1[d0] = msg->opc;
+  Tx1[d1] = msg->d[0];
+  Tx1[d2] = msg->d[1];
+  Tx1[d3] = msg->d[2];
+  Tx1[d4] = msg->d[3];
+  Tx1[d5] = msg->d[4];
+  Tx1[d6] = msg->d[5];
+  Tx1[d7] = msg->d[6];
 	Latcount = 10;
 
   LED1 = PORT_ON;
@@ -216,7 +219,7 @@ void tx(unsigned char dlc_val) {
 
   tx_idx = 0;
   ptr_fsr1 = &TXB1CON;
-  for (i=0; i<14; i++) {
+  for( i = 0; i < 14; i++ ) {
     *(ptr_fsr1++) = Tx1[tx_idx++];
   }
 
@@ -224,28 +227,24 @@ void tx(unsigned char dlc_val) {
 
 }
 
-/*
- * Work around for the hanging problem. See:
- * http://www.ccsinfo.com/forum/viewtopic.php?t=44066
- */
-#define can_tbe_0() (!TXB1CONbits.TXREQ)
-void can_tx(unsigned char dlc_val) {
-  byte CANsent = FALSE;
-  can_transmit_failed = 0;
-  can_transmit_timeout = 20;
-  while( CANsent == FALSE && can_transmit_failed == 0 && can_transmit_timeout > 0 ) {
-    if( can_tbe_0() ) {
-      tx(dlc_val);
-      CANsent = TRUE;
+
+
+void canSendQ(void) {
+  if( TXB1CONbits.TXREQ == 0 ) {
+    int i;
+    for( i = 0; i < CANMSG_QSIZE; i++ ) {
+      if( CANMsgs[i].status == CANMSG_PENDING )
+        CANMsgs[i].status = CANMSG_FREE;
     }
-    else if (ecan_fifo_empty() == 0) {
-      // Decode the new command
-      LED1 = 1;
-      led1timer = 20;
-      parse_cmd();
+    for( i = 0; i < CANMSG_QSIZE; i++ ) {
+      if( CANMsgs[i].status == CANMSG_OPEN ) {
+        CANMsgs[i].status = CANMSG_PENDING;
+        canTxQ(&CANMsgs[i]);
+        break;
+      }
     }
   }
 }
 
-#endif	// TX1
+
 

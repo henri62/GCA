@@ -195,12 +195,13 @@ void doTimedOff(int i) {
       Ports[i].timedoff = 0;
       if( Ports[i].cfg & PORTCFG_IN ) {
         // Send an OPC.
-        Tx1[d0] = Ports[i].cfg & PORTCFG_INV ? OPC_ASON:OPC_ASOF;
-        Tx1[d1] = (NN_temp / 256) & 0xFF;
-        Tx1[d2] = (NN_temp % 256) & 0xFF;
-        Tx1[d3] = (Ports[i].addr / 256) & 0xFF;
-        Tx1[d4] = (Ports[i].addr % 256) & 0xFF;
-        can_tx(5);
+        canmsg.opc = Ports[i].cfg & PORTCFG_INV ? OPC_ASON:OPC_ASOF;
+        canmsg.d[0] = (NN_temp / 256) & 0xFF;
+        canmsg.d[1] = (NN_temp % 256) & 0xFF;
+        canmsg.d[2] = (Ports[i].addr / 256) & 0xFF;
+        canmsg.d[3] = (Ports[i].addr % 256) & 0xFF;
+        canmsg.len = 4;
+        canQueue(&canmsg);
         // check if an output is consumer of this event
         setOutput(NN_temp, Ports[i].addr, Ports[i].cfg & PORTCFG_INV ? 1:0);
       }
@@ -236,14 +237,15 @@ void checkInput(unsigned char idx, unsigned char sod) {
         }
         // Send an OPC.
         if( sod )
-          Tx1[d0] = val ? OPC_ARON:OPC_AROF;
+          canmsg.opc = val ? OPC_ARON:OPC_AROF;
         else
-          Tx1[d0] = val ? OPC_ASON:OPC_ASOF;
-        Tx1[d1] = (NN_temp / 256) & 0xFF;
-        Tx1[d2] = (NN_temp % 256) & 0xFF;
-        Tx1[d3] = (Ports[idx].addr / 256) & 0xFF;
-        Tx1[d4] = (Ports[idx].addr % 256) & 0xFF;
-        can_tx(5);
+          canmsg.opc = val ? OPC_ASON:OPC_ASOF;
+        canmsg.d[0] = (NN_temp / 256) & 0xFF;
+        canmsg.d[1] = (NN_temp % 256) & 0xFF;
+        canmsg.d[2] = (Ports[idx].addr / 256) & 0xFF;
+        canmsg.d[3] = (Ports[idx].addr % 256) & 0xFF;
+        canmsg.len = 4; // data bytes
+        canQueue(&canmsg);
         //LED2 = val;
         //delay();
         // check if an output is consumer of this event
@@ -258,15 +260,16 @@ void checkInput(unsigned char idx, unsigned char sod) {
       if( IRPorts[idx].addr > 0 && IRPorts[idx].addr != IRPorts[idx].prevaddr ) {
         IRPorts[idx].prevaddr = IRPorts[idx].addr;
         // Generate an event.
-        Tx1[d0] = OPC_ACON3;
-        Tx1[d1] = (NN_temp / 256) & 0xFF;
-        Tx1[d2] = (NN_temp % 256) & 0xFF;
-        Tx1[d3] = (Ports[idx].addr / 256) & 0xFF;
-        Tx1[d4] = (Ports[idx].addr % 256) & 0xFF;
-        Tx1[d5] = ((IRPorts[idx].addr & 0x3FFF) / 256) & 0xFF;
-        Tx1[d6] = ((IRPorts[idx].addr & 0x3FFF) % 256) & 0xFF;
-        Tx1[d7] = (IRPorts[idx].addr & 0xC0000) >> 14;
-        can_tx(8);
+        canmsg.opc = OPC_ACON3;
+        canmsg.d[0] = (NN_temp / 256) & 0xFF;
+        canmsg.d[1] = (NN_temp % 256) & 0xFF;
+        canmsg.d[2] = (Ports[idx].addr / 256) & 0xFF;
+        canmsg.d[3] = (Ports[idx].addr % 256) & 0xFF;
+        canmsg.d[4] = ((IRPorts[idx].addr & 0x3FFF) / 256) & 0xFF;
+        canmsg.d[5] = ((IRPorts[idx].addr & 0x3FFF) % 256) & 0xFF;
+        canmsg.d[6] = (IRPorts[idx].addr & 0xC0000) >> 14;
+        canmsg.len = 7;
+        canQueue(&canmsg);
       }
     }
   }

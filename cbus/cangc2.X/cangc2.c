@@ -46,7 +46,8 @@
 
 
 ram Port Ports[16];
-ram IRPort IRPorts[8];
+ram IRPort IRPorts[2];
+
 
 #pragma udata access VARS
 
@@ -63,6 +64,8 @@ near unsigned char  isLearning;
 near unsigned char  led1timer;
 near unsigned char doSOD;
 near unsigned char ioIdx;
+near unsigned char doEV;
+near unsigned char evIdx;
 
 volatile near unsigned char tmr0_reload;
 
@@ -131,6 +134,8 @@ void main(void) {
   led1timer = 0;
   doSOD = 0;
   ioIdx = 0;
+  doEV = 0;
+  evIdx = 0;
 
   NV1 = eeRead(EE_NV);
 
@@ -171,13 +176,22 @@ void main(void) {
     }
 
     checkInput(ioIdx, doSOD);
+    doTimedOff(ioIdx);
+
     ioIdx++;
     if( ioIdx >= 16 ) {
       ioIdx = 0;
       doSOD = 0;
     }
     
-    doTimedOff(ioIdx);
+    doPortEvent(evIdx);
+    evIdx++;
+    if( evIdx >= 16 ) {
+      evIdx = 0;
+      doEV = 0;
+    }
+
+    canSendQ();
 
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
@@ -190,10 +204,11 @@ void main(void) {
       }
       else {
         LED2 = 1;
-        Tx1[d0] = OPC_NNACK;
-        Tx1[d1] = NN_temp / 256;
-        Tx1[d2] = NN_temp % 256;
-        can_tx(3);
+        canmsg.opc = OPC_NNACK;
+        canmsg.d[0] = NN_temp / 256;
+        canmsg.d[1] = NN_temp % 256;
+        canmsg.len = 2;
+        canQueue(&canmsg);
         Wait4NN = 1;
       }
     }

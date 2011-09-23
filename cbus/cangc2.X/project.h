@@ -28,19 +28,6 @@
 
 #include <p18f2480.h>
 
-// CAN mode for setup
-#define ECAN_MODE_2
-
-// CBUS headers
-// One Rx buffer and one Tx buffer must be defined before
-// including cbus_common.h
-#define TX1
-
-// This device has a fixed CAN ID
-
-// 06/04/11 Roger Healey - Put CANCMD constants inside #ifdef
-//  					 - Add MODULE_ID as MTYP_CANCMD		
-
 #include "cbus.h"
 
     

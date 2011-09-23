@@ -32,8 +32,6 @@
 
 #pragma udata access VARS
 
-void cmd_cv(void);
-
 #pragma code APP
 
 //
@@ -96,15 +94,16 @@ void parse_cmd(void) {
     }
 
     case OPC_RQNP:
-      Tx1[d0] = OPC_PARAMS;
-      Tx1[d1] = params[0];
-      Tx1[d2] = params[1];
-      Tx1[d3] = params[2];
-      Tx1[d4] = params[3];
-      Tx1[d5] = params[4];
-      Tx1[d6] = params[5];
-      Tx1[d7] = params[6];
-      can_tx(8);
+      canmsg.opc = OPC_PARAMS;
+      canmsg.d[0] = params[0];
+      canmsg.d[1] = params[1];
+      canmsg.d[2] = params[2];
+      canmsg.d[3] = params[3];
+      canmsg.d[4] = params[4];
+      canmsg.d[5] = params[5];
+      canmsg.d[6] = params[6];
+      canmsg.len = 7;
+      canQueue(&canmsg);
       break;
 
     case OPC_BOOT:
@@ -127,57 +126,63 @@ void parse_cmd(void) {
       break;
 
     case OPC_QNN:
-      Tx1[d0] = OPC_PNN;
-      Tx1[d1] = (NN_temp / 256) & 0xFF;
-      Tx1[d2] = (NN_temp % 256) & 0xFF;
-      Tx1[d3] = params[0];
-      Tx1[d4] = params[2];
-      Tx1[d5] = NV1;
-      can_tx(6);
+      canmsg.opc = OPC_PNN;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[2] = params[0];
+      canmsg.d[3] = params[2];
+      canmsg.d[4] = NV1;
+      canmsg.len = 5;
+      canQueue(&canmsg);
       break;
 
     case OPC_NVRD:
       if( thisNN() ) {
         byte nvnr = rx_ptr->d3;
         if( nvnr == 1 ) {
-          Tx1[d0] = OPC_NVANS;
-          Tx1[d1] = (NN_temp / 256) & 0xFF;
-          Tx1[d2] = (NN_temp % 256) & 0xFF;
-          Tx1[d3] = nvnr;
-          Tx1[d4] = NV1;
-          can_tx(5);
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = NV1;
+          canmsg.len = 4;
+          canQueue(&canmsg);
         }
         else if( nvnr < 18 ) {
-          Tx1[d0] = OPC_NVANS;
-          Tx1[d1] = (NN_temp / 256) & 0xFF;
-          Tx1[d2] = (NN_temp % 256) & 0xFF;
-          Tx1[d3] = nvnr;
-          Tx1[d4] = Ports[nvnr-2].cfg;
-          can_tx(5);
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = Ports[nvnr-2].cfg;
+          canmsg.len = 4;
+          canQueue(&canmsg);
         }
         else if( nvnr == 18 ) {
-          Tx1[d0] = OPC_NVANS;
-          Tx1[d1] = (NN_temp / 256) & 0xFF;
-          Tx1[d2] = (NN_temp % 256) & 0xFF;
-          Tx1[d3] = nvnr;
-          Tx1[d4] = getPortStates(0); // port status 1-8
-          can_tx(5);
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = getPortStates(0); // port status 1-8
+          canmsg.len = 4;
+          canQueue(&canmsg);
         }
         else if( nvnr == 19 ) {
-          Tx1[d0] = OPC_NVANS;
-          Tx1[d1] = (NN_temp / 256) & 0xFF;
-          Tx1[d2] = (NN_temp % 256) & 0xFF;
-          Tx1[d3] = nvnr;
-          Tx1[d4] = getPortStates(1); // port status 9-16
-          can_tx(5);
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = getPortStates(1); // port status 9-16
+          canmsg.len = 4;
+          canQueue(&canmsg);
         }
         else if( nvnr == 20 ) {
-          Tx1[d0] = OPC_NVANS;
-          Tx1[d1] = (NN_temp / 256) & 0xFF;
-          Tx1[d2] = (NN_temp % 256) & 0xFF;
-          Tx1[d3] = nvnr;
-          Tx1[d4] = CANID; // port status 9-16
-          can_tx(5);
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = CANID;
+          canmsg.len = 4;
+          canQueue(&canmsg);
         }
       }
       break;
@@ -241,29 +246,19 @@ void parse_cmd(void) {
 
     case OPC_NERD:
       if( thisNN() ) {
-        int i = 0;
-        // port events
-        for( i = 0; i < 16; i++) {
-          Tx1[d0] = OPC_ENRSP;
-          Tx1[d1] = (NN_temp / 256) & 0xFF;
-          Tx1[d2] = (NN_temp % 256) & 0xFF;
-          Tx1[d3] = Ports[i].evtnn / 256;
-          Tx1[d4] = Ports[i].evtnn % 256;
-          Tx1[d5] = Ports[i].addr / 256;
-          Tx1[d6] = Ports[i].addr % 256;
-          Tx1[d7] = i;
-          can_tx(8);
-        }
+        doEV = 1;
+        evIdx = 0;
         // start of day event
-        Tx1[d0] = OPC_ENRSP;
-        Tx1[d1] = (NN_temp / 256) & 0xFF;
-        Tx1[d2] = (NN_temp % 256) & 0xFF;
-        Tx1[d3] = 0;
-        Tx1[d4] = 0;
-        Tx1[d5] = SOD / 256;
-        Tx1[d6] = SOD % 256;
-        Tx1[d7] = i;
-        can_tx(8);
+        canmsg.opc = OPC_ENRSP;
+        canmsg.d[0] = (NN_temp / 256) & 0xFF;
+        canmsg.d[1] = (NN_temp % 256) & 0xFF;
+        canmsg.d[2] = 0;
+        canmsg.d[3] = 0;
+        canmsg.d[4] = SOD / 256;
+        canmsg.d[5] = SOD % 256;
+        canmsg.d[6] = 16;
+        canmsg.len = 7;
+        canQueue(&canmsg);
       }
       break;
 
@@ -284,24 +279,14 @@ void parse_cmd(void) {
 
 void doRqnpn(unsigned int idx) {
   if (idx < 8) {
-    Tx1[d0] = OPC_PARAN;
-    Tx1[d1] = (NN_temp / 256) & 0xFF;
-    Tx1[d2] = (NN_temp % 256) & 0xFF;
-    Tx1[d3] = idx;
-    Tx1[d4] = params[idx - 1];
-    can_tx(5);
+    canmsg.opc = OPC_PARAN;
+    canmsg.d[0] = (NN_temp / 256) & 0xFF;
+    canmsg.d[1] = (NN_temp % 256) & 0xFF;
+    canmsg.d[2] = idx;
+    canmsg.d[3] = params[idx - 1];
+    canmsg.len = 4;
+    canQueue(&canmsg);
   }
-  else {
-    doError(CMDERR_INV_PARAM_IDX);
-  }
-}
-
-void doError(unsigned int code) {
-  Tx1[d0] = OPC_CMDERR;
-  Tx1[d1] = (NN_temp / 256) & 0xFF;
-  Tx1[d2] = (NN_temp % 256) & 0xFF;
-  Tx1[d3] = code;
-  can_tx(4);
 }
 
 int thisNN() {
@@ -310,4 +295,19 @@ int thisNN() {
   else
     return 0;
 
+}
+
+void doPortEvent(int i ) {
+  if( doEV ) {
+    canmsg.opc = OPC_ENRSP;
+    canmsg.d[0] = (NN_temp / 256) & 0xFF;
+    canmsg.d[1] = (NN_temp % 256) & 0xFF;
+    canmsg.d[2] = Ports[i].evtnn / 256;
+    canmsg.d[3] = Ports[i].evtnn % 256;
+    canmsg.d[4] = Ports[i].addr / 256;
+    canmsg.d[5] = Ports[i].addr % 256;
+    canmsg.d[6] = i;
+    canmsg.len = 7;
+    canQueue(&canmsg);
+  }
 }
