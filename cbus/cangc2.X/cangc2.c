@@ -176,20 +176,24 @@ void main(void) {
     }
     LED3 = PORT_OFF;
 
-    checkInput(ioIdx, doSOD);
     doTimedOff(ioIdx);
 
-    ioIdx++;
-    if( ioIdx >= 16 ) {
-      ioIdx = 0;
-      doSOD = 0;
+    if( checkInput(ioIdx, doSOD) ) {
+      ioIdx++;
+      if( ioIdx >= 16 ) {
+        ioIdx = 0;
+        doSOD = 0;
+      }
     }
-    
-    doPortEvent(evIdx);
-    evIdx++;
-    if( evIdx >= 16 ) {
-      evIdx = 0;
-      doEV = 0;
+
+    if( l3 ) {
+      if( doPortEvent(evIdx) ) {
+        evIdx++;
+        if( evIdx >= 16 ) {
+          evIdx = 0;
+          doEV = 0;
+        }
+      }
     }
 
     //LED2 = PORT_ON;

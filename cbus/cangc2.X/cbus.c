@@ -182,12 +182,12 @@ byte canQueue(CANMsg* msg) {
   int n = 0;
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( CANMsgs[i].status == CANMSG_FREE ) {
-      CANMsgs[i].status = CANMSG_OPEN;
       CANMsgs[i].opc = msg->opc;
       CANMsgs[i].len = msg->len;
       for( n = 0; n < 7; n++ ) {
         CANMsgs[i].d[n] = msg->d[n];
       }
+      CANMsgs[i].status = CANMSG_OPEN;
       return 1;
     }
   }

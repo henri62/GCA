@@ -297,7 +297,7 @@ int thisNN() {
 
 }
 
-void doPortEvent(int i ) {
+unsigned char doPortEvent(int i ) {
   if( doEV ) {
     canmsg.opc = OPC_ENRSP;
     canmsg.d[0] = (NN_temp / 256) & 0xFF;
@@ -308,6 +308,7 @@ void doPortEvent(int i ) {
     canmsg.d[5] = Ports[i].addr % 256;
     canmsg.d[6] = i;
     canmsg.len = 7;
-    canQueue(&canmsg);
+    return canQueue(&canmsg);
   }
+  return 1;
 }

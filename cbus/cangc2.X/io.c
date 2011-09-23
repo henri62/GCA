@@ -219,7 +219,8 @@ unsigned char checkFlimSwitch(void) {
   return !val;
 }
 
-void checkInput(unsigned char idx, unsigned char sod) {
+unsigned char checkInput(unsigned char idx, unsigned char sod) {
+  unsigned char ok = 1;
   if( (Ports[idx].cfg & PORTCFG_IO) == PORTCFG_IN ) {
     unsigned char val = readInput(idx);
     if( sod || val != Ports[idx].status ) {
@@ -253,7 +254,10 @@ void checkInput(unsigned char idx, unsigned char sod) {
           canmsg.d[2] = (Ports[idx].addr / 256) & 0xFF;
           canmsg.d[3] = (Ports[idx].addr % 256) & 0xFF;
           canmsg.len = 4; // data bytes
-          canQueue(&canmsg);
+          ok = canQueue(&canmsg);
+          if( !ok ) {
+            Ports[idx].status = !Ports[idx].status;
+          }
         }
         //LED2 = val;
         //delay();
@@ -261,6 +265,7 @@ void checkInput(unsigned char idx, unsigned char sod) {
         setOutput(NN_temp, Ports[idx].addr, val);
       }
     }
+    return ok;
   }
 
 

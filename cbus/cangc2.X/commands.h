@@ -27,7 +27,7 @@
 void parse_cmd(void);
 void doRqnpn(unsigned int);
 int thisNN(void);
-void doPortEvent(int i );
+unsigned char doPortEvent(int i );
 
 
 #endif

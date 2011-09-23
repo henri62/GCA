@@ -64,7 +64,7 @@ typedef struct {
   byte   status;
   ushort addr;
   byte   timedoff;
-  ushort timer;
+  byte   timer;
   ushort evtnn;
 } Port;
 
@@ -87,7 +87,7 @@ unsigned char readInput(int port);
 void doIOTimers(void);
 void doLEDTimers(void);
 void doTimedOff(int i);
-void checkInput(unsigned char idx, unsigned char sod);
+unsigned char checkInput(unsigned char idx, unsigned char sod);
 void resetOutputs(void);
 unsigned char checkFlimSwitch(void);
 void doLEDs(void);
