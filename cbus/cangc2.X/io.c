@@ -236,16 +236,25 @@ void checkInput(unsigned char idx, unsigned char sod) {
           val = !val;
         }
         // Send an OPC.
-        if( sod )
-          canmsg.opc = val ? OPC_ARON:OPC_AROF;
+        if( sod ) {
+          canmsg.opc = 0;
+          if( NV1 & CFG_SOD_REPORTALL ) {
+            canmsg.opc = val ? OPC_ARON:OPC_AROF;
+          }
+          else if ( val ) {
+            canmsg.opc = OPC_ARON;
+          }
+        }
         else
           canmsg.opc = val ? OPC_ASON:OPC_ASOF;
-        canmsg.d[0] = (NN_temp / 256) & 0xFF;
-        canmsg.d[1] = (NN_temp % 256) & 0xFF;
-        canmsg.d[2] = (Ports[idx].addr / 256) & 0xFF;
-        canmsg.d[3] = (Ports[idx].addr % 256) & 0xFF;
-        canmsg.len = 4; // data bytes
-        canQueue(&canmsg);
+        if( canmsg.opc > 0 ) {
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[2] = (Ports[idx].addr / 256) & 0xFF;
+          canmsg.d[3] = (Ports[idx].addr % 256) & 0xFF;
+          canmsg.len = 4; // data bytes
+          canQueue(&canmsg);
+        }
         //LED2 = val;
         //delay();
         // check if an output is consumer of this event
