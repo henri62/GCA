@@ -25,7 +25,6 @@
 #include "isr.h"
 #include "cangc2.h"
 #include "io.h"
-#include "infrared.h"
 
 #pragma udata access VARS
 near unsigned short led500ms_timer;
@@ -43,9 +42,6 @@ near unsigned short led_timer;
 void isr_high(void) {
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
-
-    // ToDo: If we have 8.3usec cycle we can do Lissy:
-    checkIR();
 
     //
     // I/O timeout - 5ms

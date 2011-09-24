@@ -267,24 +267,6 @@ unsigned char checkInput(unsigned char idx, unsigned char sod) {
     }
   }
 
-
-  if( idx < 2 && Ports[idx].cfg & PORTCFG_IR ) {
-    if( IRPorts[idx].addr > 0 && IRPorts[idx].addr != IRPorts[idx].prevaddr ) {
-      IRPorts[idx].prevaddr = IRPorts[idx].addr;
-      // Generate an event.
-      canmsg.opc = OPC_ACON3;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = (Ports[idx].addr / 256) & 0xFF;
-      canmsg.d[3] = (Ports[idx].addr % 256) & 0xFF;
-      canmsg.d[4] = ((IRPorts[idx].addr & 0x3FFF) / 256) & 0xFF;
-      canmsg.d[5] = ((IRPorts[idx].addr & 0x3FFF) % 256) & 0xFF;
-      canmsg.d[6] = (IRPorts[idx].addr & 0xC0000) >> 14;
-      canmsg.len = 7;
-      canQueue(&canmsg);
-    }
-  }
-
   return ok;
 }
 
