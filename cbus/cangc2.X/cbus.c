@@ -23,6 +23,7 @@
 
 
 #include "project.h"
+#include "cangc2.h"
 #include "cbus.h"
 #include "cbusdefs.h"
 #include "io.h"
@@ -46,7 +47,8 @@ rom unsigned char bootflag = 0;
 /*
  * Common CBUS CAN setup
  */
-void cbus_setup(void) {
+void cbusSetup(void) {
+  int i = 0;
   CANCON = 0b10000000; // CAN to config mode
   while (CANSTATbits.OPMODE2 == 0)
     // Wait for config mode
@@ -119,7 +121,7 @@ BRGCON3: 0x03
   MSEL2 = 0;
   MSEL3 = 0;
 
-  BIE0 = 0; // No Rx buffer interrupts - assume FIFOWM will interrupt
+  BIE0  = 0; // No Rx buffer interrupts - assume FIFOWM will interrupt
   TXBIE = 0; // No Tx buffer interrupts
 
   // Clear RXFUL bits
@@ -133,6 +135,10 @@ BRGCON3: 0x03
   B5CON = 0;
 
   CANCON = 0; // Out of CAN setup mode
+
+  for( i = 0; i < CANMSG_QSIZE; i++ ) {
+    CANMsgs[i].status = CANMSG_FREE;
+  }
 }
 
 #pragma udata access VARS
@@ -150,7 +156,7 @@ ecan_rx_buffer * rx_ptr;
 // preload the pointer to it
 //
 
-unsigned char ecan_fifo_empty(void) {
+unsigned char fifoEmpty(void) {
   switch (CANCON & 0b00000111) {
     case 0:
       rx_ptr = (ecan_rx_buffer *) & RXB0CON;
@@ -188,9 +194,13 @@ byte canQueue(CANMsg* msg) {
         CANMsgs[i].d[n] = msg->d[n];
       }
       CANMsgs[i].status = CANMSG_OPEN;
+      if( !isLearning )
+        LED2 = PORT_OFF;
       return 1;
     }
   }
+  if( !isLearning )
+    LED2 = PORT_ON;
   return 0;
 }
 

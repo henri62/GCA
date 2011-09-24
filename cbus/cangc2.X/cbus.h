@@ -38,7 +38,7 @@ extern rom unsigned char status;
 extern rom unsigned short nodeID;
 extern rom unsigned char bootflag;
 
-void cbus_setup(void);
+void cbusSetup(void);
 
 extern near unsigned char Tx1[14];
 
@@ -59,7 +59,7 @@ enum bufbytes {
 	d7
 };
 
-unsigned char ecan_fifo_empty(void);
+unsigned char fifoEmpty(void);
 
 typedef struct {
 	unsigned char con;

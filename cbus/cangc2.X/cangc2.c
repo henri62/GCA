@@ -164,16 +164,17 @@ void main(void) {
 
   // Loop forever (nothing lasts forever...)
   while (1) {
-    LED3 = PORT_ON;
+    unsigned char txed = 0;
+    LED3 = l3;
     l3 ^= 1;
     // Check for Rx packet and setup pointer to it
-    while (ecan_fifo_empty() == 0) {
+    while (fifoEmpty() == 0) {
       // Decode the new command
       LED1 = 1;
       led1timer = 20;
-      parse_cmd();
+      txed = parseCmd();
     }
-    LED3 = PORT_OFF;
+    //LED3 = PORT_OFF;
 
     doTimedOff(ioIdx);
 
@@ -253,7 +254,7 @@ void initIO(void) {
   INTCON2bits.TMR0IP = 1;
 
   // clear the fifo receive buffers
-  while (ecan_fifo_empty() == 0) {
+  while (fifoEmpty() == 0) {
     rx_ptr->con = 0;
   }
 
@@ -291,7 +292,7 @@ void initCAN(void) {
   INTCONbits.GIEH = 1;
   INTCONbits.GIEL = 1;
   
-  cbus_setup();
+  cbusSetup();
 }
 
 

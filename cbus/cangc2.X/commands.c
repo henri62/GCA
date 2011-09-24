@@ -40,7 +40,8 @@
 // Decode the OPC and call the function to handle it.
 //
 
-void parse_cmd(void) {
+unsigned char parseCmd(void) {
+  unsigned char txed = 0;
   //mode_word.s_full = 0;
   switch (rx_ptr->d0) {
 
@@ -104,6 +105,7 @@ void parse_cmd(void) {
       canmsg.d[6] = params[6];
       canmsg.len = 7;
       canQueue(&canmsg);
+      txed = 1;
       break;
 
     case OPC_BOOT:
@@ -134,6 +136,7 @@ void parse_cmd(void) {
       canmsg.d[4] = NV1;
       canmsg.len = 5;
       canQueue(&canmsg);
+      txed = 1;
       break;
 
     case OPC_NVRD:
@@ -147,6 +150,7 @@ void parse_cmd(void) {
           canmsg.d[3] = NV1;
           canmsg.len = 4;
           canQueue(&canmsg);
+          txed = 1;
         }
         else if( nvnr < 18 ) {
           canmsg.opc = OPC_NVANS;
@@ -156,6 +160,7 @@ void parse_cmd(void) {
           canmsg.d[3] = Ports[nvnr-2].cfg;
           canmsg.len = 4;
           canQueue(&canmsg);
+          txed = 1;
         }
         else if( nvnr == 18 ) {
           canmsg.opc = OPC_NVANS;
@@ -165,6 +170,7 @@ void parse_cmd(void) {
           canmsg.d[3] = getPortStates(0); // port status 1-8
           canmsg.len = 4;
           canQueue(&canmsg);
+          txed = 1;
         }
         else if( nvnr == 19 ) {
           canmsg.opc = OPC_NVANS;
@@ -174,6 +180,7 @@ void parse_cmd(void) {
           canmsg.d[3] = getPortStates(1); // port status 9-16
           canmsg.len = 4;
           canQueue(&canmsg);
+          txed = 1;
         }
         else if( nvnr == 20 ) {
           canmsg.opc = OPC_NVANS;
@@ -183,6 +190,7 @@ void parse_cmd(void) {
           canmsg.d[3] = CANID;
           canmsg.len = 4;
           canQueue(&canmsg);
+          txed = 1;
         }
       }
       break;
@@ -259,6 +267,7 @@ void parse_cmd(void) {
         canmsg.d[6] = 16;
         canmsg.len = 7;
         canQueue(&canmsg);
+        txed = 1;
       }
       break;
 
@@ -266,7 +275,6 @@ void parse_cmd(void) {
     default: break;
   }
 
-    Nop();
     rx_ptr->con = 0;
     if (can_bus_off) {
       // At least one buffer is now free
@@ -274,7 +282,7 @@ void parse_cmd(void) {
       PIE3bits.FIFOWMIE = 1;
     }
 
-
+    return txed;
 }
 
 void doRqnpn(unsigned int idx) {
