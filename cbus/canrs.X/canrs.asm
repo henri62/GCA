@@ -477,15 +477,17 @@ inframe	bcf		Datmode,0		;allow another CAN input while processing
 		movwf	POSTINC1
 		btfsc	RXB0SIDL,3		;is it extended
 		bra	exide
-		movlw	"S"				;standard frames 
+		movlw	"s"				;standard frames
 		movwf	POSTINC1
 		bra	serload
-exide	movlw	"X"			;extended frames
+exide	movlw	"x"			;extended frames
 		movwf	POSTINC1
 serload	movf	POSTINC0,W		;get byte
-		call	hexasc			;convert to acsii
-		movff	Hbyte1,POSTINC1
-		movff	Hbyte2,POSTINC1
+		;call	hexasc			;convert to acsii
+    movwf	Htemp
+		movff	Htemp,POSTINC1
+		;movff	Hbyte1,POSTINC1
+		;movff	Hbyte2,POSTINC1
 		movlw	Rx0sidh+2		;get where we are
 		cpfseq	FSR0L			;the dlc byte is next
 		bra		serload
@@ -495,13 +497,17 @@ serload	movf	POSTINC0,W		;get byte
 		incf	FSR0L
 		bra		serlo1
 exload	movf	POSTINC0,W		;get byte
-		call	hexasc			;convert to acsii
-		movff	Hbyte1,POSTINC1
-		movff	Hbyte2,POSTINC1
+		;call	hexasc			;convert to acsii
+    movwf	Htemp
+		movff	Htemp,POSTINC1
+		;movff	Hbyte1,POSTINC1
+		;movff	Hbyte2,POSTINC1
 		movf	POSTINC0,W		;get byte
-		call	hexasc			;convert to acsii
-		movff	Hbyte1,POSTINC1
-		movff	Hbyte2,POSTINC1
+		;call	hexasc			;convert to acsii
+    movwf	Htemp
+		movff	Htemp,POSTINC1
+		;movff	Hbyte1,POSTINC1
+		;movff	Hbyte2,POSTINC1
 
 serlo1		movff	POSTINC0,Datnum		;get dlc byte
 		btfsc	Datnum,6			;is it an RTR
@@ -516,9 +522,11 @@ datbyte	tstfsz	Datnum
 		bra		datload
 		bra		back2			
 datload	movf	POSTINC0,W		;get byte
-		call	hexasc			;convert to acsii
-		movff	Hbyte1,POSTINC1
-		movff	Hbyte2,POSTINC1
+		;call	hexasc			;convert to acsii
+    movwf	Htemp
+		movff	Htemp,POSTINC1
+		;movff	Hbyte1,POSTINC1
+		;movff	Hbyte2,POSTINC1
 		decfsz	Datnum
 		bra		datload				
 back2	movlw	";"				
@@ -630,8 +638,8 @@ setup	clrf	INTCON			;no interrupts yet
 		clrf	ECANCON			;CAN mode 0 for now
 		 
 		bsf		CANCON,7		;CAN to config mode
-		movlw	B'00000011'		;set CAN bit rate at 125000 for now (Fosc=16MHz)
-;		movlw	B'00000111'		;set CAN bit rate at 125000 for now (Fosc=32MHz)
+;		movlw	B'00000011'		;set CAN bit rate at 125000 for now (Fosc=16MHz)
+		movlw	B'00000111'		;set CAN bit rate at 125000 for now (Fosc=32MHz)
 		movwf	BRGCON1
 		movlw	B'10011110'		;set phase 1 etc
 		movwf	BRGCON2
@@ -650,8 +658,8 @@ setup	clrf	INTCON			;no interrupts yet
 		movwf	RCSTA
 		movlw	B'00001000'		;set BAUDCON to 16 bit
 		movwf	BAUDCON
-		movlw	.16			;.16 Baud = 230400 (Fosc=16MHz)
-;		movlw	.34			;.34 Baud = 230400 (Fosc=32MHz)
+;		movlw	.16			;.16 Baud = 230400 (Fosc=16MHz)
+		movlw	.34			;.34 Baud = 230400 (Fosc=32MHz)
 		movwf	SPBRG
 		movlw	0
 		movwf	SPBRGH
