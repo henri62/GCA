@@ -165,7 +165,7 @@ void main(void) {
   // Loop forever (nothing lasts forever...)
   while (1) {
     unsigned char txed = 0;
-    LED3 = l3;
+    LED3 = PORT_ON;
     l3 ^= 1;
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
@@ -174,7 +174,7 @@ void main(void) {
       led1timer = 20;
       txed = parseCmd();
     }
-    //LED3 = PORT_OFF;
+    LED3 = PORT_OFF;
 
     doTimedOff(ioIdx);
 
@@ -232,7 +232,8 @@ void initIO(void) {
   IPR3 = 0;					// All IRQs low priority for now
   IPR2 = 0;
   IPR1 = 0;
-  PIE3 = 0b00100001;			// CAN TX error and FIFOWM interrupts
+  PIE3 = 0;
+  PIE3bits.TXB1IE = 1;
   PIE2 = 0;
   PIE1 = 0;
   INTCON3 = 0;

@@ -29,6 +29,7 @@
 #include "cangc2.h"
 #include "io.h"
 
+ram unsigned char pnnCount = 0;
 
 #pragma udata access VARS
 
@@ -136,7 +137,36 @@ unsigned char parseCmd(void) {
       canmsg.d[4] = NV1;
       canmsg.len = 5;
       canQueue(&canmsg);
+      //LED2 = 1;
       txed = 1;
+      break;
+
+    case OPC_RTON:
+      pnnCount=0;
+      /*
+      setOutput(0,  9, (pnnCount & 0x01) ? 1:0);
+      setOutput(0, 10, (pnnCount & 0x02) ? 1:0);
+      setOutput(0, 11, (pnnCount & 0x04) ? 1:0);
+      setOutput(0, 12, (pnnCount & 0x08) ? 1:0);
+      setOutput(0, 13, (pnnCount & 0x10) ? 1:0);
+      setOutput(0, 14, (pnnCount & 0x20) ? 1:0);
+      setOutput(0, 15, (pnnCount & 0x40) ? 1:0);
+      setOutput(0, 16, (pnnCount & 0x80) ? 1:0);
+      */
+      break;
+
+    case OPC_PNN:
+      pnnCount++;
+      /*
+      setOutput(0,  9, (pnnCount & 0x01) ? 1:0);
+      setOutput(0, 10, (pnnCount & 0x02) ? 1:0);
+      setOutput(0, 11, (pnnCount & 0x04) ? 1:0);
+      setOutput(0, 12, (pnnCount & 0x08) ? 1:0);
+      setOutput(0, 13, (pnnCount & 0x10) ? 1:0);
+      setOutput(0, 14, (pnnCount & 0x20) ? 1:0);
+      setOutput(0, 15, (pnnCount & 0x40) ? 1:0);
+      setOutput(0, 16, (pnnCount & 0x80) ? 1:0);
+      */
       break;
 
     case OPC_NVRD:
