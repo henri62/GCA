@@ -92,7 +92,7 @@ near unsigned char awd_count;
 #pragma interrupt isr_high
 void isr_high(void) {
     // 13 clocks to get here after interrupt
-	ISR_PIN = 1;		// flag start of ISR
+	//ISR_PIN = 1;		// flag start of ISR
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
 
@@ -129,7 +129,8 @@ void isr_high(void) {
         }
         // Main track output is main track output
         if (op_flags.op_pwr_m) {
-            DCC_OUT = op_flags.op_bit_m;
+            DCC_OUT_POS = op_flags.op_bit_m;
+            DCC_OUT_NEG = !op_flags.op_bit_m;
         }
     } else {
         // J7 is in
@@ -150,7 +151,8 @@ void isr_high(void) {
         }
         // Main track output is service mode packets
         if (op_flags.op_pwr_s) {
-            DCC_OUT = op_flags.op_bit_s;
+            DCC_OUT_POS = op_flags.op_bit_s;
+            DCC_OUT_NEG = !op_flags.op_bit_m;
         }
     }
 
@@ -337,7 +339,7 @@ void isr_high(void) {
             }
 			
 			if (dcc_idx_m == 0) {
-              DCC_PKT_PIN = 1;					// Spare output pin for sync scope on start of packet
+              //DCC_PKT_PIN = 1;					// Spare output pin for sync scope on start of packet
    			}
 			         
             dcc_idx_m++;		                    // all bits done so point to next byte
@@ -345,7 +347,7 @@ void isr_high(void) {
             dcc_bits_m = 8;		                // reload bit counter
             byte_cnt_m--;
             if (byte_cnt_m == 0) {
-				DCC_PKT_PIN = 0;
+				//DCC_PKT_PIN = 0;
                 dcc_buff_m[6]--;                  // no more bytes, more packets?
                 if ((dcc_buff_m[6] == 0)) {
                     bit_flag_m = FIRST_IDLE;		// no more packets
@@ -564,5 +566,5 @@ void isr_high(void) {
             break;
     }
 
-	ISR_PIN = 0;   // end of ISR
+	//ISR_PIN = 0;   // end of ISR
 }

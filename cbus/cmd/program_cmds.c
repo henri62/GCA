@@ -126,7 +126,7 @@ void cv_sm(void) {
                 dcc_flags.dcc_rec_time = 0;
 				OVERLOAD_PIN = 0;
 				// ACK_PIN = 0;
-				DCC_PKT_PIN = 0;
+				//DCC_PKT_PIN = 0;
                 // send reset packets for 250ms delay after power up
                 packet_reset(14);
                 prog_state = CV_PON1;
