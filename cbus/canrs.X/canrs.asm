@@ -470,6 +470,7 @@ main1	btfsc	Datmode,0		;any new CAN frame received?
 inframe	bcf		Datmode,0		;allow another CAN input while processing
 		
 ;		move incoming CAN frame to serial output buffer
+		bsf	PORTB,6				;yellow LED on.
 
 		lfsr	FSR0,Rx0sidh		;start of CAN frame in RB0
 		lfsr	FSR1,TXbuf			;start of serial string for PC
@@ -529,7 +530,7 @@ datload	movf	POSTINC0,W		;get byte
 		;movff	Hbyte2,POSTINC1
 		decfsz	Datnum
 		bra		datload				
-back2	movlw	";"				
+back2	movlw	";"       ;serial end
 		movwf	POSTINC1
 		bcf		Datmode,0		;load done
 
@@ -541,6 +542,8 @@ back2	movlw	";"
 		bsf		PIE1,TXIE		;enable send to PC (in lpint)
 		bsf		TXSTA,TXEN
 		bsf		INTCON,GIEL
+
+		bcf	PORTB,6				;yellow LED off
 			
 		goto	main
 	
@@ -752,6 +755,11 @@ sendTX0	movlb	.15				;set to bank 1
 ;		Send contents of Tx1 buffer via CAN TXB1
 
 sendTX1		movlb	.15				;check for buffer access
+
+		;bcf	PORTB,6				;yellow LED off
+		bsf	PORTB,6				;yellow LED on.
+
+
 tx_loop		btfsc	TXB1CON,TXREQ
 		bra		tx_loop
 		movlb	0
@@ -771,6 +779,7 @@ tx1test	btfsc	TXB1CON,TXREQ	;test if clear to send
 		bsf		TXB1CON,TXREQ	;OK so send
 		
 tx1done	movlb	0				;bank 0
+		bcf	PORTB,6				;yellow LED off
 		return					;successful send
 
 		
