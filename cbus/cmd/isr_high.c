@@ -152,7 +152,7 @@ void isr_high(void) {
         // Main track output is service mode packets
         if (op_flags.op_pwr_s) {
             DCC_OUT_POS = op_flags.op_bit_s;
-            DCC_OUT_NEG = !op_flags.op_bit_m;
+            DCC_OUT_NEG = !op_flags.op_bit_s;
         }
     }
 

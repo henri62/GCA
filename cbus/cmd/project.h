@@ -148,7 +148,7 @@ extern near unsigned short NN_temp;
   #define PORTC_INIT	0x0
 #else //CANCMD
   #define OVERLOAD_PIN 	PORTCbits.RC7		// (pin 18) For scope debug - set bit when overload detected
-  //#define ISR_PIN		PORTCbits.RC6		// (pin 17) For scope debug - set bit when in high priority ISR
+  #define BOOSTER_OUT		PORTCbits.RC6		// (pin 17) For scope debug - set bit when in high priority ISR
   //#define DCC_PKT_PIN	PORTCbits.RC5		// (pin 16) For scope debug - Set during packet send (can sync scope on packet start)
   #define SHUTDOWN_N    PORTCbits.RC4
   #define DCC_OUT_POS       PORTCbits.RC3
