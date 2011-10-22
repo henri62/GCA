@@ -87,6 +87,9 @@ void sendTX1(void) {
 	while((TXB1CONbits.TXREQ) && (!op_flags.can_transmit_failed) && (can_transmit_timeout != 0))
 		;
 
+  LEDCanActTimer = 2000;
+  LEDCANACT = 1;
+
     // Load TXB1
 	tx_idx = 0;
 	ptr_fsr1 = &TXB1CON;

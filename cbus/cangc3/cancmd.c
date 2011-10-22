@@ -126,7 +126,7 @@ near unsigned char	Latcount;
 near unsigned char	BeepCount;
 near unsigned char	can_transmit_timeout;
 near unsigned short NN_temp;
-
+near unsigned char LEDCanActTimer;
 
 // dcc packet buffers for service mode programming track
 // and main track
@@ -183,7 +183,8 @@ void LOW_INT_VECT(void)
 
 void main(void) {
     unsigned char i;
-
+    LEDCanActTimer = 0;
+    
     setup();
     
     // Turn on main track
@@ -226,6 +227,8 @@ void main(void) {
         // Check for Rx packet and setup pointer to it
         if (ecan_fifo_empty() == 0) {
             // Decode the new command
+            LEDCanActTimer = 2000;
+            LEDCANACT = 1;
             parse_cmd();
         }
 
@@ -285,6 +288,7 @@ void setup(void) {
     TRISC = PORTC_DDR;
     TRISB = PORTB_DDR;
     TRISA = PORTA_DDR;
+    TRISBbits.TRISB4 = 0; /* CAN activity */
 
     DCC_EN = 1;
 

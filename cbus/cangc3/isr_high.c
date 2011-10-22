@@ -110,6 +110,12 @@ void isr_high(void) {
     // protection delay
     //
 
+    if( LEDCanActTimer > 0 ) {
+      LEDCanActTimer--;
+      if( LEDCanActTimer == 0)
+        LEDCANACT = 0;
+    }
+
     if (SWAP_OP == 1) {
         // J7 is out
         // On-board booster is service mode output

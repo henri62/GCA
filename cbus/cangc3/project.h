@@ -115,8 +115,9 @@ extern near unsigned short NN_temp;
 // Note that RB2 and RB3 are canrx and cantx so not used as I/O pins
 //           RB6 and RB7 are used as PGC and PGD but can also drive LEDs
 //
-#define LED1    		PORTBbits.RB6	// canbc1a does not have leds here,
-#define LED2    		PORTBbits.RB7	// but set pins anyway for diagnostics
+#define LEDCANACT               PORTBbits.RB4   // CBUS activity
+#define LED1    		PORTBbits.RB6	// Internal booster/service track
+#define LED2    		PORTBbits.RB7	// RUN indicator
 
 #ifdef BC1a
   // BC1a port b was mainly the old handsets, which are not used here

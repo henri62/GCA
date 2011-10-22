@@ -104,6 +104,7 @@ extern near unsigned char BeepCount;
 extern near unsigned char can_transmit_timeout;
 extern volatile near unsigned char tmr0_reload;
 extern const rom unsigned char params[7];
+extern near unsigned char LEDCanActTimer;
 
 
 #endif	// __SPROG_H
