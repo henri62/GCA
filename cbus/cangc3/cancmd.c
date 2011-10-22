@@ -289,6 +289,8 @@ void setup(void) {
     TRISB = PORTB_DDR;
     TRISA = PORTA_DDR;
     TRISBbits.TRISB4 = 0; /* CAN activity */
+    TRISBbits.TRISB1 = 0; /* RUN indicator */
+    TRISBbits.TRISB0 = 0; /* Internal booster/PT */
 
     DCC_EN = 1;
 
