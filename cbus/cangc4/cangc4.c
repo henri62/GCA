@@ -26,16 +26,25 @@ __CONFIG(FOSC_INTRCIO & WDTE_OFF & PWRTE_ON & MCLRE_OFF & BOREN_OFF);
 
 
 void setup(void);
+void makeBitStream(void);
 
-static char f40khz;
+const int addr = 4711;
+
+static char f40khz    = 0;
+static char modBitCnt = 0;
+static char bitStatus = 0;
+static char bitIndex  = 0;
+
+static unsigned long ir = 0L;
+
+
 
 void main(void) {
-  f40khz = 0;
+  makeBitStream();
   setup();
   
   do {
-    f40khz ^= 1;
-    GPIO2 = f40khz;
+    ;
   } while( True );
 }
 
@@ -53,9 +62,9 @@ void setup(void) {
 
   // Setup Timer0 interrupt.
   INTCON = 0;
-  //INTCONbits.T0IE = 1;
+  INTCONbits.T0IE = 1;
   INTCONbits.T0IF = 0;
-  //INTCONbits.GIE  = 1;
+  INTCONbits.GIE  = 1;
 
   /* I/O
   Port 	Use 	    Info bit
@@ -67,11 +76,73 @@ void setup(void) {
   PIR1   = 0;
 }
 
+void makeBitStream(void) {
+  byte bits[16];
+  byte p1;
+  byte p0;
+  byte i;
+
+  //---------- BIT stream
+  // d13 ... d0 p1 p0
+  // address
+  for( i = 0; i < 14; i++ ) {
+    bits[i] = (byte)((addr & (1 << 13-i)) > 0 ? 1:0);
+  }
+
+  // parity bit 1
+  p1 = bits[0];
+  for( i = 1; i < 14; i+=2 ) {
+    p1 = (byte)(p1 ^ bits[i]);
+  }
+  bits[14] = p1;
+
+  // parity bit 0
+  p0 = bits[1];
+  for( i = 2; i < 14; i+=2 ) {
+    p0 = (byte)(p0 ^ bits[i]);
+  }
+  bits[15] = p0;
+
+  //---------- IR stream
+  // 11=sync, 00=0, 01=1
+  // sync
+  ir = 0L;
+
+  for( i = 0; i < 16; i++ ) {
+    if( bits[i] == 1 ) {
+      ir |= 1 << (i*2+1);
+    }
+  }
+
+}
+
+char getBitStatus() {
+  modBitCnt++;
+  //if( modBitCnt >= 20 ) {
+    bitIndex++;
+    if( bitIndex >= 34)
+      bitIndex = 0;
+
+    bitStatus = 0;
+    if( bitIndex < 2 )
+      bitStatus = 1;
+    else {
+      if( (ir >> (bitIndex-2)) & 1 )
+        bitStatus = 1;
+    }
+
+    modBitCnt = 0;
+  //}
+  return bitStatus;
+}
+
 static void interrupt
-isr(void) // Here be interrupt function - the name is unimportant.
+isr(void) // 80kHz interrupt for generating a 40kHz block signal.
 {
-  TMR0 = 244; // preset for timer register
   f40khz ^= 1;
-  GPIO2 = f40khz;
+  //GPIO2 = getBitStatus() ? f40khz:0;
+  GPIO2 = getBitStatus(); // bit stream scope test
+
+  TMR0 = 244; // preset for timer register
   INTF = 0;   // clear the interrupt
 }
