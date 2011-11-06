@@ -28,14 +28,15 @@ __CONFIG(FOSC_INTRCIO & WDTE_OFF & PWRTE_ON & MCLRE_OFF & BOREN_OFF);
 void setup(void);
 void makeBitStream(void);
 
-const int addr = 4711;
+const int addr = 4733;
 
 static char f40khz    = 0;
 static char modBitCnt = 0;
 static char bitStatus = 0;
 static char bitIndex  = 0;
 
-static unsigned long ir = 0L;
+//static unsigned long ir = 0L;
+static byte ir[4];
 
 
 
@@ -77,7 +78,7 @@ void setup(void) {
 }
 
 void makeBitStream(void) {
-  byte bits[16];
+  unsigned short bits;
   byte p1;
   byte p0;
   byte i;
@@ -85,32 +86,33 @@ void makeBitStream(void) {
   //---------- BIT stream
   // d13 ... d0 p1 p0
   // address
-  for( i = 0; i < 14; i++ ) {
-    bits[i] = (byte)((addr & (1 << 13-i)) > 0 ? 1:0);
-  }
+  bits = addr & 0x3FFF;
 
   // parity bit 1
-  p1 = bits[0];
+  p1 = bits & 0x0001;
   for( i = 1; i < 14; i+=2 ) {
-    p1 = (byte)(p1 ^ bits[i]);
+    p1 = (byte)(p1 ^ (bits >> i & 0x0001));
   }
-  bits[14] = p1;
+  bits |= (p1&1) << 14;
 
   // parity bit 0
-  p0 = bits[1];
+  p0 = bits & 0x0001;
   for( i = 2; i < 14; i+=2 ) {
-    p0 = (byte)(p0 ^ bits[i]);
+    p0 = (byte)(p0 ^ (bits>>i & 0x0001));
   }
-  bits[15] = p0;
+  bits |= (p1&1) << 15;
 
   //---------- IR stream
   // 11=sync, 00=0, 01=1
   // sync
-  ir = 0L;
+  ir[0] = 0;
+  ir[1] = 0;
+  ir[2] = 0;
+  ir[3] = 0;
 
   for( i = 0; i < 16; i++ ) {
-    if( bits[i] == 1 ) {
-      ir |= 1 << (i*2+1);
+    if( (bits >> i & 0x0001) == 1 ) {
+      ir[(i*2)/8] |= 1 << ((i*2)/8+1);
     }
   }
 
@@ -118,7 +120,7 @@ void makeBitStream(void) {
 
 char getBitStatus() {
   modBitCnt++;
-  //if( modBitCnt >= 20 ) {
+  if( modBitCnt >= 20 ) {
     bitIndex++;
     if( bitIndex >= 34)
       bitIndex = 0;
@@ -127,22 +129,22 @@ char getBitStatus() {
     if( bitIndex < 2 )
       bitStatus = 1;
     else {
-      if( (ir >> (bitIndex-2)) & 1 )
+      if( ir[(bitIndex-2) / 8] & (1 << (bitIndex-2) % 8) )
         bitStatus = 1;
     }
 
     modBitCnt = 0;
-  //}
-  return bitStatus;
+  }
+  if( bitStatus == 1 && f40khz == 1 )
+    return 1;
+  return 0;
 }
 
 static void interrupt
 isr(void) // 80kHz interrupt for generating a 40kHz block signal.
 {
   f40khz ^= 1;
-  //GPIO2 = getBitStatus() ? f40khz:0;
   GPIO2 = getBitStatus(); // bit stream scope test
-
   TMR0 = 244; // preset for timer register
   INTF = 0;   // clear the interrupt
 }
