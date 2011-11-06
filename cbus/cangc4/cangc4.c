@@ -112,7 +112,7 @@ void makeBitStream(void) {
 
   for( i = 0; i < 16; i++ ) {
     if( (bits >> i & 0x0001) == 1 ) {
-      ir[(i*2)/8] |= 1 << ((i*2)/8+1);
+      ir[(i*2)/8] |= 1 << ((i*2)%8+1);
     }
   }
 
@@ -121,9 +121,6 @@ void makeBitStream(void) {
 char getBitStatus() {
   modBitCnt++;
   if( modBitCnt >= 20 ) {
-    bitIndex++;
-    if( bitIndex >= 34)
-      bitIndex = 0;
 
     bitStatus = 0;
     if( bitIndex < 2 )
@@ -132,6 +129,10 @@ char getBitStatus() {
       if( ir[(bitIndex-2) / 8] & (1 << (bitIndex-2) % 8) )
         bitStatus = 1;
     }
+
+    bitIndex++;
+    if( bitIndex >= 34)
+      bitIndex = 0;
 
     modBitCnt = 0;
   }
