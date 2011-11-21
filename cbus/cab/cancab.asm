@@ -149,7 +149,7 @@ EVperEVT    equ 0           ; Event variables per event
 NV_NUM	    equ	0           ; Number of node variables	
 
 test_ver	equ 1			; A test version not to be distributed - comment out for release versions
-build_no	equ 2			; Displayed on LCD at startup for test versions only	
+build_no	equ 3			; Displayed on LCD at startup for test versions only	
 
 
 
@@ -1451,7 +1451,6 @@ lpint	movwf	W_tempL
 
 main	
 		
-		
 
 	
 main1	;clrwdt					;clear watchdog
@@ -1496,7 +1495,8 @@ main4	btfss	Datmode,3		;device mode
 		call	dev_nr
 		bra		main3
 		
-main2	btfss	Datmode,2		; speed change?
+main2	clrwdt
+		btfss	Datmode,2		; speed change?
 		bra		main3		    ; no - so back to keypad scan
         bcf     Modstat,5       ; Clear stop pressed once flag on any knob movement
 		movf	Speed1,F		; Is it a non zero speed?
@@ -2738,7 +2738,7 @@ mskloop	clrf	POSTINC0
 		movlb	0
 
 ;set up LCD
-
+		clrwdt
 		bcf		LCD_PORT,LCD_RS	;control register
 		movlw	B'00110011'		;reset and 4 bit mode
 		call	lcd_wrt
@@ -2755,7 +2755,7 @@ mskloop	clrf	POSTINC0
 
 
 ; Download custom characters to LCD CG RAM
-
+		clrwdt
 		movlw	B'01000000'		; Set CG RAM address 0
 		movwf	Temp1			; Save Initial CG RAM address
 		movlw	HIGH Custchars	; Set up table pointer for character data to load
@@ -5458,7 +5458,8 @@ no_set	return
 
 clr_fun	movlw	LOW Fn_stat			;sets all Fn status in EEPROM to off
 		movwf	EEADR
-clr_fun1	call	eeread
+clr_fun1	clrwdt
+		call	eeread
 		bcf		WREG,0
 		call	eewrite
 		incf	EEADR,F
@@ -5470,6 +5471,7 @@ clr_fun1	call	eeread
 res_fun	movlw	LOW Fn_stat			;sets all Fn status to clear
 		movwf	EEADR
 res_fun1	
+		clrwdt
 		movlw	0
 		call	eewrite
 		incf	EEADR,F
