@@ -296,13 +296,13 @@ rxb1int	bcf		PIR3,RXB1IF		;uses RB0 to RB1 rollover so may never use this
 		
 		lfsr	FSR0,Rx0con		;
 		
-		goto	access
+		goto	l_access
 		
 rxb0int	bcf		PIR3,RXB0IF
 	
 		lfsr	FSR0,Rx0con
 		
-		goto	access
+		goto	l_access
 		
 		;error routine here. Only acts on lost arbitration	
 errint	movlb	.15					;change bank			
@@ -326,7 +326,7 @@ errbak		movlb	.15
 				
 		bra		back1
 
-access	movf	CANCON,W				;switch buffers
+l_access	movf	CANCON,W				;switch buffers
 		andlw	B'11110001'
 		movwf	CANCON
 		movf	TempCANSTAT,W
@@ -382,14 +382,14 @@ lpint	movwf	W_tempL				;used for serial transfers
 		btfsc	RXmode,1			;is buffer available
 		bra		rcend				;no
 		btfsc	RXmode,0			;is it start of packet
-		bra		rc1
+		bra		l_rc1
 		movlw	":"
 		cpfseq	RXtemp
 		bra		rcend					;not a start
 		bsf		RXmode,0
 		clrf	RXnum
 		bra		rcend
-rc1		movlw	"S"
+l_rc1		movlw	"S"
 		subwf	RXtemp,W
 		bz		instart			;was S so start of standard frame follows
 		movlw	"X"
@@ -402,24 +402,24 @@ instart		lfsr	FSR2,RXbuf				;point to start
 		bra		rcend
 rcnext	movlw	";"
 		subwf	RXtemp,W			;is it end?
-		bz		rc2
+		bz		l_rc2
 		movlw	"N"
 		subwf	RXtemp,W
-		bnz		rc3
+		bnz		l_rc3
 		bsf		RXmode,2			;set normal packet
 		bra		rc4
-rc3		movlw	"R"
+l_rc3		movlw	"R"
 		subwf	RXtemp,W			;is it RTR
-		bnz		rc4
+		bnz		l_rc4
 		bcf		RXmode,2
-		bra		rc4
+		bra		l_rc4
 
-rc4		movff	Fsr_hold,FSR2L		;recover index
+l_rc4		movff	Fsr_hold,FSR2L		;recover index
 		movff	RXtemp,POSTINC2		;put in buffer
 
 		bra		rcend
 
-rc2		movff	Fsr_hold,FSR2L		;recover index
+l_rc2		movff	Fsr_hold,FSR2L		;recover index
 		movff	RXtemp,POSTINC2		;put in buffer
 		bsf		RXmode,1			;flag a packet
 		bcf		RXmode,0			;ready for next packet
@@ -477,11 +477,11 @@ inframe	bcf		Datmode,0		;allow another CAN input while processing
 		movlw	":"					;serial start
 		movwf	POSTINC1
 		btfsc	RXB0SIDL,3		;is it extended
-		bra	exide
+		bra	l_exide
 		movlw	"s"				;standard frames
 		movwf	POSTINC1
 		bra	serload
-exide	movlw	"x"			;extended frames
+l_exide	movlw	"x"			;extended frames
 		movwf	POSTINC1
 serload	movf	POSTINC0,W		;get byte
 		;call	hexasc			;convert to acsii
