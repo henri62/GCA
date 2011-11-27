@@ -22,7 +22,8 @@
 
 #include "cangc4.h"
 
-__CONFIG(FOSC_INTRCIO & WDTE_OFF & PWRTE_ON & MCLRE_OFF & BOREN_OFF);
+__CONFIG(FOSC_HS & WDTE_OFF & PWRTE_ON & MCLRE_OFF & BOREN_OFF);
+//__CONFIG(FOSC_INTRCIO & WDTE_OFF & PWRTE_ON & MCLRE_OFF & BOREN_OFF);
 
 
 void setup(void);
@@ -34,9 +35,10 @@ static char f40khz    = 0;
 static char modBitCnt = 0;
 static char bitStatus = 0;
 static char bitIndex  = 0;
+static char bitFirst  = 1;
 
 //static unsigned long ir = 0L;
-static byte ir[4];
+static byte ir[16];
 
 
 
@@ -51,15 +53,13 @@ void main(void) {
 
 
 void setup(void) {
-  // Timer0 Registers:
-  // Prescaler=1:1; TMR0 Preset=244; Freq=83.33333kHz; Period=12,000 ns
   OPTION_REGbits.T0CS = 0;// bit 5 TMR0 Clock Source Select bit:0=Internal Clock (CLKO) / 1=Transition on T0CKI pin
   OPTION_REGbits.T0SE = 0;// bit 4 TMR0 Source Edge Select bit: 0=low/high / 1=high/low
-  OPTION_REGbits.PSA  = 1;// bit 3 Prescaler Assignment bit: 0=Prescaler is assigned to the Timer0
+  OPTION_REGbits.PSA  = 0;// bit 3 Prescaler Assignment bit: 0=Prescaler is assigned to the Timer0
   OPTION_REGbits.PS2  = 0;// bits 2-0  PS2:PS0: Prescaler Rate Select bits
   OPTION_REGbits.PS1  = 0;
   OPTION_REGbits.PS0  = 0;
-  TMR0 = 244;           // preset for timer register
+  TMR0 = 100;           // preset for timer register
 
   // Setup Timer0 interrupt.
   INTCON = 0;
@@ -69,10 +69,11 @@ void setup(void) {
 
   /* I/O
   Port 	Use 	    Info bit
-  GP2 	IR-LED 1 	0
-  GP4 	IR-LED 2 	1
+  GP1 	IR-LED 1 	0
+  GP2 	IR-LED 2 	1
   */
-  TRISIO = 0; // All output.
+  TRISIObits.TRISIO1 = 0; // All output.
+  TRISIObits.TRISIO2 = 0; // All output.
   PIE1   = 0;
   PIR1   = 0;
 }
@@ -105,15 +106,13 @@ void makeBitStream(void) {
   //---------- IR stream
   // 11=sync, 00=0, 01=1
   // sync
-  ir[0] = 0;
-  ir[1] = 0;
-  ir[2] = 0;
-  ir[3] = 0;
 
   for( i = 0; i < 16; i++ ) {
-    if( (bits >> i & 0x0001) == 1 ) {
-      ir[(i*2)/8] |= 1 << ((i*2)%8+1);
-    }
+    if( (bits >> i & 0x0001) == 1 )
+      ir[i] = 1;
+    else
+      ir[i] = 0;
+  
   }
 
 }
@@ -126,12 +125,18 @@ char getBitStatus() {
     if( bitIndex < 2 )
       bitStatus = 1;
     else {
-      if( ir[(bitIndex-2) / 8] & (1 << (bitIndex-2) % 8) )
-        bitStatus = 1;
+      if( bitFirst ) {
+        bitStatus = 0;
+        bitFirst = 0;
+      }
+      else {
+        bitStatus = ir[bitIndex-2];
+        bitFirst = 1;
+      }
     }
 
     bitIndex++;
-    if( bitIndex >= 34)
+    if( bitIndex >= 18)
       bitIndex = 0;
 
     modBitCnt = 0;
@@ -145,7 +150,11 @@ static void interrupt
 isr(void) // 80kHz interrupt for generating a 40kHz block signal.
 {
   f40khz ^= 1;
-  GPIO2 = getBitStatus(); // bit stream scope test
-  TMR0 = 244; // preset for timer register
+  char bitStat = getBitStatus(); // bit stream scope test
+  //GPIO2 = getBitStatus(); // bit stream scope test
+  GPIO1 = f40khz;
+  GPIO2 = f40khz;
+  TMR0 = 242; // preset for timer register
   INTF = 0;   // clear the interrupt
+  INTCONbits.T0IF = 0;
 }
