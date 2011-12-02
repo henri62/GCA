@@ -187,8 +187,8 @@ void main(void) {
     
     setup();
     
-    // Turn on main track
-    op_flags.op_pwr_m = 1;
+    // Initial power off on main track
+    op_flags.op_pwr_m = 0;
 
     for (i = 0; i < 5; i++) {
         Tx1[d0] = OPC_ARST;
