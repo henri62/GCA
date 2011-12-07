@@ -46,6 +46,23 @@ unsigned char parseCmd(void) {
   //mode_word.s_full = 0;
   switch (rx_ptr->d0) {
 
+    case OPC_FCLK:
+      // fast clock:
+      /*
+      cmd[0] = OPC_FCLK;
+      cmd[1] = mins;
+      cmd[2] = hours;
+      cmd[3] = wday;
+      cmd[4] = div;
+      cmd[5] = 0;
+      cmd[6] = 0;
+      */
+      FastClock.mins  = rx_ptr->d1;
+      FastClock.hours = rx_ptr->d2;
+      FastClock.wday  = rx_ptr->d3;
+      FastClock.div   = rx_ptr->d4;
+      break;
+
     case OPC_RQNPN:
       // Request to read a parameter
       if (thisNN() == 1) {

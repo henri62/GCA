@@ -59,6 +59,16 @@
 #define PORTCFG_IR          0x08   // Infrared port
 
 
+typedef struct {
+  byte   mins;
+  byte   hours;
+  byte   wday;
+  byte   div;
+  byte   spare1;
+  byte   spare2;
+} Clock;
+
+extern ram Clock FastClock;
 extern near unsigned char led1timer;
 
 

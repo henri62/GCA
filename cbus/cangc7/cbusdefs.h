@@ -166,6 +166,7 @@
 
 #define OPC_RDCC5   0xC0    // 5 byte DCC packet
 #define OPC_WCVOA   0xC1    // Write CV ops mode by address
+#define OPC_FCLK    0xCF    // Fast clock event
 
 #define OPC_ACON2   0xD0    // On event with two data bytes
 #define OPC_ACOF2   0xD1    // Off event with two data bytes

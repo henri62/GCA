@@ -44,6 +44,7 @@
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 
 
+ram Clock FastClock;
 
 #pragma udata access VARS
 
