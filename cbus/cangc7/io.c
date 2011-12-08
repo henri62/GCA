@@ -156,6 +156,10 @@ void doLEDTimers(void) {
         POINT1 = PORT_ON;
         POINT2 = PORT_ON;
       }
+      else if( FastClock.issync) {
+        POINT1 = PORT_OFF;
+        POINT2 = PORT_OFF;
+      }
       else {
         POINT1 = PORT_OFF;
         POINT2 = PORT_OFF;
