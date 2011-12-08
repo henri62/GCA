@@ -173,6 +173,7 @@ void doLEDTimers(void) {
   if( display > 4 ) {
     display = 0;
   }
+
 }
 
 void doIOTimers(void) {

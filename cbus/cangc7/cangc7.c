@@ -213,7 +213,8 @@ void initIO(void) {
     // Start slot timeout timer
   led500ms_timer = 2000;  // 500ms
   io_timer = 200;  // 50ms
-  led_timer = 20;  // 5ms
+  led_timer = 16;  // 4ms
+  led_timer = 8;  // 2ms
 
   // Set up global interrupts
   RCONbits.IPEN = 1;          // Enable priority levels on interrupts

@@ -30,6 +30,7 @@
 near unsigned short led500ms_timer;
 near unsigned short io_timer;
 near unsigned short led_timer;
+near unsigned short dim_timer;
 
 #pragma code APP
 
@@ -43,12 +44,25 @@ void isr_high(void) {
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
 
+
+    //
+    // I/O timeout - 4ms
+    //
+    if (dim_timer > 0 && --dim_timer == 0) {
+      DIS1 = PORT_OFF;
+      DIS2 = PORT_OFF;
+      DIS3 = PORT_OFF;
+      DIS4 = PORT_OFF;
+      DIS5 = PORT_OFF;
+    }
+
     //
     // I/O timeout - 4ms
     //
     if (--led_timer == 0) {
       led_timer = 16;
       doLEDTimers();
+      dim_timer = 3;
     }
 
     //
