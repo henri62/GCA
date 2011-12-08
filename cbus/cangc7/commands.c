@@ -58,11 +58,12 @@ unsigned char parseCmd(void) {
       cmd[5] = 0;
       cmd[6] = 0;
       */
-      FastClock.mins   = rx_ptr->d1;
-      FastClock.hours  = rx_ptr->d2;
-      FastClock.wday   = rx_ptr->d3;
-      FastClock.div    = rx_ptr->d4;
-      FastClock.issync = TRUE;
+      FastClock.mins     = rx_ptr->d1;
+      FastClock.hours    = rx_ptr->d2;
+      FastClock.wday     = rx_ptr->d3;
+      FastClock.div      = rx_ptr->d4;
+      FastClock.issync   = TRUE;
+      FastClock.synctime = 0;
 
       //LED1 = __LED1;
       __LED1 ^= 1;

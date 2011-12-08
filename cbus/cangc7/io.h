@@ -53,6 +53,7 @@ typedef struct {
   byte   spare1;
   byte   spare2;
   byte   issync;
+  int    synctime;
 } Clock;
 
 extern ram Clock FastClock;

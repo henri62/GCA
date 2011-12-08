@@ -108,6 +108,8 @@ void main(void) {
   ioIdx = 0;
   display = 0;
   FastClock.issync = FALSE;
+  FastClock.synctime = 0;
+  FastClock.div = 1;
 
   NV1 = eeRead(EE_NV);
 

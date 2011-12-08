@@ -78,11 +78,20 @@ unsigned char readInput(int idx) {
 }
 
 
+// Called every 5ms.
 void doLEDTimers(void) {
   if( led1timer > 0 ) {
     led1timer--;
     if( led1timer == 0 ) {
       LED1 = 0;
+    }
+  }
+
+  if( FastClock.issync ) {
+    FastClock.synctime++;
+
+    if( FastClock.synctime > (200*60 / FastClock.div) ) {
+      FastClock.issync = FALSE;
     }
   }
 
