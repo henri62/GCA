@@ -54,13 +54,15 @@ void setupIO(byte clr) {
   TRISAbits.TRISA4 = 0; /* DIS2 */
   TRISAbits.TRISA5 = 0; /* DIS1 */
 
+  TRISBbits.TRISB0 = 0; /* LED1 */
+  TRISBbits.TRISB1 = 0; /* LED2 */
   TRISBbits.TRISB4 = 1; /* PB1 */
   TRISBbits.TRISB5 = 1; /* PB2 */
 
 
   LED1 = PORT_OFF;
   LED2 = PORT_OFF;
-  DIS5 = PORT_ON;
+  DIS5 = PORT_OFF;
 
 
   // following presets are written to eeprom if the flim switch is preshed at boot
@@ -78,7 +80,7 @@ unsigned char readInput(int idx) {
 }
 
 
-// Called every 5ms.
+// Called every 4ms.
 void doLEDTimers(void) {
   if( led1timer > 0 ) {
     led1timer--;
@@ -90,7 +92,7 @@ void doLEDTimers(void) {
   if( FastClock.issync ) {
     FastClock.synctime++;
 
-    if( FastClock.synctime > (200*60 / FastClock.div) ) {
+    if( FastClock.synctime > (250*60 / FastClock.div) ) {
       FastClock.issync = FALSE;
     }
   }
@@ -101,6 +103,7 @@ void doLEDTimers(void) {
       DIS2 = PORT_OFF;
       DIS3 = PORT_OFF;
       DIS4 = PORT_OFF;
+      DIS5 = PORT_OFF;
       if( FastClock.issync )
         PORTC = bcd[FastClock.mins % 10];
       else
@@ -111,6 +114,7 @@ void doLEDTimers(void) {
       DIS2 = PORT_ON;
       DIS3 = PORT_OFF;
       DIS4 = PORT_OFF;
+      DIS5 = PORT_OFF;
       if( FastClock.issync )
         PORTC = bcd[FastClock.mins / 10];
       else
@@ -121,6 +125,7 @@ void doLEDTimers(void) {
       DIS2 = PORT_OFF;
       DIS3 = PORT_ON;
       DIS4 = PORT_OFF;
+      DIS5 = PORT_OFF;
       if( FastClock.issync )
         PORTC = bcd[FastClock.hours % 10];
       else
@@ -130,6 +135,7 @@ void doLEDTimers(void) {
       DIS1 = PORT_OFF;
       DIS2 = PORT_OFF;
       DIS3 = PORT_OFF;
+      DIS5 = PORT_OFF;
       if( FastClock.issync && FastClock.hours / 10 != 0 ) {
         DIS4 = PORT_ON;
         PORTC = bcd[FastClock.hours / 10];
@@ -139,9 +145,28 @@ void doLEDTimers(void) {
         PORTC = 0x76;
       }
       break;
+    case 4:
+      DIS1 = PORT_OFF;
+      DIS2 = PORT_OFF;
+      DIS3 = PORT_OFF;
+      DIS4 = PORT_OFF;
+      DIS5 = PORT_ON;
+
+      if( FastClock.issync && pointtimer < (50/FastClock.div) ) {
+        POINT1 = PORT_ON;
+        POINT2 = PORT_ON;
+      }
+      else {
+        POINT1 = PORT_OFF;
+        POINT2 = PORT_OFF;
+      }
+      pointtimer++;
+      if( pointtimer > (100/FastClock.div) )
+        pointtimer = 0;
+      break;
   }
   display++;
-  if( display > 3 ) {
+  if( display > 4 ) {
     display = 0;
   }
 }

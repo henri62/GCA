@@ -56,6 +56,7 @@ near unsigned char CANID;
 near unsigned char  Latcount;
 near unsigned char  NV1;
 near unsigned char  led1timer;
+near unsigned char  pointtimer;
 near unsigned char ioIdx;
 near unsigned char display;
 
@@ -105,6 +106,7 @@ void main(void) {
   lDelay();
 
   led1timer = 0;
+  pointtimer = 0;
   ioIdx = 0;
   display = 0;
   FastClock.issync = FALSE;

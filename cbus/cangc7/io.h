@@ -25,8 +25,11 @@
 #define __IO_H
 
 
-#define LED1    PORTCbits.RC0
-#define LED2    PORTCbits.RC3
+#define LED1    PORTBbits.RB0
+#define LED2    PORTBbits.RB1
+
+#define POINT1  PORTCbits.RC0
+#define POINT2  PORTCbits.RC3
 
 #define DIS1    PORTAbits.RA5
 #define DIS2    PORTAbits.RA4
@@ -59,6 +62,7 @@ typedef struct {
 extern ram Clock FastClock;
 extern near unsigned char led1timer;
 extern near unsigned char display;
+extern near unsigned char pointtimer;
 
 
 void setupIO(byte clr);

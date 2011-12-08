@@ -44,10 +44,10 @@ void isr_high(void) {
     TMR0L = tmr0_reload;
 
     //
-    // I/O timeout - 5ms
+    // I/O timeout - 4ms
     //
     if (--led_timer == 0) {
-      led_timer = 20;
+      led_timer = 16;
       doLEDTimers();
     }
 
