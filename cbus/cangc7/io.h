@@ -25,28 +25,9 @@
 #define __IO_H
 
 
-#define SW      PORTAbits.RA2	// Flim switch
-#define LED1    PORTBbits.RB6
-#define LED2    PORTBbits.RB7
-#define LED3    PORTBbits.RB5
-
-#define PORT1   PORTAbits.RA0
-#define PORT2   PORTAbits.RA1
-#define PORT3   PORTAbits.RA3
-#define PORT4   PORTAbits.RA4
-#define PORT5   PORTAbits.RA5
-#define PORT6   PORTBbits.RB0
-#define PORT7   PORTBbits.RB4
-#define PORT8   PORTBbits.RB1
-
-#define PORT9   PORTCbits.RC0
-#define PORT10  PORTCbits.RC1
-#define PORT11  PORTCbits.RC2
-#define PORT12  PORTCbits.RC3
-#define PORT13  PORTCbits.RC7
-#define PORT14  PORTCbits.RC6
-#define PORT15  PORTCbits.RC5
-#define PORT16  PORTCbits.RC4
+#define LED1    PORTCbits.RC0
+#define LED2    PORTCbits.RC3
+#define DIS5    PORTAbits.RA1
 
 
 // port config

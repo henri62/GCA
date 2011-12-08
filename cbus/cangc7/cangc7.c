@@ -83,30 +83,13 @@ void initCAN(void);
 /*
  * Interrupt vectors
  */
-//#pragma code high_vector=0x08
-#pragma code high_vector=0x808
-void high_irq_errata_fix(void);
-//void interrupt_at_high_vector(void)
+#pragma code high_vector=0x08
 void HIGH_INT_VECT(void)
 {
-    _asm
-        CALL high_irq_errata_fix, 1
-    _endasm
+    _asm GOTO isr_high _endasm
 }
 
-/*
- * See 18F2480 errata
- */
-void high_irq_errata_fix(void) {
-    _asm
-        POP
-        GOTO isr_high
-    _endasm
-}
-
-//#pragma code low_vector=0x18
-#pragma code low_vector=0x818
-//void interrupt_at_low_vector(void)
+#pragma code low_vector=0x18
 void LOW_INT_VECT(void)
 {
     _asm GOTO isr_low _endasm
@@ -116,7 +99,6 @@ void LOW_INT_VECT(void)
 #pragma code APP
 void main(void) {
   unsigned char swTrig = 0;
-  byte l3 = 1;
 
   lDelay();
 
@@ -140,13 +122,23 @@ void main(void) {
   delay();
   restoreOutputStates();
   delay();
-  
+
+
+  canmsg.opc = OPC_PARAMS;
+  canmsg.d[0] = params[0];
+  canmsg.d[1] = params[1];
+  canmsg.d[2] = params[2];
+  canmsg.d[3] = params[3];
+  canmsg.d[4] = params[4];
+  canmsg.d[5] = params[5];
+  canmsg.d[6] = params[6];
+  canmsg.len = 7;
+  canQueue(&canmsg);
+
 
   // Loop forever (nothing lasts forever...)
   while (1) {
     unsigned char txed = 0;
-    LED3 = PORT_ON;
-    l3 ^= 1;
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
       // Decode the new command
@@ -154,7 +146,6 @@ void main(void) {
       led1timer = 20;
       txed = parseCmd();
     }
-    LED3 = PORT_OFF;
 
     if( checkInput(ioIdx) ) {
       ioIdx++;

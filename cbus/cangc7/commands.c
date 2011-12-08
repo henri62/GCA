@@ -41,6 +41,7 @@ ram unsigned char pnnCount = 0;
 // Decode the OPC and call the function to handle it.
 //
 
+static unsigned char __LED1 = 0;
 unsigned char parseCmd(void) {
   unsigned char txed = 0;
   //mode_word.s_full = 0;
@@ -61,6 +62,9 @@ unsigned char parseCmd(void) {
       FastClock.hours = rx_ptr->d2;
       FastClock.wday  = rx_ptr->d3;
       FastClock.div   = rx_ptr->d4;
+
+      //LED1 = __LED1;
+      __LED1 ^= 1;
       break;
 
     case OPC_RQNPN:
