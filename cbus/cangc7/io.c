@@ -99,7 +99,6 @@ void doLEDTimers(void) {
 
   switch( display ) {
     case 0:
-      DIS1 = PORT_ON;
       DIS2 = PORT_OFF;
       DIS3 = PORT_OFF;
       DIS4 = PORT_OFF;
@@ -108,10 +107,10 @@ void doLEDTimers(void) {
         PORTC = bcd[FastClock.mins % 10];
       else
         PORTC = 0x73;
+      DIS1 = PORT_ON;
       break;
     case 1:
       DIS1 = PORT_OFF;
-      DIS2 = PORT_ON;
       DIS3 = PORT_OFF;
       DIS4 = PORT_OFF;
       DIS5 = PORT_OFF;
@@ -119,17 +118,18 @@ void doLEDTimers(void) {
         PORTC = bcd[FastClock.mins / 10];
       else
         PORTC = 0x38;
+      DIS2 = PORT_ON;
       break;
     case 2:
       DIS1 = PORT_OFF;
       DIS2 = PORT_OFF;
-      DIS3 = PORT_ON;
       DIS4 = PORT_OFF;
       DIS5 = PORT_OFF;
       if( FastClock.issync )
         PORTC = bcd[FastClock.hours % 10];
       else
         PORTC = 0x79;
+      DIS3 = PORT_ON;
       break;
     case 3:
       DIS1 = PORT_OFF;
@@ -137,12 +137,12 @@ void doLEDTimers(void) {
       DIS3 = PORT_OFF;
       DIS5 = PORT_OFF;
       if( FastClock.issync && FastClock.hours / 10 != 0 ) {
-        DIS4 = PORT_ON;
         PORTC = bcd[FastClock.hours / 10];
+        DIS4 = PORT_ON;
       }
       else if( !FastClock.issync ) {
-        DIS4 = PORT_ON;
         PORTC = 0x76;
+        DIS4 = PORT_ON;
       }
       break;
     case 4:
@@ -150,7 +150,6 @@ void doLEDTimers(void) {
       DIS2 = PORT_OFF;
       DIS3 = PORT_OFF;
       DIS4 = PORT_OFF;
-      DIS5 = PORT_ON;
 
       if( FastClock.issync && pointtimer < (50/FastClock.div) ) {
         POINT1 = PORT_ON;
@@ -164,6 +163,7 @@ void doLEDTimers(void) {
         POINT1 = PORT_OFF;
         POINT2 = PORT_OFF;
       }
+      DIS5 = PORT_ON;
       pointtimer++;
       if( pointtimer > (100/FastClock.div) )
         pointtimer = 0;
