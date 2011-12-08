@@ -31,6 +31,7 @@
 #include "cangc7.h"
 #include "io.h"
 
+static byte bcd[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
 
 void setupIO(byte clr) {
   int idx = 0;
@@ -39,9 +40,22 @@ void setupIO(byte clr) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
   
-  TRISCbits.TRISC0 = 0; /* LED1 */
-  TRISCbits.TRISC3 = 0; /* LED2 */
-  TRISAbits.TRISA1 = 0; /* DSI5 */
+  TRISCbits.TRISC0 = 0; /* a LED1 */
+  TRISCbits.TRISC1 = 0; /* b */
+  TRISCbits.TRISC2 = 0; /* c */
+  TRISCbits.TRISC3 = 0; /* d LED2 */
+  TRISCbits.TRISC4 = 0; /* e */
+  TRISCbits.TRISC5 = 0; /* f */
+  TRISCbits.TRISC6 = 0; /* g */
+  TRISCbits.TRISC7 = 0; /*  */
+  TRISAbits.TRISA1 = 0; /* DIS5 */
+  TRISAbits.TRISA2 = 0; /* DIS4 */
+  TRISAbits.TRISA3 = 0; /* DIS3 */
+  TRISAbits.TRISA4 = 0; /* DIS2 */
+  TRISAbits.TRISA5 = 0; /* DIS1 */
+
+  TRISBbits.TRISB4 = 1; /* PB1 */
+  TRISBbits.TRISB5 = 1; /* PB2 */
 
 
   LED1 = PORT_OFF;
@@ -53,6 +67,7 @@ void setupIO(byte clr) {
 
 
 }
+
 
 void writeOutput(int idx, unsigned char val) {
 }
@@ -69,6 +84,56 @@ void doLEDTimers(void) {
     if( led1timer == 0 ) {
       LED1 = 0;
     }
+  }
+
+  switch( display ) {
+    case 0:
+      DIS1 = PORT_ON;
+      DIS2 = PORT_OFF;
+      DIS3 = PORT_OFF;
+      DIS4 = PORT_OFF;
+      if( FastClock.issync )
+        PORTC = bcd[FastClock.mins % 10];
+      else
+        PORTC = 0x73;
+      break;
+    case 1:
+      DIS1 = PORT_OFF;
+      DIS2 = PORT_ON;
+      DIS3 = PORT_OFF;
+      DIS4 = PORT_OFF;
+      if( FastClock.issync )
+        PORTC = bcd[FastClock.mins / 10];
+      else
+        PORTC = 0x38;
+      break;
+    case 2:
+      DIS1 = PORT_OFF;
+      DIS2 = PORT_OFF;
+      DIS3 = PORT_ON;
+      DIS4 = PORT_OFF;
+      if( FastClock.issync )
+        PORTC = bcd[FastClock.hours % 10];
+      else
+        PORTC = 0x79;
+      break;
+    case 3:
+      DIS1 = PORT_OFF;
+      DIS2 = PORT_OFF;
+      DIS3 = PORT_OFF;
+      if( FastClock.issync && FastClock.hours / 10 != 0 ) {
+        DIS4 = PORT_ON;
+        PORTC = bcd[FastClock.hours / 10];
+      }
+      else if( !FastClock.issync ) {
+        DIS4 = PORT_ON;
+        PORTC = 0x76;
+      }
+      break;
+  }
+  display++;
+  if( display > 3 ) {
+    display = 0;
   }
 }
 

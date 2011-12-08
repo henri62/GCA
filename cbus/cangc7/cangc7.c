@@ -57,6 +57,8 @@ near unsigned char  Latcount;
 near unsigned char  NV1;
 near unsigned char  led1timer;
 near unsigned char ioIdx;
+near unsigned char display;
+
 
 volatile near unsigned char tmr0_reload;
 
@@ -104,6 +106,8 @@ void main(void) {
 
   led1timer = 0;
   ioIdx = 0;
+  display = 0;
+  FastClock.issync = FALSE;
 
   NV1 = eeRead(EE_NV);
 

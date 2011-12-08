@@ -27,6 +27,11 @@
 
 #define LED1    PORTCbits.RC0
 #define LED2    PORTCbits.RC3
+
+#define DIS1    PORTAbits.RA5
+#define DIS2    PORTAbits.RA4
+#define DIS3    PORTAbits.RA3
+#define DIS4    PORTAbits.RA2
 #define DIS5    PORTAbits.RA1
 
 
@@ -47,10 +52,12 @@ typedef struct {
   byte   div;
   byte   spare1;
   byte   spare2;
+  byte   issync;
 } Clock;
 
 extern ram Clock FastClock;
 extern near unsigned char led1timer;
+extern near unsigned char display;
 
 
 void setupIO(byte clr);
