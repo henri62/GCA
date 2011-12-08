@@ -32,7 +32,7 @@
 
     
 #define FIXED_CAN_ID 0x7F // use only for enummeration
-#define DEFAULT_NN   254
+#define DEFAULT_NN   111
 
 #define TRUE 1
 #define FALSE 0

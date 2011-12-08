@@ -35,12 +35,8 @@ ram CANMsg canmsg;
 
 #pragma romdata EEPROM
 // Ensure newly programmed part is in virgin state
-rom unsigned char defaultID = 0x7F;
 rom unsigned char status = 0;
 rom unsigned short nodeID = 0;
-
-#pragma romdata BOOTFLAG
-rom unsigned char bootflag = 0;
 
 #pragma code APP
 
@@ -79,8 +75,8 @@ BRGCON3: 0x03
    */
 
   // prescaler Tq = 16/Fosc
-  // BRGCON1 = 0b00000111; // 8MHz resonator
-  BRGCON1 = 0b00000011; // 4MHz resonator
+  BRGCON1 = 0b00000111; // 8MHz resonator
+  //BRGCON1 = 0b00000011; // 4MHz resonator
   // freely programmable, sample once, phase 1 = 4xTq, prop time = 7xTq
   BRGCON2 = 0b10011110;
   // Wake-up enabled, wake-up filter not used, phase 2 = 4xTq
