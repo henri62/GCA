@@ -62,7 +62,9 @@ void isr_high(void) {
     if (--led_timer == 0) {
       led_timer = 16;
       doLEDTimers();
-      dim_timer = 3;
+      dim_timer = NV1 & CFG_DISPDIM;
+      if( dim_timer == 0 )
+        dim_timer++;
     }
 
     //

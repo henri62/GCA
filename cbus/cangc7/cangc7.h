@@ -29,9 +29,9 @@
 #define MAJOR_VER 1
 #define MINOR_VER 'a'	// Minor version character
 
-#define EVT_NUM 17
+#define EVT_NUM 0
 #define EVperEVT 0
-#define NV_NUM 17
+#define NV_NUM 1
 
 // EEPROM addresses
 #define EE_MAGIC 0
@@ -43,7 +43,8 @@
 #define MAGIC 93
 
 // node var 1
-#define CFG_SAVEOUTPUT 0x01
+#define CFG_DISPDIM  0x0F
+#define CFG_SHOWDATE 0x10
 
 
 

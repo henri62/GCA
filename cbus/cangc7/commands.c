@@ -59,6 +59,19 @@ unsigned char parseCmd(void) {
       FastClock.synctime = 0;
       break;
 
+    case OPC_QNN:
+      canmsg.opc  = OPC_PNN;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[2] = params[0];
+      canmsg.d[3] = params[2];
+      canmsg.d[4] = NV1;
+      canmsg.len = 5;
+      canQueue(&canmsg);
+      //LED2 = 1;
+      txed = 1;
+      break;
+
     case OPC_RQNPN:
       // Request to read a parameter
       if (thisNN() == 1) {
@@ -92,9 +105,6 @@ unsigned char parseCmd(void) {
       break;
 
     case OPC_RTOF:
-      if( NV1 & CFG_SAVEOUTPUT ) {
-        saveOutputStates();
-      }
       break;
 
     case OPC_NVRD:
@@ -119,6 +129,10 @@ unsigned char parseCmd(void) {
         if( nvnr == 1 ) {
           NV1 = rx_ptr->d4;
           eeWrite(EE_NV, NV1);
+          dim_timer = NV1 & CFG_DISPDIM;
+          if( dim_timer == 0 )
+            dim_timer++;
+          date_enabled = (NV1 & CFG_SHOWDATE) ? TRUE:FALSE;
         }
       }
       break;

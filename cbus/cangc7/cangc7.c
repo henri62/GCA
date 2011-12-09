@@ -60,6 +60,7 @@ near unsigned char  pointtimer;
 near unsigned char ioIdx;
 near unsigned char display;
 near unsigned char showdate;
+near unsigned char date_enabled;
 
 
 volatile near unsigned char tmr0_reload;
@@ -111,11 +112,16 @@ void main(void) {
   ioIdx = 0;
   display = 0;
   showdate = FALSE;
+  date_enabled = FALSE;
   FastClock.issync = FALSE;
   FastClock.synctime = 0;
   FastClock.div = 1;
 
   NV1 = eeRead(EE_NV);
+  dim_timer = NV1 & CFG_DISPDIM;
+  if( dim_timer == 0 )
+    dim_timer++;
+  date_enabled = (NV1 & CFG_SHOWDATE) ? TRUE:FALSE;
 
   initIO();
 

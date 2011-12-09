@@ -38,16 +38,6 @@
 #define DIS5    PORTAbits.RA1
 
 
-// port config
-#define PORTCFG_IO          0x01   // port I/O mask
-#define PORTCFG_IN          0x01
-#define PORTCFG_OUT         0x00
-#define PORTCFG_OFFDELAY    0x02   // input 2 seconds off delay for occupancy detectors
-#define PORTCFG_PULSE       0x02   // output 0.5 seconds pulse length
-#define PORTCFG_INV         0x04   // invert
-#define PORTCFG_IR          0x08   // Infrared port
-
-
 typedef struct {
   byte   mins;
   byte   hours;
@@ -64,6 +54,8 @@ extern near unsigned char led1timer;
 extern near unsigned char display;
 extern near unsigned char pointtimer;
 extern near unsigned char showdate;
+extern near unsigned char date_enabled;
+extern unsigned near short dim_timer;
 
 
 void setupIO(byte clr);
