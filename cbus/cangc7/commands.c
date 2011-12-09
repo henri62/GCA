@@ -41,32 +41,22 @@ ram unsigned char pnnCount = 0;
 // Decode the OPC and call the function to handle it.
 //
 
-static unsigned char __LED1 = 0;
 unsigned char parseCmd(void) {
   unsigned char txed = 0;
   //mode_word.s_full = 0;
+
   switch (rx_ptr->d0) {
 
     case OPC_FCLK:
       // fast clock:
-      /*
-      cmd[0] = OPC_FCLK;
-      cmd[1] = mins;
-      cmd[2] = hours;
-      cmd[3] = wday;
-      cmd[4] = div;
-      cmd[5] = 0;
-      cmd[6] = 0;
-      */
       FastClock.mins     = rx_ptr->d1;
       FastClock.hours    = rx_ptr->d2;
       FastClock.wday     = rx_ptr->d3;
       FastClock.div      = rx_ptr->d4;
+      FastClock.mday     = rx_ptr->d5;
+      FastClock.mon      = rx_ptr->d6;
       FastClock.issync   = TRUE;
       FastClock.synctime = 0;
-
-      //LED1 = __LED1;
-      __LED1 ^= 1;
       break;
 
     case OPC_RQNPN:

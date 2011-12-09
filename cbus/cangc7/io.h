@@ -53,8 +53,8 @@ typedef struct {
   byte   hours;
   byte   wday;
   byte   div;
-  byte   spare1;
-  byte   spare2;
+  byte   mday;
+  byte   mon;
   byte   issync;
   int    synctime;
 } Clock;
@@ -63,6 +63,7 @@ extern ram Clock FastClock;
 extern near unsigned char led1timer;
 extern near unsigned char display;
 extern near unsigned char pointtimer;
+extern near unsigned char showdate;
 
 
 void setupIO(byte clr);

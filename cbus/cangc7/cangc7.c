@@ -59,6 +59,7 @@ near unsigned char  led1timer;
 near unsigned char  pointtimer;
 near unsigned char ioIdx;
 near unsigned char display;
+near unsigned char showdate;
 
 
 volatile near unsigned char tmr0_reload;
@@ -109,6 +110,7 @@ void main(void) {
   pointtimer = 0;
   ioIdx = 0;
   display = 0;
+  showdate = FALSE;
   FastClock.issync = FALSE;
   FastClock.synctime = 0;
   FastClock.div = 1;

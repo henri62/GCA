@@ -32,6 +32,7 @@
 #include "io.h"
 
 static byte bcd[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
+static int showdate_timer = 0;
 
 void setupIO(byte clr) {
   int idx = 0;
@@ -89,6 +90,19 @@ void doLEDTimers(void) {
     }
   }
 
+  if( !showdate ) {
+    showdate_timer++;
+    if( showdate_timer > 5000 ) {
+      showdate = TRUE;
+    }
+  }
+  else {
+    showdate_timer--;
+    if( showdate_timer <= 0 ) {
+      showdate = FALSE;
+    }
+  }
+
   if( FastClock.div > 0 && FastClock.issync ) {
     FastClock.synctime++;
 
@@ -104,7 +118,10 @@ void doLEDTimers(void) {
       DIS4 = PORT_OFF;
       DIS5 = PORT_OFF;
       if( FastClock.issync || FastClock.div == 0 )
-        PORTC = bcd[FastClock.mins % 10];
+        if( showdate)
+          PORTC = bcd[FastClock.mon % 10];
+        else
+          PORTC = bcd[FastClock.mins % 10];
       else
         PORTC = 0x73;
       DIS1 = PORT_ON;
@@ -115,7 +132,10 @@ void doLEDTimers(void) {
       DIS4 = PORT_OFF;
       DIS5 = PORT_OFF;
       if( FastClock.issync || FastClock.div == 0 )
-        PORTC = bcd[FastClock.mins / 10];
+        if( showdate)
+          PORTC = bcd[FastClock.mon / 10];
+        else
+          PORTC = bcd[FastClock.mins / 10];
       else
         PORTC = 0x38;
       DIS2 = PORT_ON;
@@ -126,7 +146,10 @@ void doLEDTimers(void) {
       DIS4 = PORT_OFF;
       DIS5 = PORT_OFF;
       if( FastClock.issync || FastClock.div == 0 )
-        PORTC = bcd[FastClock.hours % 10];
+        if( showdate)
+          PORTC = bcd[FastClock.mday % 10];
+        else
+          PORTC = bcd[FastClock.hours % 10];
       else
         PORTC = 0x79;
       DIS3 = PORT_ON;
@@ -137,7 +160,10 @@ void doLEDTimers(void) {
       DIS3 = PORT_OFF;
       DIS5 = PORT_OFF;
       if( (FastClock.issync || FastClock.div == 0) && FastClock.hours / 10 != 0) {
-        PORTC = bcd[FastClock.hours / 10];
+        if( showdate)
+          PORTC = bcd[FastClock.mday / 10];
+        else
+          PORTC = bcd[FastClock.hours / 10];
         DIS4 = PORT_ON;
       }
       else if( !FastClock.issync ) {
@@ -151,7 +177,7 @@ void doLEDTimers(void) {
       DIS3 = PORT_OFF;
       DIS4 = PORT_OFF;
 
-      if( FastClock.issync && pointtimer < (50/FastClock.div) || FastClock.div == 0 ) {
+      if( !showdate && FastClock.issync && pointtimer < (50/FastClock.div) || FastClock.div == 0 ) {
         POINT1 = PORT_ON;
         POINT2 = PORT_ON;
       }
