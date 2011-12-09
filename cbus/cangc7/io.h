@@ -28,6 +28,8 @@
 #define LED1    PORTBbits.RB0
 #define LED2    PORTBbits.RB1
 
+#define SW      PORTBbits.RB4	// Flim switch
+
 #define POINT1  PORTCbits.RC0
 #define POINT2  PORTCbits.RC3
 
@@ -68,5 +70,6 @@ void doLEDs(void);
 void saveOutputStates(void);
 void restoreOutputStates(void);
 void setOutput(ushort nn, ushort addr, byte on);
+unsigned char checkFlimSwitch(void);
 
 #endif	// __IO_H

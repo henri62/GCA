@@ -37,7 +37,7 @@
 #define EE_MAGIC 0
 #define EE_NV 1          // 1 byte configuration
 #define EE_NN 2          // 2 bytes node number of this unit
-#define EE_CANID 3       // 1 byte CANID
+#define EE_CANID 4       // 1 byte CANID
 
 // values
 #define MAGIC 93
@@ -55,5 +55,7 @@ extern near unsigned char CANID;
 extern near unsigned char led1timer;
 extern near unsigned char ioIdx;
 extern volatile near unsigned char tmr0_reload;
+extern near unsigned char Wait4NN;
+extern near unsigned char isLearning;
 
 #endif

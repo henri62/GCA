@@ -61,6 +61,8 @@ near unsigned char ioIdx;
 near unsigned char display;
 near unsigned char showdate;
 near unsigned char date_enabled;
+near unsigned char  Wait4NN;
+near unsigned char  isLearning;
 
 
 volatile near unsigned char tmr0_reload;
@@ -116,6 +118,7 @@ void main(void) {
   FastClock.issync = FALSE;
   FastClock.synctime = 0;
   FastClock.div = 1;
+  Wait4NN = FALSE;
 
   NV1 = eeRead(EE_NV);
   dim_timer = NV1 & CFG_DISPDIM;
@@ -140,18 +143,6 @@ void main(void) {
   delay();
 
 
-  canmsg.opc = OPC_PARAMS;
-  canmsg.d[0] = params[0];
-  canmsg.d[1] = params[1];
-  canmsg.d[2] = params[2];
-  canmsg.d[3] = params[3];
-  canmsg.d[4] = params[4];
-  canmsg.d[5] = params[5];
-  canmsg.d[6] = params[6];
-  canmsg.len = 7;
-  canQueue(&canmsg);
-
-
   // Loop forever (nothing lasts forever...)
   while (1) {
     unsigned char txed = 0;
@@ -173,6 +164,25 @@ void main(void) {
     //LED2 = PORT_ON;
     canSendQ();
     //LED2 = PORT_OFF;
+    if( checkFlimSwitch() && !swTrig ) {
+      swTrig = 1;
+    }
+    else if( !checkFlimSwitch() && swTrig) {
+      swTrig = 0;
+      if( Wait4NN ) {
+        Wait4NN = 0;
+        LED2 = 0;
+      }
+      else {
+        LED2 = 1;
+        canmsg.opc = OPC_NNACK;
+        canmsg.d[0] = NN_temp / 256;
+        canmsg.d[1] = NN_temp % 256;
+        canmsg.len = 2;
+        canQueue(&canmsg);
+        Wait4NN = 1;
+      }
+    }
 
   }
 

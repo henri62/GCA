@@ -81,14 +81,18 @@ unsigned char parseCmd(void) {
 
     case OPC_SNN:
     {
-      unsigned char nnH = rx_ptr->d1;
-      unsigned char nnL = rx_ptr->d2;
-      NN_temp = nnH * 256 + nnL;
-      eeWrite(EE_NN, nnH);
-      eeWrite(EE_NN+1, nnL);
-      LED2 = 0;
+      if( Wait4NN ) {
+        unsigned char nnH = rx_ptr->d1;
+        unsigned char nnL = rx_ptr->d2;
+        NN_temp = nnH * 256 + nnL;
+        eeWrite(EE_NN, nnH);
+        eeWrite(EE_NN+1, nnL);
+        Wait4NN = 0;
+        LED2 = 0;
+      }
       break;
     }
+
 
     case OPC_RQNP:
       canmsg.opc = OPC_PARAMS;
@@ -120,6 +124,16 @@ unsigned char parseCmd(void) {
           canQueue(&canmsg);
           txed = 1;
         }
+        else if( nvnr == 2 ) {
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = CANID;
+          canmsg.len = 4;
+          canQueue(&canmsg);
+          txed = 1;
+        }
       }
       break;
 
@@ -133,6 +147,10 @@ unsigned char parseCmd(void) {
           if( dim_timer == 0 )
             dim_timer++;
           date_enabled = (NV1 & CFG_SHOWDATE) ? TRUE:FALSE;
+        }
+        else if( nvnr == 2 ) {
+          CANID = rx_ptr->d4;
+          eeWrite(EE_CANID, CANID);
         }
       }
       break;

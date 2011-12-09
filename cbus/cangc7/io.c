@@ -57,7 +57,7 @@ void setupIO(byte clr) {
 
   TRISBbits.TRISB0 = 0; /* LED1 */
   TRISBbits.TRISB1 = 0; /* LED2 */
-  TRISBbits.TRISB4 = 1; /* PB1 */
+  TRISBbits.TRISB4 = 1; /* SW */
   TRISBbits.TRISB5 = 1; /* PB2 */
 
 
@@ -112,6 +112,18 @@ void doLEDTimers(void) {
     if( FastClock.synctime > (250*60 / FastClock.div) ) {
       FastClock.issync = FALSE;
     }
+  }
+
+  if( Wait4NN ) {
+    DIS1 = PORT_OFF;
+    DIS2 = PORT_OFF;
+    DIS3 = PORT_OFF;
+    DIS4 = PORT_OFF;
+    DIS5 = PORT_OFF;
+    POINT1 = PORT_ON;
+    POINT2 = PORT_OFF;
+    DIS5 = PORT_ON;
+    return;
   }
 
   switch( display ) {
@@ -215,6 +227,11 @@ void doIOTimers(void) {
 void doTimedOff(int i) {
 }
 
+
+unsigned char checkFlimSwitch(void) {
+  unsigned char val = SW;
+  return !val;
+}
 
 unsigned char checkInput(unsigned char idx) {
   unsigned char ok = 1;
