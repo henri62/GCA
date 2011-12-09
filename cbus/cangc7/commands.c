@@ -57,6 +57,7 @@ unsigned char parseCmd(void) {
       FastClock.mon      = rx_ptr->d6;
       FastClock.issync   = TRUE;
       FastClock.synctime = 0;
+      FastClock.gotfirstsync = TRUE;
       break;
 
     case OPC_QNN:

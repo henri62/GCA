@@ -138,7 +138,7 @@ void doLEDTimers(void) {
         else
           PORTC = bcd[FastClock.mins % 10];
       else
-        PORTC = 0x73;
+        PORTC = FastClock.gotfirstsync ? 0x73:0x40;
       DIS1 = PORT_ON;
       break;
     case 1:
@@ -152,7 +152,7 @@ void doLEDTimers(void) {
         else
           PORTC = bcd[FastClock.mins / 10];
       else
-        PORTC = 0x38;
+        PORTC = FastClock.gotfirstsync ? 0x38:0x40;
       DIS2 = PORT_ON;
       break;
     case 2:
@@ -166,7 +166,7 @@ void doLEDTimers(void) {
         else
           PORTC = bcd[FastClock.hours % 10];
       else
-        PORTC = 0x79;
+        PORTC = FastClock.gotfirstsync ? 0x79:0x40;
       DIS3 = PORT_ON;
       break;
     case 3:
@@ -185,7 +185,7 @@ void doLEDTimers(void) {
         }
       }
       else if( !FastClock.issync ) {
-        PORTC = 0x76;
+        PORTC = FastClock.gotfirstsync ? 0x76:0x40;
         DIS4 = PORT_ON;
       }
       break;
