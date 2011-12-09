@@ -92,8 +92,9 @@ void doLEDTimers(void) {
 
   if( !showdate ) {
     showdate_timer++;
-    if( showdate_timer > 5000 ) {
+    if( showdate_timer > 3000 ) {
       showdate = TRUE;
+      showdate_timer = 1000;
     }
   }
   else {
@@ -159,12 +160,15 @@ void doLEDTimers(void) {
       DIS2 = PORT_OFF;
       DIS3 = PORT_OFF;
       DIS5 = PORT_OFF;
-      if( (FastClock.issync || FastClock.div == 0) && FastClock.hours / 10 != 0) {
-        if( showdate)
+      if( FastClock.issync || FastClock.div == 0) {
+        if( showdate && FastClock.mday / 10 != 0) {
           PORTC = bcd[FastClock.mday / 10];
-        else
+          DIS4 = PORT_ON;
+        }
+        else if( !showdate && FastClock.hours / 10 != 0) {
           PORTC = bcd[FastClock.hours / 10];
-        DIS4 = PORT_ON;
+          DIS4 = PORT_ON;
+        }
       }
       else if( !FastClock.issync ) {
         PORTC = 0x76;
@@ -181,9 +185,9 @@ void doLEDTimers(void) {
         POINT1 = PORT_ON;
         POINT2 = PORT_ON;
       }
-      else if( FastClock.issync) {
+      else if( showdate && FastClock.issync) {
         POINT1 = PORT_OFF;
-        POINT2 = PORT_OFF;
+        POINT2 = PORT_ON;
       }
       else {
         POINT1 = PORT_OFF;
