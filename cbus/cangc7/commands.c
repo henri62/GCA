@@ -89,7 +89,6 @@ unsigned char parseCmd(void) {
         eeWrite(EE_NN, nnH);
         eeWrite(EE_NN+1, nnL);
         Wait4NN = 0;
-        LED2 = 0;
       }
       break;
     }

@@ -95,7 +95,7 @@ void isr_high(void) {
 //
 #pragma interruptlow isr_low
 void isr_low(void) {
-  LED2 = 1;
+  //LED2 = 1;
 
   if (PIR3bits.ERRIF == 1) {
 

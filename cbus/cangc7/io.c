@@ -41,14 +41,14 @@ void setupIO(byte clr) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
   
-  TRISCbits.TRISC0 = 0; /* a LED1 */
+  TRISCbits.TRISC0 = 0; /* a */
   TRISCbits.TRISC1 = 0; /* b */
   TRISCbits.TRISC2 = 0; /* c */
-  TRISCbits.TRISC3 = 0; /* d LED2 */
+  TRISCbits.TRISC3 = 0; /* d */
   TRISCbits.TRISC4 = 0; /* e */
   TRISCbits.TRISC5 = 0; /* f */
   TRISCbits.TRISC6 = 0; /* g */
-  TRISCbits.TRISC7 = 0; /*  */
+  TRISCbits.TRISC7 = 0; /*   */
   TRISAbits.TRISA1 = 0; /* DIS5 */
   TRISAbits.TRISA2 = 0; /* DIS4 */
   TRISAbits.TRISA3 = 0; /* DIS3 */
@@ -58,11 +58,10 @@ void setupIO(byte clr) {
   TRISBbits.TRISB0 = 0; /* LED1 */
   TRISBbits.TRISB1 = 0; /* LED2 */
   TRISBbits.TRISB4 = 1; /* SW */
-  TRISBbits.TRISB5 = 1; /* PB2 */
+  TRISBbits.TRISB5 = 0; /* LED1 */
 
 
   LED1 = PORT_OFF;
-  LED2 = PORT_OFF;
   DIS5 = PORT_OFF;
 
 
@@ -260,10 +259,7 @@ void restoreOutputStates(void) {
 
 
 
-static unsigned char __LED2 = 0;
 void doLEDs(void) {
-  LED2 = __LED2;
-  __LED2 ^= 1;
 }
 
 byte getPortStates(int group) {

@@ -172,10 +172,8 @@ void main(void) {
       swTrig = 0;
       if( Wait4NN ) {
         Wait4NN = 0;
-        LED2 = 0;
       }
       else {
-        LED2 = 1;
         canmsg.opc = OPC_NNACK;
         canmsg.d[0] = NN_temp / 256;
         canmsg.d[1] = NN_temp % 256;

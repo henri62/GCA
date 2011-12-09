@@ -190,11 +190,11 @@ byte canQueue(CANMsg* msg) {
         CANMsgs[i].d[n] = msg->d[n];
       }
       CANMsgs[i].status = CANMSG_OPEN;
-      LED2 = PORT_OFF;
+      //LED2 = PORT_OFF;
       return 1;
     }
   }
-  LED2 = PORT_ON;
+  //LED2 = PORT_ON;
   return 0;
 }
 

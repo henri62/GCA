@@ -25,8 +25,7 @@
 #define __IO_H
 
 
-#define LED1    PORTBbits.RB0
-#define LED2    PORTBbits.RB1
+#define LED1    PORTBbits.RB5   // cbus activity
 
 #define SW      PORTBbits.RB4	// Flim switch
 
