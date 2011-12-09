@@ -41,11 +41,11 @@ void setupIO(byte clr) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
   
-  TRISCbits.TRISC0 = 0; /* a */
+  TRISCbits.TRISC0 = 0; /* a POINT1 */
   TRISCbits.TRISC1 = 0; /* b */
   TRISCbits.TRISC2 = 0; /* c */
-  TRISCbits.TRISC3 = 0; /* d */
-  TRISCbits.TRISC4 = 0; /* e */
+  TRISCbits.TRISC3 = 0; /* d POINT2 */
+  TRISCbits.TRISC4 = 0; /* e DASH   */
   TRISCbits.TRISC5 = 0; /* f */
   TRISCbits.TRISC6 = 0; /* g */
   TRISCbits.TRISC7 = 0; /*   */
@@ -197,14 +197,17 @@ void doLEDTimers(void) {
       if( !showdate && FastClock.issync && pointtimer < (50/FastClock.div) || FastClock.div == 0 ) {
         POINT1 = PORT_ON;
         POINT2 = PORT_ON;
+        DASH   = PORT_OFF;
       }
       else if( showdate && FastClock.issync) {
         POINT1 = PORT_OFF;
         POINT2 = PORT_ON;
+        DASH   = PORT_ON;
       }
       else {
         POINT1 = PORT_OFF;
         POINT2 = PORT_OFF;
+        DASH   = PORT_OFF;
       }
       DIS5 = PORT_ON;
       pointtimer++;

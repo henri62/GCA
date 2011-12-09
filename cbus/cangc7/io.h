@@ -31,6 +31,7 @@
 
 #define POINT1  PORTCbits.RC0
 #define POINT2  PORTCbits.RC3
+#define DASH    PORTCbits.RC4
 
 #define DIS1    PORTAbits.RA5
 #define DIS2    PORTAbits.RA4
