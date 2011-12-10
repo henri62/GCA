@@ -90,19 +90,22 @@ void doLEDTimers(void) {
   }
 
   if( date_enabled ) {
-      if( !showdate ) {
-        showdate_timer++;
-        if( showdate_timer > 3000 ) {
-          showdate = TRUE;
-          showdate_timer = 1000;
-        }
+    if( !showdate ) {
+      showdate_timer++;
+      if( showdate_timer > 3000 ) {
+        showdate = TRUE;
+        showdate_timer = 1000;
       }
-      else {
-        showdate_timer--;
-        if( showdate_timer <= 0 ) {
-          showdate = FALSE;
-        }
+    }
+    else {
+      showdate_timer--;
+      if( showdate_timer <= 0 ) {
+        showdate = FALSE;
       }
+    }
+  }
+  else {
+    showdate = FALSE;
   }
 
   if( FastClock.div > 0 && FastClock.issync ) {
