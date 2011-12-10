@@ -138,7 +138,7 @@ void doLEDTimers(void) {
         if( showdate)
           PORTC = bcd[FastClock.mon % 10];
         else
-          PORTC = bcd[FastClock.mins % 10];
+          PORTC = bcd[FastClock.mins % 10] + (FastClock.wday&0x01?0x80:0x00);
       else
         PORTC = FastClock.gotfirstsync ? 0x73:0x40;
       DIS1 = PORT_ON;
@@ -152,7 +152,7 @@ void doLEDTimers(void) {
         if( showdate)
           PORTC = bcd[FastClock.mon / 10];
         else
-          PORTC = bcd[FastClock.mins / 10];
+          PORTC = bcd[FastClock.mins / 10] + (FastClock.wday&0x02?0x80:0x00);
       else
         PORTC = FastClock.gotfirstsync ? 0x38:0x40;
       DIS2 = PORT_ON;
@@ -166,7 +166,7 @@ void doLEDTimers(void) {
         if( showdate)
           PORTC = bcd[FastClock.mday % 10];
         else
-          PORTC = bcd[FastClock.hours % 10];
+          PORTC = bcd[FastClock.hours % 10] + (FastClock.wday&0x04?0x80:0x00);
       else
         PORTC = FastClock.gotfirstsync ? 0x79:0x40;
       DIS3 = PORT_ON;
@@ -182,7 +182,11 @@ void doLEDTimers(void) {
           DIS4 = PORT_ON;
         }
         else if( !showdate && FastClock.hours / 10 != 0) {
-          PORTC = bcd[FastClock.hours / 10];
+          PORTC = bcd[FastClock.hours / 10] + (FastClock.wday&0x08?0x80:0x00);
+          DIS4 = PORT_ON;
+        }
+        else if( !showdate ) {
+          PORTC = FastClock.wday&0x08?0x80:0x00;
           DIS4 = PORT_ON;
         }
       }
