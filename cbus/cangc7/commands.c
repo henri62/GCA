@@ -95,17 +95,19 @@ unsigned char parseCmd(void) {
 
 
     case OPC_RQNP:
-      canmsg.opc = OPC_PARAMS;
-      canmsg.d[0] = params[0];
-      canmsg.d[1] = params[1];
-      canmsg.d[2] = params[2];
-      canmsg.d[3] = params[3];
-      canmsg.d[4] = params[4];
-      canmsg.d[5] = params[5];
-      canmsg.d[6] = params[6];
-      canmsg.len = 7;
-      canQueue(&canmsg);
-      txed = 1;
+      if( Wait4NN ) {
+        canmsg.opc = OPC_PARAMS;
+        canmsg.d[0] = params[0];
+        canmsg.d[1] = params[1];
+        canmsg.d[2] = params[2];
+        canmsg.d[3] = params[3];
+        canmsg.d[4] = params[4];
+        canmsg.d[5] = params[5];
+        canmsg.d[6] = params[6];
+        canmsg.len = 7;
+        canQueue(&canmsg);
+        txed = 1;
+      }
       break;
 
     case OPC_RTOF:
