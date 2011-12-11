@@ -135,8 +135,8 @@
 	
 	;definitions  Change these to suit hardware.
 
-	include	"cbusdefs7h.inc"	
-	include "cabmessages2m.inc"	; Version of messages file only changes if messages are added
+	include	"cbusdefs.inc"	
+	include "cabmessages.inc"	; Version of messages file only changes if messages are added
 
 ; Define the node parameters to be stored at node_id
 
@@ -2343,7 +2343,7 @@ set1	btfss	Modstat,2			;awaiting handle confirmation?
 set2	movff	Rx0d4,Speed1
 		bcf		Speed1,7			;clear direction bit
 ;		call	ss_send				;send speed mode to CS
-		movlw	LOW Ser_md + 1		;recover SS mode
+		movlw	LOW (Ser_md + 1)		;recover SS mode
 		movwf	EEADR
 		call	eeread
 		movwf	Smode
@@ -5052,7 +5052,7 @@ sm_inc		incf	Smode
 
 ;			set new SS on enter
 
-ss_set		movlw	LOW Ser_md +1
+ss_set		movlw	LOW (Ser_md +1)
 			movwf	EEADR
 			movf	Smode,W
 			call	eewrite				;save curent ss mode
@@ -5463,19 +5463,19 @@ clr_fun1	clrwdt
 		bcf		WREG,0
 		call	eewrite
 		incf	EEADR,F
-		movlw	LOW Fn_stat +.29
+		movlw	LOW (Fn_stat +.29)
 		cpfslt	EEADR
 		return
 		bra		clr_fun1
 
-res_fun	movlw	LOW Fn_stat			;sets all Fn status to clear
+res_fun	movlw	LOW (Fn_stat)			;sets all Fn status to clear
 		movwf	EEADR
 res_fun1	
 		clrwdt
 		movlw	0
 		call	eewrite
 		incf	EEADR,F
-		movlw	LOW Fn_stat +.29
+		movlw	LOW (Fn_stat +.29)
 		cpfslt	EEADR
 		return
 		bra		res_fun1
