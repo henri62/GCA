@@ -127,6 +127,8 @@
 ;						  On / off cleared to all off on reset or loco change.
 ;						  Mom for all Fn keys only cleared by resetting with 'Consist' in. Otherwise is remembered for that CAB. 
 ;						  Conditional assembly for conventional Fn frames or for DFNON / DFNOF. (not both at once)
+; Rev 2m3				  Fix to WDT resets
+; Rev 2m4				  Fix to reset action so Fn tog / mom remains unless deliberately cleared
 
 ; Assembly options
 	LIST	P=18F2480,r=hex,N=75,C=120,T=ON
@@ -149,7 +151,7 @@ EVperEVT    equ 0           ; Event variables per event
 NV_NUM	    equ	0           ; Number of node variables	
 
 test_ver	equ 1			; A test version not to be distributed - comment out for release versions
-build_no	equ 3			; Displayed on LCD at startup for test versions only	
+build_no	equ 4			; Displayed on LCD at startup for test versions only	
 
 
 
@@ -2832,7 +2834,7 @@ re_set1b	movlw	LOW E_hndle		;clear handle
 
 re_set4	bsf		PORTC,7
 		bcf		PORTC,5			;is consist in?
-		btfss	PORTB,0
+		btfsc	PORTB,0
 		bra		re_set4a
 		call	res_fun			;reset all mom keys
 re_set4a	bsf		PORTC,5
