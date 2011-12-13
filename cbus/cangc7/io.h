@@ -40,6 +40,10 @@
 #define DIS5    PORTAbits.RA1
 
 
+#define DISPLAY_ON 1
+#define DISPLAY_OFF 0
+
+
 typedef struct {
   byte   mins;
   byte   hours;
