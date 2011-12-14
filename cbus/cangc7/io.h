@@ -39,7 +39,6 @@
 #define DIS4    PORTAbits.RA2
 #define DIS5    PORTAbits.RA1
 
-
 #define DISPLAY_ON 1
 #define DISPLAY_OFF 0
 
@@ -62,6 +61,7 @@ extern near unsigned char display;
 extern near unsigned char pointtimer;
 extern near unsigned char showdate;
 extern near unsigned char date_enabled;
+extern near unsigned char pos_display;
 extern unsigned near short dim_timer;
 
 

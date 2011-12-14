@@ -45,6 +45,7 @@
 // node var 1
 #define CFG_DISPDIM  0x0F
 #define CFG_SHOWDATE 0x10
+#define CFG_POSDISPLAY 0x20
 
 
 

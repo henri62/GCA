@@ -46,7 +46,7 @@ void isr_high(void) {
 
 
     //
-    // I/O timeout - 4ms
+    // I/O timeout - 3ms
     //
     if (dim_timer > 0 && --dim_timer == 0) {
       DIS1 = PORT_OFF;
@@ -57,10 +57,10 @@ void isr_high(void) {
     }
 
     //
-    // I/O timeout - 4ms
+    // I/O timeout - 3ms
     //
     if (--led_timer == 0) {
-      led_timer = 16;
+      led_timer = 12;
       doLEDTimers();
       dim_timer = NV1 & CFG_DISPDIM;
       if( dim_timer == 0 )

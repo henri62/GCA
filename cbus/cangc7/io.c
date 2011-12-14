@@ -33,7 +33,20 @@
 
 static byte pos_bcd[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
 static byte neg_bcd[] = {0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90};
-static byte* bcd = pos_bcd;
+
+static byte pos_Dash = 0x40;
+static byte neg_Dash = 0xBF;
+
+static byte pos_H = 0x76;
+static byte pos_E = 0x79;
+static byte pos_L = 0x38;
+static byte pos_P = 0x73;
+
+static byte neg_H = 0x89;
+static byte neg_E = 0x86;
+static byte neg_L = 0xC7;
+static byte neg_P = 0x8C;
+
 static int showdate_timer = 0;
 
 void setupIO(byte clr) {
@@ -84,6 +97,17 @@ unsigned char readInput(int idx) {
 
 // Called every 4ms.
 void doLEDTimers(void) {
+  byte* bcd    = pos_display ? pos_bcd:neg_bcd;
+  byte Dash    = pos_display ? pos_Dash:neg_Dash;
+  byte charH   = pos_display ? pos_H:neg_H;
+  byte charE   = pos_display ? pos_E:neg_E;
+  byte charL   = pos_display ? pos_L:neg_L;
+  byte charP   = pos_display ? pos_P:neg_P;
+  byte dispON  = pos_display ? 1:0;
+  byte dispOFF = pos_display ? 0:1;
+
+
+
   if( led1timer > 0 ) {
     led1timer--;
     if( led1timer == 0 ) {
@@ -113,119 +137,121 @@ void doLEDTimers(void) {
   if( FastClock.div > 0 && FastClock.issync ) {
     FastClock.synctime++;
 
-    if( FastClock.synctime > (250*60 / FastClock.div) ) {
+    if( FastClock.synctime > (333*60 / FastClock.div) ) {
       FastClock.issync = FALSE;
     }
   }
 
   if( Wait4NN ) {
-    DIS1   = DISPLAY_OFF;
-    DIS2   = DISPLAY_OFF;
-    DIS3   = DISPLAY_OFF;
-    DIS4   = DISPLAY_OFF;
-    DIS5   = DISPLAY_OFF;
-    POINT1 = DISPLAY_ON;
-    POINT2 = DISPLAY_OFF;
-    DIS5   = DISPLAY_ON;
+    DIS1   = dispOFF;
+    DIS2   = dispOFF;
+    DIS3   = dispOFF;
+    DIS4   = dispOFF;
+    DIS5   = dispOFF;
+    POINT1 = dispON;
+    POINT2 = dispOFF;
+    DIS5   = dispON;
     return;
   }
 
   switch( display ) {
     case 0:
-      DIS2 = DISPLAY_OFF;
-      DIS3 = DISPLAY_OFF;
-      DIS4 = DISPLAY_OFF;
-      DIS5 = DISPLAY_OFF;
+      DIS2 = dispOFF;
+      DIS3 = dispOFF;
+      DIS4 = dispOFF;
+      DIS5 = dispOFF;
       if( FastClock.issync || FastClock.div == 0 )
         if( showdate)
           PORTC = bcd[FastClock.mon % 10];
         else
           PORTC = bcd[FastClock.mins % 10] + (FastClock.wday&0x01?0x80:0x00);
       else
-        PORTC = FastClock.gotfirstsync ? 0x73:0x40;
-      DIS1 = DISPLAY_ON;
+        PORTC = FastClock.gotfirstsync ? charP:Dash;
+      DIS1 = dispON;
       break;
     case 1:
-      DIS1 = DISPLAY_OFF;
-      DIS3 = DISPLAY_OFF;
-      DIS4 = DISPLAY_OFF;
-      DIS5 = DISPLAY_OFF;
+      DIS1 = dispOFF;
+      DIS3 = dispOFF;
+      DIS4 = dispOFF;
+      DIS5 = dispOFF;
       if( FastClock.issync || FastClock.div == 0 )
         if( showdate)
           PORTC = bcd[FastClock.mon / 10];
         else
           PORTC = bcd[FastClock.mins / 10] + (FastClock.wday&0x02?0x80:0x00);
       else
-        PORTC = FastClock.gotfirstsync ? 0x38:0x40;
-      DIS2 = DISPLAY_ON;
+        PORTC = FastClock.gotfirstsync ? charL:Dash;
+      DIS2 = dispON;
       break;
     case 2:
-      DIS1 = DISPLAY_OFF;
-      DIS2 = DISPLAY_OFF;
-      DIS4 = DISPLAY_OFF;
-      DIS5 = DISPLAY_OFF;
+      DIS1 = dispOFF;
+      DIS2 = dispOFF;
+      DIS4 = dispOFF;
+      DIS5 = dispOFF;
       if( FastClock.issync || FastClock.div == 0 )
         if( showdate)
           PORTC = bcd[FastClock.mday % 10];
         else
           PORTC = bcd[FastClock.hours % 10] + (FastClock.wday&0x04?0x80:0x00);
       else
-        PORTC = FastClock.gotfirstsync ? 0x79:0x40;
+        PORTC = FastClock.gotfirstsync ? charE:Dash;
       DIS3 = DISPLAY_ON;
       break;
     case 3:
-      DIS1 = DISPLAY_OFF;
-      DIS2 = DISPLAY_OFF;
-      DIS3 = DISPLAY_OFF;
-      DIS5 = DISPLAY_OFF;
+      DIS1 = dispOFF;
+      DIS2 = dispOFF;
+      DIS3 = dispOFF;
+      DIS5 = dispOFF;
       if( FastClock.issync || FastClock.div == 0) {
         if( showdate && FastClock.mday / 10 != 0) {
           PORTC = bcd[FastClock.mday / 10];
-          DIS4 = DISPLAY_ON;
+          DIS4 = dispON;
         }
         else if( !showdate && FastClock.hours / 10 != 0) {
           PORTC = bcd[FastClock.hours / 10] + (FastClock.wday&0x08?0x80:0x00);
-          DIS4 = DISPLAY_ON;
+          DIS4 = dispON;
         }
         else if( !showdate ) {
           PORTC = FastClock.wday&0x08?0x80:0x00;
-          DIS4 = DISPLAY_ON;
+          DIS4 = dispON;
         }
       }
       else if( !FastClock.issync ) {
-        PORTC = FastClock.gotfirstsync ? 0x76:0x40;
-        DIS4 = DISPLAY_ON;
+        PORTC = FastClock.gotfirstsync ? charH:Dash;
+        DIS4 = dispON;
       }
       break;
     case 4:
-      DIS1 = DISPLAY_OFF;
-      DIS2 = DISPLAY_OFF;
-      DIS3 = DISPLAY_OFF;
-      DIS4 = DISPLAY_OFF;
+      DIS1 = dispOFF;
+      DIS2 = dispOFF;
+      DIS3 = dispOFF;
+      DIS4 = dispOFF;
 
       if( !showdate && FastClock.issync && pointtimer < (50/FastClock.div) || FastClock.div == 0 ) {
-        POINT1 = DISPLAY_ON;
-        POINT2 = DISPLAY_ON;
-        DASH   = DISPLAY_OFF;
+        POINT1 = dispON;
+        POINT2 = dispON;
+        DASH   = dispOFF;
       }
       else if( showdate && FastClock.issync) {
-        POINT1 = DISPLAY_OFF;
-        POINT2 = DISPLAY_ON;
-        DASH   = DISPLAY_ON;
+        POINT1 = dispOFF;
+        POINT2 = dispON;
+        DASH   = dispON;
       }
       else {
-        POINT1 = DISPLAY_OFF;
-        POINT2 = DISPLAY_OFF;
-        DASH   = DISPLAY_OFF;
+        POINT1 = dispOFF;
+        POINT2 = dispOFF;
+        DASH   = dispOFF;
       }
-      DIS5 = DISPLAY_ON;
+      DIS5 = dispON;
       pointtimer++;
       if( pointtimer > (100/FastClock.div) )
         pointtimer = 0;
       break;
+    case 5:
+      break;
   }
   display++;
-  if( display > 4 ) {
+  if( display > 5 ) {
     display = 0;
   }
 
