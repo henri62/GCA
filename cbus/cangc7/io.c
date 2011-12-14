@@ -108,8 +108,8 @@ void doLEDTimers(void) {
   byte charE   = pos_display ? pos_E:neg_E;
   byte charL   = pos_display ? pos_L:neg_L;
   byte charP   = pos_display ? pos_P:neg_P;
-  byte dispON  = pos_display ? 1:0;
-  byte dispOFF = pos_display ? 0:1;
+  byte dispON  = pos_display ? DISPLAY_ON:DISPLAY_OFF;
+  byte dispOFF = pos_display ? DISPLAY_OFF:DISPLAY_ON;
 
 
 
@@ -204,7 +204,7 @@ void doLEDTimers(void) {
           PORTC = bcd[FastClock.hours % 10] + (FastClock.wday&0x04?0x80:0x00);
       else
         PORTC = FastClock.gotfirstsync ? charE:Dash;
-      DIS3 = DISPLAY_ON;
+      DIS3 = dispON;
       break;
     case 3:
       DIS1 = dispOFF;

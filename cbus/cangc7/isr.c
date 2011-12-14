@@ -49,11 +49,13 @@ void isr_high(void) {
     // I/O timeout - 3ms
     //
     if (dim_timer > 0 && --dim_timer == 0) {
-      DIS1 = PORT_OFF;
-      DIS2 = PORT_OFF;
-      DIS3 = PORT_OFF;
-      DIS4 = PORT_OFF;
-      DIS5 = PORT_OFF;
+      byte dispOFF = pos_display ? DISPLAY_OFF:DISPLAY_ON;
+      DIS1 = dispOFF;
+      DIS2 = dispOFF;
+      DIS3 = dispOFF;
+      DIS4 = dispOFF;
+      DIS5 = dispOFF;
+      DIS6 = dispOFF;
     }
 
     //
