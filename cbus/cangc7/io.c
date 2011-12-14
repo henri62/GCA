@@ -99,7 +99,7 @@ unsigned char readInput(int idx) {
 }
 
 
-// Called every 4ms.
+// Called every 3ms.
 void doLEDTimers(void) {
   byte* bcd    = pos_display ? pos_bcd:neg_bcd;
   byte* wd     = pos_display ? pos_wd:neg_wd;
@@ -171,7 +171,7 @@ void doLEDTimers(void) {
         if( showdate)
           PORTC = bcd[FastClock.mon % 10];
         else
-          PORTC = bcd[FastClock.mins % 10] + (FastClock.wday&0x01?0x80:0x00);
+          PORTC = bcd[FastClock.mins % 10];
       else
         PORTC = FastClock.gotfirstsync ? charP:Dash;
       DIS1 = dispON;
@@ -186,7 +186,7 @@ void doLEDTimers(void) {
         if( showdate)
           PORTC = bcd[FastClock.mon / 10];
         else
-          PORTC = bcd[FastClock.mins / 10] + (FastClock.wday&0x02?0x80:0x00);
+          PORTC = bcd[FastClock.mins / 10];
       else
         PORTC = FastClock.gotfirstsync ? charL:Dash;
       DIS2 = dispON;
@@ -201,7 +201,7 @@ void doLEDTimers(void) {
         if( showdate)
           PORTC = bcd[FastClock.mday % 10];
         else
-          PORTC = bcd[FastClock.hours % 10] + (FastClock.wday&0x04?0x80:0x00);
+          PORTC = bcd[FastClock.hours % 10];
       else
         PORTC = FastClock.gotfirstsync ? charE:Dash;
       DIS3 = dispON;
@@ -218,7 +218,7 @@ void doLEDTimers(void) {
           DIS4 = dispON;
         }
         else if( !showdate && FastClock.hours / 10 != 0) {
-          PORTC = bcd[FastClock.hours / 10] + (FastClock.wday&0x08?0x80:0x00);
+          PORTC = bcd[FastClock.hours / 10];
           DIS4 = dispON;
         }
         else if( !showdate ) {
@@ -245,7 +245,7 @@ void doLEDTimers(void) {
       }
       else if( showdate && FastClock.issync) {
         POINT1 = dispOFF;
-        POINT2 = dispON;
+        POINT2 = dispOFF;
         DASH   = dispON;
       }
       else {
