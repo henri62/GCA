@@ -34,6 +34,10 @@
 static byte pos_bcd[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
 static byte neg_bcd[] = {0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90};
 
+static byte pos_wd[] = {0x00, 0x01, 0x20, 0x02, 0x10, 0x40, 0x04, 0x08};
+static byte neg_wd[] = {0xFF, 0xFE, 0xDF, 0xFD, 0xEF, 0xBF, 0xFB, 0xF7};
+
+
 static byte pos_Dash = 0x40;
 static byte neg_Dash = 0xBF;
 
@@ -70,7 +74,7 @@ void setupIO(byte clr) {
   TRISAbits.TRISA4 = 0; /* DIS2 */
   TRISAbits.TRISA5 = 0; /* DIS1 */
 
-  TRISBbits.TRISB0 = 0; /* LED1 */
+  TRISBbits.TRISB0 = 0; /* DIS6 */
   TRISBbits.TRISB1 = 0; /* LED2 */
   TRISBbits.TRISB4 = 1; /* SW */
   TRISBbits.TRISB5 = 0; /* LED1 */
@@ -98,6 +102,7 @@ unsigned char readInput(int idx) {
 // Called every 4ms.
 void doLEDTimers(void) {
   byte* bcd    = pos_display ? pos_bcd:neg_bcd;
+  byte* wd     = pos_display ? pos_wd:neg_wd;
   byte Dash    = pos_display ? pos_Dash:neg_Dash;
   byte charH   = pos_display ? pos_H:neg_H;
   byte charE   = pos_display ? pos_E:neg_E;
@@ -148,6 +153,7 @@ void doLEDTimers(void) {
     DIS3   = dispOFF;
     DIS4   = dispOFF;
     DIS5   = dispOFF;
+    DIS6   = dispOFF;
     POINT1 = dispON;
     POINT2 = dispOFF;
     DIS5   = dispON;
@@ -160,6 +166,7 @@ void doLEDTimers(void) {
       DIS3 = dispOFF;
       DIS4 = dispOFF;
       DIS5 = dispOFF;
+      DIS6 = dispOFF;
       if( FastClock.issync || FastClock.div == 0 )
         if( showdate)
           PORTC = bcd[FastClock.mon % 10];
@@ -174,6 +181,7 @@ void doLEDTimers(void) {
       DIS3 = dispOFF;
       DIS4 = dispOFF;
       DIS5 = dispOFF;
+      DIS6 = dispOFF;
       if( FastClock.issync || FastClock.div == 0 )
         if( showdate)
           PORTC = bcd[FastClock.mon / 10];
@@ -188,6 +196,7 @@ void doLEDTimers(void) {
       DIS2 = dispOFF;
       DIS4 = dispOFF;
       DIS5 = dispOFF;
+      DIS6 = dispOFF;
       if( FastClock.issync || FastClock.div == 0 )
         if( showdate)
           PORTC = bcd[FastClock.mday % 10];
@@ -202,6 +211,7 @@ void doLEDTimers(void) {
       DIS2 = dispOFF;
       DIS3 = dispOFF;
       DIS5 = dispOFF;
+      DIS6 = dispOFF;
       if( FastClock.issync || FastClock.div == 0) {
         if( showdate && FastClock.mday / 10 != 0) {
           PORTC = bcd[FastClock.mday / 10];
@@ -226,6 +236,7 @@ void doLEDTimers(void) {
       DIS2 = dispOFF;
       DIS3 = dispOFF;
       DIS4 = dispOFF;
+      DIS6 = dispOFF;
 
       if( !showdate && FastClock.issync && pointtimer < (50/FastClock.div) || FastClock.div == 0 ) {
         POINT1 = dispON;
@@ -248,6 +259,14 @@ void doLEDTimers(void) {
         pointtimer = 0;
       break;
     case 5:
+      DIS1 = dispOFF;
+      DIS2 = dispOFF;
+      DIS3 = dispOFF;
+      DIS4 = dispOFF;
+      DIS5 = dispOFF;
+      // week day
+      PORTC = wd[FastClock.wday&0x07];
+      DIS6 = dispON;
       break;
   }
   display++;

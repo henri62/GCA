@@ -38,6 +38,7 @@
 #define DIS3    PORTAbits.RA3
 #define DIS4    PORTAbits.RA2
 #define DIS5    PORTAbits.RA1
+#define DIS6    PORTBbits.RB0
 
 #define DISPLAY_ON 1
 #define DISPLAY_OFF 0
