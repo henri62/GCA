@@ -51,10 +51,11 @@ unsigned char parseCmd(void) {
       // fast clock:
       FastClock.mins     = rx_ptr->d1;
       FastClock.hours    = rx_ptr->d2;
-      FastClock.wday     = rx_ptr->d3;
+      FastClock.wday     = rx_ptr->d3 & 0x0F;
+      FastClock.mon      = (rx_ptr->d3 & 0xF0) >> 4;
       FastClock.div      = rx_ptr->d4;
       FastClock.mday     = rx_ptr->d5;
-      FastClock.mon      = rx_ptr->d6;
+      FastClock.temp     = rx_ptr->d6;
       FastClock.issync   = TRUE;
       FastClock.synctime = 0;
       FastClock.gotfirstsync = TRUE;
