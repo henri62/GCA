@@ -150,6 +150,7 @@ unsigned char parseCmd(void) {
             dim_timer++;
           date_enabled = (NV1 & CFG_SHOWDATE) ? TRUE:FALSE;
           pos_display = (NV1 & CFG_POSDISPLAY) ? TRUE:FALSE;
+          temp_enabled = (NV1 & CFG_SHOWTEMP) ? TRUE:FALSE;
         }
         else if( nvnr == 2 ) {
           CANID = rx_ptr->d4;

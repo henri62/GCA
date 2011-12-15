@@ -43,6 +43,9 @@
 #define DISPLAY_ON 1
 #define DISPLAY_OFF 0
 
+#define DISPLAY_DATE 1
+#define DISPLAY_TEMP 2
+
 
 typedef struct {
   byte   mins;
@@ -54,6 +57,7 @@ typedef struct {
   byte   issync;
   int    synctime;
   byte   gotfirstsync;
+  char   temp;
 } Clock;
 
 extern ram Clock FastClock;
@@ -62,6 +66,7 @@ extern near unsigned char display;
 extern near unsigned char pointtimer;
 extern near unsigned char showdate;
 extern near unsigned char date_enabled;
+extern near unsigned char temp_enabled;
 extern near unsigned char pos_display;
 extern unsigned near short dim_timer;
 

@@ -61,6 +61,7 @@ near unsigned char ioIdx;
 near unsigned char display;
 near unsigned char showdate;
 near unsigned char date_enabled;
+near unsigned char temp_enabled;
 near unsigned char pos_display;
 near unsigned char  Wait4NN;
 near unsigned char  isLearning;
@@ -116,6 +117,7 @@ void main(void) {
   display = 0;
   showdate = FALSE;
   date_enabled = FALSE;
+  temp_enabled = FALSE;
   pos_display = TRUE;
   FastClock.issync = FALSE;
   FastClock.synctime = 0;
@@ -129,6 +131,7 @@ void main(void) {
     dim_timer++;
   date_enabled = (NV1 & CFG_SHOWDATE) ? TRUE:FALSE;
   pos_display = (NV1 & CFG_POSDISPLAY) ? TRUE:FALSE;
+  temp_enabled = (NV1 & CFG_SHOWTEMP) ? TRUE:FALSE;
 
   initIO();
 
