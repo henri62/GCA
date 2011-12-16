@@ -44,7 +44,7 @@
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 
 
-ram Clock FastClock;
+ram ServoDef Servo[4];
 
 #pragma udata access VARS
 
@@ -52,16 +52,12 @@ near unsigned char  can_transmit_timeout;
 near unsigned char  can_transmit_failed;
 near unsigned char  can_bus_off;
 near unsigned short NN_temp;
-near unsigned char CANID;
+near unsigned char  CANID;
 near unsigned char  Latcount;
 near unsigned char  NV1;
 near unsigned char  led1timer;
 near unsigned char  pointtimer;
-near unsigned char ioIdx;
-near unsigned char display;
-near unsigned char showdate;
-near unsigned char date_enabled;
-near unsigned char pos_display;
+near unsigned char  ioIdx;
 near unsigned char  Wait4NN;
 near unsigned char  isLearning;
 
@@ -80,7 +76,7 @@ volatile near unsigned char tmr0_reload;
   */
 
 #pragma romdata parameters
-const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC7, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
+const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC6, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
 
 #pragma romdata
 
@@ -113,22 +109,11 @@ void main(void) {
   led1timer = 0;
   pointtimer = 0;
   ioIdx = 0;
-  display = 0;
-  showdate = FALSE;
-  date_enabled = FALSE;
-  pos_display = TRUE;
-  FastClock.issync = FALSE;
-  FastClock.synctime = 0;
-  FastClock.div = 1;
-  FastClock.gotfirstsync = FALSE;
   Wait4NN = FALSE;
 
   NV1 = eeRead(EE_NV);
-  dim_timer = NV1 & CFG_DISPDIM;
-  if( dim_timer == 0 )
-    dim_timer++;
-  date_enabled = (NV1 & CFG_SHOWDATE) ? TRUE:FALSE;
-  pos_display = (NV1 & CFG_POSDISPLAY) ? TRUE:FALSE;
+  /* TODO: Read EEPROM... */
+
 
   initIO();
 

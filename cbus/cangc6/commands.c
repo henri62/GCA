@@ -47,19 +47,6 @@ unsigned char parseCmd(void) {
 
   switch (rx_ptr->d0) {
 
-    case OPC_FCLK:
-      // fast clock:
-      FastClock.mins     = rx_ptr->d1;
-      FastClock.hours    = rx_ptr->d2;
-      FastClock.wday     = rx_ptr->d3;
-      FastClock.div      = rx_ptr->d4;
-      FastClock.mday     = rx_ptr->d5;
-      FastClock.mon      = rx_ptr->d6;
-      FastClock.issync   = TRUE;
-      FastClock.synctime = 0;
-      FastClock.gotfirstsync = TRUE;
-      break;
-
     case OPC_QNN:
       canmsg.opc  = OPC_PNN;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
@@ -145,11 +132,6 @@ unsigned char parseCmd(void) {
         if( nvnr == 1 ) {
           NV1 = rx_ptr->d4;
           eeWrite(EE_NV, NV1);
-          dim_timer = NV1 & CFG_DISPDIM;
-          if( dim_timer == 0 )
-            dim_timer++;
-          date_enabled = (NV1 & CFG_SHOWDATE) ? TRUE:FALSE;
-          pos_display = (NV1 & CFG_POSDISPLAY) ? TRUE:FALSE;
         }
         else if( nvnr == 2 ) {
           CANID = rx_ptr->d4;

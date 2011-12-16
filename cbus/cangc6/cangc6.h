@@ -22,30 +22,32 @@
 
 
 
-#ifndef __CANGC7_H
-#define __CANGC7_H
+#ifndef __CANGC6_H
+#define __CANGC6_H
 
 
 #define MAJOR_VER 1
 #define MINOR_VER 'a'	// Minor version character
 
-#define EVT_NUM 0
+#define EVT_NUM 8
 #define EVperEVT 0
-#define NV_NUM 1
+#define NV_NUM 4*8
 
 // EEPROM addresses
 #define EE_MAGIC 0
 #define EE_NV 1          // 1 byte configuration
 #define EE_NN 2          // 2 bytes node number of this unit
 #define EE_CANID 4       // 1 byte CANID
+#define EE_SERVO1 EE_CANID+1
+#define EE_SERVO2 EE_SERVO1+10
+#define EE_SERVO3 EE_SERVO2+10
+#define EE_SERVO4 EE_SERVO3+10
 
 // values
 #define MAGIC 93
 
 // node var 1
-#define CFG_DISPDIM  0x0F
-#define CFG_SHOWDATE 0x10
-#define CFG_POSDISPLAY 0x20
+#define CFG_ALL  0xFF
 
 
 

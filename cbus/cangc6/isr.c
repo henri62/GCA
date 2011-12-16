@@ -46,27 +46,11 @@ void isr_high(void) {
 
 
     //
-    // I/O timeout - 3ms
-    //
-    if (dim_timer > 0 && --dim_timer == 0) {
-      byte dispOFF = pos_display ? DISPLAY_OFF:DISPLAY_ON;
-      DIS1 = dispOFF;
-      DIS2 = dispOFF;
-      DIS3 = dispOFF;
-      DIS4 = dispOFF;
-      DIS5 = dispOFF;
-      DIS6 = dispOFF;
-    }
-
-    //
-    // I/O timeout - 3ms
+    // I/O timeout - 5ms
     //
     if (--led_timer == 0) {
-      led_timer = 12;
+      led_timer = 20;
       doLEDTimers();
-      dim_timer = NV1 & CFG_DISPDIM;
-      if( dim_timer == 0 )
-        dim_timer++;
     }
 
     //

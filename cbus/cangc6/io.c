@@ -54,39 +54,30 @@ static byte neg_P = 0x8C;
 static int showdate_timer = 0;
 
 void setupIO(byte clr) {
-  int idx = 0;
 
   // all digital I/O
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
-  
-  TRISCbits.TRISC0 = 0; /* a POINT1 */
-  TRISCbits.TRISC1 = 0; /* b */
-  TRISCbits.TRISC2 = 0; /* c */
-  TRISCbits.TRISC3 = 0; /* d POINT2 */
-  TRISCbits.TRISC4 = 0; /* e DASH   */
-  TRISCbits.TRISC5 = 0; /* f */
-  TRISCbits.TRISC6 = 0; /* g */
-  TRISCbits.TRISC7 = 0; /*   */
-  TRISAbits.TRISA1 = 0; /* DIS5 */
-  TRISAbits.TRISA2 = 0; /* DIS4 */
-  TRISAbits.TRISA3 = 0; /* DIS3 */
-  TRISAbits.TRISA4 = 0; /* DIS2 */
-  TRISAbits.TRISA5 = 0; /* DIS1 */
 
-  TRISBbits.TRISB0 = 0; /* DIS6 */
-  TRISBbits.TRISB1 = 0; /* LED2 */
-  TRISBbits.TRISB4 = 1; /* SW */
-  TRISBbits.TRISB5 = 0; /* LED1 */
+  TRISCbits.TRISC0 = 1; /* T1S */
+  TRISCbits.TRISC1 = 1; /* T1R */
+  TRISCbits.TRISC2 = 1; /* T2S */
+  TRISCbits.TRISC3 = 1; /* T2R */
+  TRISCbits.TRISC4 = 1; /* T3S */
+  TRISCbits.TRISC5 = 1; /* T3R */
+  TRISCbits.TRISC6 = 1; /* T4S */
+  TRISCbits.TRISC7 = 1; /* T4R */
 
+  TRISAbits.TRISA1 = 1; /* SW */
+  TRISAbits.TRISA2 = 0; /* GCA137 */
+  TRISAbits.TRISA3 = 0; /* LED1 */
+  TRISAbits.TRISA4 = 0; /* LED2 */
+  TRISAbits.TRISA5 = 0; /* LED3 */
 
-  LED1 = PORT_OFF;
-  DIS5 = PORT_OFF;
-
-
-  // following presets are written to eeprom if the flim switch is preshed at boot
-
-
+  TRISBbits.TRISB0 = 0; /* SERVO1 */
+  TRISBbits.TRISB1 = 0; /* SERVO2 */
+  TRISBbits.TRISB4 = 0; /* SERVO3 */
+  TRISBbits.TRISB5 = 0; /* SERVO4 */
 }
 
 
@@ -101,18 +92,6 @@ unsigned char readInput(int idx) {
 
 // Called every 3ms.
 void doLEDTimers(void) {
-  byte* bcd    = pos_display ? pos_bcd:neg_bcd;
-  byte* wd     = pos_display ? pos_wd:neg_wd;
-  byte Dash    = pos_display ? pos_Dash:neg_Dash;
-  byte charH   = pos_display ? pos_H:neg_H;
-  byte charE   = pos_display ? pos_E:neg_E;
-  byte charL   = pos_display ? pos_L:neg_L;
-  byte charP   = pos_display ? pos_P:neg_P;
-  byte dispON  = pos_display ? DISPLAY_ON:DISPLAY_OFF;
-  byte dispOFF = pos_display ? DISPLAY_OFF:DISPLAY_ON;
-
-
-
   if( led1timer > 0 ) {
     led1timer--;
     if( led1timer == 0 ) {
@@ -120,164 +99,9 @@ void doLEDTimers(void) {
     }
   }
 
-  if( date_enabled ) {
-    if( !showdate ) {
-      showdate_timer++;
-      if( showdate_timer > 3000 ) {
-        showdate = TRUE;
-        showdate_timer = 1000;
-      }
-    }
-    else {
-      showdate_timer--;
-      if( showdate_timer <= 0 ) {
-        showdate = FALSE;
-      }
-    }
-  }
-  else {
-    showdate = FALSE;
-  }
-
-  if( FastClock.div > 0 && FastClock.issync ) {
-    FastClock.synctime++;
-
-    if( FastClock.synctime > (333*60 / FastClock.div) ) {
-      FastClock.issync = FALSE;
-    }
-  }
-
-  if( Wait4NN ) {
-    DIS1   = dispOFF;
-    DIS2   = dispOFF;
-    DIS3   = dispOFF;
-    DIS4   = dispOFF;
-    DIS5   = dispOFF;
-    DIS6   = dispOFF;
-    POINT1 = dispON;
-    POINT2 = dispOFF;
-    DIS5   = dispON;
-    return;
-  }
-
-  switch( display ) {
-    case 0:
-      DIS2 = dispOFF;
-      DIS3 = dispOFF;
-      DIS4 = dispOFF;
-      DIS5 = dispOFF;
-      DIS6 = dispOFF;
-      if( FastClock.issync || FastClock.div == 0 )
-        if( showdate)
-          PORTC = bcd[FastClock.mon % 10];
-        else
-          PORTC = bcd[FastClock.mins % 10];
-      else
-        PORTC = FastClock.gotfirstsync ? charP:Dash;
-      DIS1 = dispON;
-      break;
-    case 1:
-      DIS1 = dispOFF;
-      DIS3 = dispOFF;
-      DIS4 = dispOFF;
-      DIS5 = dispOFF;
-      DIS6 = dispOFF;
-      if( FastClock.issync || FastClock.div == 0 )
-        if( showdate)
-          PORTC = bcd[FastClock.mon / 10];
-        else
-          PORTC = bcd[FastClock.mins / 10];
-      else
-        PORTC = FastClock.gotfirstsync ? charL:Dash;
-      DIS2 = dispON;
-      break;
-    case 2:
-      DIS1 = dispOFF;
-      DIS2 = dispOFF;
-      DIS4 = dispOFF;
-      DIS5 = dispOFF;
-      DIS6 = dispOFF;
-      if( FastClock.issync || FastClock.div == 0 )
-        if( showdate)
-          PORTC = bcd[FastClock.mday % 10];
-        else
-          PORTC = bcd[FastClock.hours % 10];
-      else
-        PORTC = FastClock.gotfirstsync ? charE:Dash;
-      DIS3 = dispON;
-      break;
-    case 3:
-      DIS1 = dispOFF;
-      DIS2 = dispOFF;
-      DIS3 = dispOFF;
-      DIS5 = dispOFF;
-      DIS6 = dispOFF;
-      if( FastClock.issync || FastClock.div == 0) {
-        if( showdate && FastClock.mday / 10 != 0) {
-          PORTC = bcd[FastClock.mday / 10];
-          DIS4 = dispON;
-        }
-        else if( !showdate && FastClock.hours / 10 != 0) {
-          PORTC = bcd[FastClock.hours / 10];
-          DIS4 = dispON;
-        }
-        else if( !showdate ) {
-          PORTC = FastClock.wday&0x08?0x80:0x00;
-          DIS4 = dispON;
-        }
-      }
-      else if( !FastClock.issync ) {
-        PORTC = FastClock.gotfirstsync ? charH:Dash;
-        DIS4 = dispON;
-      }
-      break;
-    case 4:
-      DIS1 = dispOFF;
-      DIS2 = dispOFF;
-      DIS3 = dispOFF;
-      DIS4 = dispOFF;
-      DIS6 = dispOFF;
-
-      if( !showdate && FastClock.issync && pointtimer < (50/FastClock.div) || FastClock.div == 0 ) {
-        POINT1 = dispON;
-        POINT2 = dispON;
-        DASH   = dispOFF;
-      }
-      else if( showdate && FastClock.issync) {
-        POINT1 = dispOFF;
-        POINT2 = dispOFF;
-        DASH   = dispON;
-      }
-      else {
-        POINT1 = dispOFF;
-        POINT2 = dispOFF;
-        DASH   = dispOFF;
-      }
-      DIS5 = dispON;
-      pointtimer++;
-      if( pointtimer > (100/FastClock.div) )
-        pointtimer = 0;
-      break;
-    case 5:
-      DIS1 = dispOFF;
-      DIS2 = dispOFF;
-      DIS3 = dispOFF;
-      DIS4 = dispOFF;
-      DIS5 = dispOFF;
-      // week day
-      PORTC = wd[FastClock.wday&0x07];
-      DIS6 = dispON;
-      break;
-  }
-  display++;
-  if( display > 5 ) {
-    display = 0;
-  }
-
 }
 
 void doIOTimers(void) {
-  int i = 0;
 }
 
 void doTimedOff(int i) {

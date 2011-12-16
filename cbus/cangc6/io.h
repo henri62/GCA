@@ -25,45 +25,43 @@
 #define __IO_H
 
 
-#define LED1    PORTBbits.RB5   // cbus activity
+#define LED1    PORTAbits.RA3   // cbus activity
+#define LED2    PORTAbits.RA4   // learning mode
+#define LED3    PORTAbits.RA5   // running
 
-#define SW      PORTBbits.RB4	// Flim switch
+#define SW      PORTAbits.RA1	// Flim switch
 
-#define POINT1  PORTCbits.RC0
-#define POINT2  PORTCbits.RC3
-#define DASH    PORTCbits.RC4
+#define GCA137  PORTAbits.RA2	// GCA137 polarisation Tx
 
-#define DIS1    PORTAbits.RA5
-#define DIS2    PORTAbits.RA4
-#define DIS3    PORTAbits.RA3
-#define DIS4    PORTAbits.RA2
-#define DIS5    PORTAbits.RA1
-#define DIS6    PORTBbits.RB0
+#define SERVO1  PORTBbits.RB0
+#define SERVO2  PORTBbits.RB1
+#define SERVO3  PORTBbits.RB4
+#define SERVO4  PORTBbits.RB5
 
-#define DISPLAY_ON 1
-#define DISPLAY_OFF 0
-
+#define T1S     PORTCbits.RC0
+#define T1R     PORTCbits.RC1
+#define T2S     PORTCbits.RC2
+#define T2R     PORTCbits.RC3
+#define T3S     PORTCbits.RC4
+#define T3R     PORTCbits.RC5
+#define T4S     PORTCbits.RC6
+#define T4R     PORTCbits.RC7
 
 typedef struct {
-  byte   mins;
-  byte   hours;
-  byte   wday;
-  byte   div;
-  byte   mday;
-  byte   mon;
-  byte   issync;
-  int    synctime;
-  byte   gotfirstsync;
-} Clock;
+  byte   config;
+  byte   left;
+  byte   right;
+  byte   speed;
+  int    swevent;
+  int    fbevent;
+} ServoDef;
 
-extern ram Clock FastClock;
+#define SERVOCONF_POLAR  0x01
+#define SERVOCONF_EXTSEN 0x02
+
+
+extern ram ServoDef Servo[4];
 extern near unsigned char led1timer;
-extern near unsigned char display;
-extern near unsigned char pointtimer;
-extern near unsigned char showdate;
-extern near unsigned char date_enabled;
-extern near unsigned char pos_display;
-extern unsigned near short dim_timer;
 
 
 void setupIO(byte clr);
