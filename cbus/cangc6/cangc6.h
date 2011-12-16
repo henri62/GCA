@@ -37,7 +37,8 @@
 #define EE_MAGIC 0
 #define EE_NV 1          // 1 byte configuration
 #define EE_NN 2          // 2 bytes node number of this unit
-#define EE_CANID 4       // 1 byte CANID
+#define EE_SOD EE_NN + 2     // 2 bytes start off day address to report all input states
+#define EE_CANID EE_SOD + 2  // 1 byte CANID
 #define EE_SERVO1 EE_CANID+1
 #define EE_SERVO2 EE_SERVO1+10
 #define EE_SERVO3 EE_SERVO2+10
@@ -53,12 +54,16 @@
 
 
 extern near unsigned short NN_temp;
-extern near unsigned char NV1;
-extern near unsigned char CANID;
-extern near unsigned char led1timer;
-extern near unsigned char ioIdx;
+extern near unsigned char  NV1;
+extern near unsigned char  CANID;
+extern near unsigned char  led1timer;
+extern near unsigned char  ioIdx;
+extern near unsigned char  Wait4NN;
+extern near unsigned char  isLearning;
+extern near unsigned short SOD;
+extern near unsigned char  doSOD;
+extern near unsigned char  doEV;
+extern near unsigned char  evIdx;
 extern volatile near unsigned char tmr0_reload;
-extern near unsigned char Wait4NN;
-extern near unsigned char isLearning;
 
 #endif

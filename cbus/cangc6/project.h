@@ -26,7 +26,7 @@
 
 #define CANGC2
 
-#include <p18f2480.h>
+#include <p18f2585.h>
 
 #include "cbus.h"
 

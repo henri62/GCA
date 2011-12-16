@@ -60,6 +60,10 @@ near unsigned char  pointtimer;
 near unsigned char  ioIdx;
 near unsigned char  Wait4NN;
 near unsigned char  isLearning;
+near unsigned short SOD;
+near unsigned char  doSOD;
+near unsigned char  doEV;
+near unsigned char  evIdx;
 
 
 volatile near unsigned char tmr0_reload;
@@ -102,6 +106,7 @@ void LOW_INT_VECT(void)
 
 #pragma code APP
 void main(void) {
+  byte l3 = 1;
   unsigned char swTrig = 0;
 
   lDelay();
@@ -135,6 +140,8 @@ void main(void) {
   // Loop forever (nothing lasts forever...)
   while (1) {
     unsigned char txed = 0;
+    l3 ^= 1;
+
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
       // Decode the new command
@@ -149,6 +156,17 @@ void main(void) {
         ioIdx = 0;
       }
     }
+
+    if( l3 ) {
+      if( doPortEvent(evIdx) ) {
+        evIdx++;
+        if( evIdx >= 16 ) {
+          evIdx = 0;
+          doEV = 0;
+        }
+      }
+    }
+
 
     //LED2 = PORT_ON;
     canSendQ();

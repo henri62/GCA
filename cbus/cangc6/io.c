@@ -78,6 +78,15 @@ void setupIO(byte clr) {
   TRISBbits.TRISB1 = 0; /* SERVO2 */
   TRISBbits.TRISB4 = 0; /* SERVO3 */
   TRISBbits.TRISB5 = 0; /* SERVO4 */
+
+  GCA137 = PORT_OFF;
+  LED1   = PORT_OFF;
+  LED2   = PORT_OFF;
+  LED3   = PORT_OFF;
+  SERVO1 = PORT_OFF;
+  SERVO2 = PORT_OFF;
+  SERVO3 = PORT_OFF;
+  SERVO4 = PORT_OFF;
 }
 
 
