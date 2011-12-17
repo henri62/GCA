@@ -24,15 +24,13 @@
 #ifndef __PROJECT_H
 #define __PROJECT_H
 
-#define CANGC2
-
-#include <p18f2585.h>
+#include <p18f2480.h>
 
 #include "cbus.h"
 
     
-#define FIXED_CAN_ID 0x7F // use only for enummeration
 #define DEFAULT_NN   112
+#define DEFAULT_SOD  4711
 
 #define TRUE 1
 #define FALSE 0

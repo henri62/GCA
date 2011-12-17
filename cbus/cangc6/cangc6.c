@@ -113,7 +113,10 @@ void main(void) {
 
   led1timer = 0;
   pointtimer = 0;
+  doSOD = 0;
   ioIdx = 0;
+  doEV = 0;
+  evIdx = 0;
   Wait4NN = FALSE;
 
   NV1 = eeRead(EE_NV);
@@ -137,6 +140,13 @@ void main(void) {
   delay();
 
 
+  SOD  = eeRead(EE_SOD) * 256;
+  SOD += eeRead(EE_SOD+1);
+  if( SOD == 0 || SOD == 0xFFFF )
+    SOD = DEFAULT_SOD;
+
+
+
   // Loop forever (nothing lasts forever...)
   while (1) {
     unsigned char txed = 0;
@@ -150,10 +160,11 @@ void main(void) {
       txed = parseCmd();
     }
 
-    if( checkInput(ioIdx) ) {
+    if( checkInput(ioIdx, doSOD) ) {
       ioIdx++;
-      if( ioIdx >= 16 ) {
+      if( ioIdx >= 4 ) {
         ioIdx = 0;
+        doSOD = 0;
       }
     }
 
@@ -214,8 +225,7 @@ void initIO(void) {
   PIR1 = 0;
   RCONbits.IPEN = 1;			// enable interrupt priority levels
 
-  // Set up TMR0 for DCC bit timing with 58us period prescaler 4:1,
-  // 8 bit mode
+  // Set up TMR0 8 bit mode
   //T0CON = 0x41; //or 4MHz resonat
   T0CON = 0x42; //or 8MHz resonat
   TMR0L = 0;

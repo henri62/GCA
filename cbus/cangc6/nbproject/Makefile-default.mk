@@ -72,9 +72,9 @@ MP_AR_DIR="/Applications/microchip/mplabc18/v3.40/bin"
 .build-conf:  ${BUILD_SUBPROJECTS}
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/cangc6.${IMAGE_TYPE}.cof
 
-MP_PROCESSOR_OPTION=18F2585
-MP_PROCESSOR_OPTION_LD=18f2585
-MP_LINKER_DEBUG_OPTION= -u_DEBUGCODESTART=0xbd30 -u_DEBUGCODELEN=0x2d0 -u_DEBUGDATASTART=0xcf4 -u_DEBUGDATALEN=0xb
+MP_PROCESSOR_OPTION=18F2480
+MP_PROCESSOR_OPTION_LD=18f2480
+MP_LINKER_DEBUG_OPTION= -u_DEBUGCODESTART=0x3dc0 -u_DEBUGCODELEN=0x240 -u_DEBUGDATASTART=0x2f4 -u_DEBUGDATALEN=0xb
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)

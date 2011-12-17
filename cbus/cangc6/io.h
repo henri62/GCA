@@ -52,6 +52,7 @@ typedef struct {
   byte   left;
   byte   right;
   byte   speed;
+  byte   position;
   int    swevent;
   int    fbevent;
 } ServoDef;
@@ -69,7 +70,7 @@ void writeOutput(int port, unsigned char val);
 unsigned char readInput(int port);
 void doIOTimers(void);
 void doLEDTimers(void);
-unsigned char checkInput(unsigned char idx);
+unsigned char checkInput(unsigned char idx, unsigned char sod);
 void doLEDs(void);
 void saveOutputStates(void);
 void restoreOutputStates(void);

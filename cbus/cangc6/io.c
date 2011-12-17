@@ -122,8 +122,19 @@ unsigned char checkFlimSwitch(void) {
   return !val;
 }
 
-unsigned char checkInput(unsigned char idx) {
+unsigned char checkInput(unsigned char idx, unsigned char sod) {
   unsigned char ok = 1;
+  if( sod ) {
+    canmsg.opc = Servo[idx].position ? OPC_ASON:OPC_ASOF;
+    if( canmsg.opc > 0 ) {
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[2] = (Servo[idx].fbevent / 256) & 0xFF;
+      canmsg.d[3] = (Servo[idx].fbevent % 256) & 0xFF;
+      canmsg.len = 4; // data bytes
+    }
+    ok = canQueue(&canmsg);
+  }
   return ok;
 }
 
