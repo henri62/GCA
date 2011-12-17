@@ -210,13 +210,17 @@ unsigned char parseCmd(void) {
         ushort addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
         byte idx = rx_ptr->d5;
         byte val = rx_ptr->d6;
+        if( idx < 4 ) {
+          Servo[idx].swnn = evtnn;
+          Servo[idx].swevent = addr;
+          eeWriteShort(EE_SERVO_SWNN + (2*idx), evtnn);
+          eeWriteShort(EE_SERVO_SWEVENT + (2*idx), addr);
+        }
         if( idx < 8 ) {
-          /*
-          Ports[idx].evtnn = evtnn;
-          Ports[idx].addr = addr;
-          eeWriteShort(EE_PORTNN + (2*idx), evtnn);
-          eeWriteShort(EE_PORTADDR + (2*idx), addr);
-          */
+          Servo[idx/2].fbnn = evtnn;
+          Servo[idx/2].fbevent = addr;
+          eeWriteShort(EE_SERVO_FBNN + 2*(idx/2), evtnn);
+          eeWriteShort(EE_SERVO_FBEVENT + 2*(idx/2), addr);
         }
         if( idx == 8 ) {
           SOD = addr;
@@ -282,18 +286,42 @@ int thisNN() {
 
 unsigned char doPortEvent(int i ) {
   if( doEV ) {
-    canmsg.opc = OPC_ENRSP;
-    canmsg.d[0] = (NN_temp / 256) & 0xFF;
-    canmsg.d[1] = (NN_temp % 256) & 0xFF;
-    /* TODO!
-    canmsg.d[2] = Servo[i].evtnn / 256;
-    canmsg.d[3] = Servo[i].evtnn % 256;
-    canmsg.d[4] = Servo[i].addr / 256;
-    canmsg.d[5] = Servo[i].addr % 256;
-    */
-    canmsg.d[6] = i;
-    canmsg.len = 7;
-    return canQueue(&canmsg);
+    if( i < 4 ) {
+      canmsg.opc = OPC_ENRSP;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[2] = Servo[i].swnn / 256;
+      canmsg.d[3] = Servo[i].swnn % 256;
+      canmsg.d[4] = Servo[i].swevent / 256;
+      canmsg.d[5] = Servo[i].swevent % 256;
+      canmsg.d[6] = i;
+      canmsg.len = 7;
+      return canQueue(&canmsg);
+    }
+    if( i < 8 ) {
+      canmsg.opc = OPC_ENRSP;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[2] = Servo[i/2].fbnn / 256;
+      canmsg.d[3] = Servo[i/2].fbnn % 256;
+      canmsg.d[4] = Servo[i/2].fbevent / 256;
+      canmsg.d[5] = Servo[i/2].fbevent % 256;
+      canmsg.d[6] = i;
+      canmsg.len = 7;
+      return canQueue(&canmsg);
+    }
+    if( i == 8 ) {
+      canmsg.opc = OPC_ENRSP;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[2] = 0;
+      canmsg.d[3] = 0;
+      canmsg.d[4] = SOD / 256;
+      canmsg.d[5] = SOD % 256;
+      canmsg.d[6] = i;
+      canmsg.len = 7;
+      return canQueue(&canmsg);
+    }
   }
   return 1;
 }

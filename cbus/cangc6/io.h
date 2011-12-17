@@ -53,7 +53,9 @@ typedef struct {
   byte   right;
   byte   speed;
   byte   position;
+  int    swnn;
   int    swevent;
+  int    fbnn;
   int    fbevent;
 } ServoDef;
 

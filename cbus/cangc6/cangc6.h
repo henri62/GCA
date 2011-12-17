@@ -39,10 +39,18 @@
 #define EE_NN 2          // 2 bytes node number of this unit
 #define EE_SOD EE_NN + 2     // 2 bytes start off day address to report all input states
 #define EE_CANID EE_SOD + 2  // 1 byte CANID
-#define EE_SERVO1 EE_CANID+1
-#define EE_SERVO2 EE_SERVO1+10
-#define EE_SERVO3 EE_SERVO2+10
-#define EE_SERVO4 EE_SERVO3+10
+
+#define EE_SERVO_CONFIG EE_CANID+2
+#define EE_SERVO_LEFT EE_SERVO_CONFIG+4
+#define EE_SERVO_RIGHT EE_SERVO_LEFT+4
+#define EE_SERVO_SPEED EE_SERVO_RIGHT+4
+#define EE_SERVO_POSITION EE_SERVO_SPEED+4
+#define EE_SERVO_FBEVENT EE_SERVO_POSITION+4
+#define EE_SERVO_SWEVENT EE_SERVO_FBEVENT+8
+#define EE_SERVO_SWNN EE_SERVO_SWEVENT+8
+#define EE_SERVO_FBNN EE_SERVO_SWNN+8
+
+
 
 // values
 #define MAGIC 93

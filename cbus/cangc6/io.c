@@ -54,6 +54,7 @@ static byte neg_P = 0x8C;
 static int showdate_timer = 0;
 
 void setupIO(byte clr) {
+  int idx = 0;
 
   // all digital I/O
   ADCON0 = 0x00;
@@ -87,6 +88,19 @@ void setupIO(byte clr) {
   SERVO2 = PORT_OFF;
   SERVO3 = PORT_OFF;
   SERVO4 = PORT_OFF;
+
+  for( idx = 0; idx < 4; idx++ ) {
+    Servo[idx].config   = eeRead(EE_SERVO_CONFIG + idx);
+    Servo[idx].left     = eeRead(EE_SERVO_LEFT + idx);
+    Servo[idx].right    = eeRead(EE_SERVO_RIGHT + idx);
+    Servo[idx].speed    = eeRead(EE_SERVO_SPEED + idx);
+    Servo[idx].position = eeRead(EE_SERVO_POSITION + idx);
+    Servo[idx].fbnn     = eeReadShort(EE_SERVO_FBNN + 2 * idx);
+    Servo[idx].fbevent  = eeReadShort(EE_SERVO_FBEVENT + 2 * idx);
+    Servo[idx].swnn     = eeReadShort(EE_SERVO_SWNN + 2 * idx);
+    Servo[idx].swevent  = eeReadShort(EE_SERVO_SWEVENT + 2 * idx);
+  }
+
 }
 
 
@@ -141,12 +155,10 @@ unsigned char checkInput(unsigned char idx, unsigned char sod) {
 
 
 void saveOutputStates(void) {
-  int idx = 0;
-  byte o1 = 0;
-  byte o2 = 0;
-
-  //eeWrite(EE_PORTSTAT + 1, o2);
-  
+  int idx = 0;  
+  for( idx = 0; idx < 4; idx++ ) {
+    eeWrite(EE_SERVO_POSITION + idx, Servo[idx].position);
+  }
 
 }
 
@@ -154,7 +166,6 @@ void saveOutputStates(void) {
 
 void restoreOutputStates(void) {
   int idx = 0;
-  //byte o1 = eeRead(EE_PORTSTAT + 0);
 
 }
 
