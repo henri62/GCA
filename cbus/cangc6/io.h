@@ -28,6 +28,7 @@
 #define LED1    PORTAbits.RA3   // cbus activity
 #define LED2    PORTAbits.RA4   // learning mode
 #define LED3    PORTAbits.RA5   // running
+#define LED4    PORTAbits.RA0   // servo busy
 
 #define SW      PORTAbits.RA1	// Flim switch
 

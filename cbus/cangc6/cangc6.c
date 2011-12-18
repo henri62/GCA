@@ -144,6 +144,7 @@ void main(void) {
     SOD = DEFAULT_SOD;
 
 
+  LED3 = PORT_ON; /* signal running system */
 
   // Loop forever (nothing lasts forever...)
   while (1) {

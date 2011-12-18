@@ -74,6 +74,7 @@ void setupIO(byte clr) {
   TRISAbits.TRISA3 = 0; /* LED1 */
   TRISAbits.TRISA4 = 0; /* LED2 */
   TRISAbits.TRISA5 = 0; /* LED3 */
+  TRISAbits.TRISA0 = 0; /* LED4 */
 
   TRISBbits.TRISB0 = 0; /* SERVO1 */
   TRISBbits.TRISB1 = 0; /* SERVO2 */
@@ -84,6 +85,7 @@ void setupIO(byte clr) {
   LED1   = PORT_OFF;
   LED2   = PORT_OFF;
   LED3   = PORT_OFF;
+  LED4   = PORT_OFF;
   SERVO1 = PORT_OFF;
   SERVO2 = PORT_OFF;
   SERVO3 = PORT_OFF;
@@ -185,8 +187,14 @@ void restoreOutputStates(void) {
 
 
 
+static unsigned char __LED2 = 0;
 void doLEDs(void) {
+  if( Wait4NN || isLearning) {
+    LED2 = __LED2;
+    __LED2 ^= 1;
+  }
 }
+
 
 byte getPortStates(int group) {
 }
