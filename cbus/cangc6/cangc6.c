@@ -118,6 +118,7 @@ void main(void) {
   doEV = 0;
   evIdx = 0;
   Wait4NN = FALSE;
+  isLearning = FALSE;
 
   NV1 = eeRead(EE_NV);
 
