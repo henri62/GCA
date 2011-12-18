@@ -120,8 +120,6 @@ void main(void) {
   Wait4NN = FALSE;
 
   NV1 = eeRead(EE_NV);
-  /* TODO: Read EEPROM... */
-
 
   initIO();
 

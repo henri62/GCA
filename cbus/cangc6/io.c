@@ -89,6 +89,21 @@ void setupIO(byte clr) {
   SERVO3 = PORT_OFF;
   SERVO4 = PORT_OFF;
 
+  if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
+    eeWrite(EE_CLEAN, 0);
+    for( idx = 0; idx < 4; idx++ ) {
+      eeWrite(EE_SERVO_CONFIG + idx, 0);
+      eeWrite(EE_SERVO_LEFT + idx, 50);
+      eeWrite(EE_SERVO_RIGHT + idx, 50);
+      eeWrite(EE_SERVO_SPEED + idx, 50);
+      eeWrite(EE_SERVO_POSITION + idx, 0);
+      eeWriteShort(EE_SERVO_FBADDR + 2 * idx, 0);
+      eeWriteShort(EE_SERVO_SWNN + 2 * idx, 0);
+      eeWriteShort(EE_SERVO_SWADDR + 2 * idx, 0);
+    }
+  }
+
+
   for( idx = 0; idx < 4; idx++ ) {
     Servo[idx].config   = eeRead(EE_SERVO_CONFIG + idx);
     Servo[idx].left     = eeRead(EE_SERVO_LEFT + idx);

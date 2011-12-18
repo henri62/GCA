@@ -34,7 +34,7 @@
 #define NV_NUM 4*8
 
 // EEPROM addresses
-#define EE_MAGIC 0
+#define EE_CLEAN 0
 #define EE_NV 1          // 1 byte configuration
 #define EE_NN 2          // 2 bytes node number of this unit
 #define EE_SOD EE_NN + 2     // 2 bytes start off day address to report all input states

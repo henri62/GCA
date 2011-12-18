@@ -151,21 +151,21 @@ unsigned char parseCmd(void) {
           canQueue(&canmsg);
           txed = 1;
         }
-        else if( nvnr < 19 ) {
+        else if( nvnr > 2 && nvnr < 19 ) {
           // Servo
-          byte servoIdx = ((nvnr-2) / 4) -1;
-          byte servoVar = (nvnr-2) % 4;
+          byte servoIdx = (nvnr-3) / 4;
+          byte servoVar = (nvnr-3) % 4;
           canmsg.opc = OPC_NVANS;
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
           canmsg.d[1] = (NN_temp % 256) & 0xFF;
           canmsg.d[2] = nvnr;
-          if( servoVar == 1 )
+          if( servoVar == 0 )
             canmsg.d[3] = Servo[servoIdx].config;
-          else if( servoVar == 2 )
+          else if( servoVar == 1 )
             canmsg.d[3] = Servo[servoIdx].left;
-          else if( servoVar == 3 )
+          else if( servoVar == 2 )
             canmsg.d[3] = Servo[servoIdx].right;
-          else if( servoVar == 4 )
+          else if( servoVar == 3 )
             canmsg.d[3] = Servo[servoIdx].speed;
 
           canmsg.len = 4;
@@ -187,17 +187,17 @@ unsigned char parseCmd(void) {
           CANID = rx_ptr->d4;
           eeWrite(EE_CANID, CANID);
         }
-        else if( nvnr < 19 ) {
+        else if( nvnr > 2 && nvnr < 19 ) {
           // Servo
           byte servoIdx = ((nvnr-2) / 4) -1;
-          byte servoVar = (nvnr-2) % 4;
-          if( servoVar == 1 )
+          byte servoVar = (nvnr-3) % 4;
+          if( servoVar == 0 )
             Servo[servoIdx].config = rx_ptr->d4;
-          else if( servoVar == 2 )
+          else if( servoVar == 1 )
             Servo[servoIdx].left = rx_ptr->d4;
-          else if( servoVar == 3 )
+          else if( servoVar == 2 )
             Servo[servoIdx].right = rx_ptr->d4;
-          else if( servoVar == 4 )
+          else if( servoVar == 3 )
             Servo[servoIdx].speed = rx_ptr->d4;
 
         }
