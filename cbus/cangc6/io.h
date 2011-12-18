@@ -39,13 +39,13 @@
 #define SERVO4  PORTBbits.RB5
 
 #define T1S     PORTCbits.RC0
-#define T1R     PORTCbits.RC1
-#define T2S     PORTCbits.RC2
-#define T2R     PORTCbits.RC3
-#define T3S     PORTCbits.RC4
+#define T1R     PORTCbits.RC7
+#define T2S     PORTCbits.RC1
+#define T2R     PORTCbits.RC6
+#define T3S     PORTCbits.RC2
 #define T3R     PORTCbits.RC5
-#define T4S     PORTCbits.RC6
-#define T4R     PORTCbits.RC7
+#define T4S     PORTCbits.RC3
+#define T4R     PORTCbits.RC4
 
 typedef struct {
   byte   config;
@@ -54,9 +54,8 @@ typedef struct {
   byte   speed;
   byte   position;
   int    swnn;
-  int    swevent;
-  int    fbnn;
-  int    fbevent;
+  int    swaddr;
+  int    fbaddr;
 } ServoDef;
 
 #define SERVOCONF_POLAR  0x01

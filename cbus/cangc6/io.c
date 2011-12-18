@@ -61,13 +61,13 @@ void setupIO(byte clr) {
   ADCON1 = 0x0F;
 
   TRISCbits.TRISC0 = 1; /* T1S */
-  TRISCbits.TRISC1 = 1; /* T1R */
-  TRISCbits.TRISC2 = 1; /* T2S */
-  TRISCbits.TRISC3 = 1; /* T2R */
-  TRISCbits.TRISC4 = 1; /* T3S */
+  TRISCbits.TRISC1 = 1; /* T2S */
+  TRISCbits.TRISC2 = 1; /* T3S */
+  TRISCbits.TRISC3 = 1; /* T4S */
+  TRISCbits.TRISC4 = 1; /* T4R */
   TRISCbits.TRISC5 = 1; /* T3R */
-  TRISCbits.TRISC6 = 1; /* T4S */
-  TRISCbits.TRISC7 = 1; /* T4R */
+  TRISCbits.TRISC6 = 1; /* T2R */
+  TRISCbits.TRISC7 = 1; /* T1R */
 
   TRISAbits.TRISA1 = 1; /* SW */
   TRISAbits.TRISA2 = 0; /* GCA137 */
@@ -95,10 +95,9 @@ void setupIO(byte clr) {
     Servo[idx].right    = eeRead(EE_SERVO_RIGHT + idx);
     Servo[idx].speed    = eeRead(EE_SERVO_SPEED + idx);
     Servo[idx].position = eeRead(EE_SERVO_POSITION + idx);
-    Servo[idx].fbnn     = eeReadShort(EE_SERVO_FBNN + 2 * idx);
-    Servo[idx].fbevent  = eeReadShort(EE_SERVO_FBEVENT + 2 * idx);
+    Servo[idx].fbaddr   = eeReadShort(EE_SERVO_FBADDR + 2 * idx);
     Servo[idx].swnn     = eeReadShort(EE_SERVO_SWNN + 2 * idx);
-    Servo[idx].swevent  = eeReadShort(EE_SERVO_SWEVENT + 2 * idx);
+    Servo[idx].swaddr   = eeReadShort(EE_SERVO_SWADDR + 2 * idx);
   }
 
 }
@@ -143,8 +142,8 @@ unsigned char checkInput(unsigned char idx, unsigned char sod) {
     if( canmsg.opc > 0 ) {
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
       canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = (Servo[idx].fbevent / 256) & 0xFF;
-      canmsg.d[3] = (Servo[idx].fbevent % 256) & 0xFF;
+      canmsg.d[2] = (Servo[idx].fbaddr / 256) & 0xFF;
+      canmsg.d[3] = (Servo[idx].fbaddr % 256) & 0xFF;
       canmsg.len = 4; // data bytes
     }
     ok = canQueue(&canmsg);

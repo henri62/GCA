@@ -187,6 +187,20 @@ unsigned char parseCmd(void) {
           CANID = rx_ptr->d4;
           eeWrite(EE_CANID, CANID);
         }
+        else if( nvnr < 19 ) {
+          // Servo
+          byte servoIdx = ((nvnr-2) / 4) -1;
+          byte servoVar = (nvnr-2) % 4;
+          if( servoVar == 1 )
+            Servo[servoIdx].config = rx_ptr->d4;
+          else if( servoVar == 2 )
+            Servo[servoIdx].left = rx_ptr->d4;
+          else if( servoVar == 3 )
+            Servo[servoIdx].right = rx_ptr->d4;
+          else if( servoVar == 4 )
+            Servo[servoIdx].speed = rx_ptr->d4;
+
+        }
       }
       break;
 
@@ -212,15 +226,13 @@ unsigned char parseCmd(void) {
         byte val = rx_ptr->d6;
         if( idx < 4 ) {
           Servo[idx].swnn = evtnn;
-          Servo[idx].swevent = addr;
+          Servo[idx].swaddr = addr;
           eeWriteShort(EE_SERVO_SWNN + (2*idx), evtnn);
-          eeWriteShort(EE_SERVO_SWEVENT + (2*idx), addr);
+          eeWriteShort(EE_SERVO_SWADDR + (2*idx), addr);
         }
         if( idx < 8 ) {
-          Servo[idx/2].fbnn = evtnn;
-          Servo[idx/2].fbevent = addr;
-          eeWriteShort(EE_SERVO_FBNN + 2*(idx/2), evtnn);
-          eeWriteShort(EE_SERVO_FBEVENT + 2*(idx/2), addr);
+          Servo[idx/2].fbaddr = addr;
+          eeWriteShort(EE_SERVO_FBADDR + 2*(idx/2), addr);
         }
         if( idx == 8 ) {
           SOD = addr;
@@ -292,8 +304,8 @@ unsigned char doPortEvent(int i ) {
       canmsg.d[1] = (NN_temp % 256) & 0xFF;
       canmsg.d[2] = Servo[i].swnn / 256;
       canmsg.d[3] = Servo[i].swnn % 256;
-      canmsg.d[4] = Servo[i].swevent / 256;
-      canmsg.d[5] = Servo[i].swevent % 256;
+      canmsg.d[4] = Servo[i].swaddr / 256;
+      canmsg.d[5] = Servo[i].swaddr % 256;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
@@ -302,10 +314,10 @@ unsigned char doPortEvent(int i ) {
       canmsg.opc = OPC_ENRSP;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
       canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = Servo[i/2].fbnn / 256;
-      canmsg.d[3] = Servo[i/2].fbnn % 256;
-      canmsg.d[4] = Servo[i/2].fbevent / 256;
-      canmsg.d[5] = Servo[i/2].fbevent % 256;
+      canmsg.d[2] = NN_temp / 256;
+      canmsg.d[3] = NN_temp % 256;
+      canmsg.d[4] = Servo[i/2].fbaddr / 256;
+      canmsg.d[5] = Servo[i/2].fbaddr % 256;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
