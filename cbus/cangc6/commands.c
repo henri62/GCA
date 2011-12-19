@@ -189,7 +189,7 @@ unsigned char parseCmd(void) {
         }
         else if( nvnr > 2 && nvnr < 19 ) {
           // Servo
-          byte servoIdx = ((nvnr-2) / 4) -1;
+          byte servoIdx = ((nvnr-3) / 4);
           byte servoVar = (nvnr-3) % 4;
           if( servoVar == 0 )
             Servo[servoIdx].config = rx_ptr->d4;
