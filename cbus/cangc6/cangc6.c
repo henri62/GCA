@@ -236,9 +236,9 @@ void initIO(void) {
 
   T2CON = 0;
   T2CONbits.TMR2ON  = 1; // Timer2 on
-  T2CONbits.T2CKPS0 = 0; // 16 pre scaler
-  T2CONbits.T2CKPS1 = 1; 
-  TMR2 = 125;
+  T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
+  T2CONbits.T2CKPS1 = 1;
+  TMR2 = 255 - 50;
   PR2  = 0xFF;
   PIE1bits.TMR2IE = 1;
 
