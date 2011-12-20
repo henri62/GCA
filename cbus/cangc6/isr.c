@@ -45,19 +45,19 @@ static ushort servo_timer = 0;
 void isr_high(void) {
 
   if( PIR1bits.TMR2IF ) {
-    // 0.1 mS.
+    // 1.5 mS.
     servo_timer++;
-    if( servo_timer < 5000 ) {
+    if( servo_timer < 333 ) {
       LED4 = PORT_ON;
     }
-    else if( servo_timer == 5000) {
+    else if( servo_timer == 333) {
       LED4 = PORT_OFF;
     }
-    else if( servo_timer > 10000) {
+    else if( servo_timer > 666) {
       servo_timer = 0;
     }
     
-    TMR2 = 255-50;
+    TMR2 = 255-150;
     PIR1bits.TMR2IF = 0;
   }
 
