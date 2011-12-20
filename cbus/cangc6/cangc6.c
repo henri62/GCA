@@ -234,6 +234,14 @@ void initIO(void) {
   T0CONbits.TMR0ON = 1;
   INTCON2bits.TMR0IP = 1;
 
+  T2CON = 0;
+  T2CONbits.TMR2ON  = 1; // Timer2 on
+  T2CONbits.T2CKPS0 = 0; // 16 pre scaler
+  T2CONbits.T2CKPS1 = 1; 
+  TMR2 = 125;
+  PR2  = 0xFF;
+  PIE1bits.TMR2IE = 1;
+
   // clear the fifo receive buffers
   while (fifoEmpty() == 0) {
     rx_ptr->con = 0;

@@ -25,12 +25,14 @@
 #include "isr.h"
 #include "cangc6.h"
 #include "io.h"
+#include "servo.h"
 
 #pragma udata access VARS
 near unsigned short led500ms_timer;
 near unsigned short io_timer;
 near unsigned short led_timer;
 near unsigned short dim_timer;
+static ushort servo_timer = 0;
 
 #pragma code APP
 
@@ -41,6 +43,23 @@ near unsigned short dim_timer;
 //
 #pragma interrupt isr_high
 void isr_high(void) {
+
+  if( PIR1bits.TMR2IF ) {
+    servo_timer++;
+    if( servo_timer < 1000 ) {
+      LED4 = PORT_ON;
+    }
+    else if( servo_timer == 2000) {
+      LED4 = PORT_OFF;
+    }
+    else if( servo_timer > 2000) {
+      servo_timer = 0;
+    }
+    PIR1bits.TMR2IF = 0;
+    TMR2 = 125;
+  }
+
+  if( INTCONbits.T0IF ) {
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
 
@@ -72,6 +91,7 @@ void isr_high(void) {
         led500ms_timer = 2000;
         doLEDs();
     }
+  }
 
 }
 
