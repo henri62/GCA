@@ -32,7 +32,6 @@ near unsigned short led500ms_timer;
 near unsigned short io_timer;
 near unsigned short led_timer;
 near unsigned short dim_timer;
-static ushort servo_timer = 0;
 
 #pragma code APP
 
@@ -45,20 +44,9 @@ static ushort servo_timer = 0;
 void isr_high(void) {
 
   if( PIR1bits.TMR2IF ) {
-    // 1.5 mS.
-    servo_timer++;
-    if( servo_timer < 333 ) {
-      LED4 = PORT_ON;
-    }
-    else if( servo_timer == 333) {
-      LED4 = PORT_OFF;
-    }
-    else if( servo_timer > 666) {
-      servo_timer = 0;
-    }
-    
-    TMR2 = 255-150;
+    T2CONbits.TMR2ON  = 0; // Timer2 off
     PIR1bits.TMR2IF = 0;
+    endServoPulse();
   }
 
   if( INTCONbits.T0IF ) {
@@ -72,6 +60,7 @@ void isr_high(void) {
     if (--led_timer == 0) {
       led_timer = 20;
       doLEDTimers();
+      doServo();
     }
 
     //

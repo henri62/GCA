@@ -19,6 +19,50 @@
 */
 
 #include "project.h"
+#include "io.h"
 #include "servo.h"
 
 
+static byte servoIdx = 0;
+
+// called every 5ms
+void doServo(void) {
+  if( servoIdx == 0 ) {
+    SERVO1 = PORT_ON;
+    TMR2 = 150;
+    PR2  = 150;
+  }
+  else if( servoIdx == 1 ) {
+    SERVO2 = PORT_ON;
+    TMR2 = 150;
+    PR2  = 150;
+  }
+  else if( servoIdx == 2 ) {
+    SERVO3 = PORT_ON;
+    TMR2 = 150;
+    PR2  = 150;
+  }
+  else if( servoIdx == 3 ) {
+    SERVO4 = PORT_ON;
+    TMR2 = 150;
+    PR2  = 150;
+  }
+
+  T2CONbits.TMR2ON  = 1; // Timer2 on
+
+}
+
+void endServoPulse(void) {
+  if( servoIdx == 0 )
+    SERVO1 = PORT_OFF;
+  else if( servoIdx == 1 )
+    SERVO2 = PORT_OFF;
+  else if( servoIdx == 2 )
+    SERVO3 = PORT_OFF;
+  else if( servoIdx == 3 )
+    SERVO4 = PORT_OFF;
+
+  servoIdx++;
+  if( servoIdx > 3 )
+    servoIdx = 0;
+}

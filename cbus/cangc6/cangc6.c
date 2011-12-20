@@ -238,8 +238,8 @@ void initIO(void) {
   T2CONbits.TMR2ON  = 1; // Timer2 on
   T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
   T2CONbits.T2CKPS1 = 1;
-  TMR2 = 255 - 150; // 1.50 mS, servo center
-  PR2  = 0xFF;
+  TMR2 = 150; // 1.50 mS, servo center
+  PR2  = 150;
   PIE1bits.TMR2IE = 1;
 
   // clear the fifo receive buffers

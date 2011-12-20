@@ -21,4 +21,8 @@
 #ifndef __SERVO__
 #define __SERVO__
 
+void doServo(void);
+void endServoPulse(void);
+
 #endif
+
