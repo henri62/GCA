@@ -29,23 +29,23 @@ static byte servoIdx = 0;
 void doServo(void) {
   if( servoIdx == 0 ) {
     SERVO1 = PORT_ON;
-    TMR2 = 150;
-    PR2  = 150;
+    TMR2 = Servo[0].position;
+    PR2  = Servo[0].position;
   }
   else if( servoIdx == 1 ) {
     SERVO2 = PORT_ON;
-    TMR2 = 150;
-    PR2  = 150;
+    TMR2 = Servo[1].position;
+    PR2  = Servo[1].position;
   }
   else if( servoIdx == 2 ) {
     SERVO3 = PORT_ON;
-    TMR2 = 150;
-    PR2  = 150;
+    TMR2 = Servo[2].position;
+    PR2  = Servo[2].position;
   }
   else if( servoIdx == 3 ) {
     SERVO4 = PORT_ON;
-    TMR2 = 150;
-    PR2  = 150;
+    TMR2 = Servo[3].position;
+    PR2  = Servo[3].position;
   }
 
   T2CONbits.TMR2ON  = 1; // Timer2 on

@@ -196,12 +196,14 @@ unsigned char parseCmd(void) {
             eeWrite(EE_SERVO_CONFIG + servoIdx, rx_ptr->d4);
           }
           else if( servoVar == 1 ) {
-            Servo[servoIdx].left = rx_ptr->d4;
+            Servo[servoIdx].left = rx_ptr->d4 + 50;
             eeWrite(EE_SERVO_LEFT + servoIdx, rx_ptr->d4);
+            Servo[servoIdx].position = Servo[servoIdx].left;
           }
           else if( servoVar == 2 ) {
-            Servo[servoIdx].right = rx_ptr->d4;
+            Servo[servoIdx].right = rx_ptr->d4 + 50;
             eeWrite(EE_SERVO_RIGHT + servoIdx, rx_ptr->d4);
+            Servo[servoIdx].position = Servo[servoIdx].right;
           }
           else if( servoVar == 3 ) {
             Servo[servoIdx].speed = rx_ptr->d4;
