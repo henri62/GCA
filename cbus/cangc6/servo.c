@@ -21,21 +21,39 @@
 #include "project.h"
 #include "io.h"
 #include "servo.h"
+#include "cbusdefs.h"
 
 
 static byte servoIdx = 0;
 static byte pending  = FALSE;
 
+void reportServoPosition(byte rightSide) {
+  if( !(Servo[servoIdx].config & SERVOCONF_EXTSEN) ) {
+    canmsg.opc = rightSide ? OPC_ASON:OPC_ASOF;
+    canmsg.d[0] = (NN_temp / 256) & 0xFF;
+    canmsg.d[1] = (NN_temp % 256) & 0xFF;
+    canmsg.d[2] = (Servo[servoIdx].fbaddr / 256) & 0xFF;
+    canmsg.d[3] = (Servo[servoIdx].fbaddr % 256) & 0xFF;
+    canmsg.len = 4; // data bytes
+    canQueue(&canmsg);
+  }
+}
+
+
 void doServoPosition(void) {
   if( Servo[servoIdx].wantedpos > Servo[servoIdx].position ) {
     Servo[servoIdx].position += Servo[servoIdx].speed;
-    if( Servo[servoIdx].position > Servo[servoIdx].wantedpos )
+    if( Servo[servoIdx].position >= Servo[servoIdx].wantedpos ) {
       Servo[servoIdx].position = Servo[servoIdx].wantedpos;
+      reportServoPosition(TRUE);
+    }
   }
   else if( Servo[servoIdx].wantedpos < Servo[servoIdx].position ) {
     Servo[servoIdx].position -= Servo[servoIdx].speed;
-    if( Servo[servoIdx].position < Servo[servoIdx].wantedpos )
+    if( Servo[servoIdx].position <= Servo[servoIdx].wantedpos ) {
       Servo[servoIdx].position = Servo[servoIdx].wantedpos;
+      reportServoPosition(FALSE);
+    }
   }
 
   if( Servo[servoIdx].position < 50 )

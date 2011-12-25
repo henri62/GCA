@@ -226,7 +226,8 @@ void initIO(void) {
 
   // Set up TMR0 8 bit mode
   //T0CON = 0x41; //or 4MHz resonat
-  T0CON = 0x42; //or 8MHz resonat
+  //T0CON = 0x42; //or 8MHz resonat
+  T0CON = 0x44; //or 8MHz resonat
   TMR0L = 0;
   TMR0H = 0;
   INTCONbits.TMR0IE = 1;

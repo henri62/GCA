@@ -162,14 +162,12 @@ unsigned char checkFlimSwitch(void) {
 unsigned char checkInput(unsigned char idx, unsigned char sod) {
   unsigned char ok = 1;
   if( sod ) {
-    canmsg.opc = Servo[idx].position ? OPC_ASON:OPC_ASOF;
-    if( canmsg.opc > 0 ) {
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = (Servo[idx].fbaddr / 256) & 0xFF;
-      canmsg.d[3] = (Servo[idx].fbaddr % 256) & 0xFF;
-      canmsg.len = 4; // data bytes
-    }
+    canmsg.opc = Servo[idx].position == Servo[idx].right ? OPC_ASON:OPC_ASOF;
+    canmsg.d[0] = (NN_temp / 256) & 0xFF;
+    canmsg.d[1] = (NN_temp % 256) & 0xFF;
+    canmsg.d[2] = (Servo[idx].fbaddr / 256) & 0xFF;
+    canmsg.d[3] = (Servo[idx].fbaddr % 256) & 0xFF;
+    canmsg.len = 4; // data bytes
     ok = canQueue(&canmsg);
   }
   return ok;
@@ -209,4 +207,19 @@ byte getPortStates(int group) {
 
 void setOutput(ushort nn, ushort addr, byte on) {
   int i = 0;
+  for( i = 0; i < 4; i++) {
+    if( Servo[i].swaddr == addr ) {
+      byte act = FALSE;
+      if( NV1 & CFG_SHORTEVENTS ) {
+        act = TRUE;
+      }
+      else if(Servo[i].swnn == nn) {
+        act = TRUE;
+      }
+
+      if( act ) {
+        Servo[i].wantedpos = on ? Servo[i].right:Servo[i].left;
+      }
+    }
+  }
 }

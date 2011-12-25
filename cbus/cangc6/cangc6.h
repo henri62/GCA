@@ -56,6 +56,8 @@
 
 // node var 1
 #define CFG_ALL  0xFF
+#define CFG_SAVEOUTPUT 0x01
+#define CFG_SHORTEVENTS 0x02
 
 
 
