@@ -223,7 +223,6 @@ void initIO(void) {
   PIR3 = 0;
   PIR2 = 0;
   PIR1 = 0;
-  RCONbits.IPEN = 1;			// enable interrupt priority levels
 
   // Set up TMR0 8 bit mode
   //T0CON = 0x41; //or 4MHz resonat
@@ -238,9 +237,10 @@ void initIO(void) {
   T2CONbits.TMR2ON  = 1; // Timer2 on
   T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
   T2CONbits.T2CKPS1 = 1;
-  TMR2 = 150; // 1.50 mS, servo center
+  TMR2 = 0; // 1.50 mS, servo center
   PR2  = 150;
   PIE1bits.TMR2IE = 1;
+  INTCONbits.PEIE = 1;
 
   // clear the fifo receive buffers
   while (fifoEmpty() == 0) {
@@ -258,9 +258,10 @@ void initIO(void) {
   led_timer = 8;  // 2ms
 
   // Set up global interrupts
-  RCONbits.IPEN = 1;          // Enable priority levels on interrupts
+  RCONbits.IPEN   = 1;        // Enable priority levels on interrupts
+  INTCONbits.GIE  = 1;        // Interrupting enabled.
   INTCONbits.GIEL = 1;        // Low priority interrupts allowed
-  INTCONbits.GIEH = 1;        // Interrupting enabled.
+  INTCONbits.GIEH = 1;        // High priority interrupts allowed
 
   setupIO(FALSE);
 }

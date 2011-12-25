@@ -45,7 +45,7 @@ void isr_high(void) {
 
   if( PIR1bits.TMR2IF ) {
     T2CONbits.TMR2ON  = 0; // Timer2 off
-    PIR1bits.TMR2IF = 0;
+    PIR1bits.TMR2IF   = 0; // Clear interrupt flag
     endServoPulse();
   }
 
@@ -69,7 +69,6 @@ void isr_high(void) {
     if (--io_timer == 0) {
       io_timer = 200;
       doIOTimers();
-
       if (can_transmit_timeout != 0) {
         --can_transmit_timeout;
       }
@@ -93,6 +92,11 @@ void isr_high(void) {
 #pragma interruptlow isr_low
 void isr_low(void) {
   //LED2 = 1;
+  if( PIR1bits.TMR2IF ) {
+    T2CONbits.TMR2ON  = 0; // Timer2 off
+    PIR1bits.TMR2IF   = 0; // Clear interrupt flag
+    endServoPulse();
+  }
 
   if (PIR3bits.ERRIF == 1) {
 

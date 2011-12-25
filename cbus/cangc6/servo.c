@@ -24,45 +24,72 @@
 
 
 static byte servoIdx = 0;
+static byte pending  = FALSE;
+
+void doServoPosition(void) {
+  //Servo[servoIdx].position = Servo[servoIdx].wantedpos;
+  
+  if( Servo[servoIdx].wantedpos > Servo[servoIdx].position ) {
+    Servo[servoIdx].position += Servo[servoIdx].speed;
+    if( Servo[servoIdx].position > Servo[servoIdx].wantedpos )
+      Servo[servoIdx].position = Servo[servoIdx].wantedpos;
+  }
+  else if( Servo[servoIdx].wantedpos < Servo[servoIdx].position ) {
+    Servo[servoIdx].position -= Servo[servoIdx].speed;
+    if( Servo[servoIdx].position < Servo[servoIdx].wantedpos )
+      Servo[servoIdx].position = Servo[servoIdx].wantedpos;
+  }
+
+  if( Servo[servoIdx].position < 50 )
+    Servo[servoIdx].position = 50;
+  if( Servo[servoIdx].position > 250 )
+    Servo[servoIdx].position = 250;
+  
+}
 
 // called every 5ms
 void doServo(void) {
-  if( servoIdx == 0 ) {
-    SERVO1 = PORT_ON;
-    TMR2 = Servo[0].position;
-    PR2  = Servo[0].position;
+  if( !pending ) {
+    pending = TRUE;
+    doServoPosition();
+    if( servoIdx == 0 ) {
+      TMR2 = 0;
+      PR2  = Servo[servoIdx].position-1;
+      T2CONbits.TMR2ON  = 1; // Timer2 on
+      SERVO1 = PORT_ON;
+    }
+    else if( servoIdx == 1 ) {
+      TMR2 = 0;
+      PR2  = Servo[servoIdx].position-1;
+      T2CONbits.TMR2ON  = 1; // Timer2 on
+      SERVO2 = PORT_ON;
+    }
+    else if( servoIdx == 2 ) {
+      TMR2 = 0;
+      PR2  = Servo[servoIdx].position-1;
+      T2CONbits.TMR2ON  = 1; // Timer2 on
+      SERVO3 = PORT_ON;
+    }
+    else if( servoIdx == 3 ) {
+      TMR2 = 0;
+      PR2  = Servo[servoIdx].position-1;
+      T2CONbits.TMR2ON  = 1; // Timer2 on
+      SERVO4 = PORT_ON;
+    }
   }
-  else if( servoIdx == 1 ) {
-    SERVO2 = PORT_ON;
-    TMR2 = Servo[1].position;
-    PR2  = Servo[1].position;
-  }
-  else if( servoIdx == 2 ) {
-    SERVO3 = PORT_ON;
-    TMR2 = Servo[2].position;
-    PR2  = Servo[2].position;
-  }
-  else if( servoIdx == 3 ) {
-    SERVO4 = PORT_ON;
-    TMR2 = Servo[3].position;
-    PR2  = Servo[3].position;
-  }
-
-  T2CONbits.TMR2ON  = 1; // Timer2 on
-
 }
 
 void endServoPulse(void) {
-  if( servoIdx == 0 )
+  if( pending ) {
     SERVO1 = PORT_OFF;
-  else if( servoIdx == 1 )
     SERVO2 = PORT_OFF;
-  else if( servoIdx == 2 )
     SERVO3 = PORT_OFF;
-  else if( servoIdx == 3 )
     SERVO4 = PORT_OFF;
 
-  servoIdx++;
-  if( servoIdx > 3 )
-    servoIdx = 0;
+    servoIdx++;
+    if( servoIdx > 3 )
+      servoIdx = 0;
+
+    pending = FALSE;
+  }
 }

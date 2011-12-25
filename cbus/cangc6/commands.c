@@ -195,17 +195,19 @@ unsigned char parseCmd(void) {
             Servo[servoIdx].config = rx_ptr->d4;
             eeWrite(EE_SERVO_CONFIG + servoIdx, rx_ptr->d4);
           }
-          else if( servoVar == 1 ) {
-            Servo[servoIdx].left = rx_ptr->d4 + 50;
+          else if( servoVar == 1 && rx_ptr->d4 >= 50 && rx_ptr->d4 <= 250 ) {
+            Servo[servoIdx].left = rx_ptr->d4;
             eeWrite(EE_SERVO_LEFT + servoIdx, rx_ptr->d4);
-            Servo[servoIdx].position = Servo[servoIdx].left;
+            Servo[servoIdx].wantedpos = Servo[servoIdx].left;
+            //Servo[servoIdx].position = Servo[servoIdx].left;
           }
-          else if( servoVar == 2 ) {
-            Servo[servoIdx].right = rx_ptr->d4 + 50;
+          else if( servoVar == 2 && rx_ptr->d4 >= 50 && rx_ptr->d4 <= 250  ) {
+            Servo[servoIdx].right = rx_ptr->d4;
             eeWrite(EE_SERVO_RIGHT + servoIdx, rx_ptr->d4);
-            Servo[servoIdx].position = Servo[servoIdx].right;
+            Servo[servoIdx].wantedpos = Servo[servoIdx].right;
+            //Servo[servoIdx].position = Servo[servoIdx].right;
           }
-          else if( servoVar == 3 ) {
+          else if( servoVar == 3 && rx_ptr->d4 <= 100 ) {
             Servo[servoIdx].speed = rx_ptr->d4;
             eeWrite(EE_SERVO_SPEED + servoIdx, rx_ptr->d4);
           }

@@ -23,6 +23,7 @@
 
 void doServo(void);
 void endServoPulse(void);
+void doServoPosition(void);
 
 #endif
 

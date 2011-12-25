@@ -54,6 +54,7 @@ typedef struct {
   byte   right;
   byte   speed;
   byte   position;
+  byte   wantedpos;
   int    swnn;
   int    swaddr;
   int    fbaddr;
