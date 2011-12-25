@@ -92,12 +92,6 @@ void isr_high(void) {
 #pragma interruptlow isr_low
 void isr_low(void) {
   //LED2 = 1;
-  if( PIR1bits.TMR2IF ) {
-    T2CONbits.TMR2ON  = 0; // Timer2 off
-    PIR1bits.TMR2IF   = 0; // Clear interrupt flag
-    endServoPulse();
-  }
-
   if (PIR3bits.ERRIF == 1) {
 
     if (TXB1CONbits.TXLARB) { // lost arbitration

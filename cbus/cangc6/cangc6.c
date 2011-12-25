@@ -241,6 +241,7 @@ void initIO(void) {
   PR2  = 150;
   PIE1bits.TMR2IE = 1;
   INTCONbits.PEIE = 1;
+  IPR1bits.TMR2IP = 1; // high prio
 
   // clear the fifo receive buffers
   while (fifoEmpty() == 0) {

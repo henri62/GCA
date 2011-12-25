@@ -99,9 +99,9 @@ void setupIO(byte clr) {
       eeWrite(EE_SERVO_RIGHT + idx, 200);
       eeWrite(EE_SERVO_SPEED + idx, 50);
       eeWrite(EE_SERVO_POSITION + idx, 150);
-      eeWriteShort(EE_SERVO_FBADDR + 2 * idx, 0);
+      eeWriteShort(EE_SERVO_FBADDR + 2 * idx, idx + idx * 4);
       eeWriteShort(EE_SERVO_SWNN + 2 * idx, 0);
-      eeWriteShort(EE_SERVO_SWADDR + 2 * idx, 0);
+      eeWriteShort(EE_SERVO_SWADDR + 2 * idx, idx + 1 + idx * 4);
     }
   }
 

@@ -27,8 +27,6 @@ static byte servoIdx = 0;
 static byte pending  = FALSE;
 
 void doServoPosition(void) {
-  //Servo[servoIdx].position = Servo[servoIdx].wantedpos;
-  
   if( Servo[servoIdx].wantedpos > Servo[servoIdx].position ) {
     Servo[servoIdx].position += Servo[servoIdx].speed;
     if( Servo[servoIdx].position > Servo[servoIdx].wantedpos )
@@ -52,30 +50,24 @@ void doServo(void) {
   if( !pending ) {
     pending = TRUE;
     doServoPosition();
+    TMR2 = 0;
     if( servoIdx == 0 ) {
-      TMR2 = 0;
       PR2  = Servo[servoIdx].position-1;
-      T2CONbits.TMR2ON  = 1; // Timer2 on
       SERVO1 = PORT_ON;
     }
     else if( servoIdx == 1 ) {
-      TMR2 = 0;
       PR2  = Servo[servoIdx].position-1;
-      T2CONbits.TMR2ON  = 1; // Timer2 on
       SERVO2 = PORT_ON;
     }
     else if( servoIdx == 2 ) {
-      TMR2 = 0;
       PR2  = Servo[servoIdx].position-1;
-      T2CONbits.TMR2ON  = 1; // Timer2 on
       SERVO3 = PORT_ON;
     }
     else if( servoIdx == 3 ) {
-      TMR2 = 0;
       PR2  = Servo[servoIdx].position-1;
-      T2CONbits.TMR2ON  = 1; // Timer2 on
       SERVO4 = PORT_ON;
     }
+    T2CONbits.TMR2ON  = 1; // Timer2 on
   }
 }
 
