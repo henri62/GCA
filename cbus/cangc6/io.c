@@ -66,11 +66,11 @@ void setupIO(byte clr) {
   TRISCbits.TRISC3 = 1; /* T4S */
   TRISCbits.TRISC4 = 1; /* T4R */
   TRISCbits.TRISC5 = 1; /* T3R */
-  TRISCbits.TRISC6 = 1; /* T2R */
+  TRISAbits.TRISA2 = 1; /* T2R */
   TRISCbits.TRISC7 = 1; /* T1R */
 
   TRISAbits.TRISA1 = 1; /* SW */
-  TRISAbits.TRISA2 = 0; /* GCA137 */
+  TRISCbits.TRISC6 = 1; /* GCA137 TX */
   TRISAbits.TRISA3 = 0; /* LED1 */
   TRISAbits.TRISA4 = 0; /* LED2 */
   TRISAbits.TRISA5 = 0; /* LED3 */

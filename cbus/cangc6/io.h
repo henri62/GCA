@@ -32,7 +32,7 @@
 
 #define SW      PORTAbits.RA1	// Flim switch
 
-#define GCA137  PORTAbits.RA2	// GCA137 polarisation Tx
+#define GCA137  PORTCbits.RC6	// GCA137 polarisation Tx
 
 #define SERVO1  PORTBbits.RB0
 #define SERVO2  PORTBbits.RB1
@@ -42,7 +42,7 @@
 #define T1S     PORTCbits.RC0
 #define T1R     PORTCbits.RC7
 #define T2S     PORTCbits.RC1
-#define T2R     PORTCbits.RC6
+#define T2R     PORTAbits.RA2
 #define T3S     PORTCbits.RC2
 #define T3R     PORTCbits.RC5
 #define T4S     PORTCbits.RC3
@@ -58,6 +58,8 @@ typedef struct {
   int    swnn;
   int    swaddr;
   int    fbaddr;
+  byte   relayBitsLeft;
+  byte   relayBitsRight;
 } ServoDef;
 
 #define SERVOCONF_POLAR  0x01

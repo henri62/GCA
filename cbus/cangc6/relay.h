@@ -22,4 +22,6 @@
 #ifndef __RELAY__
 #define __RELAY__
 
+void initRelayTx(void);
+
 #endif
