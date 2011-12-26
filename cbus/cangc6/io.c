@@ -194,10 +194,38 @@ void restoreOutputStates(void) {
 
 static unsigned char __LED2 = 0;
 void doLEDs(void) {
+  byte i;
+  byte servoPending = FALSE;
+
   if( Wait4NN || isLearning) {
     LED2 = __LED2;
     __LED2 ^= 1;
   }
+
+}
+
+
+static unsigned char __LED4 = 0;
+void doLED250(void) {
+  byte i;
+  byte servoPending = FALSE;
+
+  for( i = 0; i < 4; i++ ) {
+    if( Servo[i].wantedpos != Servo[i].position ) {
+      servoPending = TRUE;
+      break;
+    }
+  }
+
+  if( servoPending ) {
+      LED4 = __LED4;
+      __LED4 ^= 1;
+  }
+  else {
+    LED4 = PORT_OFF;
+    __LED4 = 1;
+  }
+
 }
 
 

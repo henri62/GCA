@@ -29,6 +29,7 @@
 
 #pragma udata access VARS
 near unsigned short led500ms_timer;
+near unsigned short led250ms_timer;
 near unsigned short io_timer;
 near unsigned short led_timer;
 near unsigned short dim_timer;
@@ -73,6 +74,14 @@ void isr_high(void) {
       if (can_transmit_timeout != 0) {
         --can_transmit_timeout;
       }
+    }
+
+    //
+    // Timer 250ms
+    //
+    if (--led250ms_timer == 0) {
+        led250ms_timer = 200;
+        doLED250();
     }
 
     //

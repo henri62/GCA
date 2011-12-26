@@ -19,6 +19,7 @@
 */
 
 #include "project.h"
+#include "cangc6.h"
 #include "io.h"
 #include "servo.h"
 #include "cbusdefs.h"
