@@ -34,7 +34,7 @@ Chip initialization
 	TRISB = 0x06; \
 	CMCON = 0x07; \
 	BRGH = 0; \
-	SPBRG = 129; /* 1200 Baud */ \
+	SPBRG = 129; /* 480 Baud */ \
 	/* Enable serial port */ \
 	SYNC = 0; \
 	SPEN = 1; \
