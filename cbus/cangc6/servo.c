@@ -23,6 +23,7 @@
 #include "io.h"
 #include "servo.h"
 #include "cbusdefs.h"
+#include "relay.h"
 
 
 static byte servoIdx = 0;
@@ -43,17 +44,21 @@ void reportServoPosition(byte rightSide) {
 
 void doServoPosition(void) {
   if( Servo[servoIdx].wantedpos > Servo[servoIdx].position ) {
+    RelayStart(servoIdx);
     Servo[servoIdx].position += Servo[servoIdx].speed;
     if( Servo[servoIdx].position >= Servo[servoIdx].wantedpos ) {
       Servo[servoIdx].position = Servo[servoIdx].wantedpos;
       reportServoPosition(TRUE);
+      RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 2:1 );
     }
   }
   else if( Servo[servoIdx].wantedpos < Servo[servoIdx].position ) {
+    RelayStart(servoIdx);
     Servo[servoIdx].position -= Servo[servoIdx].speed;
     if( Servo[servoIdx].position <= Servo[servoIdx].wantedpos ) {
       Servo[servoIdx].position = Servo[servoIdx].wantedpos;
       reportServoPosition(FALSE);
+      RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 1:2 );
     }
   }
 

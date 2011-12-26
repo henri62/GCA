@@ -39,48 +39,30 @@ void initRelayTx(void) {
 }
 
 static byte relayMasks[] = { 0x03, 0x0C, 0x30, 0xC0 };
-
-#define RELAY_MASK(servo) (relayMasks[servo])
 static byte allRelayBits = 0xAA;
 
 
 /*
-Turn of relays when servo starts
+Turn of both relays when servo starts
 */
 void RelayStart(byte servo) {
-	allRelayBits &= ~RELAY_MASK(servo);
+	allRelayBits &= ~relayMasks[servo];
 }
 
 /*
-Update relay settings for middle position
-RelayMiddle is not needed for 136/137
-*/
-
-/*
-Update relay settings for target position
-*/
+ * Update relay settings for target position;
+ *   Only one relay may be activated depending of polarisation.
+ */
 void RelayEnd(byte servo, byte relayBits) {
-	allRelayBits &= ~RELAY_MASK(servo);
-	allRelayBits |= relayBits;
+	allRelayBits &= ~relayMasks[servo];
+	allRelayBits |= relayBits << (servo*2);
 }
 
 /*
 Called during each timer interrupt, send relay bits to serial port (if free)
 */
-static byte __swaprelay = 0;
 void RelayUpdate(void) {
-	//if( PIR1bits.TXIF ) {
 	if( TXSTAbits.TRMT ) {
-    
-    __swaprelay++;
-    if( __swaprelay == 2 ) {
-      allRelayBits = 0x02;
-    }
-    if( __swaprelay == 4 ) {
-      allRelayBits = 0x01;
-      __swaprelay = 0;
-    }
-    
 		TXREG = allRelayBits;
 	}
 }

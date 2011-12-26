@@ -63,6 +63,7 @@ void isr_high(void) {
       led_timer = 5;
       doLEDTimers();
       doServo();
+      RelayUpdate();
     }
 
     //
@@ -90,7 +91,6 @@ void isr_high(void) {
     if (--led500ms_timer == 0) {
       led500ms_timer = 500;
       doLEDs();
-      RelayUpdate();
     }
   }
 

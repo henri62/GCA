@@ -24,5 +24,7 @@
 
 void initRelayTx(void);
 void RelayUpdate(void);
+void RelayStart(byte servo);
+void RelayEnd(byte servo, byte relayBits);
 
 #endif
