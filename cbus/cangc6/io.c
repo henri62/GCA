@@ -194,9 +194,6 @@ void restoreOutputStates(void) {
 
 static unsigned char __LED2 = 0;
 void doLEDs(void) {
-  byte i;
-  byte servoPending = FALSE;
-
   if( Wait4NN || isLearning) {
     LED2 = __LED2;
     __LED2 ^= 1;

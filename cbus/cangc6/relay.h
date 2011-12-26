@@ -23,5 +23,6 @@
 #define __RELAY__
 
 void initRelayTx(void);
+void RelayUpdate(void);
 
 #endif

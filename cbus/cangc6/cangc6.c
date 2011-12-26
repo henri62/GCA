@@ -31,6 +31,7 @@
 #include "cangc6.h"
 #include "isr.h"
 #include "io.h"
+#include "relay.h"
 #include "project.h"
 
 
@@ -134,6 +135,8 @@ void main(void) {
     CANID = NN_temp & 0xFF;
   initCAN();
 
+  initRelayTx();
+  
   delay();
   restoreOutputStates();
   delay();

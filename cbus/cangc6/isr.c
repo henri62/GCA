@@ -26,6 +26,7 @@
 #include "cangc6.h"
 #include "io.h"
 #include "servo.h"
+#include "relay.h"
 
 #pragma udata access VARS
 near unsigned short led500ms_timer;
@@ -88,8 +89,9 @@ void isr_high(void) {
     // Timer 500ms
     //
     if (--led500ms_timer == 0) {
-        led500ms_timer = 500;
-        doLEDs();
+      led500ms_timer = 500;
+      doLEDs();
+      RelayUpdate();
     }
   }
 

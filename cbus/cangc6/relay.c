@@ -28,17 +28,21 @@ void initRelayTx(void) {
   BAUDCONbits.BRG16 = 1;
 
 	/* Enable serial TX */
+  TXSTA = 0;
   TXSTAbits.BRGH = 1;
-  TXSTAbits.SYNC = 0;
   TXSTAbits.TXEN = 1;
 	/* Disable serial RX */
-  RCSTAbits.SPEN = 0;
+  RCSTA = 0;
+  RCSTAbits.SPEN = 1;
+
+  TRISCbits.TRISC6 = 1; /* GCA137 TX */
 }
 
 static byte relayMasks[] = { 0x03, 0x0C, 0x30, 0xC0 };
 
 #define RELAY_MASK(servo) (relayMasks[servo])
-static byte allRelayBits = 0;
+static byte allRelayBits = 0xFF;
+
 
 /*
 Turn of relays when servo starts
@@ -63,8 +67,17 @@ void RelayEnd(byte servo, byte relayBits) {
 /*
 Called during each timer interrupt, send relay bits to serial port (if free)
 */
+static byte __swaprelay = 0;
 void RelayUpdate(void) {
+	//if( PIR1bits.TXIF ) {
 	if( TXSTAbits.TRMT ) {
+    
+    __swaprelay++;
+    if( __swaprelay == 2 ) {
+      allRelayBits ^= 0xFF;
+      __swaprelay = 0;
+    }
+    
 		TXREG = allRelayBits;
 	}
 }
