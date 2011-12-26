@@ -107,21 +107,21 @@ void setupIO(byte clr) {
 
 
   for( idx = 0; idx < 4; idx++ ) {
-    Servo[idx].config   = eeRead(EE_SERVO_CONFIG + idx);
-    Servo[idx].left     = eeRead(EE_SERVO_LEFT + idx);
-    Servo[idx].right    = eeRead(EE_SERVO_RIGHT + idx);
-    Servo[idx].speed    = eeRead(EE_SERVO_SPEED + idx);
-    Servo[idx].position = eeRead(EE_SERVO_POSITION + idx);
-    Servo[idx].fbaddr   = eeReadShort(EE_SERVO_FBADDR + 2 * idx);
-    Servo[idx].swnn     = eeReadShort(EE_SERVO_SWNN + 2 * idx);
-    Servo[idx].swaddr   = eeReadShort(EE_SERVO_SWADDR + 2 * idx);
+    Servo[idx].config    = eeRead(EE_SERVO_CONFIG + idx);
+    Servo[idx].left      = eeRead(EE_SERVO_LEFT + idx);
+    Servo[idx].right     = eeRead(EE_SERVO_RIGHT + idx);
+    Servo[idx].speed     = eeRead(EE_SERVO_SPEED + idx);
+    Servo[idx].wantedpos = eeRead(EE_SERVO_POSITION + idx);
+    Servo[idx].fbaddr    = eeReadShort(EE_SERVO_FBADDR + 2 * idx);
+    Servo[idx].swnn      = eeReadShort(EE_SERVO_SWNN + 2 * idx);
+    Servo[idx].swaddr    = eeReadShort(EE_SERVO_SWADDR + 2 * idx);
 
     if(Servo[idx].left > 250 || Servo[idx].left < 50 )
       Servo[idx].left = 100;
     if(Servo[idx].right > 250 || Servo[idx].right < 50 )
       Servo[idx].right = 200;
-    if(Servo[idx].position > 250 || Servo[idx].position < 50 )
-      Servo[idx].position = 150;
+    if(Servo[idx].wantedpos > 250 || Servo[idx].wantedpos < 50 )
+      Servo[idx].wantedpos = 150;
   }
 
 }
