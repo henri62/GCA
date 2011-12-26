@@ -22,9 +22,9 @@
 #include "relay.h"
 
 void initRelayTx(void) {
-   /* 1200 baud = 32000000 / 4 [ (6665 + 1) ]  */
-  SPBRGH = 0x1A;
-  SPBRG  = 0x09;
+   /* 480 baud = 32000000 / 4 [ (16666 + 1) ]  */
+  SPBRGH = 0x41;
+  SPBRG  = 0x1A;
   BAUDCONbits.BRG16 = 1;
 
 	/* Enable serial TX */
@@ -41,7 +41,7 @@ void initRelayTx(void) {
 static byte relayMasks[] = { 0x03, 0x0C, 0x30, 0xC0 };
 
 #define RELAY_MASK(servo) (relayMasks[servo])
-static byte allRelayBits = 0xFF;
+static byte allRelayBits = 0xAA;
 
 
 /*
@@ -74,7 +74,10 @@ void RelayUpdate(void) {
     
     __swaprelay++;
     if( __swaprelay == 2 ) {
-      allRelayBits ^= 0xFF;
+      allRelayBits = 0x02;
+    }
+    if( __swaprelay == 4 ) {
+      allRelayBits = 0x01;
       __swaprelay = 0;
     }
     

@@ -198,6 +198,9 @@ void doLEDs(void) {
     LED2 = __LED2;
     __LED2 ^= 1;
   }
+  else {
+    LED2 = PORT_OFF;
+  }
 
 }
 

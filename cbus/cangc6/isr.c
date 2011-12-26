@@ -56,7 +56,6 @@ void isr_high(void) {
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
 
-
     //
     // I/O timeout - 5ms
     //
