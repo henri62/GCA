@@ -30,15 +30,19 @@ static byte servoIdx = 0;
 static byte pending  = FALSE;
 
 void reportServoPosition(byte rightSide) {
-  if( !(Servo[servoIdx].config & SERVOCONF_EXTSEN) ) {
-    canmsg.opc = rightSide ? OPC_ASON:OPC_ASOF;
-    canmsg.d[0] = (NN_temp / 256) & 0xFF;
-    canmsg.d[1] = (NN_temp % 256) & 0xFF;
-    canmsg.d[2] = (Servo[servoIdx].fbaddr / 256) & 0xFF;
-    canmsg.d[3] = (Servo[servoIdx].fbaddr % 256) & 0xFF;
-    canmsg.len = 4; // data bytes
-    canQueue(&canmsg);
+  
+  if( Servo[servoIdx].config & SERVOCONF_EXTSEN ) {
+    readExtSensors(servoIdx);
+    return;
   }
+
+  canmsg.opc = rightSide ? OPC_ASON:OPC_ASOF;
+  canmsg.d[0] = (NN_temp / 256) & 0xFF;
+  canmsg.d[1] = (NN_temp % 256) & 0xFF;
+  canmsg.d[2] = (Servo[servoIdx].fbaddr / 256) & 0xFF;
+  canmsg.d[3] = (Servo[servoIdx].fbaddr % 256) & 0xFF;
+  canmsg.len = 4; // data bytes
+  canQueue(&canmsg);
 }
 
 
@@ -108,4 +112,55 @@ void endServoPulse(void) {
 
     pending = FALSE;
   }
+}
+
+
+/* returns 0 for unknown, 1 for straight, 2 for thrown */
+byte __extPosS[4] = {0,0,0,0};
+byte __extPosT[4] = {0,0,0,0};
+byte __extIdx = 0;
+byte readExtSensors( byte servo ) {
+  byte straight = 0;
+  byte thrown   = 0;
+
+  if( servo == 0xFF ) {
+    servo = __extIdx;
+    __extIdx++;
+    if( __extIdx > 3 )
+      __extIdx = 0;
+  }
+
+  if( servo == 0 ) {
+    straight = T1S;
+    thrown   = T1R;
+  }
+  else if( servo == 1 ) {
+    straight = T2S;
+    thrown   = T2R;
+  }
+  else if( servo == 2 ) {
+    straight = T3S;
+    thrown   = T3R;
+  }
+  else if( servo == 3 ) {
+    straight = T4S;
+    thrown   = T4R;
+  }
+
+  if( straight == thrown )
+    return TURNOUT_UNKNOWN;
+
+  if( straight == __extPosS[servo] && thrown == __extPosT[servo] )
+    return TURNOUT_UNKNOWN;
+
+  __extPosS[servo] = straight;
+  __extPosT[servo] = thrown;
+
+  canmsg.opc = thrown ? OPC_ASON:OPC_ASOF;
+  canmsg.d[0] = (NN_temp / 256) & 0xFF;
+  canmsg.d[1] = (NN_temp % 256) & 0xFF;
+  canmsg.d[2] = (Servo[servo].fbaddr / 256) & 0xFF;
+  canmsg.d[3] = (Servo[servo].fbaddr % 256) & 0xFF;
+  canmsg.len = 4; // data bytes
+  canQueue(&canmsg);
 }

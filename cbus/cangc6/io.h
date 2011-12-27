@@ -65,6 +65,10 @@ typedef struct {
 #define SERVOCONF_POLAR  0x01
 #define SERVOCONF_EXTSEN 0x02
 
+#define TURNOUT_UNKNOWN 0
+#define TURNOUT_STRAIGHT 1
+#define TURNOUT_THROWN 2
+
 
 extern ram ServoDef Servo[4];
 extern near unsigned char led1timer;

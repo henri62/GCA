@@ -91,6 +91,7 @@ void isr_high(void) {
     if (--led500ms_timer == 0) {
       led500ms_timer = 500;
       doLEDs();
+      readExtSensors(0xFF);
     }
   }
 
