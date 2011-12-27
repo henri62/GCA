@@ -127,6 +127,12 @@ unsigned char parseCmd(void) {
       break;
 
     case OPC_RTOF:
+      if( NV1 & CFG_SAVEOUTPUT ) {
+        byte i = 0;
+        for( i = 0; i < 4; i++ ) {
+          eeWrite(EE_SERVO_POSITION + i, Servo[i].position );
+        }
+      }
       break;
 
     case OPC_NVRD:
@@ -212,7 +218,7 @@ unsigned char parseCmd(void) {
             Servo[servoIdx].wantedpos = Servo[servoIdx].right;
             //Servo[servoIdx].position = Servo[servoIdx].right;
           }
-          else if( servoVar == 3 && rx_ptr->d4 <= 100 ) {
+          else if( servoVar == 3 && rx_ptr->d4 <= 10 ) {
             Servo[servoIdx].speed = rx_ptr->d4;
             eeWrite(EE_SERVO_SPEED + servoIdx, rx_ptr->d4);
           }

@@ -123,6 +123,7 @@ byte readExtSensors( byte servo ) {
   byte straight = 0;
   byte thrown   = 0;
 
+  /* periodically called by the isr 500ms */
   if( servo == 0xFF ) {
     servo = __extIdx;
     __extIdx++;
