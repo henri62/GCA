@@ -28,6 +28,7 @@
 #include "commands.h"
 #include "cangc6.h"
 #include "io.h"
+#include "relay.h"
 
 ram unsigned char pnnCount = 0;
 
@@ -194,6 +195,10 @@ unsigned char parseCmd(void) {
           if( servoVar == 0 ) {
             Servo[servoIdx].config = rx_ptr->d4;
             eeWrite(EE_SERVO_CONFIG + servoIdx, rx_ptr->d4);
+            if( Servo[servoIdx].position == Servo[servoIdx].right )
+              RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 2:1 );
+            else
+              RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 1:2 );
           }
           else if( servoVar == 1 && rx_ptr->d4 >= 50 && rx_ptr->d4 <= 250 ) {
             Servo[servoIdx].left = rx_ptr->d4;
