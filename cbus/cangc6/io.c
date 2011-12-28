@@ -106,6 +106,7 @@ void setupIO(byte clr) {
     Servo[idx].position = Servo[idx].wantedpos;
     setServoRelaybits(idx);
     Servo[idx].endtime = 0;
+    Servo[idx].gear = 0;
   }
 
 }

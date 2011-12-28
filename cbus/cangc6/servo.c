@@ -52,11 +52,13 @@ void setServoRelaybits(byte servo) {
     RelayEnd(servo, Servo[servo].config & SERVOCONF_POLAR ? 1:2 );
 }
 
+/* ToDo: Skip on or more 20ms ticks to get a slower speed. */
 byte doServoPosition(void) {
   if( Servo[servoIdx].wantedpos > Servo[servoIdx].position ) {
     Servo[servoIdx].endtime = 0;
     RelayStart(servoIdx);
-    Servo[servoIdx].position += Servo[servoIdx].speed;
+    Servo[servoIdx].position += Servo[servoIdx].gear ? 0:Servo[servoIdx].speed;
+    Servo[servoIdx].gear ^= 0x01;
     if( Servo[servoIdx].position >= Servo[servoIdx].wantedpos ) {
       Servo[servoIdx].position = Servo[servoIdx].wantedpos;
       reportServoPosition(TRUE);
@@ -66,7 +68,8 @@ byte doServoPosition(void) {
   else if( Servo[servoIdx].wantedpos < Servo[servoIdx].position ) {
     Servo[servoIdx].endtime = 0;
     RelayStart(servoIdx);
-    Servo[servoIdx].position -= Servo[servoIdx].speed;
+    Servo[servoIdx].position -= Servo[servoIdx].gear ? 0:Servo[servoIdx].speed;
+    Servo[servoIdx].gear ^= 0x01;
     if( Servo[servoIdx].position <= Servo[servoIdx].wantedpos ) {
       Servo[servoIdx].position = Servo[servoIdx].wantedpos;
       reportServoPosition(FALSE);
@@ -79,7 +82,7 @@ byte doServoPosition(void) {
   if( Servo[servoIdx].position > 250 )
     Servo[servoIdx].position = 250;
   
-   return (Servo[servoIdx].position == Servo[servoIdx].wantedpos);
+   return (Servo[servoIdx].position == Servo[servoIdx].wantedpos) ? TRUE:FALSE;
 }
 
 // called every 5ms
@@ -87,24 +90,25 @@ void doServo(void) {
   if( !pending ) {
     pending = TRUE;
     if( doServoPosition() ) {
-      Servo[servoIdx].endtime++;
+      if( Servo[servoIdx].endtime < 200 )
+        Servo[servoIdx].endtime++;
     }
     TMR2 = 0;
     if( servoIdx == 0 ) {
       PR2  = Servo[servoIdx].position-1;
-      SERVO1 = Servo[servoIdx].endtime < 200 ? PORT_ON:PORT_OFF;
+      SERVO1 = (Servo[servoIdx].endtime < 200) ? PORT_ON:PORT_OFF;
     }
     else if( servoIdx == 1 ) {
       PR2  = Servo[servoIdx].position-1;
-      SERVO2 = Servo[servoIdx].endtime < 200 ? PORT_ON:PORT_OFF;
+      SERVO2 = (Servo[servoIdx].endtime < 200) ? PORT_ON:PORT_OFF;
     }
     else if( servoIdx == 2 ) {
       PR2  = Servo[servoIdx].position-1;
-      SERVO3 = Servo[servoIdx].endtime < 200 ? PORT_ON:PORT_OFF;
+      SERVO3 = (Servo[servoIdx].endtime < 200) ? PORT_ON:PORT_OFF;
     }
     else if( servoIdx == 3 ) {
       PR2  = Servo[servoIdx].position-1;
-      SERVO4 = Servo[servoIdx].endtime < 200 ? PORT_ON:PORT_OFF;
+      SERVO4 = (Servo[servoIdx].endtime < 200) ? PORT_ON:PORT_OFF;
     }
     T2CONbits.TMR2ON  = 1; // Timer2 on
   }

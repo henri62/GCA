@@ -59,6 +59,7 @@ typedef struct {
   int    swaddr;
   int    fbaddr;
   byte   endtime;
+  byte   gear;
 } ServoDef;
 
 #define SERVOCONF_POLAR  0x01
