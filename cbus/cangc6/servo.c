@@ -45,6 +45,12 @@ void reportServoPosition(byte rightSide) {
   canQueue(&canmsg);
 }
 
+void setServoRelaybits(byte servo) {
+  if( Servo[servo].position == Servo[servo].right )
+    RelayEnd(servo, Servo[servo].config & SERVOCONF_POLAR ? 2:1 );
+  else
+    RelayEnd(servo, Servo[servo].config & SERVOCONF_POLAR ? 1:2 );
+}
 
 void doServoPosition(void) {
   if( Servo[servoIdx].wantedpos > Servo[servoIdx].position ) {

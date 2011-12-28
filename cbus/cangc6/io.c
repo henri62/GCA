@@ -30,6 +30,7 @@
 #include "cbusdefs.h"
 #include "cangc6.h"
 #include "io.h"
+#include "servo.h"
 
 
 void setupIO(byte clr) {
@@ -101,6 +102,9 @@ void setupIO(byte clr) {
       Servo[idx].right = 200;
     if(Servo[idx].wantedpos > 250 || Servo[idx].wantedpos < 50 )
       Servo[idx].wantedpos = 150;
+
+    Servo[idx].position = Servo[idx].wantedpos;
+    setServoRelaybits(idx);
   }
 
 }
