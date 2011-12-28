@@ -23,7 +23,7 @@
 
 void doServo(void);
 void endServoPulse(void);
-void doServoPosition(void);
+byte doServoPosition(void);
 byte readExtSensors( byte servo );
 void setServoRelaybits(byte servo);
 

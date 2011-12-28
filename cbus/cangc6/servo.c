@@ -52,23 +52,25 @@ void setServoRelaybits(byte servo) {
     RelayEnd(servo, Servo[servo].config & SERVOCONF_POLAR ? 1:2 );
 }
 
-void doServoPosition(void) {
+byte doServoPosition(void) {
   if( Servo[servoIdx].wantedpos > Servo[servoIdx].position ) {
+    Servo[servoIdx].endtime = 0;
     RelayStart(servoIdx);
     Servo[servoIdx].position += Servo[servoIdx].speed;
     if( Servo[servoIdx].position >= Servo[servoIdx].wantedpos ) {
       Servo[servoIdx].position = Servo[servoIdx].wantedpos;
       reportServoPosition(TRUE);
-      RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 2:1 );
+      setServoRelaybits(servoIdx);
     }
   }
   else if( Servo[servoIdx].wantedpos < Servo[servoIdx].position ) {
+    Servo[servoIdx].endtime = 0;
     RelayStart(servoIdx);
     Servo[servoIdx].position -= Servo[servoIdx].speed;
     if( Servo[servoIdx].position <= Servo[servoIdx].wantedpos ) {
       Servo[servoIdx].position = Servo[servoIdx].wantedpos;
       reportServoPosition(FALSE);
-      RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 1:2 );
+      setServoRelaybits(servoIdx);
     }
   }
 
@@ -77,29 +79,32 @@ void doServoPosition(void) {
   if( Servo[servoIdx].position > 250 )
     Servo[servoIdx].position = 250;
   
+   return (Servo[servoIdx].position == Servo[servoIdx].wantedpos);
 }
 
 // called every 5ms
 void doServo(void) {
   if( !pending ) {
     pending = TRUE;
-    doServoPosition();
+    if( doServoPosition() ) {
+      Servo[servoIdx].endtime++;
+    }
     TMR2 = 0;
     if( servoIdx == 0 ) {
       PR2  = Servo[servoIdx].position-1;
-      SERVO1 = PORT_ON;
+      SERVO1 = Servo[servoIdx].endtime < 200 ? PORT_ON:PORT_OFF;
     }
     else if( servoIdx == 1 ) {
       PR2  = Servo[servoIdx].position-1;
-      SERVO2 = PORT_ON;
+      SERVO2 = Servo[servoIdx].endtime < 200 ? PORT_ON:PORT_OFF;
     }
     else if( servoIdx == 2 ) {
       PR2  = Servo[servoIdx].position-1;
-      SERVO3 = PORT_ON;
+      SERVO3 = Servo[servoIdx].endtime < 200 ? PORT_ON:PORT_OFF;
     }
     else if( servoIdx == 3 ) {
       PR2  = Servo[servoIdx].position-1;
-      SERVO4 = PORT_ON;
+      SERVO4 = Servo[servoIdx].endtime < 200 ? PORT_ON:PORT_OFF;
     }
     T2CONbits.TMR2ON  = 1; // Timer2 on
   }
@@ -170,4 +175,6 @@ byte readExtSensors( byte servo ) {
   canmsg.d[3] = (Servo[servo].fbaddr % 256) & 0xFF;
   canmsg.len = 4; // data bytes
   canQueue(&canmsg);
+
+  return thrown ? TURNOUT_THROWN:TURNOUT_STRAIGHT;
 }
