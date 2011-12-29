@@ -27,5 +27,10 @@ byte doServoPosition(void);
 byte readExtSensors( byte servo );
 void setServoRelaybits(byte servo);
 
+#define SERVO_MINPOS 50
+#define SERVO_CENTERPOS 150
+#define SERVO_MAXPOS 250
+#define SERVO_ENDTIME 100
+
 #endif
 
