@@ -36,7 +36,7 @@ void reportServoPosition(byte rightSide) {
     return;
   }
 
-  canmsg.opc = rightSide ? OPC_ASON:OPC_ASOF;
+  canmsg.opc = rightSide ? OPC_ASOF:OPC_ASON;
   canmsg.d[0] = (NN_temp / 256) & 0xFF;
   canmsg.d[1] = (NN_temp % 256) & 0xFF;
   canmsg.d[2] = (Servo[servoIdx].fbaddr / 256) & 0xFF;
