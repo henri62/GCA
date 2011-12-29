@@ -11,8 +11,11 @@
 include Makefile
 
 # Environment
+# Adding MPLAB X bin directory to path
+PATH:=/Applications/microchip/mplabx/mplab_ide.app/Contents/Resources/mplab_ide/mplab_ide/modules/../../bin/:$(PATH)
 MKDIR=mkdir -p
 RM=rm -f 
+MV=mv 
 CP=cp 
 
 # Macros
@@ -31,6 +34,9 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 # Distribution Directory
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
+# Object Files Quoted if spaced
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangc4.p1
+
 # Object Files
 OBJECTFILES=${OBJECTDIR}/cangc4.p1
 
@@ -40,7 +46,7 @@ ASFLAGS=
 LDLIBSOPTIONS=
 
 # Path to java used to run MPLAB X when this makefile was created
-MP_JAVA_PATH=/usr/lib/jvm/java-6-openjdk/jre/bin/
+MP_JAVA_PATH="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/bin/"
 OS_CURRENT="$(shell uname -s)"
 ############# Tool locations ##########################################
 # If you copy a project from one host to another, the path where the  #
@@ -48,20 +54,22 @@ OS_CURRENT="$(shell uname -s)"
 # If you open this project with MPLAB X in the new host, this         #
 # makefile will be regenerated and the paths will be corrected.       #
 #######################################################################
-MP_CC=/usr/hitech/picc/9.82/bin/picc
+MP_CC="/Applications/HI-TECH/picc/9.82/bin/picc"
 # MP_BC is not defined
-MP_AS=/usr/hitech/picc/9.82/bin/picc
-MP_LD=/usr/hitech/picc/9.82/bin/picc
-MP_AR=/usr/hitech/picc/9.82/bin/picc
-# MP_BC is not defined
-MP_CC_DIR=/usr/hitech/picc/9.82/bin
+MP_AS="/Applications/HI-TECH/picc/9.82/bin/picc"
+MP_LD="/Applications/HI-TECH/picc/9.82/bin/picc"
+MP_AR="/Applications/HI-TECH/picc/9.82/bin/picc"
+DEP_GEN=${MP_JAVA_PATH}java -jar "/Applications/microchip/mplabx/mplab_ide.app/Contents/Resources/mplab_ide/mplab_ide/modules/../../bin/extractobjectdependencies.jar" 
+# fixDeps replaces a bunch of sed/cat/printf statements that slow down the build
+FIXDEPS=fixDeps
+MP_CC_DIR="/Applications/HI-TECH/picc/9.82/bin"
 # MP_BC_DIR is not defined
-MP_AS_DIR=/usr/hitech/picc/9.82/bin
-MP_LD_DIR=/usr/hitech/picc/9.82/bin
-MP_AR_DIR=/usr/hitech/picc/9.82/bin
+MP_AS_DIR="/Applications/HI-TECH/picc/9.82/bin"
+MP_LD_DIR="/Applications/HI-TECH/picc/9.82/bin"
+MP_AR_DIR="/Applications/HI-TECH/picc/9.82/bin"
 # MP_BC_DIR is not defined
 
-.build-conf: ${BUILD_SUBPROJECTS}
+.build-conf:  ${BUILD_SUBPROJECTS}
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.cof
 
 MP_PROCESSOR_OPTION=12F675
@@ -75,39 +83,35 @@ endif
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 ${OBJECTDIR}/cangc4.p1: cangc4.c  nbproject/Makefile-${CND_CONF}.mk
-	${MKDIR} ${OBJECTDIR} 
+	@${MKDIR} ${OBJECTDIR} 
 	${MP_CC} --pass1 cangc4.c $(MP_EXTRA_CC_PRE) -q --chip=$(MP_PROCESSOR_OPTION) -P  --outdir=${OBJECTDIR} -N31 --warn=9 --runtime=default,+clear,+init,-keep,+osccal,-resetbits,-download,+stackcall,+clib --summary=default,-psect,-class,+mem,-hex --opt=default,+asm,-asmfile,+speed,-space,-debug,-9 -D__DEBUG --debugger=pickit3  --double=24 --float=24 --addrqual=ignore --mode=lite -g --asmlist "--errformat=%f:%l: error: %s" "--msgformat=%f:%l: advisory: %s" "--warnformat=%f:%l warning: %s"
 	${MP_CC} --scandep --pass1 cangc4.c $(MP_EXTRA_CC_PRE) -q --chip=$(MP_PROCESSOR_OPTION) -P  --outdir=${OBJECTDIR} -N31 --warn=9 --runtime=default,+clear,+init,-keep,+osccal,-resetbits,-download,+stackcall,+clib --opt=default,+asm,-asmfile,+speed,-space,-debug,-9 -D__DEBUG --debugger=pickit3  --double=24 --float=24 --addrqual=ignore --mode=lite -g --asmlist "--errformat=%f:%l: error: %s" "--msgformat=%f:%l: advisory: %s" "--warnformat=%f:%l warning: %s"
-	echo "${OBJECTDIR}/cangc4.p1:\\" > ${OBJECTDIR}/cangc4.p1.d
-ifneq (,$(findstring MINGW32,$(OS_CURRENT))) 
-	@cat ${OBJECTDIR}/cangc4.dep | sed -e 's/^ *//' -e 's/\\/\//g' -e 's/ /\\ /g' -e 's/^.*$$/ &\\/g'  >> ${OBJECTDIR}/cangc4.p1.d
-else 
-	@cat ${OBJECTDIR}/cangc4.dep | sed -e 's/^ *//' -e 's/^.*$$/ &\\/g'  >> ${OBJECTDIR}/cangc4.p1.d
-endif
+	@echo ${OBJECTDIR}/cangc4.p1: > ${OBJECTDIR}/cangc4.p1.d
+	@cat ${OBJECTDIR}/cangc4.dep >> ${OBJECTDIR}/cangc4.p1.d
+	@${FIXDEPS} "${OBJECTDIR}/cangc4.p1.d" $(SILENT) -ht 
+	
 else
 ${OBJECTDIR}/cangc4.p1: cangc4.c  nbproject/Makefile-${CND_CONF}.mk
-	${MKDIR} ${OBJECTDIR} 
+	@${MKDIR} ${OBJECTDIR} 
 	${MP_CC} --pass1 cangc4.c $(MP_EXTRA_CC_PRE) -q --chip=$(MP_PROCESSOR_OPTION) -P  --outdir=${OBJECTDIR} -N31 --warn=9 --runtime=default,+clear,+init,-keep,+osccal,-resetbits,-download,+stackcall,+clib --summary=default,-psect,-class,+mem,-hex --opt=default,+asm,-asmfile,+speed,-space,-debug,-9  --double=24 --float=24 --addrqual=ignore --mode=lite -g --asmlist "--errformat=%f:%l: error: %s" "--msgformat=%f:%l: advisory: %s" "--warnformat=%f:%l warning: %s"
 	${MP_CC} --scandep --pass1 cangc4.c $(MP_EXTRA_CC_PRE) -q --chip=$(MP_PROCESSOR_OPTION) -P  --outdir=${OBJECTDIR} -N31 --warn=9 --runtime=default,+clear,+init,-keep,+osccal,-resetbits,-download,+stackcall,+clib --opt=default,+asm,-asmfile,+speed,-space,-debug,-9  --double=24 --float=24 --addrqual=ignore --mode=lite -g --asmlist "--errformat=%f:%l: error: %s" "--msgformat=%f:%l: advisory: %s" "--warnformat=%f:%l warning: %s"
-	echo "${OBJECTDIR}/cangc4.p1:\\" > ${OBJECTDIR}/cangc4.p1.d
-ifneq (,$(findstring MINGW32,$(OS_CURRENT))) 
-	@cat ${OBJECTDIR}/cangc4.dep | sed -e 's/^ *//' -e 's/\\/\//g' -e 's/ /\\ /g' -e 's/^.*$$/ &\\/g'  >> ${OBJECTDIR}/cangc4.p1.d
-else 
-	@cat ${OBJECTDIR}/cangc4.dep | sed -e 's/^ *//' -e 's/^.*$$/ &\\/g'  >> ${OBJECTDIR}/cangc4.p1.d
-endif
+	@echo ${OBJECTDIR}/cangc4.p1: > ${OBJECTDIR}/cangc4.p1.d
+	@cat ${OBJECTDIR}/cangc4.dep >> ${OBJECTDIR}/cangc4.p1.d
+	@${FIXDEPS} "${OBJECTDIR}/cangc4.p1.d" $(SILENT) -ht 
+	
 endif
 
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: link
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.cof: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk
-	${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE) -odist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.cof -mdist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.map --summary=default,-psect,-class,+mem,-hex --chip=$(MP_PROCESSOR_OPTION) -P --runtime=default,+clear,+init,-keep,+osccal,-resetbits,-download,+stackcall,+clib --summary=default,-psect,-class,+mem,-hex --opt=default,+asm,-asmfile,+speed,-space,-debug,-9 -D__DEBUG --debugger=pickit3 -N31 --warn=9  --double=24 --float=24 --addrqual=ignore --mode=lite --output=default,-inhx032 -g --asmlist "--errformat=%f:%l: error: %s" "--msgformat=%f:%l: advisory: %s" "--warnformat=%f:%l warning: %s" ${OBJECTFILES}  
-	${RM} dist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.hex
+	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
+	${MP_LD} $(MP_EXTRA_LD_PRE) -odist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.cof -mdist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.map --summary=default,-psect,-class,+mem,-hex --chip=$(MP_PROCESSOR_OPTION) -P --runtime=default,+clear,+init,-keep,+osccal,-resetbits,-download,+stackcall,+clib --summary=default,-psect,-class,+mem,-hex --opt=default,+asm,-asmfile,+speed,-space,-debug,-9 -D__DEBUG --debugger=pickit3 -N31 --warn=9  --double=24 --float=24 --addrqual=ignore --mode=lite --output=default,-inhx032 -g --asmlist "--errformat=%f:%l: error: %s" "--msgformat=%f:%l: advisory: %s" "--warnformat=%f:%l warning: %s" ${OBJECTFILES_QUOTED_IF_SPACED}  
+	@${RM} dist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.hex
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.cof: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk
-	${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE) -odist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.cof -mdist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.map --summary=default,-psect,-class,+mem,-hex --chip=$(MP_PROCESSOR_OPTION) -P --runtime=default,+clear,+init,-keep,+osccal,-resetbits,-download,+stackcall,+clib --summary=default,-psect,-class,+mem,-hex --opt=default,+asm,-asmfile,+speed,-space,-debug,-9 -N31 --warn=9  --double=24 --float=24 --addrqual=ignore --mode=lite --output=default,-inhx032 -g --asmlist "--errformat=%f:%l: error: %s" "--msgformat=%f:%l: advisory: %s" "--warnformat=%f:%l warning: %s" ${OBJECTFILES}  
+	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
+	${MP_LD} $(MP_EXTRA_LD_PRE) -odist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.cof -mdist/${CND_CONF}/${IMAGE_TYPE}/cangc4.${IMAGE_TYPE}.map --summary=default,-psect,-class,+mem,-hex --chip=$(MP_PROCESSOR_OPTION) -P --runtime=default,+clear,+init,-keep,+osccal,-resetbits,-download,+stackcall,+clib --summary=default,-psect,-class,+mem,-hex --opt=default,+asm,-asmfile,+speed,-space,-debug,-9 -N31 --warn=9  --double=24 --float=24 --addrqual=ignore --mode=lite --output=default,-inhx032 -g --asmlist "--errformat=%f:%l: error: %s" "--msgformat=%f:%l: advisory: %s" "--warnformat=%f:%l warning: %s" ${OBJECTFILES_QUOTED_IF_SPACED}  
 endif
 
 
@@ -122,4 +126,7 @@ endif
 # Enable dependency checking
 .dep.inc: .depcheck-impl
 
-include .dep.inc
+DEPFILES=$(wildcard $(addsuffix .d, ${OBJECTFILES}))
+ifneq (${DEPFILES},)
+include ${DEPFILES}
+endif
