@@ -46,6 +46,7 @@ near unsigned short dim_timer;
 #pragma interrupt isr_high
 void isr_high(void) {
 
+  // Timer2 interrupt handler
   if( PIR1bits.TMR2IF ) {
     PIR1bits.TMR2IF = 0; // Clear interrupt flag
     TMR2 = 0; // reset counter
@@ -61,7 +62,6 @@ void isr_high(void) {
     // I/O timeout - 50ms
     if (--io_timer == 0) {
       io_timer = 50;
-      doIOTimers();
       if (can_transmit_timeout != 0) {
         --can_transmit_timeout;
       }
@@ -82,7 +82,7 @@ void isr_high(void) {
 
   }
 
-
+  // Timer0 interrupt handler
   if( INTCONbits.T0IF ) {
     T0CONbits.TMR0ON = 0; // Timer0 off
     INTCONbits.T0IF  = 0; // Clear interrupt flag

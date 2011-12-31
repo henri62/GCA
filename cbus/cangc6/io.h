@@ -55,7 +55,7 @@ typedef struct {
   byte   speed;
   byte   position;
   byte   wantedpos;
-  int    pulse;
+  ushort pulse;
   int    swnn;
   int    swaddr;
   int    fbaddr;
@@ -75,15 +75,11 @@ extern near unsigned char led1timer;
 
 
 void setupIO(byte clr);
-void writeOutput(int port, unsigned char val);
-unsigned char readInput(int port);
-void doIOTimers(void);
 void doLEDTimers(void);
 unsigned char checkInput(unsigned char idx, unsigned char sod);
 void doLED250(void);
 void doLEDs(void);
 void saveOutputStates(void);
-void restoreOutputStates(void);
 void setOutput(ushort nn, ushort addr, byte on);
 unsigned char checkFlimSwitch(void);
 

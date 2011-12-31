@@ -140,9 +140,6 @@ void main(void) {
   initRelayTx();
   
   delay();
-  restoreOutputStates();
-  delay();
-
 
   SOD  = eeRead(EE_SOD) * 256;
   SOD += eeRead(EE_SOD+1);

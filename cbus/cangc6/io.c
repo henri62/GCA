@@ -113,15 +113,6 @@ void setupIO(byte clr) {
 }
 
 
-void writeOutput(int idx, unsigned char val) {
-}
-
-unsigned char readInput(int idx) {
-  unsigned char val = 0;
-  return !val;
-}
-
-
 // Called every 3ms.
 void doLEDTimers(void) {
   if( led1timer > 0 ) {
@@ -132,13 +123,6 @@ void doLEDTimers(void) {
   }
 
 }
-
-void doIOTimers(void) {
-}
-
-void doTimedOff(int i) {
-}
-
 
 unsigned char checkFlimSwitch(void) {
   unsigned char val = SW;
@@ -168,14 +152,6 @@ void saveOutputStates(void) {
   }
 
 }
-
-
-
-void restoreOutputStates(void) {
-  int idx = 0;
-
-}
-
 
 
 static unsigned char __LED2 = 0;
@@ -212,10 +188,6 @@ void doLED250(void) {
     __LED4 = 1;
   }
 
-}
-
-
-byte getPortStates(int group) {
 }
 
 

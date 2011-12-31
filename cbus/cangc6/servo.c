@@ -94,48 +94,42 @@ byte doServoPosition(void) {
 
 // called every 5ms
 void doServo(void) {
-  if( !pending ) {
-    int rest = 0;
-    pending = TRUE;
-    if( doServoPosition() ) {
-      if( Servo[servoIdx].endtime < SERVO_ENDTIME )
-        Servo[servoIdx].endtime++;
-    }
+  ushort rest = 0;
 
-    rest = 0xFFFF - (Servo[servoIdx].pulse*15);
-    TMR0H = rest / 256;
-    TMR0L = rest % 256;
-
-    if( servoIdx == 0 ) {
-      SERVO1 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
-    }
-    else if( servoIdx == 1 ) {
-      SERVO2 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
-    }
-    else if( servoIdx == 2 ) {
-      SERVO3 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
-    }
-    else if( servoIdx == 3 ) {
-      SERVO4 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
-    }
-    T0CONbits.TMR0ON = 1; // Timer0 on
-
+  if( doServoPosition() ) {
+    if( Servo[servoIdx].endtime < SERVO_ENDTIME )
+      Servo[servoIdx].endtime++;
   }
+
+  rest = 0xFFFF - (Servo[servoIdx].pulse*15);
+  TMR0H = (byte)(rest / 256);
+  TMR0L = (byte)(rest % 256);
+
+  if( servoIdx == 0 ) {
+    SERVO1 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
+  }
+  else if( servoIdx == 1 ) {
+    SERVO2 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
+  }
+  else if( servoIdx == 2 ) {
+    SERVO3 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
+  }
+  else if( servoIdx == 3 ) {
+    SERVO4 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
+  }
+  T0CONbits.TMR0ON = 1; // Timer0 on
+
 }
 
 void endServoPulse(void) {
-  if( pending ) {
-    SERVO1 = PORT_OFF;
-    SERVO2 = PORT_OFF;
-    SERVO3 = PORT_OFF;
-    SERVO4 = PORT_OFF;
+  SERVO1 = PORT_OFF;
+  SERVO2 = PORT_OFF;
+  SERVO3 = PORT_OFF;
+  SERVO4 = PORT_OFF;
 
-    servoIdx++;
-    if( servoIdx > 3 )
-      servoIdx = 0;
-
-    pending = FALSE;
-  }
+  servoIdx++;
+  if( servoIdx > 3 )
+    servoIdx = 0;
 }
 
 
