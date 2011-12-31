@@ -55,11 +55,11 @@ typedef struct {
   byte   speed;
   byte   position;
   byte   wantedpos;
+  int    pulse;
   int    swnn;
   int    swaddr;
   int    fbaddr;
   byte   endtime;
-  byte   gear;
 } ServoDef;
 
 #define SERVOCONF_POLAR  0x01

@@ -88,6 +88,7 @@ const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC6, EVT_
 
 void initIO(void);
 void initCAN(void);
+void initTimers(void);
 
 /*
  * Interrupt vectors
@@ -124,6 +125,7 @@ void main(void) {
   NV1 = eeRead(EE_NV);
 
   initIO();
+  initTimers();
 
   NN_temp  = eeRead(EE_NN) * 256;
   NN_temp += eeRead(EE_NN+1);
@@ -207,6 +209,46 @@ void main(void) {
 
 }
 
+
+void initTimers(void) {
+  tmr0_reload = TMR0_NORMAL;
+    // Start slot timeout timer
+  led500ms_timer = 500;  // 500ms
+  io_timer = 50;  // 50ms
+  led_timer = 4;  // 4ms
+
+  // ***** Timer0 *****
+  T0CON = 0;
+  // pre scaler 16:
+  T0CONbits.PSA   = 1;
+  T0CONbits.T0PS0 = 1;
+  T0CONbits.T0PS1 = 1;
+  T0CONbits.T0PS2 = 0;
+  // 16 bit counter
+  T0CONbits.T08BIT = 0;
+  // timer off; is controlled by the servo functions
+  T0CONbits.TMR0ON = 0;
+  // center servo position: 750 * 2us = 1.5ms
+  TMR0H = 0;
+  TMR0L = 0;
+  // interrupt
+  INTCONbits.TMR0IE  = 1;
+  INTCON2bits.TMR0IP = 1;
+
+  // ***** Timer2 *****
+  T2CON = 4 << 3; // 5 post scaler
+  T2CONbits.TMR2ON  = 1; // Timer2 on
+  T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
+  T2CONbits.T2CKPS1 = 1;
+  TMR2 = 0; // 1 mS
+  PR2  = 100;
+  PIE1bits.TMR2IE = 1;
+  INTCONbits.PEIE = 1;
+  IPR1bits.TMR2IP = 1; // high prio
+
+
+}
+
 void initIO(void) {
   int idx = 0;
 
@@ -227,40 +269,12 @@ void initIO(void) {
   PIR2 = 0;
   PIR1 = 0;
 
-  // Set up TMR0 8 bit mode
-  //T0CON = 0x41; //or 4MHz resonat
-  //T0CON = 0x42; //or 8MHz resonat
-  T0CON = 0x44; //or 8MHz resonat
-  TMR0L = 0;
-  TMR0H = 0;
-  INTCONbits.TMR0IE = 1;
-  T0CONbits.TMR0ON = 1;
-  INTCON2bits.TMR0IP = 1;
-
-  T2CON = 4 << 3; // 5 post scaler
-  T2CONbits.TMR2ON  = 1; // Timer2 on
-  T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
-  T2CONbits.T2CKPS1 = 1;
-  TMR2 = 0; // 1.50 mS, servo center
-  PR2  = 150;
-  PIE1bits.TMR2IE = 1;
-  INTCONbits.PEIE = 1;
-  IPR1bits.TMR2IP = 1; // high prio
 
   // clear the fifo receive buffers
   while (fifoEmpty() == 0) {
     rx_ptr->con = 0;
   }
 
-
-  tmr0_reload = TMR0_NORMAL;
-
-
-    // Start slot timeout timer
-  led500ms_timer = 2000;  // 500ms
-  io_timer = 200;  // 50ms
-  led_timer = 16;  // 4ms
-  led_timer = 8;  // 2ms
 
   // Set up global interrupts
   RCONbits.IPEN   = 1;        // Enable priority levels on interrupts

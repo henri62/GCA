@@ -40,25 +40,17 @@ near unsigned short dim_timer;
 //
 // Interrupt Service Routine
 //
-// TMR0 generates a heartbeat every 1mS.
-// TMR2 generates a pulse between 0.5 and 2.5mS.
+// TMR2 generates a heartbeat every 1mS.
+// TMR0 generates a pulse between 0.5 and 2.5mS.
 //
 #pragma interrupt isr_high
 void isr_high(void) {
 
   if( PIR1bits.TMR2IF ) {
-    T2CONbits.TMR2ON  = 0; // Timer2 off
-    PIR1bits.TMR2IF   = 0; // Clear interrupt flag
-    endServoPulse();
-  }
+    PIR1bits.TMR2IF = 0; // Clear interrupt flag
+    TMR2 = 0; // reset counter
 
-  if( INTCONbits.T0IF ) {
-    INTCONbits.T0IF = 0;
-    TMR0L = tmr0_reload;
-
-    //
     // I/O timeout - 5ms
-    //
     if (--led_timer == 0) {
       led_timer = 5;
       doLEDTimers();
@@ -66,9 +58,7 @@ void isr_high(void) {
       RelayUpdate();
     }
 
-    //
     // I/O timeout - 50ms
-    //
     if (--io_timer == 0) {
       io_timer = 50;
       doIOTimers();
@@ -77,22 +67,26 @@ void isr_high(void) {
       }
     }
 
-    //
-    // Timer 250ms
-    //
+    // Timer 200ms
     if (--led250ms_timer == 0) {
         led250ms_timer = 200;
         doLED250();
     }
 
-    //
     // Timer 500ms
-    //
     if (--led500ms_timer == 0) {
       led500ms_timer = 500;
       doLEDs();
       readExtSensors(0xFF);
     }
+
+  }
+
+
+  if( INTCONbits.T0IF ) {
+    T0CONbits.TMR0ON = 0; // Timer0 off
+    INTCONbits.T0IF  = 0; // Clear interrupt flag
+    endServoPulse();
   }
 
 }
