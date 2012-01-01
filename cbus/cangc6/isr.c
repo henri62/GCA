@@ -46,6 +46,13 @@ near unsigned short dim_timer;
 #pragma interrupt isr_high
 void isr_high(void) {
 
+  // Timer0 interrupt handler
+  if( INTCONbits.T0IF ) {
+    T0CONbits.TMR0ON = 0; // Timer0 off
+    INTCONbits.T0IF  = 0; // Clear interrupt flag
+    endServoPulse();
+  }
+
   // Timer2 interrupt handler
   if( PIR1bits.TMR2IF ) {
     PIR1bits.TMR2IF = 0; // Clear interrupt flag
@@ -56,12 +63,12 @@ void isr_high(void) {
       led_timer = 5;
       doLEDTimers();
       doServo();
-      RelayUpdate();
     }
 
     // I/O timeout - 50ms
     if (--io_timer == 0) {
       io_timer = 50;
+      RelayUpdate();
       if (can_transmit_timeout != 0) {
         --can_transmit_timeout;
       }
@@ -82,13 +89,6 @@ void isr_high(void) {
 
   }
 
-  // Timer0 interrupt handler
-  if( INTCONbits.T0IF ) {
-    T0CONbits.TMR0ON = 0; // Timer0 off
-    INTCONbits.T0IF  = 0; // Clear interrupt flag
-    endServoPulse();
-  }
-
 }
 
 
@@ -99,6 +99,7 @@ void isr_high(void) {
 void isr_low(void) {
   //LED2 = 1;
   if (PIR3bits.ERRIF == 1) {
+    PIR3bits.ERRIF = 0;
 
     if (TXB1CONbits.TXLARB) { // lost arbitration
       if (Latcount == 0) { // already tried higher priority
@@ -118,5 +119,4 @@ void isr_low(void) {
 
   }
 
-  PIR3 = 0; // clear interrupts
 }

@@ -102,8 +102,8 @@ void doServo(void) {
   }
 
   rest = 0xFFFF - (Servo[servoIdx].pulse*15);
-  TMR0H = (byte)(rest / 256);
-  TMR0L = (byte)(rest % 256);
+  TMR0H = (byte)(rest >> 8);
+  TMR0L = (byte)(rest & 0x00FF);
 
   if( servoIdx == 0 ) {
     SERVO1 = (Servo[servoIdx].endtime < SERVO_ENDTIME) ? PORT_ON:PORT_OFF;
