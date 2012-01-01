@@ -241,7 +241,7 @@ void initTimers(void) {
   PR2  = 100;
   PIE1bits.TMR2IE = 1;
   INTCONbits.PEIE = 1;
-  IPR1bits.TMR2IP = 1; // high prio
+  IPR1bits.TMR2IP = 0; // high prio
 
 
 }

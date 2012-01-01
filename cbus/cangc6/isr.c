@@ -53,6 +53,15 @@ void isr_high(void) {
     endServoPulse();
   }
 
+
+}
+
+
+//
+// Low priority interrupt. Used for CAN receive.
+//
+#pragma interruptlow isr_low
+void isr_low(void) {
   // Timer2 interrupt handler
   if( PIR1bits.TMR2IF ) {
     PIR1bits.TMR2IF = 0; // Clear interrupt flag
@@ -88,16 +97,7 @@ void isr_high(void) {
     }
 
   }
-
-}
-
-
-//
-// Low priority interrupt. Used for CAN receive.
-//
-#pragma interruptlow isr_low
-void isr_low(void) {
-  //LED2 = 1;
+  
   if (PIR3bits.ERRIF == 1) {
     PIR3bits.ERRIF = 0;
 
