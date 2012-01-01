@@ -127,7 +127,9 @@ unsigned char parseCmd(void) {
       break;
 
     case OPC_NNCLR:
-      setupIO(TRUE);
+      if( thisNN() && isLearning ) {
+        setupIO(TRUE);
+      }
       break;
 
     case OPC_QNN:
