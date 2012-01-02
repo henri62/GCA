@@ -58,6 +58,7 @@
 #include "isr.h"
 #include "cangc4.h"
 #include "io.h"
+#include "rfid.h"
 
 #pragma udata access VARS
 near unsigned short led500ms_timer;
@@ -79,9 +80,9 @@ void isr_high(void) {
 
   // Timer0 interrupt handler
   if( INTCONbits.T0IF ) {
-    T0CONbits.TMR0ON = 0; // Timer0 off
     INTCONbits.T0IF  = 0; // Clear interrupt flag
-    //endServoPulse();
+    TMR0L = 256 - 139;
+    scanRFID();
   }
 
 

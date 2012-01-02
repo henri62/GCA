@@ -11,6 +11,7 @@
       <itemPath>io.h</itemPath>
       <itemPath>isr.h</itemPath>
       <itemPath>project.h</itemPath>
+      <itemPath>rfid.h</itemPath>
       <itemPath>rocrail.h</itemPath>
       <itemPath>utils.h</itemPath>
     </logicalFolder>
@@ -30,6 +31,7 @@
       <itemPath>commands.c</itemPath>
       <itemPath>io.c</itemPath>
       <itemPath>isr.c</itemPath>
+      <itemPath>rfid.c</itemPath>
       <itemPath>utils.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -92,8 +94,8 @@
         <property key="programoptions.preserveprogramrange.start" value="0x0"/>
         <property key="voltagevalue" value="5.0"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
-        <property key="memories.programmemory.start" value="0x0"/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="memories.programmemory.start" value="0x0"/>
         <property key="memories.programmemory.end" value="0x3ff"/>
         <property key="poweroptions.powerenable" value="false"/>
       </PICkit3PlatformTool>
