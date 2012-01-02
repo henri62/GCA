@@ -44,7 +44,8 @@
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 
 
-//ram ServoDef Servo[4];
+ram RFIDDef Reader[8];
+ram SENSDef Sensor[8];
 
 #pragma udata access VARS
 
@@ -212,19 +213,19 @@ void initTimers(void) {
   led_timer = 4;  // 4ms
 
   // ***** Timer0 *****
+  // 32000000/4/2/139 == 28776,98 Hz.
   T0CON = 0;
-  // pre scaler 16:
+  // pre scaler 2:
   T0CONbits.PSA   = 1;
-  T0CONbits.T0PS0 = 1;
-  T0CONbits.T0PS1 = 1;
+  T0CONbits.T0PS0 = 0;
+  T0CONbits.T0PS1 = 0;
   T0CONbits.T0PS2 = 0;
-  // 16 bit counter
-  T0CONbits.T08BIT = 0;
-  // timer off; is controlled by the servo functions
-  T0CONbits.TMR0ON = 0;
-  // center servo position: 750 * 2us = 1.5ms
+  // 8 bit counter
+  T0CONbits.T08BIT = 1;
   TMR0H = 0;
-  TMR0L = 0;
+  TMR0L = 256 - 139;
+  // timer on
+  T0CONbits.TMR0ON = 1;
   // interrupt
   INTCONbits.TMR0IE  = 1;
   INTCON2bits.TMR0IP = 1;

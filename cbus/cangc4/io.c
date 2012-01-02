@@ -39,31 +39,34 @@ void setupIO(byte clr) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
 
-  TRISCbits.TRISC0 = 1; /* T1S */
-  TRISCbits.TRISC1 = 1; /* T2S */
-  TRISCbits.TRISC2 = 1; /* T3S */
-  TRISCbits.TRISC3 = 1; /* T4S */
-  TRISCbits.TRISC4 = 1; /* T4R */
-  TRISCbits.TRISC5 = 1; /* T3R */
-  TRISAbits.TRISA2 = 1; /* T2R */
-  TRISCbits.TRISC7 = 1; /* T1R */
+  TRISBbits.TRISB5 = 0;  // LED3 cbus activity
+  TRISBbits.TRISB7 = 0;  // LED2 learning mode
+  TRISBbits.TRISB6 = 0;  // LED1 running
 
-  TRISAbits.TRISA1 = 1; /* SW */
-  TRISCbits.TRISC6 = 1; /* GCA137 TX */
-  TRISAbits.TRISA3 = 0; /* LED1 */
-  TRISAbits.TRISA4 = 0; /* LED2 */
-  TRISAbits.TRISA5 = 0; /* LED3 */
-  TRISAbits.TRISA0 = 0; /* LED4 */
+  TRISAbits.TRISA2 = 1; /* SW */
 
-  TRISBbits.TRISB0 = 0; /* SERVO1 */
-  TRISBbits.TRISB1 = 0; /* SERVO2 */
-  TRISBbits.TRISB4 = 0; /* SERVO3 */
-  TRISBbits.TRISB5 = 0; /* SERVO4 */
+  TRISCbits.TRISC0 = 1; /* RFID1 */
+  TRISCbits.TRISC1 = 1; /* RFID2 */
+  TRISCbits.TRISC2 = 1; /* RFID3 */
+  TRISCbits.TRISC3 = 1; /* RFID4 */
+
+  TRISCbits.TRISC4 = 1; /* RFID8 */
+  TRISCbits.TRISC5 = 1; /* RFID7 */
+  TRISCbits.TRISC6 = 1; /* RFID6 */
+  TRISCbits.TRISC7 = 1; /* RFID5 */
+
+  TRISAbits.TRISA0 = 1; /* SENS1 */
+  TRISAbits.TRISA1 = 1; /* SENS2 */
+  TRISAbits.TRISA3 = 1; /* SENS3 */
+  TRISAbits.TRISA4 = 1; /* SENS4 */
+  TRISAbits.TRISA5 = 1; /* SENS5 */
+  TRISBbits.TRISB0 = 1; /* SENS6 */
+  TRISBbits.TRISB7 = 1; /* SENS7 */
+  TRISBbits.TRISB6 = 1; /* SENS8 */
 
   LED1   = PORT_OFF;
   LED2   = PORT_OFF;
   LED3   = PORT_OFF;
-  LED4   = PORT_OFF;
 
 
 }
