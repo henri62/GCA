@@ -44,6 +44,7 @@
 #define EE_PORTACT EE_PORTADDR + 32     // 16 * 2 bytes event variable
 #define EE_PORTSTAT EE_PORTACT + 32     // 2 bytes port output status saved at power off command
 #define EE_CANID EE_PORTSTAT + 2        // 1 byte CANID
+#define EE_FIRSTTIME EE_CANID + 1       // 1 byte first time flag
 
 // values
 #define MAGIC 93

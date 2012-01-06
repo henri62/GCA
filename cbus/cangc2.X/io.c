@@ -34,6 +34,7 @@
 
 void setupIO(byte clr) {
   int idx = 0;
+  byte firstTime = eeRead(EE_FIRSTTIME);
 
   // all digital I/O
   ADCON0 = 0x00;
@@ -47,6 +48,11 @@ void setupIO(byte clr) {
   LED1 = 0;
   LED2 = 0;
   LED3 = 0;
+
+  if( firstTime == 0xFF ) {
+    eeWrite(EE_FIRSTTIME, 0);
+    clr = TRUE;
+  }
 
 
   // following presets are written to eeprom if the flim switch is preshed at boot
