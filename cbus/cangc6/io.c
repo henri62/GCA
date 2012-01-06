@@ -66,10 +66,12 @@ void setupIO(byte clr) {
   LED2   = PORT_OFF;
   LED3   = PORT_OFF;
   LED4   = PORT_OFF;
-  SERVO1 = PORT_OFF;
-  SERVO2 = PORT_OFF;
-  SERVO3 = PORT_OFF;
-  SERVO4 = PORT_OFF;
+
+  // Keep servo output high to avoid unwanted movements.
+  SERVO1 = PORT_ON;
+  SERVO2 = PORT_ON;
+  SERVO3 = PORT_ON;
+  SERVO4 = PORT_ON;
 
   if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
     eeWrite(EE_CLEAN, 0);

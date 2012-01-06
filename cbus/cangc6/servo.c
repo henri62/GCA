@@ -175,7 +175,7 @@ byte readExtSensors( byte servo ) {
   __extPosS[servo] = straight;
   __extPosT[servo] = thrown;
 
-  canmsg.opc = thrown ? OPC_ASON:OPC_ASOF;
+  canmsg.opc = !thrown ? OPC_ASON:OPC_ASOF;
   canmsg.d[0] = (NN_temp / 256) & 0xFF;
   canmsg.d[1] = (NN_temp % 256) & 0xFF;
   canmsg.d[2] = (Servo[servo].fbaddr / 256) & 0xFF;
