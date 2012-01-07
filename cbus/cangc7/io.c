@@ -243,15 +243,12 @@ void doLEDTimers(void) {
           PORTC = bcd[FastClock.mday / 10];
           DIS4 = dispON;
         }
-        if( showdate && altDisplay == DISPLAY_TEMP && FastClock.temp & 0x80 ) {
-          DIS4 = Dash;
+        else if( showdate && altDisplay == DISPLAY_TEMP && FastClock.temp & 0x80 ) {
+          PORTC = Dash;
+          DIS4  = dispON;
         }
         else if( !showdate && FastClock.hours / 10 != 0) {
           PORTC = bcd[FastClock.hours / 10];
-          DIS4 = dispON;
-        }
-        else if( !showdate ) {
-          PORTC = FastClock.wday&0x08?0x80:0x00;
           DIS4 = dispON;
         }
       }
