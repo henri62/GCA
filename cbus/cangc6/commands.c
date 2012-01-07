@@ -158,10 +158,10 @@ unsigned char parseCmd(void) {
           canQueue(&canmsg);
           txed = 1;
         }
-        else if( nvnr > 2 && nvnr < 19 ) {
+        else if( nvnr > 2 && nvnr < 23 ) {
           // Servo
-          byte servoIdx = (nvnr-3) / 4;
-          byte servoVar = (nvnr-3) % 4;
+          byte servoIdx = (nvnr-3) / 5;
+          byte servoVar = (nvnr-3) % 5;
           canmsg.opc = OPC_NVANS;
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
           canmsg.d[1] = (NN_temp % 256) & 0xFF;
@@ -173,7 +173,9 @@ unsigned char parseCmd(void) {
           else if( servoVar == 2 )
             canmsg.d[3] = Servo[servoIdx].right;
           else if( servoVar == 3 )
-            canmsg.d[3] = Servo[servoIdx].speed;
+            canmsg.d[3] = Servo[servoIdx].speedL;
+          else if( servoVar == 4 )
+            canmsg.d[3] = Servo[servoIdx].speedR;
 
           canmsg.len = 4;
           canQueue(&canmsg);
@@ -194,10 +196,10 @@ unsigned char parseCmd(void) {
           CANID = rx_ptr->d4;
           eeWrite(EE_CANID, CANID);
         }
-        else if( nvnr > 2 && nvnr < 19 ) {
+        else if( nvnr > 2 && nvnr < 23 ) {
           // Servo
-          byte servoIdx = ((nvnr-3) / 4);
-          byte servoVar = (nvnr-3) % 4;
+          byte servoIdx = ((nvnr-3) / 5);
+          byte servoVar = (nvnr-3) % 5;
           if( servoVar == 0 ) {
             Servo[servoIdx].config = rx_ptr->d4;
             eeWrite(EE_SERVO_CONFIG + servoIdx, rx_ptr->d4);
@@ -218,9 +220,13 @@ unsigned char parseCmd(void) {
             Servo[servoIdx].wantedpos = Servo[servoIdx].right;
             //Servo[servoIdx].position = Servo[servoIdx].right;
           }
-          else if( servoVar == 3 && rx_ptr->d4 <= 10 ) {
-            Servo[servoIdx].speed = rx_ptr->d4;
-            eeWrite(EE_SERVO_SPEED + servoIdx, rx_ptr->d4);
+          else if( servoVar == 3 && rx_ptr->d4 <= 20 ) {
+            Servo[servoIdx].speedL = rx_ptr->d4;
+            eeWrite(EE_SERVO_SPEEDL + servoIdx, rx_ptr->d4);
+          }
+          else if( servoVar == 4 && rx_ptr->d4 <= 20 ) {
+            Servo[servoIdx].speedR = rx_ptr->d4;
+            eeWrite(EE_SERVO_SPEEDR + servoIdx, rx_ptr->d4);
           }
 
         }

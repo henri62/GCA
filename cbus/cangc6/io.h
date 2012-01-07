@@ -52,7 +52,8 @@ typedef struct {
   byte   config;
   byte   left;
   byte   right;
-  byte   speed;
+  byte   speedL;
+  byte   speedR;
   byte   position;
   byte   wantedpos;
   ushort pulse;
@@ -60,10 +61,13 @@ typedef struct {
   int    swaddr;
   int    fbaddr;
   byte   endtime;
+  byte   bounceL;
+  byte   bounceR;
 } ServoDef;
 
 #define SERVOCONF_POLAR  0x01
 #define SERVOCONF_EXTSEN 0x02
+#define SERVOCONF_BOUNCE 0x04
 
 #define TURNOUT_UNKNOWN 0
 #define TURNOUT_STRAIGHT 1

@@ -79,7 +79,8 @@ void setupIO(byte clr) {
       eeWrite(EE_SERVO_CONFIG + idx, 0);
       eeWrite(EE_SERVO_LEFT + idx, 100);
       eeWrite(EE_SERVO_RIGHT + idx, 200);
-      eeWrite(EE_SERVO_SPEED + idx, 1);
+      eeWrite(EE_SERVO_SPEEDL + idx, 1);
+      eeWrite(EE_SERVO_SPEEDR + idx, 1);
       eeWrite(EE_SERVO_POSITION + idx, SERVO_CENTERPOS);
       eeWriteShort(EE_SERVO_FBADDR + 2 * idx, idx + idx * 4);
       eeWriteShort(EE_SERVO_SWNN + 2 * idx, 0);
@@ -92,7 +93,8 @@ void setupIO(byte clr) {
     Servo[idx].config    = eeRead(EE_SERVO_CONFIG + idx);
     Servo[idx].left      = eeRead(EE_SERVO_LEFT + idx);
     Servo[idx].right     = eeRead(EE_SERVO_RIGHT + idx);
-    Servo[idx].speed     = eeRead(EE_SERVO_SPEED + idx);
+    Servo[idx].speedL    = eeRead(EE_SERVO_SPEEDL + idx);
+    Servo[idx].speedR    = eeRead(EE_SERVO_SPEEDR + idx);
     Servo[idx].wantedpos = eeRead(EE_SERVO_POSITION + idx);
     Servo[idx].fbaddr    = eeReadShort(EE_SERVO_FBADDR + 2 * idx);
     Servo[idx].swnn      = eeReadShort(EE_SERVO_SWNN + 2 * idx);
@@ -105,9 +107,20 @@ void setupIO(byte clr) {
     if(Servo[idx].wantedpos > SERVO_MAXPOS || Servo[idx].wantedpos < SERVO_MINPOS )
       Servo[idx].wantedpos = SERVO_CENTERPOS;
 
+    if( Servo[idx].speedL > 20 ) {
+      Servo[idx].speedL = 20;
+      eeWrite(EE_SERVO_SPEEDL + idx, Servo[idx].speedL);
+    }
+    if( Servo[idx].speedR > 20 ) {
+      Servo[idx].speedR = Servo[idx].speedL;
+      eeWrite(EE_SERVO_SPEEDR + idx, Servo[idx].speedR);
+    }
+
     Servo[idx].position = Servo[idx].wantedpos;
     setServoRelaybits(idx);
     Servo[idx].endtime = 0;
+    Servo[idx].bounceL = 0;
+    Servo[idx].bounceR = 0;
     Servo[idx].pulse = Servo[idx].position;
     Servo[idx].pulse *= 5;
   }

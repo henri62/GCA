@@ -61,26 +61,48 @@ byte doServoPosition(void) {
     Servo[servoIdx].endtime = 0;
     RelayStart(servoIdx);
 
-    Servo[servoIdx].pulse += Servo[servoIdx].speed;
+    Servo[servoIdx].pulse += Servo[servoIdx].speedR;
     Servo[servoIdx].position = Servo[servoIdx].pulse / 5;
 
     if( Servo[servoIdx].position >= Servo[servoIdx].wantedpos ) {
-      Servo[servoIdx].position = Servo[servoIdx].wantedpos;
-      reportServoPosition(TRUE);
-      setServoRelaybits(servoIdx);
+      if( Servo[servoIdx].config & SERVOCONF_BOUNCE && Servo[servoIdx].bounceL == 1 ) {
+        Servo[servoIdx].wantedpos -= 10;
+        Servo[servoIdx].bounceL = 2;
+      }
+      else if( Servo[servoIdx].config & SERVOCONF_BOUNCE && Servo[servoIdx].bounceR == 0 ) {
+        Servo[servoIdx].wantedpos -= 10;
+        Servo[servoIdx].bounceR = 1;
+      }
+      else {
+        Servo[servoIdx].position = Servo[servoIdx].wantedpos;
+        reportServoPosition(TRUE);
+        setServoRelaybits(servoIdx);
+        Servo[servoIdx].bounceR = 0;
+      }
     }
   }
   else if( Servo[servoIdx].wantedpos < Servo[servoIdx].position ) {
     Servo[servoIdx].endtime = 0;
     RelayStart(servoIdx);
 
-    Servo[servoIdx].pulse -= Servo[servoIdx].speed;
+    Servo[servoIdx].pulse -= Servo[servoIdx].speedL;
     Servo[servoIdx].position = Servo[servoIdx].pulse / 5;
 
     if( Servo[servoIdx].position <= Servo[servoIdx].wantedpos ) {
-      Servo[servoIdx].position = Servo[servoIdx].wantedpos;
-      reportServoPosition(FALSE);
-      setServoRelaybits(servoIdx);
+      if( Servo[servoIdx].config & SERVOCONF_BOUNCE && Servo[servoIdx].bounceR == 1 ) {
+        Servo[servoIdx].wantedpos += 10;
+        Servo[servoIdx].bounceR = 2;
+      }
+      else if( Servo[servoIdx].config & SERVOCONF_BOUNCE && Servo[servoIdx].bounceL == 0 ) {
+        Servo[servoIdx].wantedpos += 10;
+        Servo[servoIdx].bounceL = 1;
+      }
+      else {
+        Servo[servoIdx].position = Servo[servoIdx].wantedpos;
+        reportServoPosition(FALSE);
+        setServoRelaybits(servoIdx);
+        Servo[servoIdx].bounceL = 0;
+      }
     }
   }
 
