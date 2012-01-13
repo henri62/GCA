@@ -34,7 +34,7 @@
 
 #define GCA137  PORTCbits.RC6	// GCA137 polarisation Tx
 
-#define CANGC6_21
+//#define CANGC6_21
 #ifdef CANGC6_21
     #define SERVO1  PORTBbits.RB5
     #define SERVO2  PORTBbits.RB4
