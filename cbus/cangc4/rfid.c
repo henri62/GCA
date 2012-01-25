@@ -20,9 +20,11 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "project.h"
+#include "cangc4.h"
 #include "rfid.h"
 
 void scanRFID(void) {
-  byte in = PORTC;
-  
+  byte inc = PORTC;
+
 }

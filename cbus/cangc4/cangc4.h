@@ -29,9 +29,9 @@
 #define MAJOR_VER 1
 #define MINOR_VER 'a'	// Minor version character
 
-#define EVT_NUM 8
+#define EVT_NUM 16
 #define EVperEVT 0
-#define NV_NUM 4*8
+#define NV_NUM 0
 
 // EEPROM addresses
 #define EE_CLEAN 0
@@ -39,6 +39,7 @@
 #define EE_NN 2          // 2 bytes node number of this unit
 #define EE_SOD EE_NN + 2     // 2 bytes start off day address to report all input states
 #define EE_CANID EE_SOD + 2  // 1 byte CANID
+#define EE_PORT_NN EE_CANID + 1  // 2 short event port 1
 
 
 // values
