@@ -39,9 +39,9 @@ void setupIO(byte clr) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
 
-  TRISBbits.TRISB5 = 0;  // LED3 cbus activity
+  TRISBbits.TRISB5 = 0;  // LED1 cbus activity
   TRISBbits.TRISB7 = 0;  // LED2 learning mode
-  TRISBbits.TRISB6 = 0;  // LED1 running
+  TRISBbits.TRISB6 = 0;  // LED3 running
 
   TRISAbits.TRISA2 = 1; /* SW */
 
@@ -61,8 +61,8 @@ void setupIO(byte clr) {
   TRISAbits.TRISA4 = 1; /* SENS4 */
   TRISAbits.TRISA5 = 1; /* SENS5 */
   TRISBbits.TRISB0 = 1; /* SENS6 */
-  TRISBbits.TRISB7 = 1; /* SENS7 */
-  TRISBbits.TRISB6 = 1; /* SENS8 */
+  TRISBbits.TRISB4 = 1; /* SENS7 */
+  TRISBbits.TRISB1 = 1; /* SENS8 */
 
   LED1   = PORT_OFF;
   LED2   = PORT_OFF;
