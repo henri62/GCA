@@ -29,11 +29,18 @@
 #include "cangc4.h"
 #include "io.h"
 
-ram unsigned char pnnCount = 0;
 
-#pragma udata access VARS
 
-#pragma code APP
+#pragma udata access VARS_CMD
+near unsigned char pnnCount;
+near byte idx;
+near byte var;
+near ushort nn;
+near ushort addr;
+near byte nnH;
+near byte nnL;
+
+//#pragma code CMD
 
 //
 // parse_cmd()
@@ -49,7 +56,7 @@ unsigned char parseCmd(void) {
 
     case OPC_ASRQ:
     {
-      int addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      addr = rx_ptr->d3 * 256 + rx_ptr->d4;
       if( SOD == addr && doSOD == 0) {
         ioIdx = 0;
         doSOD = 1;
@@ -60,8 +67,8 @@ unsigned char parseCmd(void) {
     case OPC_ACON:
     case OPC_ASON:
     {
-      ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
-      ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
+      addr = rx_ptr->d3 * 256 + rx_ptr->d4;
       setOutput(nn, addr, 1);
       break;
     }
@@ -69,8 +76,8 @@ unsigned char parseCmd(void) {
     case OPC_ACOF:
     case OPC_ASOF:
     {
-      ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
-      ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
+      nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
+      addr = rx_ptr->d3 * 256 + rx_ptr->d4;
       setOutput(nn, addr, 0);
       break;
     }
@@ -98,8 +105,8 @@ unsigned char parseCmd(void) {
     case OPC_SNN:
     {
       if( Wait4NN ) {
-        unsigned char nnH = rx_ptr->d1;
-        unsigned char nnL = rx_ptr->d2;
+        nnH = rx_ptr->d1;
+        nnL = rx_ptr->d2;
         NN_temp = nnH * 256 + nnL;
         eeWrite(EE_NN, nnH);
         eeWrite(EE_NN+1, nnL);
@@ -159,8 +166,8 @@ unsigned char parseCmd(void) {
         }
         else if( nvnr > 2 && nvnr < 28 ) {
           // 5 x 40bit Allowed RFID
-          byte idx = 0; //(nvnr-3) / 5;
-          byte var = 0;//(nvnr-3) % 5;
+          idx = (nvnr-3) / 5;
+          var = (nvnr-3) % 5;
           canmsg.opc = OPC_NVANS;
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
           canmsg.d[1] = NN_temp & 0xFF;
@@ -212,10 +219,10 @@ unsigned char parseCmd(void) {
 
     case OPC_EVLRN:
       if( isLearning ) {
-        ushort evtnn = rx_ptr->d1 * 256 + rx_ptr->d2;
-        ushort addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
-        byte idx = rx_ptr->d5;
-        byte val = rx_ptr->d6;
+        nn = rx_ptr->d1 * 256 + rx_ptr->d2;
+        addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
+        idx = rx_ptr->d5;
+        var = rx_ptr->d6;
         if( idx < 8 ) {
           // RFID
           RFID[idx].addr = addr;
@@ -224,7 +231,7 @@ unsigned char parseCmd(void) {
         }
         else if( idx > 7 && idx < 16 ) {
           // Block
-          Sensor[idx-8].addr = addr;
+          //Sensor[idx-8].addr = addr;
           //eeWrite(EE_PORT_ADDR + (idx-7)*2    , addr/256);
           //eeWrite(EE_PORT_ADDR + (idx-7)*2 + 1, addr%256);
         }
@@ -310,8 +317,8 @@ unsigned char doPortEvent(int i ) {
       canmsg.d[1] = NN_temp & 0xFF;
       canmsg.d[2] = (NN_temp / 256) & 0xFF;
       canmsg.d[3] = NN_temp & 0xFF;
-      canmsg.d[4] = (Sensor[i-7].addr >> 8) & 0xFF;
-      canmsg.d[5] = Sensor[i-7].addr & 0xFF;
+      //canmsg.d[4] = (Sensor[i-7].addr >> 8) & 0xFF;
+      //canmsg.d[5] = Sensor[i-7].addr & 0xFF;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);

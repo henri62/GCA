@@ -31,6 +31,7 @@
 #include "cangc4.h"
 #include "io.h"
 
+//#pragma code IO
 
 void setupIO(byte clr) {
   int idx = 0;

@@ -137,13 +137,16 @@ BRGCON3: 0x03
   }
 }
 
-#pragma udata access VARS
+#pragma udata access VARS_CAN
 // Transmit buffers
 near unsigned char Tx1[14];
 
 
 #pragma udata
 ecan_rx_buffer * rx_ptr;
+
+
+//#pragma code CAN
 
 //
 // ecan_fifo_empty()

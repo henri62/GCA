@@ -24,7 +24,7 @@
 #include <p18f2480.h>
 #include "utils.h"
 
-#pragma code APP
+//#pragma code APP
 
 /*
  * ee_read - read from data EEPROM

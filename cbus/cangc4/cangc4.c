@@ -38,18 +38,18 @@
 #pragma config OSC=HSPLL, FCMEN=OFF, IESO=OFF
 #pragma config PWRT=ON, BOREN=BOHW, BORV=2, WDT=OFF, WDTPS=256
 #pragma config MCLRE=OFF, LPT1OSC=OFF, PBADEN=OFF, DEBUG=OFF
-#pragma config XINST=OFF, BBSIZ=1024, LVP=OFF, STVREN=OFF
+#pragma config XINST=OFF, BBSIZ=1024, LVP=OFF, STVREN=ON
 #pragma config CP0=OFF, CP1=OFF, CPB=OFF, CPD=OFF
 #pragma config WRT0=OFF, WRT1=OFF, WRTB=OFF, WRTC=OFF, WRTD=OFF
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 
 
-ram RFIDDef RFID[8];
-ram SENSDef Sensor[8];
-ram AllowedRFIDDef AllowedRFID[5];
+#pragma udata VARS_MAIN_ARRAYS
+far RFIDDef RFID[8];
+far SENSDef Sensor[8];
+far AllowedRFIDDef AllowedRFID[5];
 
-#pragma udata access VARS
-
+#pragma udata access VARS_MAIN
 near unsigned char  can_transmit_timeout;
 near unsigned char  can_transmit_failed;
 near unsigned char  can_bus_off;
@@ -83,8 +83,6 @@ volatile near unsigned char tmr0_reload;
 
 #pragma romdata parameters
 const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC4, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
-
-#pragma romdata
 
 
 void initIO(void);

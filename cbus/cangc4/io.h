@@ -68,9 +68,9 @@ typedef struct {
 } AllowedRFIDDef;
 
 
-extern ram RFIDDef RFID[8];
-extern ram SENSDef Sensor[8];
-extern ram AllowedRFIDDef AllowedRFID[5];
+extern far RFIDDef RFID[8];
+extern far SENSDef Sensor[8];
+extern far AllowedRFIDDef AllowedRFID[5];
 extern near unsigned char led1timer;
 
 
