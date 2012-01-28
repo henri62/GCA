@@ -44,8 +44,9 @@
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 
 
-ram RFIDDef Reader[8];
+ram RFIDDef RFID[8];
 ram SENSDef Sensor[8];
+ram AllowedRFIDDef AllowedRFID[5];
 
 #pragma udata access VARS
 
@@ -143,7 +144,6 @@ void main(void) {
   SOD += eeRead(EE_SOD+1);
   if( SOD == 0 || SOD == 0xFFFF )
     SOD = DEFAULT_SOD;
-
 
   LED3 = PORT_ON; /* signal running system */
 

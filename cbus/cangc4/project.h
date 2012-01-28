@@ -24,7 +24,7 @@
 #ifndef __PROJECT_H
 #define __PROJECT_H
 
-#include <p18f2480.h>
+#include <p18f2585.h>
 
 #include "cbus.h"
 

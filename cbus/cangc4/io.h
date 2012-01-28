@@ -63,16 +63,14 @@ typedef struct {
   int    addr;
 } SENSDef;
 
-#define SERVOCONF_POLAR  0x01
-#define SERVOCONF_EXTSEN 0x02
-
-#define TURNOUT_UNKNOWN 0
-#define TURNOUT_STRAIGHT 1
-#define TURNOUT_THROWN 2
+typedef struct {
+  byte   data[5];
+} AllowedRFIDDef;
 
 
-extern ram RFIDDef Reader[8];
+extern ram RFIDDef RFID[8];
 extern ram SENSDef Sensor[8];
+extern ram AllowedRFIDDef AllowedRFID[5];
 extern near unsigned char led1timer;
 
 

@@ -78,7 +78,7 @@ unsigned char parseCmd(void) {
     case OPC_QNN:
       canmsg.opc  = OPC_PNN;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[1] = NN_temp & 0xFF;
       canmsg.d[2] = params[0];
       canmsg.d[3] = params[2];
       canmsg.d[4] = NV1;
@@ -140,7 +140,7 @@ unsigned char parseCmd(void) {
         if( nvnr == 1 ) {
           canmsg.opc = OPC_NVANS;
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[1] = NN_temp & 0xFF;
           canmsg.d[2] = nvnr;
           canmsg.d[3] = NV1;
           canmsg.len = 4;
@@ -150,22 +150,22 @@ unsigned char parseCmd(void) {
         else if( nvnr == 2 ) {
           canmsg.opc = OPC_NVANS;
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[1] = NN_temp & 0xFF;
           canmsg.d[2] = nvnr;
           canmsg.d[3] = CANID;
           canmsg.len = 4;
           canQueue(&canmsg);
           txed = 1;
         }
-        else if( nvnr > 2 && nvnr < 19 ) {
-          // Servo
-          byte servoIdx = (nvnr-3) / 4;
-          byte servoVar = (nvnr-3) % 4;
+        else if( nvnr > 2 && nvnr < 28 ) {
+          // 5 x 40bit Allowed RFID
+          byte idx = 0; //(nvnr-3) / 5;
+          byte var = 0;//(nvnr-3) % 5;
           canmsg.opc = OPC_NVANS;
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[1] = NN_temp & 0xFF;
           canmsg.d[2] = nvnr;
-          canmsg.d[3] = 0;
+          canmsg.d[3] = 0; //AllowedRFID[(nvnr-3) / 5].data[(nvnr-3) % 5];
 
           canmsg.len = 4;
           canQueue(&canmsg);
@@ -186,8 +186,12 @@ unsigned char parseCmd(void) {
           CANID = rx_ptr->d4;
           eeWrite(EE_CANID, CANID);
         }
-        else if( nvnr > 2 && nvnr < 19 ) {
-
+        else if( nvnr > 2 && nvnr < 28 ) {
+          // 5 x 40bit Allowed RFID
+          //byte idx = (nvnr-3) / 5;
+          //byte var = (nvnr-3) % 5;
+          //AllowedRFID[idx].data[var] = rx_ptr->d4;
+          //eeWrite(EE_RFID + idx*5 + var, rx_ptr->d4);
         }
       }
       break;
@@ -212,14 +216,22 @@ unsigned char parseCmd(void) {
         ushort addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
         byte idx = rx_ptr->d5;
         byte val = rx_ptr->d6;
-        if( idx < 4 ) {
+        if( idx < 8 ) {
+          // RFID
+          RFID[idx].addr = addr;
+          //eeWrite(EE_PORT_ADDR + idx*2    , addr/256);
+          //eeWrite(EE_PORT_ADDR + idx*2 + 1, addr%256);
         }
-        else if( idx > 3 && idx < 8 ) {
+        else if( idx > 7 && idx < 16 ) {
+          // Block
+          Sensor[idx-8].addr = addr;
+          //eeWrite(EE_PORT_ADDR + (idx-7)*2    , addr/256);
+          //eeWrite(EE_PORT_ADDR + (idx-7)*2 + 1, addr%256);
         }
-        else if( idx == 8 ) {
+        else if( idx == 16 ) {
           SOD = addr;
-          eeWrite(EE_SOD  , addr/256);
-          eeWrite(EE_SOD+1, addr%256);
+          //eeWrite(EE_SOD  , addr/256);
+          //eeWrite(EE_SOD+1, addr%256);
         }
       }
       break;
@@ -231,7 +243,7 @@ unsigned char parseCmd(void) {
         // start of day event
         canmsg.opc = OPC_ENRSP;
         canmsg.d[0] = (NN_temp / 256) & 0xFF;
-        canmsg.d[1] = (NN_temp % 256) & 0xFF;
+        canmsg.d[1] = NN_temp & 0xFF;
         canmsg.d[2] = 0;
         canmsg.d[3] = 0;
         canmsg.d[4] = SOD / 256;
@@ -262,7 +274,7 @@ void doRqnpn(unsigned int idx) {
   if (idx < 8) {
     canmsg.opc = OPC_PARAN;
     canmsg.d[0] = (NN_temp / 256) & 0xFF;
-    canmsg.d[1] = (NN_temp % 256) & 0xFF;
+    canmsg.d[1] = NN_temp & 0xFF;
     canmsg.d[2] = idx;
     canmsg.d[3] = params[idx - 1];
     canmsg.len = 4;
@@ -280,38 +292,38 @@ int thisNN() {
 
 unsigned char doPortEvent(int i ) {
   if( doEV ) {
-    if( i < 4 ) {
+    if( i < 8 ) {
       canmsg.opc = OPC_ENRSP;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = 0 / 256;
-      canmsg.d[3] = 0 % 256;
-      canmsg.d[4] = 0 / 256;
-      canmsg.d[5] = 0 % 256;
+      canmsg.d[1] = NN_temp & 0xFF;
+      canmsg.d[2] = (NN_temp / 256) & 0xFF;
+      canmsg.d[3] = NN_temp & 0xFF;
+      canmsg.d[4] = (RFID[i].addr >> 8) & 0xFF;
+      canmsg.d[5] = RFID[i].addr & 0xFF;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
     }
-    if( i > 3 && i < 8 ) {
+    if( i > 7 && i < 16 ) {
       canmsg.opc = OPC_ENRSP;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = NN_temp / 256;
-      canmsg.d[3] = NN_temp % 256;
-      canmsg.d[4] = 0 / 256;
-      canmsg.d[5] = 0 % 256;
+      canmsg.d[1] = NN_temp & 0xFF;
+      canmsg.d[2] = (NN_temp / 256) & 0xFF;
+      canmsg.d[3] = NN_temp & 0xFF;
+      canmsg.d[4] = (Sensor[i-7].addr >> 8) & 0xFF;
+      canmsg.d[5] = Sensor[i-7].addr & 0xFF;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
     }
-    if( i == 8 ) {
+    if( i == 16 ) {
       canmsg.opc = OPC_ENRSP;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[1] = NN_temp & 0xFF;
       canmsg.d[2] = 0;
       canmsg.d[3] = 0;
       canmsg.d[4] = SOD / 256;
-      canmsg.d[5] = SOD % 256;
+      canmsg.d[5] = SOD & 0xFF;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
