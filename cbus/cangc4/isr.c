@@ -40,21 +40,6 @@ near unsigned short dim_timer;
 // Interrupt Service Routine
 //
 // TMR2 generates a heartbeat every 1mS.
-// TMR0 generates a heartbeat every 32000000/4/2/139 == 28776,98 Hz.
-
-//
-#pragma interrupt isr_high
-void isr_high(void) {
-
-  // Timer0 interrupt handler
-  if( INTCONbits.T0IF ) {
-    byte inc = PORTC;
-    TMR0L = 256 - 139;
-    INTCONbits.T0IF  = 0; // Clear interrupt flag
-  }
-
-
-}
 
 
 //

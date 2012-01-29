@@ -27,7 +27,7 @@
 #define __RFID__
 
 
-void scanRFID(void);
+extern void scanRFID(void);
 
 
 #endif

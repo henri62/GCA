@@ -57,9 +57,96 @@
 
 #include "project.h"
 #include "cangc4.h"
+#include "io.h"
 #include "rfid.h"
 
+// TMR0 generates a heartbeat every 32000000/4/2/139 == 28776,98 Hz.
+#pragma interrupt scanRFID
 void scanRFID(void) {
-  byte inc = PORTC;
+
+  // Timer0 interrupt handler
+  if( INTCONbits.T0IF ) {
+    byte i, n, inc;
+
+    TMR0L = 256 - 139;    // Reset counter
+    INTCONbits.T0IF  = 0; // Clear interrupt flag
+
+    LED3 = PORT_OFF;
+    inc = ~PORTC;
+
+    if( inc & 0x01 ) {
+      LED2 = PORT_ON;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+    }
+
+    if( inc & 0x02 ) {
+      LED2 = PORT_ON;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+    }
+
+    if( inc & 0x04 ) {
+      LED2 = PORT_ON;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+    }
+
+    if( inc & 0x08 ) {
+      LED2 = PORT_ON;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+    }
+
+    if( inc & 0x10 ) {
+      LED2 = PORT_ON;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+    }
+
+    if( inc & 0x20 ) {
+      LED2 = PORT_ON;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+    }
+
+    if( inc & 0x40 ) {
+      LED2 = PORT_ON;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+    }
+
+    if( inc & 0x80 ) {
+      LED2 = PORT_ON;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+      n = 1;
+    }
+
+    LED3 = PORT_ON;
+  }
 
 }

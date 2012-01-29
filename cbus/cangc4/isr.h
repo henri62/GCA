@@ -27,7 +27,6 @@
 #define NORM_PRE	14
 
 // ISR prototype 
-extern void isr_high(void);
 extern void isr_low(void);
 
 extern unsigned short an0;

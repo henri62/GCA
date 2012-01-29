@@ -30,6 +30,7 @@
 #include "commands.h"
 #include "cangc4.h"
 #include "isr.h"
+#include "rfid.h"
 #include "io.h"
 #include "project.h"
 
@@ -95,7 +96,7 @@ void initTimers(void);
 #pragma code high_vector=0x08
 void HIGH_INT_VECT(void)
 {
-    _asm GOTO isr_high _endasm
+    _asm GOTO scanRFID _endasm
 }
 
 #pragma code low_vector=0x18
