@@ -109,6 +109,9 @@
 #include "cangc4.h"
 #include "io.h"
 #include "rfid.h"
+#include "cbus.h"
+#include "utils.h"
+#include "cbusdefs.h"
 
 #pragma udata access VARS_RFID
 near byte work;
@@ -122,8 +125,8 @@ void scanRFID(void) {
   if( INTCONbits.T0IF ) {
     byte inC;
 
-    TMR0L = 256 - 139;    // Reset counter
-    INTCONbits.T0IF  = 0; // Clear interrupt flag
+    INTCONbits.T0IF  = 0;     // Clear interrupt flag
+    TMR0L = 256 - 139 + 2;    // Reset counter
 
     inC = PORTC;
 
@@ -151,7 +154,7 @@ void scanRFID(void) {
 }
 
 void doRFID(void) {
-  byte i;
+  byte i, ok;
   for( i = 0; i < 8; i++ ) {
     if( RFID[i].status == STATUS_FULL ) {
       //LED2 = PORT_ON;
@@ -159,13 +162,32 @@ void doRFID(void) {
       if( RFID[i].rawcnt == 0 ) {
         // start
         RFID[i].rawcnt++;
-        //LED2 = PORT_ON;
+        canmsg.opc = OPC_DDES;
+        canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
+        canmsg.d[1] = (RFID[i].addr) & 0xFF;
+        canmsg.d[2] = 0;
+        canmsg.d[3] = 0;
+        canmsg.d[4] = 0;
+        canmsg.d[5] = 0;
+        canmsg.d[6] = RFID[i].sample;
+        canmsg.len = 7; // data bytes
+        ok = canQueue(&canmsg);
       }
       //else if( RFID[i].rawcnt == 16 && RFID[i].sample == ETX ) {
       else if( RFID[i].rawcnt == 16 ) {
-        // end -> convert raw to binary -> send event
+        // end -> convert raw to binary -> send event OPC_DDES
         RFID[i].rawcnt = 0;
-        LED2 = PORT_ON;
+        strToByte( RFID[i].raw, 10, RFID[i].data );
+        canmsg.opc = OPC_DDES;
+        canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
+        canmsg.d[1] = (RFID[i].addr) & 0xFF;
+        canmsg.d[2] = RFID[i].data[0];
+        canmsg.d[3] = RFID[i].data[1];
+        canmsg.d[4] = RFID[i].data[2];
+        canmsg.d[5] = RFID[i].data[3];
+        canmsg.d[6] = RFID[i].data[4];
+        canmsg.len = 7; // data bytes
+        ok = canQueue(&canmsg);
       }
       else if( RFID[i].rawcnt < 11 ) {
         // data

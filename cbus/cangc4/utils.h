@@ -30,6 +30,7 @@ unsigned short eeReadShort(unsigned char addr);
 void eeWriteShort(unsigned char addr, unsigned short data);
 void delay(void);
 void lDelay(void);
+void strToByte( unsigned char* s, unsigned char len, unsigned char* data );
 
 
 #endif

@@ -107,3 +107,14 @@ void lDelay(void) {
   } //		bra		ldely1
   //
 } //		return
+
+
+void strToByte( unsigned char* s, unsigned char len, unsigned char* data ) {
+  unsigned char i;
+  for( i = 0; i < len; i+=2 ) {
+    unsigned char v1 = (s[i+1] & 0x40) ? s[i  ]-0x37:s[i  ]-0x30;
+    unsigned char v2 = (s[i+1] & 0x40) ? s[i+1]-0x37:s[i+1]-0x30;
+    data[i/2] = (v1<<4) + v2;
+  }
+}
+
