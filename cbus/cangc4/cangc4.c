@@ -219,7 +219,7 @@ void initTimers(void) {
   // 32000000/4/2/139 == 28776,98 Hz.
   T0CON = 0;
   // pre scaler 2:
-  T0CONbits.PSA   = 1;
+  T0CONbits.PSA   = 0;
   T0CONbits.T0PS0 = 0;
   T0CONbits.T0PS1 = 0;
   T0CONbits.T0PS2 = 0;

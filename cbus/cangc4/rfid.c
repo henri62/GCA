@@ -126,7 +126,9 @@ void scanRFID(void) {
     byte inC;
 
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
-    TMR0L = 256 - 139 + 2;    // Reset counter
+    TMR0L = 256 - 129;    // Reset counter
+
+    LED2 = PORT_ON;
 
     inC = PORTC;
 
@@ -140,15 +142,19 @@ void scanRFID(void) {
       RFID[0].status = STATUS_SAMPLE;
     }
     else if( RFID[0].status == STATUS_SAMPLE ) {
-      RFID[0].status = STATUS_IGN1;
-      RFID[0].sample <<= 1;
-      RFID[0].sample |= (inC & 0x01);
-      RFID[0].bitcnt++;
       if( RFID[0].bitcnt == 8 ) {
+        // stop bit
         RFID[0].status = STATUS_FULL;
+      }
+      else {
+        RFID[0].status = STATUS_IGN1;
+        RFID[0].sample <<= 1;
+        RFID[0].sample |= (inC & 0x01);
+        RFID[0].bitcnt++;
       }
     }
 
+    LED2 = PORT_OFF;
   }
 
 }
@@ -162,19 +168,9 @@ void doRFID(void) {
       if( RFID[i].rawcnt == 0 ) {
         // start
         RFID[i].rawcnt++;
-        canmsg.opc = OPC_DDES;
-        canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
-        canmsg.d[1] = (RFID[i].addr) & 0xFF;
-        canmsg.d[2] = 0;
-        canmsg.d[3] = 0;
-        canmsg.d[4] = 0;
-        canmsg.d[5] = 0;
-        canmsg.d[6] = RFID[i].sample;
-        canmsg.len = 7; // data bytes
-        ok = canQueue(&canmsg);
       }
-      //else if( RFID[i].rawcnt == 16 && RFID[i].sample == ETX ) {
-      else if( RFID[i].rawcnt == 16 ) {
+      //else if( RFID[i].rawcnt == 15 && RFID[i].sample == ETX ) {
+      else if( RFID[i].rawcnt == 15 ) {
         // end -> convert raw to binary -> send event OPC_DDES
         RFID[i].rawcnt = 0;
         strToByte( RFID[i].raw, 10, RFID[i].data );
@@ -189,12 +185,13 @@ void doRFID(void) {
         canmsg.len = 7; // data bytes
         ok = canQueue(&canmsg);
       }
-      else if( RFID[i].rawcnt < 11 ) {
+      else if( RFID[i].rawcnt >= 1 && RFID[i].rawcnt < 11 ) {
         // data
         RFID[i].raw[RFID[i].rawcnt-1] = RFID[i].sample;
         RFID[i].rawcnt++;
       }
-      else {
+      else if( RFID[i].rawcnt >= 11 && RFID[i].rawcnt < 15 ) {
+        // checksum + cr + lf
         RFID[i].rawcnt++;
       }
 
