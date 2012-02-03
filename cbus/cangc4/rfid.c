@@ -55,10 +55,64 @@
  */
 
 
+    // Note: a stop bit is a 1, a start bit is a 0
+
+    // Here are the transitions of the state machine:
+    //
+    //       stop_exp                -> wait_start
+    //                                   *set rcv_ready bits
+    //                                   *set frame_err bits
+
+    //       wait_start              -> INPUT==1 -> wait_start
+    //                                  INPUT==0 -> confirm_start
+
+    //       confirm_start           -> INPUT==1 -> wait_start
+    //                                  INPUT==0 -> ignore1
+
+    //       ignore1                 -> ignore2
+
+    //       ignore2                 -> FULL==0 -> sample
+    //                                  FULL==1 -> stop_exp
+    //                                       *clear full bits
+
+    //       sample                  -> ignore1
+    //                                       *set overrun error bits
+    //                                       *store data bits
+    //                                       *set full bits
+
+    // Turning this around into math to compute the new values of the state
+    // bit vectors and 'full', 'rcv_ready', 'overrun_err' and 'frame_err' vectors
+    // based on the old state bit vectors and the 'input' and 'full' vectors
+    // we get:
+    //
+    //   NOTE: These comments are written assuming all the assignments happen
+    //       simultaneously:
+    //
+    //       confirm_start   <- (wait_start & ~input)
+    //       ignore1         <- (confirm_start & ~input) | sample
+    //       ignore2         <- ignore1
+    //       sample          <- (ignore2 & ~full)
+    //       stop_exp        <- (ignore2 & full)
+    //       full            <- full & ~ignore2
+    //       wait_start      <- stop_exp
+    //                        | (wait_start & input)
+    //                        | (confirm_start & input)
+    //       rcv_ready       <- rcv_ready | stop_exp
+    //       frame_err       <- frame_err | (stop_exp & ~input)
+    //       overrun_err     <- overrun_err | (sample & rcv_ready)
+
+    // new_wait_start = ((wait_start | confirm_start) & input) | stop_exp
+
+
+
 #include "project.h"
 #include "cangc4.h"
 #include "io.h"
 #include "rfid.h"
+
+#pragma udata access VARS_RFID
+near byte work;
+
 
 // TMR0 generates a heartbeat every 32000000/4/2/139 == 28776,98 Hz.
 #pragma interrupt scanRFID
@@ -66,87 +120,82 @@ void scanRFID(void) {
 
   // Timer0 interrupt handler
   if( INTCONbits.T0IF ) {
-    byte i, n, inc;
+    byte inC;
 
     TMR0L = 256 - 139;    // Reset counter
     INTCONbits.T0IF  = 0; // Clear interrupt flag
 
-    LED3 = PORT_OFF;
-    inc = ~PORTC;
+    inC = PORTC;
 
-    if( inc & 0x01 ) {
-      LED2 = PORT_ON;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
+    if( RFID[0].status == STATUS_WAITSTART && (inC & 0x01) == 0 ) {
+      RFID[0].status = STATUS_IGN1;
+    }
+    else if( RFID[0].status == STATUS_IGN1 ) {
+      RFID[0].status = STATUS_IGN2;
+    }
+    else if( RFID[0].status == STATUS_IGN2 ) {
+      RFID[0].status = STATUS_SAMPLE;
+    }
+    else if( RFID[0].status == STATUS_SAMPLE ) {
+      RFID[0].status = STATUS_IGN1;
+      RFID[0].sample <<= 1;
+      RFID[0].sample |= (inC & 0x01);
+      RFID[0].bitcnt++;
+      if( RFID[0].bitcnt == 8 ) {
+        RFID[0].status = STATUS_FULL;
+      }
     }
 
-    if( inc & 0x02 ) {
-      LED2 = PORT_ON;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-    }
+  }
 
-    if( inc & 0x04 ) {
-      LED2 = PORT_ON;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-    }
+}
 
-    if( inc & 0x08 ) {
-      LED2 = PORT_ON;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-    }
+void doRFID(void) {
+  byte i;
+  for( i = 0; i < 8; i++ ) {
+    if( RFID[i].status == STATUS_FULL ) {
+      //LED2 = PORT_ON;
+      //if( RFID[i].rawcnt == 0 && RFID[i].sample == STX ) {
+      if( RFID[i].rawcnt == 0 ) {
+        // start
+        RFID[i].rawcnt++;
+        //LED2 = PORT_ON;
+      }
+      //else if( RFID[i].rawcnt == 16 && RFID[i].sample == ETX ) {
+      else if( RFID[i].rawcnt == 16 ) {
+        // end -> convert raw to binary -> send event
+        RFID[i].rawcnt = 0;
+        LED2 = PORT_ON;
+      }
+      else if( RFID[i].rawcnt < 11 ) {
+        // data
+        RFID[i].raw[RFID[i].rawcnt-1] = RFID[i].sample;
+        RFID[i].rawcnt++;
+      }
+      else {
+        RFID[i].rawcnt++;
+      }
 
-    if( inc & 0x10 ) {
-      LED2 = PORT_ON;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
+      RFID[0].bitcnt = 0;
+      RFID[i].status = STATUS_WAITSTART;
     }
+  }
+}
 
-    if( inc & 0x20 ) {
-      LED2 = PORT_ON;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-    }
 
-    if( inc & 0x40 ) {
-      LED2 = PORT_ON;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-    }
-
-    if( inc & 0x80 ) {
-      LED2 = PORT_ON;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-      n = 1;
-    }
-
-    LED3 = PORT_ON;
+void initRFID(void) {
+  byte i, n;
+  
+  for( i = 0; i < 8; i++ ) {
+    RFID[i].error  = 0;
+    RFID[i].status = 0;
+    RFID[i].sample = 0;
+    RFID[i].bitcnt = 0;
+    RFID[i].rawcnt = 0;
+    for( n = 0; n < 5; n++ )
+      RFID[i].data[n] = 0;
+    for( n = 0; n < 10; n++ )
+      RFID[i].raw[n] = 0;
   }
 
 }

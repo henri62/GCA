@@ -55,6 +55,12 @@ typedef struct {
   byte   config;
   byte   data[5];
   int    addr;
+  byte   sample;
+  byte   bitcnt;
+  byte   status;
+  byte   error;
+  byte   raw[10];
+  byte   rawcnt;
 } RFIDDef;
 
 typedef struct {

@@ -108,6 +108,7 @@ void LOW_INT_VECT(void)
 
 #pragma code APP
 void main(void) {
+  byte i;
   byte l3 = 1;
   unsigned char swTrig = 0;
 
@@ -125,6 +126,7 @@ void main(void) {
   NV1 = eeRead(EE_NV);
 
   initIO();
+  initRFID();
   initTimers();
 
   NN_temp  = eeRead(EE_NN) * 256;
@@ -178,6 +180,8 @@ void main(void) {
     }
 
 
+    doRFID();
+    
     //LED2 = PORT_ON;
     canSendQ();
     //LED2 = PORT_OFF;

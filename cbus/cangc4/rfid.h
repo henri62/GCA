@@ -28,6 +28,24 @@
 
 
 extern void scanRFID(void);
+void initRFID(void);
+void doRFID(void);
+
+#define STATUS_WAITSTART 0x00
+#define STATUS_CONFSTART 0x01
+#define STATUS_IGN1      0x02
+#define STATUS_IGN2      0x04
+#define STATUS_SAMPLE    0x08
+#define STATUS_STOPEXP   0x10
+#define STATUS_FULL      0x20
+#define STATUS_RECVREADY 0x40
+#define STATUS_ERROR     0x80
+
+#define ERROR_FRAME   0x01
+#define ERROR_OVERRUN 0x02
+
+#define STX 0x02
+#define ETX 0x03
 
 
 #endif
