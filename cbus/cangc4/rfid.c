@@ -126,14 +126,20 @@ void scanRFID(void) {
     byte inC;
 
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
-    TMR0L = 256 - 129;    // Reset counter
+    TMR0L = 256 - 139 + 10;   // Reset counter with a correction of 10 cycles
 
     LED2 = PORT_ON;
 
     inC = PORTC;
 
     if( RFID[0].status == STATUS_WAITSTART && (inC & 0x01) == 0 ) {
-      RFID[0].status = STATUS_IGN1;
+      RFID[0].status = STATUS_CONFSTART;
+    }
+    else if( RFID[0].status == STATUS_CONFSTART ) {
+      if((inC & 0x01) == 0)
+        RFID[0].status = STATUS_IGN1;
+      else
+        RFID[0].status = STATUS_WAITSTART;
     }
     else if( RFID[0].status == STATUS_IGN1 ) {
       RFID[0].status = STATUS_IGN2;
@@ -143,8 +149,11 @@ void scanRFID(void) {
     }
     else if( RFID[0].status == STATUS_SAMPLE ) {
       if( RFID[0].bitcnt == 8 ) {
-        // stop bit
-        RFID[0].status = STATUS_FULL;
+        // stop bit -> must be a high sample
+        RFID[0].sampledata = RFID[0].sample;
+        RFID[0].dataready  = TRUE;
+        RFID[0].bitcnt = 0;
+        RFID[0].status = STATUS_WAITSTART;
       }
       else {
         RFID[0].status = STATUS_IGN1;
@@ -162,7 +171,8 @@ void scanRFID(void) {
 void doRFID(void) {
   byte i, ok;
   for( i = 0; i < 8; i++ ) {
-    if( RFID[i].status == STATUS_FULL ) {
+    if( RFID[i].dataready ) {
+      RFID[i].dataready = FALSE;
       //LED2 = PORT_ON;
       //if( RFID[i].rawcnt == 0 && RFID[i].sample == STX ) {
       if( RFID[i].rawcnt == 0 ) {
@@ -187,16 +197,13 @@ void doRFID(void) {
       }
       else if( RFID[i].rawcnt >= 1 && RFID[i].rawcnt < 11 ) {
         // data
-        RFID[i].raw[RFID[i].rawcnt-1] = RFID[i].sample;
+        RFID[i].raw[RFID[i].rawcnt-1] = RFID[i].sampledata;
         RFID[i].rawcnt++;
       }
       else if( RFID[i].rawcnt >= 11 && RFID[i].rawcnt < 15 ) {
         // checksum + cr + lf
         RFID[i].rawcnt++;
       }
-
-      RFID[0].bitcnt = 0;
-      RFID[i].status = STATUS_WAITSTART;
     }
   }
 }
@@ -206,11 +213,12 @@ void initRFID(void) {
   byte i, n;
   
   for( i = 0; i < 8; i++ ) {
-    RFID[i].error  = 0;
-    RFID[i].status = 0;
-    RFID[i].sample = 0;
-    RFID[i].bitcnt = 0;
-    RFID[i].rawcnt = 0;
+    RFID[i].dataready  = 0;
+    RFID[i].sampledata = 0;
+    RFID[i].status     = 0;
+    RFID[i].sample     = 0;
+    RFID[i].bitcnt     = 0;
+    RFID[i].rawcnt     = 0;
     for( n = 0; n < 5; n++ )
       RFID[i].data[n] = 0;
     for( n = 0; n < 10; n++ )
