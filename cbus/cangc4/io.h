@@ -79,6 +79,7 @@ typedef struct {
 typedef struct {
   byte   status;
   byte   timer;
+  byte   timedoff;
   int    addr;
 } SENSDef;
 
@@ -102,6 +103,8 @@ void saveOutputStates(void);
 void setOutput(ushort nn, ushort addr, byte on);
 unsigned char checkFlimSwitch(void);
 unsigned char readInput(int idx);
+void doIOTimers(void);
+void doTimedOff(int i);
 
 
 #endif	// __IO_H

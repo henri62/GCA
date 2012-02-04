@@ -60,6 +60,7 @@ void isr_low(void) {
 
     // I/O timeout - 50ms
     if (--io_timer == 0) {
+      doIOTimers();
       io_timer = 50;
       if (can_transmit_timeout != 0) {
         --can_transmit_timeout;

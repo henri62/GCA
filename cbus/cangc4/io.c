@@ -96,8 +96,9 @@ unsigned char checkInput(unsigned char idx, unsigned char sod) {
     Sensor[idx].status = val;
     if( !sod && val == 0 ) {
       Sensor[idx].timer = 40; // 2 seconds
+      Sensor[idx].timedoff = TRUE;
     }
-    else if( !sod ) {
+    else if( !sod && Sensor[idx].timedoff ) {
       Sensor[idx].timer = 40; // reload timer
     }
     else {
@@ -176,6 +177,34 @@ unsigned char readInput(int idx) {
     case 7:  val = SENS8;  break;
   }
   return !val;
+}
+
+void doIOTimers(void) {
+  int i = 0;
+  for( i = 0; i < 8; i++ ) {
+    if( Sensor[i].timedoff ) {
+      if( Sensor[i].timer > 0 ) {
+        Sensor[i].timer--;
+      }
+    }
+  }
+}
+
+
+void doTimedOff(int i) {
+  if( Sensor[i].timedoff ) {
+    if( Sensor[i].timer == 0 ) {
+      Sensor[i].timedoff = 0;
+      // Send an OPC.
+      canmsg.opc = OPC_ASOF;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[2] = (Sensor[i].addr / 256) & 0xFF;
+      canmsg.d[3] = (Sensor[i].addr % 256) & 0xFF;
+      canmsg.len = 4;
+      canQueue(&canmsg);
+    }
+  }
 }
 
 

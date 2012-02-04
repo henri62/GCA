@@ -45,8 +45,9 @@
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 
 
-#pragma udata VARS_MAIN_ARRAYS
+#pragma udata VARS_MAIN_ARRAYS1
 far RFIDDef RFID[8];
+#pragma udata VARS_MAIN_ARRAYS2
 far SENSDef Sensor[8];
 far AllowedRFIDDef AllowedRFID[5];
 
@@ -160,6 +161,8 @@ void main(void) {
       led1timer = 20;
       txed = parseCmd();
     }
+
+    doTimedOff(ioIdx);
 
     if( checkInput(ioIdx, doSOD) ) {
       ioIdx++;
