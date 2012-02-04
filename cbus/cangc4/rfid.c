@@ -116,6 +116,42 @@
 #pragma udata access VARS_RFID
 near byte work;
 
+#define scan(port,mask) \
+{ \
+  if( RFID[port].status == STATUS_WAITSTART && (inC & mask) == 0 ) { \
+    RFID[port].status = STATUS_CONFSTART; \
+  } \
+  else if(RFID[port].status != STATUS_WAITSTART) { \
+    if( RFID[port].status == STATUS_CONFSTART ) { \
+      if((inC & mask) == 0) \
+        RFID[port].status = STATUS_IGN1; \
+      else \
+        RFID[port].status = STATUS_WAITSTART; \
+    } \
+    else if( RFID[port].status == STATUS_IGN1 ) { \
+      RFID[port].status = STATUS_IGN2; \
+    } \
+    else if( RFID[port].status == STATUS_IGN2 ) { \
+      RFID[port].status = STATUS_SAMPLE;  \
+    } \
+    else if( RFID[port].status == STATUS_SAMPLE ) { \
+      if( RFID[port].bitcnt == 8 ) { \
+        RFID[port].sampledata = RFID[port].sample; \
+        RFID[port].dataready  = TRUE; \
+        RFID[port].bitcnt = 0; \
+        RFID[port].status = STATUS_WAITSTART; \
+      } \
+      else { \
+        RFID[port].status = STATUS_IGN1; \
+        RFID[port].sample <<= 1; \
+        RFID[port].sample |= ((inC & mask) >> port); \
+        RFID[port].bitcnt++; \
+      } \
+    } \
+  } \
+}
+
+
 
 // TMR0 generates a heartbeat every 32000000/4/2/139 == 28776,98 Hz.
 #pragma interrupt scanRFID
@@ -123,7 +159,7 @@ void scanRFID(void) {
 
   // Timer0 interrupt handler
   if( INTCONbits.T0IF ) {
-    byte inC;
+    byte inC,status;
 
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
     TMR0L = 256 - 139 + 10;   // Reset counter with a correction of 10 cycles
@@ -132,36 +168,14 @@ void scanRFID(void) {
 
     inC = PORTC;
 
-    if( RFID[0].status == STATUS_WAITSTART && (inC & 0x01) == 0 ) {
-      RFID[0].status = STATUS_CONFSTART;
-    }
-    else if( RFID[0].status == STATUS_CONFSTART ) {
-      if((inC & 0x01) == 0)
-        RFID[0].status = STATUS_IGN1;
-      else
-        RFID[0].status = STATUS_WAITSTART;
-    }
-    else if( RFID[0].status == STATUS_IGN1 ) {
-      RFID[0].status = STATUS_IGN2;
-    }
-    else if( RFID[0].status == STATUS_IGN2 ) {
-      RFID[0].status = STATUS_SAMPLE;
-    }
-    else if( RFID[0].status == STATUS_SAMPLE ) {
-      if( RFID[0].bitcnt == 8 ) {
-        // stop bit -> must be a high sample
-        RFID[0].sampledata = RFID[0].sample;
-        RFID[0].dataready  = TRUE;
-        RFID[0].bitcnt = 0;
-        RFID[0].status = STATUS_WAITSTART;
-      }
-      else {
-        RFID[0].status = STATUS_IGN1;
-        RFID[0].sample <<= 1;
-        RFID[0].sample |= (inC & 0x01);
-        RFID[0].bitcnt++;
-      }
-    }
+    scan(0,0x01);
+    scan(1,0x02);
+    scan(2,0x04);
+    scan(3,0x08);
+    scan(4,0x10);
+    scan(5,0x20);
+    scan(6,0x40);
+    scan(7,0x80);
 
     LED2 = PORT_OFF;
   }
