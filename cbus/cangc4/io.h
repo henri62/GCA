@@ -50,6 +50,15 @@
 #define SENS7   PORTBbits.RB4
 #define SENS8   PORTBbits.RB1
 
+#define SENS1_MASK_A 0x01
+#define SENS2_MASK_A 0x02
+#define SENS3_MASK_A 0x08
+#define SENS4_MASK_A 0x10
+#define SENS5_MASK_A 0x20
+
+#define SENS6_MASK_B 0x01
+#define SENS7_MASK_B 0x10
+#define SENS8_MASK_B 0x02
 
 typedef struct {
   byte   config;
@@ -68,8 +77,8 @@ typedef struct {
 } RFIDDef;
 
 typedef struct {
-  byte   config;
   byte   status;
+  byte   timer;
   int    addr;
 } SENSDef;
 
@@ -92,5 +101,7 @@ void doLEDs(void);
 void saveOutputStates(void);
 void setOutput(ushort nn, ushort addr, byte on);
 unsigned char checkFlimSwitch(void);
+unsigned char readInput(int idx);
+
 
 #endif	// __IO_H

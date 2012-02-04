@@ -91,17 +91,44 @@ unsigned char checkFlimSwitch(void) {
 
 unsigned char checkInput(unsigned char idx, unsigned char sod) {
   unsigned char ok = 1;
-  if( sod ) {
-    canmsg.opc = 1 ? OPC_ASON:OPC_ASOF;
-    canmsg.d[0] = (NN_temp / 256) & 0xFF;
-    canmsg.d[1] = (NN_temp % 256) & 0xFF;
-    canmsg.d[2] = (0 / 256) & 0xFF;
-    canmsg.d[3] = (0 % 256) & 0xFF;
-    canmsg.len = 4; // data bytes
-    ok = canQueue(&canmsg);
+  unsigned char val = readInput(idx);
+  if( sod || val != Sensor[idx].status ) {
+    Sensor[idx].status = val;
+    if( !sod && val == 0 ) {
+      Sensor[idx].timer = 40; // 2 seconds
+    }
+    else if( !sod ) {
+      Sensor[idx].timer = 40; // reload timer
+    }
+    else {
+      // Send an OPC.
+      if( sod ) {
+        canmsg.opc = 0;
+        if ( val ) {
+          canmsg.opc = OPC_ARON;
+        }
+      }
+      else
+        canmsg.opc = val ? OPC_ASON:OPC_ASOF;
+      if( canmsg.opc > 0 ) {
+        canmsg.d[0] = (NN_temp / 256) & 0xFF;
+        canmsg.d[1] = (NN_temp % 256) & 0xFF;
+        canmsg.d[2] = (Sensor[idx].addr / 256) & 0xFF;
+        canmsg.d[3] = (Sensor[idx].addr % 256) & 0xFF;
+        canmsg.len = 4; // data bytes
+        ok = canQueue(&canmsg);
+        if( !ok ) {
+          Sensor[idx].status = !Sensor[idx].status;
+        }
+      }
+    }
   }
+
   return ok;
 }
+
+
+
 
 
 
@@ -134,3 +161,21 @@ void doLED250(void) {
 
 void setOutput(ushort nn, ushort addr, byte on) {
 }
+
+
+unsigned char readInput(int idx) {
+  unsigned char val = 0;
+  switch(idx) {
+    case 0:  val = SENS1;  break;
+    case 1:  val = SENS2;  break;
+    case 2:  val = SENS3;  break;
+    case 3:  val = SENS4;  break;
+    case 4:  val = SENS5;  break;
+    case 5:  val = SENS6;  break;
+    case 6:  val = SENS7;  break;
+    case 7:  val = SENS8;  break;
+  }
+  return !val;
+}
+
+

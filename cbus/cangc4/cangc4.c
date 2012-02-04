@@ -163,7 +163,7 @@ void main(void) {
 
     if( checkInput(ioIdx, doSOD) ) {
       ioIdx++;
-      if( ioIdx >= 4 ) {
+      if( ioIdx >= 8 ) {
         ioIdx = 0;
         doSOD = 0;
       }
