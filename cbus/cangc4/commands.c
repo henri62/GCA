@@ -134,9 +134,14 @@ unsigned char parseCmd(void) {
 
     case OPC_RTOF:
       if( NV1 & CFG_SAVERFID ) {
-        byte i = 0;
+        byte i;
         for( i = 0; i < 8; i++ ) {
           // save rfid for SoD
+          eeWrite(EE_SCANRFID + i*5 + 0, RFID[i].data[0]);
+          eeWrite(EE_SCANRFID + i*5 + 1, RFID[i].data[1]);
+          eeWrite(EE_SCANRFID + i*5 + 2, RFID[i].data[2]);
+          eeWrite(EE_SCANRFID + i*5 + 3, RFID[i].data[3]);
+          eeWrite(EE_SCANRFID + i*5 + 4, RFID[i].data[4]);
         }
       }
       break;
@@ -165,14 +170,14 @@ unsigned char parseCmd(void) {
           txed = 1;
         }
         else if( nvnr > 2 && nvnr < 28 ) {
-          // 5 x 40bit Allowed RFID
+          // 5 x 8 = 40bit Allowed RFID
           idx = (nvnr-3) / 5;
           var = (nvnr-3) % 5;
           canmsg.opc = OPC_NVANS;
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
           canmsg.d[1] = NN_temp & 0xFF;
           canmsg.d[2] = nvnr;
-          canmsg.d[3] = AllowedRFID[(nvnr-3) / 5].data[(nvnr-3) % 5];
+          canmsg.d[3] = AllowedRFID[idx].data[var];
 
           canmsg.len = 4;
           canQueue(&canmsg);
@@ -198,7 +203,7 @@ unsigned char parseCmd(void) {
           byte idx = (nvnr-3) / 5;
           byte var = (nvnr-3) % 5;
           AllowedRFID[idx].data[var] = rx_ptr->d4;
-          eeWrite(EE_RFID + idx*5 + var, rx_ptr->d4);
+          eeWrite(EE_RFID + idx*5 + (var), rx_ptr->d4);
         }
       }
       break;
@@ -231,7 +236,7 @@ unsigned char parseCmd(void) {
         else if( idx > 7 && idx < 16 ) {
           // Block
           Sensor[idx-8].addr = addr;
-          eeWriteShort(EE_PORT_ADDR +16 + 2*idx, addr);
+          eeWriteShort(EE_PORT_ADDR + 2*idx, addr);
         }
         else if( idx == 16 ) {
           SOD = addr;

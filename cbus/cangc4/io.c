@@ -83,6 +83,13 @@ void setupIO(byte clr) {
   for( idx = 0; idx < 8; idx++ ) {
     RFID[idx].addr = eeReadShort(EE_PORT_ADDR + 2 * idx);
     Sensor[idx].addr = eeReadShort(EE_PORT_ADDR + 16 + 2 * idx);
+
+    // read rfid for SoD
+    RFID[idx].data[0] = eeRead(EE_SCANRFID + idx*5 + 0);
+    RFID[idx].data[1] = eeRead(EE_SCANRFID + idx*5 + 1);
+    RFID[idx].data[2] = eeRead(EE_SCANRFID + idx*5 + 2);
+    RFID[idx].data[3] = eeRead(EE_SCANRFID + idx*5 + 3);
+    RFID[idx].data[4] = eeRead(EE_SCANRFID + idx*5 + 4);
   }
 
   for( idx = 0; idx < 5; idx++ ) {
@@ -110,6 +117,26 @@ void doLEDTimers(void) {
 unsigned char checkFlimSwitch(void) {
   unsigned char val = SW;
   return !val;
+}
+
+
+unsigned char sodRFID(unsigned char i) {
+  if( RFID[i].data[0] != 0 || RFID[i].data[1] != 0 || 
+      RFID[i].data[2] != 0 || RFID[i].data[3] != 0 || 
+      RFID[i].data[4] != 0 )
+  {
+    canmsg.opc = OPC_DDES;
+    canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
+    canmsg.d[1] = (RFID[i].addr) & 0xFF;
+    canmsg.d[2] = RFID[i].data[0];
+    canmsg.d[3] = RFID[i].data[1];
+    canmsg.d[4] = RFID[i].data[2];
+    canmsg.d[5] = RFID[i].data[3];
+    canmsg.d[6] = RFID[i].data[4];
+    canmsg.len = 7; // data bytes
+    return canQueue(&canmsg);
+  }
+  return FALSE;
 }
 
 unsigned char checkInput(unsigned char idx, unsigned char sod) {

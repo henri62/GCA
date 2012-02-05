@@ -41,7 +41,7 @@
 #define EE_CANID EE_SOD + 2  // 1 byte CANID
 #define EE_PORT_ADDR EE_CANID + 1  // 2 short event port 1
 #define EE_RFID EE_PORT_ADDR + 32  // allowed RFID's
-
+#define EE_SCANRFID EE_RFID + 25
 
 // values
 #define MAGIC 93

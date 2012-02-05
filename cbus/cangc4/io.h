@@ -105,6 +105,7 @@ unsigned char checkFlimSwitch(void);
 unsigned char readInput(int idx);
 void doIOTimers(void);
 void doTimedOff(int i);
+unsigned char sodRFID(unsigned char i);
 
 
 #endif	// __IO_H

@@ -165,6 +165,9 @@ void main(void) {
     doTimedOff(ioIdx);
 
     if( checkInput(ioIdx, doSOD) ) {
+      if( doSOD ) {
+        sodRFID(ioIdx);
+      }
       ioIdx++;
       if( ioIdx >= 8 ) {
         ioIdx = 0;

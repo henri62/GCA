@@ -228,10 +228,17 @@ void doRFID(void) {
           canmsg.len = 7; // data bytes
           ok = canQueue(&canmsg);
         }
+        else {
+          RFID[i].data[0] = 0;
+          RFID[i].data[1] = 0;
+          RFID[i].data[2] = 0;
+          RFID[i].data[3] = 0;
+          RFID[i].data[4] = 0;
+        }
       }
       else if( RFID[i].rawcnt >= 1 && RFID[i].rawcnt < 11 ) {
         // data
-        RFID[i].raw[RFID[i].rawcnt-1] = RFID[i].sampledata;
+        RFID[i].raw[9-(RFID[i].rawcnt-1)] = RFID[i].sampledata;
         RFID[i].rawcnt++;
       }
       else if( RFID[i].rawcnt >= 11 && RFID[i].rawcnt < 15 ) {
