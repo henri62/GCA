@@ -164,7 +164,7 @@ void scanRFID(void) {
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
     TMR0L = 256 - 139 + 10;   // Reset counter with a correction of 10 cycles
 
-    LED2 = PORT_ON;
+    //LED2 = PORT_ON;
 
     inC = PORTC;
 
@@ -177,7 +177,7 @@ void scanRFID(void) {
     scan(6,0x40);
     scan(7,0x80);
 
-    LED2 = PORT_OFF;
+    //LED2 = PORT_OFF;
   }
 
 }

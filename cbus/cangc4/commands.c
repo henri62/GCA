@@ -226,14 +226,12 @@ unsigned char parseCmd(void) {
         if( idx < 8 ) {
           // RFID
           RFID[idx].addr = addr;
-          eeWrite(EE_PORT_ADDR + idx*2    , addr/256);
-          eeWrite(EE_PORT_ADDR + idx*2 + 1, addr%256);
+          eeWriteShort(EE_PORT_ADDR + 2*idx, addr);
         }
         else if( idx > 7 && idx < 16 ) {
           // Block
           Sensor[idx-8].addr = addr;
-          eeWrite(EE_PORT_ADDR + idx*2    , addr/256);
-          eeWrite(EE_PORT_ADDR + idx*2 + 1, addr%256);
+          eeWriteShort(EE_PORT_ADDR +16 + 2*idx, addr);
         }
         else if( idx == 16 ) {
           SOD = addr;
@@ -305,8 +303,8 @@ unsigned char doPortEvent(int i ) {
       canmsg.d[1] = NN_temp & 0xFF;
       canmsg.d[2] = (NN_temp / 256) & 0xFF;
       canmsg.d[3] = NN_temp & 0xFF;
-      canmsg.d[4] = (RFID[i].addr >> 8) & 0xFF;
-      canmsg.d[5] = RFID[i].addr & 0xFF;
+      canmsg.d[4] = RFID[i].addr / 256;
+      canmsg.d[5] = RFID[i].addr % 256;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
@@ -317,8 +315,8 @@ unsigned char doPortEvent(int i ) {
       canmsg.d[1] = NN_temp & 0xFF;
       canmsg.d[2] = (NN_temp / 256) & 0xFF;
       canmsg.d[3] = NN_temp & 0xFF;
-      canmsg.d[4] = (Sensor[i-7].addr >> 8) & 0xFF;
-      canmsg.d[5] = Sensor[i-7].addr & 0xFF;
+      canmsg.d[4] = Sensor[i-8].addr / 256;
+      canmsg.d[5] = Sensor[i-8].addr % 256;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
@@ -330,7 +328,7 @@ unsigned char doPortEvent(int i ) {
       canmsg.d[2] = 0;
       canmsg.d[3] = 0;
       canmsg.d[4] = SOD / 256;
-      canmsg.d[5] = SOD & 0xFF;
+      canmsg.d[5] = SOD % 256;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);

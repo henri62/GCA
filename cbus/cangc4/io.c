@@ -69,6 +69,29 @@ void setupIO(byte clr) {
   LED2   = PORT_OFF;
   LED3   = PORT_OFF;
 
+  if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
+    eeWrite(EE_CLEAN, 0);
+    for( idx = 0; idx < 16; idx++ ) {
+      eeWriteShort(EE_PORT_ADDR + 2 * idx, idx + 1);
+    }
+    for( idx = 0; idx < 5 * 5; idx++ ) {
+      eeWrite(EE_RFID + idx, 0);
+    }
+  }
+
+
+  for( idx = 0; idx < 8; idx++ ) {
+    RFID[idx].addr = eeReadShort(EE_PORT_ADDR + 2 * idx);
+    Sensor[idx].addr = eeReadShort(EE_PORT_ADDR + 16 + 2 * idx);
+  }
+
+  for( idx = 0; idx < 5; idx++ ) {
+    AllowedRFID[idx].data[0] = eeRead(EE_RFID + idx * 5 + 0);
+    AllowedRFID[idx].data[1] = eeRead(EE_RFID + idx * 5 + 1);
+    AllowedRFID[idx].data[2] = eeRead(EE_RFID + idx * 5 + 2);
+    AllowedRFID[idx].data[3] = eeRead(EE_RFID + idx * 5 + 3);
+    AllowedRFID[idx].data[4] = eeRead(EE_RFID + idx * 5 + 4);
+  }
 
 }
 
