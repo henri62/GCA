@@ -182,6 +182,21 @@ void scanRFID(void) {
 
 }
 
+byte checkRFID(byte* rfid) {
+  byte i;
+  for( i = 0; i < 5; i++ ) {
+    if( AllowedRFID[i].data[0] == rfid[0] &&
+        AllowedRFID[i].data[1] == rfid[1] &&
+        AllowedRFID[i].data[2] == rfid[2] &&
+        AllowedRFID[i].data[3] == rfid[3] &&
+        AllowedRFID[i].data[4] == rfid[4] )
+    {
+      return TRUE;
+    }
+   }
+  return FALSE;
+}
+
 void doRFID(void) {
   byte i, ok;
   for( i = 0; i < 8; i++ ) {
@@ -195,19 +210,24 @@ void doRFID(void) {
       }
       //else if( RFID[i].rawcnt == 15 && RFID[i].sample == ETX ) {
       else if( RFID[i].rawcnt == 15 ) {
+        byte checkok = TRUE;
         // end -> convert raw to binary -> send event OPC_DDES
         RFID[i].rawcnt = 0;
         strToByte( RFID[i].raw, 10, RFID[i].data );
-        canmsg.opc = OPC_DDES;
-        canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
-        canmsg.d[1] = (RFID[i].addr) & 0xFF;
-        canmsg.d[2] = RFID[i].data[0];
-        canmsg.d[3] = RFID[i].data[1];
-        canmsg.d[4] = RFID[i].data[2];
-        canmsg.d[5] = RFID[i].data[3];
-        canmsg.d[6] = RFID[i].data[4];
-        canmsg.len = 7; // data bytes
-        ok = canQueue(&canmsg);
+        if( NV1 & CFG_CHECKRFID )
+          checkok = checkRFID(RFID[i].data);
+        if( checkok ) {
+          canmsg.opc = OPC_DDES;
+          canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
+          canmsg.d[1] = (RFID[i].addr) & 0xFF;
+          canmsg.d[2] = RFID[i].data[0];
+          canmsg.d[3] = RFID[i].data[1];
+          canmsg.d[4] = RFID[i].data[2];
+          canmsg.d[5] = RFID[i].data[3];
+          canmsg.d[6] = RFID[i].data[4];
+          canmsg.len = 7; // data bytes
+          ok = canQueue(&canmsg);
+        }
       }
       else if( RFID[i].rawcnt >= 1 && RFID[i].rawcnt < 11 ) {
         // data

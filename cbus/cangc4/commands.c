@@ -133,10 +133,10 @@ unsigned char parseCmd(void) {
       break;
 
     case OPC_RTOF:
-      if( NV1 & CFG_SAVEOUTPUT ) {
+      if( NV1 & CFG_SAVERFID ) {
         byte i = 0;
-        for( i = 0; i < 4; i++ ) {
-          //eeWrite(EE_SERVO_POSITION + i, Servo[i].position );
+        for( i = 0; i < 8; i++ ) {
+          // save rfid for SoD
         }
       }
       break;
@@ -172,7 +172,7 @@ unsigned char parseCmd(void) {
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
           canmsg.d[1] = NN_temp & 0xFF;
           canmsg.d[2] = nvnr;
-          canmsg.d[3] = 0; //AllowedRFID[(nvnr-3) / 5].data[(nvnr-3) % 5];
+          canmsg.d[3] = AllowedRFID[(nvnr-3) / 5].data[(nvnr-3) % 5];
 
           canmsg.len = 4;
           canQueue(&canmsg);
@@ -195,10 +195,10 @@ unsigned char parseCmd(void) {
         }
         else if( nvnr > 2 && nvnr < 28 ) {
           // 5 x 40bit Allowed RFID
-          //byte idx = (nvnr-3) / 5;
-          //byte var = (nvnr-3) % 5;
-          //AllowedRFID[idx].data[var] = rx_ptr->d4;
-          //eeWrite(EE_RFID + idx*5 + var, rx_ptr->d4);
+          byte idx = (nvnr-3) / 5;
+          byte var = (nvnr-3) % 5;
+          AllowedRFID[idx].data[var] = rx_ptr->d4;
+          eeWrite(EE_RFID + idx*5 + var, rx_ptr->d4);
         }
       }
       break;
@@ -226,19 +226,19 @@ unsigned char parseCmd(void) {
         if( idx < 8 ) {
           // RFID
           RFID[idx].addr = addr;
-          //eeWrite(EE_PORT_ADDR + idx*2    , addr/256);
-          //eeWrite(EE_PORT_ADDR + idx*2 + 1, addr%256);
+          eeWrite(EE_PORT_ADDR + idx*2    , addr/256);
+          eeWrite(EE_PORT_ADDR + idx*2 + 1, addr%256);
         }
         else if( idx > 7 && idx < 16 ) {
           // Block
-          //Sensor[idx-8].addr = addr;
-          //eeWrite(EE_PORT_ADDR + (idx-7)*2    , addr/256);
-          //eeWrite(EE_PORT_ADDR + (idx-7)*2 + 1, addr%256);
+          Sensor[idx-8].addr = addr;
+          eeWrite(EE_PORT_ADDR + idx*2    , addr/256);
+          eeWrite(EE_PORT_ADDR + idx*2 + 1, addr%256);
         }
         else if( idx == 16 ) {
           SOD = addr;
-          //eeWrite(EE_SOD  , addr/256);
-          //eeWrite(EE_SOD+1, addr%256);
+          eeWrite(EE_SOD  , addr/256);
+          eeWrite(EE_SOD+1, addr%256);
         }
       }
       break;
@@ -317,8 +317,8 @@ unsigned char doPortEvent(int i ) {
       canmsg.d[1] = NN_temp & 0xFF;
       canmsg.d[2] = (NN_temp / 256) & 0xFF;
       canmsg.d[3] = NN_temp & 0xFF;
-      //canmsg.d[4] = (Sensor[i-7].addr >> 8) & 0xFF;
-      //canmsg.d[5] = Sensor[i-7].addr & 0xFF;
+      canmsg.d[4] = (Sensor[i-7].addr >> 8) & 0xFF;
+      canmsg.d[5] = Sensor[i-7].addr & 0xFF;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
