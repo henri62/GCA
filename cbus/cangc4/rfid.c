@@ -144,8 +144,8 @@ near byte work;
       } \
       else { \
         RFID[port].status = STATUS_IGN1; \
-        RFID[port].sample <<= 1; \
-        RFID[port].sample |= ((inC & mask) >> port); \
+        RFID[port].sample >>= 1; \
+        RFID[port].sample |= ((inC & mask) << (7-port)); \
         RFID[port].bitcnt++; \
       } \
     } \
