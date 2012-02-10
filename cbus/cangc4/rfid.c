@@ -241,8 +241,8 @@ void doRFID(void) {
         
         if( checkok ) {
           byte crc;
-          //strToByte( RFID[i].rawcrc, 2, &crc );
-          //checkok = crcRFID(RFID[i].data, crc);
+          strToByte( RFID[i].rawcrc, 2, &crc );
+          checkok = crcRFID(RFID[i].data, crc);
         }
         
         if( checkok ) {
@@ -259,18 +259,6 @@ void doRFID(void) {
         }
         else {
           LED2 = PORT_ON;
-
-          canmsg.opc = OPC_DDES;
-          canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
-          canmsg.d[1] = (RFID[i].addr) & 0xFF;
-          canmsg.d[2] = RFID[i].rawcrc[0];
-          canmsg.d[3] = RFID[i].rawcrc[1];
-          canmsg.d[4] = 0;
-          canmsg.d[5] = 0;
-          canmsg.d[6] = 0;
-          canmsg.len = 7; // data bytes
-          ok = canQueue(&canmsg);
-
           RFID[i].data[0] = 0;
           RFID[i].data[1] = 0;
           RFID[i].data[2] = 0;
