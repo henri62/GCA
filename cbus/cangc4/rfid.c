@@ -138,6 +138,7 @@ near byte work;
       if( RFID[port].bitcnt == 8 ) { \
         RFID[port].sampledata = RFID[port].sample; \
         RFID[port].dataready  = TRUE; \
+        RFID[port].sample = 0; \
         RFID[port].bitcnt = 0; \
         RFID[port].status = STATUS_WAITSTART; \
       } \
@@ -159,7 +160,7 @@ void scanRFID(void) {
 
   // Timer0 interrupt handler
   if( INTCONbits.T0IF ) {
-    byte inC,status;
+    byte inC;
 
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
     TMR0L = 256 - 139 + 10;   // Reset counter with a correction of 10 cycles
@@ -197,18 +198,39 @@ byte checkRFID(byte* rfid) {
   return FALSE;
 }
 
+byte crcRFID(byte* rfid, byte crc) {
+  byte x;
+  x  = rfid[0];
+  x ^= rfid[1];
+  x ^= rfid[2];
+  x ^= rfid[3];
+  x ^= rfid[4];
+
+  return x == crc ? TRUE:FALSE;
+}
+
+
+/*
+[STX]
+[D1] [D2] [D3] [D4] [D5] [D6] [D7] [D8] [D9] [D10]
+[CS1] [CS2]
+[CR]
+[LF]
+[ETX]
+*/
 void doRFID(void) {
   byte i, ok;
   for( i = 0; i < 8; i++ ) {
     if( RFID[i].dataready ) {
+      byte data = RFID[i].sampledata;
       RFID[i].dataready = FALSE;
       //LED2 = PORT_ON;
-      //if( RFID[i].rawcnt == 0 && RFID[i].sample == STX ) {
+      //if( RFID[i].rawcnt == 0 && data == STX ) {
       if( RFID[i].rawcnt == 0 ) {
-        // start
+        // start STX
         RFID[i].rawcnt++;
       }
-      //else if( RFID[i].rawcnt == 15 && RFID[i].sample == ETX ) {
+      //else if( RFID[i].rawcnt == 15 && data == ETX ) {
       else if( RFID[i].rawcnt == 15 ) {
         byte checkok = TRUE;
         // end -> convert raw to binary -> send event OPC_DDES
@@ -216,6 +238,13 @@ void doRFID(void) {
         strToByte( RFID[i].raw, 10, RFID[i].data );
         if( NV1 & CFG_CHECKRFID )
           checkok = checkRFID(RFID[i].data);
+        
+        if( checkok ) {
+          byte crc;
+          //strToByte( RFID[i].rawcrc, 2, &crc );
+          //checkok = crcRFID(RFID[i].data, crc);
+        }
+        
         if( checkok ) {
           canmsg.opc = OPC_DDES;
           canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
@@ -229,6 +258,19 @@ void doRFID(void) {
           ok = canQueue(&canmsg);
         }
         else {
+          LED2 = PORT_ON;
+
+          canmsg.opc = OPC_DDES;
+          canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
+          canmsg.d[1] = (RFID[i].addr) & 0xFF;
+          canmsg.d[2] = RFID[i].rawcrc[0];
+          canmsg.d[3] = RFID[i].rawcrc[1];
+          canmsg.d[4] = 0;
+          canmsg.d[5] = 0;
+          canmsg.d[6] = 0;
+          canmsg.len = 7; // data bytes
+          ok = canQueue(&canmsg);
+
           RFID[i].data[0] = 0;
           RFID[i].data[1] = 0;
           RFID[i].data[2] = 0;
@@ -236,13 +278,18 @@ void doRFID(void) {
           RFID[i].data[4] = 0;
         }
       }
-      else if( RFID[i].rawcnt >= 1 && RFID[i].rawcnt < 11 ) {
+      else if( RFID[i].rawcnt >= 1 && RFID[i].rawcnt <= 10 ) {
         // data
-        RFID[i].raw[9-(RFID[i].rawcnt-1)] = RFID[i].sampledata;
+        RFID[i].raw[RFID[i].rawcnt-1] = data;
         RFID[i].rawcnt++;
       }
-      else if( RFID[i].rawcnt >= 11 && RFID[i].rawcnt < 15 ) {
-        // checksum + cr + lf
+      else if( RFID[i].rawcnt >= 11 && RFID[i].rawcnt <= 12 ) {
+        // checksum
+        RFID[i].rawcrc[(RFID[i].rawcnt-11)] = data;
+        RFID[i].rawcnt++;
+      }
+      else if( RFID[i].rawcnt >= 13 && RFID[i].rawcnt < 15 ) {
+        // cr + lf
         RFID[i].rawcnt++;
       }
     }
