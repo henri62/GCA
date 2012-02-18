@@ -246,15 +246,26 @@ void doRFID(void) {
         }
         
         if( checkok ) {
-          canmsg.opc = OPC_DDES;
-          canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
-          canmsg.d[1] = (RFID[i].addr) & 0xFF;
-          canmsg.d[2] = RFID[i].data[0];
-          canmsg.d[3] = RFID[i].data[1];
-          canmsg.d[4] = RFID[i].data[2];
-          canmsg.d[5] = RFID[i].data[3];
-          canmsg.d[6] = RFID[i].data[4];
-          canmsg.len = 7; // data bytes
+          if( NV1 & CFG_ACCRFID ) {
+            canmsg.opc  = OPC_ASON;
+            canmsg.d[0] = (NN_temp / 256) & 0xFF;
+            canmsg.d[1] = (NN_temp % 256) & 0xFF;
+            canmsg.d[2] = (RFID[i].addr / 256) & 0xFF;
+            canmsg.d[3] = (RFID[i].addr) & 0xFF;
+            canmsg.len = 4; // data bytes
+          }
+          else {
+            canmsg.opc = OPC_DDES;
+            canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
+            canmsg.d[1] = (RFID[i].addr) & 0xFF;
+            canmsg.d[2] = RFID[i].data[0];
+            canmsg.d[3] = RFID[i].data[1];
+            canmsg.d[4] = RFID[i].data[2];
+            canmsg.d[5] = RFID[i].data[3];
+            canmsg.d[6] = RFID[i].data[4];
+            canmsg.len = 7; // data bytes
+          }
+
           ok = canQueue(&canmsg);
 
           RFID[i].timer = 40; // 2 seconds
@@ -311,15 +322,25 @@ void doRFIDTimedOff(int i) {
     if( RFID[i].timer == 0 ) {
       RFID[i].timedoff = 0;
       // Send an OPC.
-      canmsg.opc = OPC_DDES;
-      canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
-      canmsg.d[1] = (RFID[i].addr) & 0xFF;
-      canmsg.d[2] = 0;
-      canmsg.d[3] = 0;
-      canmsg.d[4] = 0;
-      canmsg.d[5] = 0;
-      canmsg.d[6] = 0;
-      canmsg.len = 7; // data bytes
+      if( NV1 & CFG_ACCRFID ) {
+        canmsg.opc  = OPC_ASOF;
+        canmsg.d[0] = (NN_temp / 256) & 0xFF;
+        canmsg.d[1] = (NN_temp % 256) & 0xFF;
+        canmsg.d[2] = (RFID[i].addr / 256) & 0xFF;
+        canmsg.d[3] = (RFID[i].addr) & 0xFF;
+        canmsg.len = 4; // data bytes
+      }
+      else {
+        canmsg.opc = OPC_DDES;
+        canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
+        canmsg.d[1] = (RFID[i].addr) & 0xFF;
+        canmsg.d[2] = 0;
+        canmsg.d[3] = 0;
+        canmsg.d[4] = 0;
+        canmsg.d[5] = 0;
+        canmsg.d[6] = 0;
+        canmsg.len = 7; // data bytes
+      }
       canQueue(&canmsg);
     }
   }

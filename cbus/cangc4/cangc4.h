@@ -51,6 +51,7 @@
 #define CFG_SAVERFID 0x01
 #define CFG_CHECKRFID 0x02
 #define CFG_RELEASERFID 0x04
+#define CFG_ACCRFID 0x08
 
 
 
