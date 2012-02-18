@@ -163,6 +163,9 @@ void main(void) {
     }
 
     doTimedOff(ioIdx);
+    
+    if( NV1 & CFG_RELEASERFID )
+      doRFIDTimedOff(ioIdx);
 
     if( checkInput(ioIdx, doSOD) ) {
       if( doSOD ) {

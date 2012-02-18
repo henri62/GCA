@@ -237,6 +237,11 @@ void doIOTimers(void) {
         Sensor[i].timer--;
       }
     }
+    if( RFID[i].timedoff ) {
+      if( RFID[i].timer > 0 ) {
+        RFID[i].timer--;
+      }
+    }
   }
 }
 

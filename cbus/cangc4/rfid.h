@@ -30,6 +30,7 @@
 extern void scanRFID(void);
 void initRFID(void);
 void doRFID(void);
+void doRFIDTimedOff(int i);
 
 #define STATUS_WAITSTART 0x00
 #define STATUS_CONFSTART 0x01

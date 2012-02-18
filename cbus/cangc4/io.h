@@ -75,6 +75,8 @@ typedef struct {
   byte   raw[10];
   byte   rawcnt;
   byte   rawcrc[2];
+  byte   timedoff;
+  byte   timer;
 } RFIDDef;
 
 typedef struct {

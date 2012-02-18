@@ -256,6 +256,9 @@ void doRFID(void) {
           canmsg.d[6] = RFID[i].data[4];
           canmsg.len = 7; // data bytes
           ok = canQueue(&canmsg);
+
+          RFID[i].timer = 40; // 2 seconds
+          RFID[i].timedoff = TRUE;
         }
         else {
           LED2 = PORT_ON;
@@ -301,4 +304,23 @@ void initRFID(void) {
       RFID[i].raw[n] = 0;
   }
 
+}
+
+void doRFIDTimedOff(int i) {
+  if( RFID[i].timedoff ) {
+    if( RFID[i].timer == 0 ) {
+      RFID[i].timedoff = 0;
+      // Send an OPC.
+      canmsg.opc = OPC_DDES;
+      canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
+      canmsg.d[1] = (RFID[i].addr) & 0xFF;
+      canmsg.d[2] = 0;
+      canmsg.d[3] = 0;
+      canmsg.d[4] = 0;
+      canmsg.d[5] = 0;
+      canmsg.d[6] = 0;
+      canmsg.len = 7; // data bytes
+      canQueue(&canmsg);
+    }
+  }
 }
