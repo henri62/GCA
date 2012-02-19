@@ -322,25 +322,12 @@ void doRFIDTimedOff(int i) {
     if( RFID[i].timer == 0 ) {
       RFID[i].timedoff = 0;
       // Send an OPC.
-      if( NV1 & CFG_ACCRFID ) {
-        canmsg.opc  = OPC_ASOF;
-        canmsg.d[0] = (NN_temp / 256) & 0xFF;
-        canmsg.d[1] = (NN_temp % 256) & 0xFF;
-        canmsg.d[2] = (RFID[i].addr / 256) & 0xFF;
-        canmsg.d[3] = (RFID[i].addr) & 0xFF;
-        canmsg.len = 4; // data bytes
-      }
-      else {
-        canmsg.opc = OPC_DDES;
-        canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
-        canmsg.d[1] = (RFID[i].addr) & 0xFF;
-        canmsg.d[2] = 0;
-        canmsg.d[3] = 0;
-        canmsg.d[4] = 0;
-        canmsg.d[5] = 0;
-        canmsg.d[6] = 0;
-        canmsg.len = 7; // data bytes
-      }
+      canmsg.opc  = OPC_ASOF;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = (NN_temp % 256) & 0xFF;
+      canmsg.d[2] = (RFID[i].addr / 256) & 0xFF;
+      canmsg.d[3] = (RFID[i].addr) & 0xFF;
+      canmsg.len = 4; // data bytes
       canQueue(&canmsg);
     }
   }
