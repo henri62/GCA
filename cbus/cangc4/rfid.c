@@ -173,10 +173,10 @@ void scanRFID(void) {
     scan(1,0x02);
     scan(2,0x04);
     scan(3,0x08);
-    scan(4,0x10);
-    scan(5,0x20);
-    scan(6,0x40);
-    scan(7,0x80);
+    scan(4,0x80);
+    scan(5,0x40);
+    scan(6,0x20);
+    scan(7,0x10);
 
     //LED2 = PORT_OFF;
   }
