@@ -116,7 +116,7 @@
 #pragma udata access VARS_RFID
 near byte work;
 
-#define scan(port,mask) \
+#define scan(port,mask,shft) \
 { \
   if( RFID[port].status == STATUS_WAITSTART && (inC & mask) == 0 ) { \
     RFID[port].status = STATUS_CONFSTART; \
@@ -145,7 +145,7 @@ near byte work;
       else { \
         RFID[port].status = STATUS_IGN1; \
         RFID[port].sample >>= 1; \
-        RFID[port].sample |= ((inC & mask) << (7-port)); \
+        RFID[port].sample |= ((inC & mask) << (7-shft)); \
         RFID[port].bitcnt++; \
       } \
     } \
@@ -169,14 +169,14 @@ void scanRFID(void) {
 
     inC = PORTC;
 
-    scan(0,0x01);
-    scan(1,0x02);
-    scan(2,0x04);
-    scan(3,0x08);
-    scan(4,0x80);
-    scan(5,0x40);
-    scan(6,0x20);
-    scan(7,0x10);
+    scan(0,0x01,0);
+    scan(1,0x02,1);
+    scan(2,0x04,2);
+    scan(3,0x08,3);
+    scan(4,0x80,7);
+    scan(5,0x40,6);
+    scan(6,0x20,5);
+    scan(7,0x10,4);
 
     //LED2 = PORT_OFF;
   }
@@ -221,6 +221,7 @@ byte crcRFID(byte* rfid, byte crc) {
 void doRFID(void) {
   byte i, ok;
   for( i = 0; i < 8; i++ ) {
+
     if( RFID[i].dataready ) {
       byte data = RFID[i].sampledata;
       RFID[i].dataready = FALSE;
@@ -229,12 +230,14 @@ void doRFID(void) {
       if( RFID[i].rawcnt == 0 ) {
         // start STX
         RFID[i].rawcnt++;
+        RFID[i].rawcntwd = 0;
       }
       //else if( RFID[i].rawcnt == 15 && data == ETX ) {
       else if( RFID[i].rawcnt == 15 ) {
         byte checkok = TRUE;
         // end -> convert raw to binary -> send event OPC_DDES
         RFID[i].rawcnt = 0;
+        RFID[i].rawcntwd = 0;
         strToByte( RFID[i].raw, 10, RFID[i].data );
         if( NV1 & CFG_CHECKRFID )
           checkok = checkRFID(RFID[i].data);
@@ -284,15 +287,28 @@ void doRFID(void) {
         // data
         RFID[i].raw[RFID[i].rawcnt-1] = data;
         RFID[i].rawcnt++;
+        RFID[i].rawcntwd = 0;
       }
       else if( RFID[i].rawcnt >= 11 && RFID[i].rawcnt <= 12 ) {
         // checksum
         RFID[i].rawcrc[(RFID[i].rawcnt-11)] = data;
         RFID[i].rawcnt++;
+        RFID[i].rawcntwd = 0;
       }
       else if( RFID[i].rawcnt >= 13 && RFID[i].rawcnt < 15 ) {
         // cr + lf
         RFID[i].rawcnt++;
+        RFID[i].rawcntwd = 0;
+      }
+    }
+
+    // no data to read
+    else if( RFID[i].rawcnt > 0 ) {
+      // Watch dog
+      RFID[i].rawcntwd++;
+      if( RFID[i].rawcntwd > 10 ) {
+        RFID[i].rawcnt = 0;
+        RFID[i].rawcntwd = 0;
       }
     }
   }

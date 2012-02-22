@@ -74,6 +74,7 @@ typedef struct {
   
   byte   raw[10];
   byte   rawcnt;
+  byte   rawcntwd;
   byte   rawcrc[2];
   byte   timedoff;
   byte   timer;
