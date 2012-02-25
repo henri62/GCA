@@ -147,3 +147,30 @@ void initDisplays(void) {
 
 }
 
+
+void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, byte char3) {
+  byte i;
+
+  for( i = 0; i < 8; i++ ) {
+    if( Display[i].addr == addr ) {
+      byte part = flags >> 4;
+      if( flags & 0x01 ) {
+        DisplayLine2[i].text[part*4+0] = char0;
+        DisplayLine2[i].text[part*4+1] = char1;
+        DisplayLine2[i].text[part*4+2] = char2;
+        DisplayLine2[i].text[part*4+3] = char3;
+        if( char0 == 0 || char1 == 0 || char2 == 0 || char3 == 0 )
+          Display[i].line2 = 1; // Send one time.
+      }
+      else {
+        DisplayLine1[i].text[part*4+0] = char0;
+        DisplayLine1[i].text[part*4+1] = char1;
+        DisplayLine1[i].text[part*4+2] = char2;
+        DisplayLine1[i].text[part*4+3] = char3;
+        if( char0 == 0 || char1 == 0 || char2 == 0 || char3 == 0 )
+          Display[i].line1 = 1; // Send one time.
+      }
+    }
+  }
+}
+

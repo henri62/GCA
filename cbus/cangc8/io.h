@@ -62,7 +62,9 @@
 
 typedef struct {
   byte config;
-  int    addr;
+  int  addr;
+  byte line1;
+  byte line2;
 } DisplayDef;
 
 typedef struct {
