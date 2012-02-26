@@ -28,6 +28,7 @@
 #include "commands.h"
 #include "cangc8.h"
 #include "io.h"
+#include "display.h"
 
 
 
@@ -133,12 +134,11 @@ unsigned char parseCmd(void) {
       break;
 
     case OPC_ACDAT:
-    {
-      // TODO: Display data.
-      ushort addr = rx_ptr->d1 * 256 + rx_ptr->d2;
-      setDisplayData(addr, rx_ptr->d3, rx_ptr->d4, rx_ptr->d5, rx_ptr->d6, rx_ptr->d7);
-      break;
-    }
+      {
+        // Display data.
+        int addr = rx_ptr->d1 * 256 + rx_ptr->d2;
+        setDisplayData(addr, rx_ptr->d3, rx_ptr->d4, rx_ptr->d5, rx_ptr->d6, rx_ptr->d7);
+      }
       break;
 
     case OPC_NVRD:
