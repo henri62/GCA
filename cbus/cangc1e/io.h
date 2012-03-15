@@ -26,11 +26,9 @@
 
 
 #define LED1    PORTCbits.RC0   // cbus activity
-#define LED3    PORTCbits.RC0   // cbus activity
-#define LED4    PORTCbits.RC1
-#define LED5    PORTCbits.RC2
+#define LED2    PORTCbits.RC1   // learning mode
+#define LED3    PORTCbits.RC2   // running
 #define SW      PORTAbits.RA0
-
 
 
 void setupIO(byte clr);
