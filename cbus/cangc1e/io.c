@@ -44,9 +44,9 @@ void setupIO(byte clr) {
   TRISAbits.TRISA0 = 1; /* SW */
 
 
-  LED1 = PORT_OFF;
-  LED2 = PORT_OFF;
-  LED3 = PORT_OFF;
+  LED1 = LED_OFF;
+  LED2 = LED_OFF;
+  LED3 = LED_OFF;
 
 
   // following presets are written to eeprom if the flim switch is preshed at boot
@@ -68,7 +68,7 @@ void doLEDTimers(void) {
   if( led1timer > 0 ) {
     led1timer--;
     if( led1timer == 0 ) {
-      LED1 = PORT_OFF;
+      LED1 = LED_OFF;
     }
   }
 

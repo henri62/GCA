@@ -25,9 +25,9 @@
 #define __IO_H
 
 
-#define LED1    PORTCbits.RC0   // cbus activity
-#define LED2    PORTCbits.RC1   // learning mode
-#define LED3    PORTCbits.RC2   // running
+#define LED1    PORTCbits.RC2   // cbus activity
+#define LED2    PORTCbits.RC0   // ethernet activity
+#define LED3    PORTCbits.RC1   // running
 #define SW      PORTAbits.RA0
 
 

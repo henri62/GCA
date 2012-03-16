@@ -127,7 +127,7 @@ void main(void) {
   restoreOutputStates();
   delay();
 
-  LED3 = PORT_ON; /* signal running system */
+  LED3 = LED_ON; /* signal running system */
 
   // Loop forever (nothing lasts forever...)
   while (1) {
@@ -135,7 +135,7 @@ void main(void) {
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
       // Decode the new command
-      LED1 = PORT_ON;
+      LED1 = LED_ON;
       led1timer = 20;
       txed = parseCmd();
     }

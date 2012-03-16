@@ -218,7 +218,7 @@ void canTxQ(CANMsg* msg) {
   Tx1[d7] = msg->d[6];
 	Latcount = 10;
 
-  LED1 = PORT_ON;
+  LED1 = LED_ON;
   led1timer = 20;
 
   tx_idx = 0;
