@@ -58,10 +58,10 @@
 /*
  * Hardware interface to NIC.
  */
-#define NIC_CTRL_TRIS       (TRISE)
-#define NIC_RESET_IO        (PORTE_RE2)
-#define NIC_IOW_IO          (PORTE_RE1)
-#define NIC_IOR_IO          (PORTE_RE0)
+#define NIC_CTRL_TRIS       (TRISC)
+#define NIC_RESET_IO        (PORTC_RC3)
+#define NIC_IOW_IO          (PORTC_RC5)
+#define NIC_IOR_IO          (PORTC_RC4)
 #define NIC_ADDR_IO         (PORTB)
 #define NIC_DATA_IO         (PORTD)
 
