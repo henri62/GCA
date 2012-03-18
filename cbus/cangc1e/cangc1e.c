@@ -155,6 +155,10 @@ void main(void) {
     //LED2 = PORT_ON;
     canSendQ();
     //LED2 = PORT_OFF;
+
+
+    doEth();
+
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
     }

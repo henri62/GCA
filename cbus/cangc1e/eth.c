@@ -55,6 +55,9 @@ void initEth(void) {
 
   StackInit();
 
+  //UDPInit();
+  TCPInit();
+
 }
 
 
@@ -90,4 +93,14 @@ void InitAppConfig(void) {
     AppConfig.Flags.bIsDHCPEnabled = FALSE;
 #endif
 
+}
+
+
+void doEth(void) {
+  /*
+   * This task performs normal stack task including checking
+   * for incoming packet, type of packet and calling
+   * appropriate stack entity to process it.
+   */
+  StackTask();
 }

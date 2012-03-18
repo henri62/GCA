@@ -32,11 +32,13 @@
 #include "MAC.h"
 #include "Helpers.h"
 #include "UDP.h"
+#include "TCP.h"
 #include "MPFS.h"
 //#include "XEEPROM.h"
 
 
 void initEth(void);
+void doEth(void);
 
 
 #endif
