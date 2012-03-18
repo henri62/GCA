@@ -52,6 +52,7 @@ extern near unsigned short NN_temp;
 extern near unsigned char NV1;
 extern near unsigned char CANID;
 extern near unsigned char led1timer;
+extern near unsigned char led2timer;
 extern near unsigned char ticktimer;
 extern near unsigned char ioIdx;
 extern volatile near unsigned char tmr0_reload;

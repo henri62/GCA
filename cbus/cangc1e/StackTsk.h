@@ -152,7 +152,7 @@
  * are required.
  */
 #define STACK_USE_ICMP
-//#define STACK_USE_HTTP_SERVER
+#define STACK_USE_HTTP_SERVER
 
 /*
  * For demo purpose only, each sample project defines one or more
@@ -173,8 +173,8 @@
  * module selections.
  * If you need them with your custom application, enable it here.
  */
-//#define STACK_USE_TCP
-#define STACK_USE_UDP
+#define STACK_USE_TCP
+//#define STACK_USE_UDP
 
 // Uncomment following line if SNMP TRAP support is required
 //#define SNMP_TRAP_DISABED

@@ -39,11 +39,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangc1e.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/eth.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/Tick.o ${OBJECTDIR}/ENC28J60.o ${OBJECTDIR}/Delay.o ${OBJECTDIR}/TCP.o ${OBJECTDIR}/UDP.o ${OBJECTDIR}/IP.o ${OBJECTDIR}/Helpers.o ${OBJECTDIR}/MPFS.o ${OBJECTDIR}/StackTsk.o ${OBJECTDIR}/ARP.o ${OBJECTDIR}/ARPTsk.o ${OBJECTDIR}/ICMP.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/cangc1e.o.d ${OBJECTDIR}/cbus.o.d ${OBJECTDIR}/commands.o.d ${OBJECTDIR}/eth.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/isr.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/Tick.o.d ${OBJECTDIR}/ENC28J60.o.d ${OBJECTDIR}/Delay.o.d ${OBJECTDIR}/TCP.o.d ${OBJECTDIR}/UDP.o.d ${OBJECTDIR}/IP.o.d ${OBJECTDIR}/Helpers.o.d ${OBJECTDIR}/MPFS.o.d ${OBJECTDIR}/StackTsk.o.d ${OBJECTDIR}/ARP.o.d ${OBJECTDIR}/ARPTsk.o.d ${OBJECTDIR}/ICMP.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangc1e.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/eth.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/Tick.o ${OBJECTDIR}/ENC28J60.o ${OBJECTDIR}/Delay.o ${OBJECTDIR}/TCP.o ${OBJECTDIR}/IP.o ${OBJECTDIR}/Helpers.o ${OBJECTDIR}/MPFS.o ${OBJECTDIR}/StackTsk.o ${OBJECTDIR}/ARP.o ${OBJECTDIR}/ARPTsk.o ${OBJECTDIR}/ICMP.o ${OBJECTDIR}/HTTP.o ${OBJECTDIR}/MAC.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/cangc1e.o.d ${OBJECTDIR}/cbus.o.d ${OBJECTDIR}/commands.o.d ${OBJECTDIR}/eth.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/isr.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/Tick.o.d ${OBJECTDIR}/ENC28J60.o.d ${OBJECTDIR}/Delay.o.d ${OBJECTDIR}/TCP.o.d ${OBJECTDIR}/IP.o.d ${OBJECTDIR}/Helpers.o.d ${OBJECTDIR}/MPFS.o.d ${OBJECTDIR}/StackTsk.o.d ${OBJECTDIR}/ARP.o.d ${OBJECTDIR}/ARPTsk.o.d ${OBJECTDIR}/ICMP.o.d ${OBJECTDIR}/HTTP.o.d ${OBJECTDIR}/MAC.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/cangc1e.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/eth.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/Tick.o ${OBJECTDIR}/ENC28J60.o ${OBJECTDIR}/Delay.o ${OBJECTDIR}/TCP.o ${OBJECTDIR}/UDP.o ${OBJECTDIR}/IP.o ${OBJECTDIR}/Helpers.o ${OBJECTDIR}/MPFS.o ${OBJECTDIR}/StackTsk.o ${OBJECTDIR}/ARP.o ${OBJECTDIR}/ARPTsk.o ${OBJECTDIR}/ICMP.o
+OBJECTFILES=${OBJECTDIR}/cangc1e.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/eth.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/Tick.o ${OBJECTDIR}/ENC28J60.o ${OBJECTDIR}/Delay.o ${OBJECTDIR}/TCP.o ${OBJECTDIR}/IP.o ${OBJECTDIR}/Helpers.o ${OBJECTDIR}/MPFS.o ${OBJECTDIR}/StackTsk.o ${OBJECTDIR}/ARP.o ${OBJECTDIR}/ARPTsk.o ${OBJECTDIR}/ICMP.o ${OBJECTDIR}/HTTP.o ${OBJECTDIR}/MAC.o
 
 
 CFLAGS=
@@ -155,12 +155,6 @@ ${OBJECTDIR}/TCP.o: TCP.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/TCP.o   TCP.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/TCP.o 
 	
-${OBJECTDIR}/UDP.o: UDP.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/UDP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/UDP.o   UDP.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/UDP.o 
-	
 ${OBJECTDIR}/IP.o: IP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/IP.o.d 
@@ -202,6 +196,18 @@ ${OBJECTDIR}/ICMP.o: ICMP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/ICMP.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ICMP.o   ICMP.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/ICMP.o 
+	
+${OBJECTDIR}/HTTP.o: HTTP.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/HTTP.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/HTTP.o   HTTP.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/HTTP.o 
+	
+${OBJECTDIR}/MAC.o: MAC.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/MAC.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/MAC.o   MAC.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/MAC.o 
 	
 else
 ${OBJECTDIR}/cangc1e.o: cangc1e.c  nbproject/Makefile-${CND_CONF}.mk
@@ -270,12 +276,6 @@ ${OBJECTDIR}/TCP.o: TCP.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/TCP.o   TCP.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/TCP.o 
 	
-${OBJECTDIR}/UDP.o: UDP.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/UDP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/UDP.o   UDP.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/UDP.o 
-	
 ${OBJECTDIR}/IP.o: IP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/IP.o.d 
@@ -317,6 +317,18 @@ ${OBJECTDIR}/ICMP.o: ICMP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/ICMP.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ICMP.o   ICMP.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/ICMP.o 
+	
+${OBJECTDIR}/HTTP.o: HTTP.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/HTTP.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/HTTP.o   HTTP.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/HTTP.o 
+	
+${OBJECTDIR}/MAC.o: MAC.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/MAC.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/MAC.o   MAC.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/MAC.o 
 	
 endif
 

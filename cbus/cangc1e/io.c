@@ -72,6 +72,13 @@ void doLEDTimers(void) {
     }
   }
 
+  if( led2timer > 0 ) {
+    led2timer--;
+    if( led2timer == 0 ) {
+      LED2 = LED_OFF;
+    }
+  }
+
   if( Wait4NN ) {
     return;
   }
