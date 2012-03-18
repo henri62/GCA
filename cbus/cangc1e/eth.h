@@ -22,6 +22,21 @@
 #ifndef __ETH_H
 #define __ETH_H
 
+#define THIS_IS_STACK_APPLICATION
+#define STACK_USE_UDP
+/*
+ * These headers must be included for required defs.
+ */
+#include "StackTsk.h"
+#include "Tick.h"
+#include "MAC.h"
+#include "Helpers.h"
+#include "UDP.h"
+//#include "MPFS.h"
+//#include "XEEPROM.h"
+
+
+void initEth(void);
 
 
 #endif

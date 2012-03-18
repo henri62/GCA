@@ -20,7 +20,6 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 #include <p18cxxx.h>
 #include <stdio.h>
 #include "cbusdefs.h"
@@ -32,6 +31,8 @@
 #include "isr.h"
 #include "io.h"
 #include "project.h"
+#include "eth.h"
+
 
 
 
@@ -54,6 +55,7 @@ near unsigned char  can_transmit_failed;
 near unsigned char  can_bus_off;
 near unsigned short NN_temp;
 near unsigned char  led1timer;
+near unsigned char ticktimer;
 near unsigned char  CANID;
 near unsigned char  Latcount;
 near unsigned char  NV1;
@@ -111,6 +113,8 @@ void main(void) {
 
   NV1 = eeRead(EE_NV);
 
+  initEth();
+
   initIO();
 
   NN_temp  = eeRead(EE_NN) * 256;
@@ -122,6 +126,7 @@ void main(void) {
   if( CANID == 0 || CANID == 0xFF )
     CANID = NN_temp & 0xFF;
   initCAN();
+
 
   delay();
   restoreOutputStates();

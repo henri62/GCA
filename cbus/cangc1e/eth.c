@@ -21,6 +21,35 @@
 
 #include "cangc1e.h"
 #include "eth.h"
+/*
+ * This is used by other stack elements.
+ * Main application must define this and initialize it with
+ * proper values.
+ */
+APP_CONFIG AppConfig;
 
-//#include "TCPIP Stack/TCPIP.h"
+void initEth(void) {
+    /*
+   * Initialize all stack related components.
+   * Following steps must be performed for all applications using
+   * PICmicro TCP/IP Stack.
+   */
+  TickInit();
 
+  /*
+   * Following steps must be performed for all applications using
+   * PICmicro TCP/IP Stack.
+   */
+  //MPFSInit();
+
+  /*
+   * Initialize Stack and application related NV variables.
+   */
+  //InitAppConfig();
+
+
+	// Disable DHCP
+	//SetConfig();
+
+
+}

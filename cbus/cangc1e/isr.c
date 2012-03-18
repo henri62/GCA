@@ -25,6 +25,7 @@
 #include "isr.h"
 #include "cangc1e.h"
 #include "io.h"
+#include "eth.h"
 
 #pragma udata access VARS
 near unsigned short led500ms_timer;
@@ -43,6 +44,14 @@ near unsigned short dim_timer;
 void isr_high(void) {
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
+
+    //
+    // 1ms
+    //
+    if (--ticktimer == 0) {
+      ticktimer = 4;
+      TickUpdate();
+    }
 
 
     //
