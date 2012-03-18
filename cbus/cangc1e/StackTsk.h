@@ -331,7 +331,7 @@
  */
 #define MY_DEFAULT_IP_ADDR_BYTE1        (192)
 #define MY_DEFAULT_IP_ADDR_BYTE2        (168)
-#define MY_DEFAULT_IP_ADDR_BYTE3        (0)
+#define MY_DEFAULT_IP_ADDR_BYTE3        (100)
 #define MY_DEFAULT_IP_ADDR_BYTE4        (30)
 
 #define MY_DEFAULT_MASK_BYTE1           (0xff)

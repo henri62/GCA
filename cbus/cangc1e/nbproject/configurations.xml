@@ -26,6 +26,9 @@
       <itemPath>TCP.h</itemPath>
       <itemPath>UDP.h</itemPath>
       <itemPath>IP.h</itemPath>
+      <itemPath>ARP.h</itemPath>
+      <itemPath>ARPTsk.h</itemPath>
+      <itemPath>ICMP.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LibraryFiles"
                    displayName="Library Files"
@@ -56,6 +59,11 @@
       <itemPath>UDP.c</itemPath>
       <itemPath>IP.c</itemPath>
       <itemPath>Helpers.c</itemPath>
+      <itemPath>MPFS.c</itemPath>
+      <itemPath>StackTsk.c</itemPath>
+      <itemPath>ARP.c</itemPath>
+      <itemPath>ARPTsk.c</itemPath>
+      <itemPath>ICMP.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -98,9 +106,9 @@
       </C18-LD>
       <C18LanguageToolchain>
         <property key="stack-analysis-mplink" value="false"/>
-        <property key="extended-mode-mcc18" value="false"/>
-        <property key="stack-analysis" value="false"/>
         <property key="stack-analysis-mcc18" value="false"/>
+        <property key="stack-analysis" value="false"/>
+        <property key="extended-mode-mcc18" value="false"/>
         <property key="extended-mode" value="false"/>
         <property key="extended-mode-mpasm" value="false"/>
         <property key="extended-mode-mplink" value="false"/>

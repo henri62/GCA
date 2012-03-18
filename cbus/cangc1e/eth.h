@@ -32,7 +32,7 @@
 #include "MAC.h"
 #include "Helpers.h"
 #include "UDP.h"
-//#include "MPFS.h"
+#include "MPFS.h"
 //#include "XEEPROM.h"
 
 
