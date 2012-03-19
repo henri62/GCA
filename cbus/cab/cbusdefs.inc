@@ -1,26 +1,50 @@
 
 ; CBUS definitions for use in PIC assembler
 
-; These definitions taken from CBUS specifications document rev 7g
+; (c) Pete Brownlow  2011-2012
+
+; These definitions taken from CBUS specifications document rev 8a
 
 ; Pete Brownlow 6/4/11 - Original from spec version 7e 
 ; Pete Brownlow 7/6/11 - Update to spec version 7f, add new module type codes
 ; Pete Brownlow 4/7/11 - Update to spec version 7g.
 ; Pete Brownlow 14/8/11 - Updated to spec ver 7h
+; Pete Brownlow 20/2/12 - Updated to spec ver 8a, Rocrail and animated modeller module types added
 
-; 7H BETA 2  - still to be finalised for version 7h
 
+; NOTE: To display this file with everything correctly lined up set your editor or IDE tab stop to 4
 
-; NOTE: To display this file with everyting correctly lined up set your editor or IDE tab stop to 4
-
+;   This program is free software: you can redistribute it and/or modify
+;   it under the terms of the GNU General Public License as published by
+;   the Free Software Foundation, version 3 of the License, as set out
+;   at <http:;www.gnu.org/licenses/>.
+;
+;   This program is distributed in the hope that it will be useful,
+;   but WITHOUT ANY WARRANTY; without even the implied warranty of
+;   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;   See the GNU General Public License for more details.
+;
+;   As set out in the GNU General Public License, you must retain and acknowledge
+;   the statements above relating to copyright and licensing. You must also
+;   state clearly any modifications made.  Please therefore retain this header
+;   and add documentation of any changes you make. If you distribute a changed
+;   version, you must make those changes publicly available.
+;
+;   The GNU license requires that if you distribute this software, changed or
+;   unchanged, or software which includes code from this software, including
+;   the supply of hardware that incorporates this software, you MUST either
+;   include the source code or a link to a location where you make the source
+;   publicly available. The best way to make your changes publicly available is
+;   via the MERG online resources.  See <www.merg.co.uk> 
 
 
 ; Manufacturers
 
-MANU_MERG	equ	.165
+MANU_MERG		equ	.165	; http:;www.merg.co.uk
+MANU_ROCRAIL	equ	.70		; http:;www.rocrail.net
+MANU_SPECTRUM	equ	.80		; http:;animatedmodeler.com  (Spectrum Engineering)
 
-
-; Module types
+; MERG Module types
 
 MTYP_SLIM       equ 0   ; default type code for SLiM nodes
 MTYP_CANACC4    equ 1	; Solenoid point driver
@@ -38,10 +62,25 @@ MTYP_CANBC		equ .12	; BC1a command station
 MTYP_CANRPI		equ	.13	; RPI and RFID interface
 MTYP_CANTTCA	equ	.14	; Turntable controller (turntable end)
 MTYP_CANTTCB	equ	.15 ; Turntable controller (control panel end)
+MTYP_CANHS		equ	.16	; Handset controller for old BC1a type handsets
+
+; Rocrail Module types
+
+MTYP_CANGC1		equ	 1	; RS232 PC interface
+MTYP_CANGC2  	equ	 2	; 16 I/O
+MTYP_CANGC3		equ	 3	; Command station (derived from cancmd)
+MTYP_CANGC4		equ	 4	; 8 channel RFID reader
+MTYP_CANGC5		equ	 5	; Cab for fixed panels (derived from cancab)
+MTYP_CANGC6		equ	 6	; 4 channel servo controller
+MTYP_CANGC7		equ	 7	; Fast clock module
+
+; Spectrum Engineering Animated Modeller module types
+
+MTYP_AMCTRLR	equ  1	; Animation controller (firmware derived from cancmd)
+MTYP_DUALCAB	equ	 2	; Dual cab based on cancab
 
 
 ;  CBUS opcodes list 
-;  Ref: CBUS Specifications rev 7d
 
 ; Packets with no data bytes
 
@@ -56,7 +95,6 @@ OPC_ARST    EQU	0x07    ; System reset
 OPC_RTOF    EQU	0x08    ; Request track off
 OPC_RTON    EQU	0x09    ; Request track on
 OPC_RESTP   EQU	0x0a    ; Request emergency stop all
-OPC_RVER    EQU 0x0b    ; Request firmware version
 OPC_RSTAT   EQU 0x0c    ; Request node status
 OPC_QNN     EQU 0x0d    ; Query nodes
 
@@ -76,8 +114,9 @@ OPC_EXTC    EQU 0x3F    ; Extended opcode
 ; Packets with 2 data bytes
 
 OPC_RLOC    EQU 0x40    ; Request session for loco
+OPC_QCON	EQU 0x41	; Query consist
 OPC_SNN     EQU	0x42    ; Set node number
-OPC_STMOD   EQU	0x44    ; Set Throttlle mode
+OPC_STMOD   EQU	0x44    ; Set Throttle mode
 OPC_PCON    EQU	0x45    ; Consist loco
 OPC_KCON    EQU	0x46    ; De-consist loco
 OPC_DSPD    EQU	0x47    ; Loco speed/dir
@@ -104,13 +143,14 @@ OPC_EXTC1   EQU 0x5F    ; Extended opcode with 1 data byte
 ; Packets with 3 data bytes
 
 OPC_DFUN    EQU	0x60    ; Set engine functions
+OPC_GLOC	EQU 0x61	; Get loco (with support for steal/share)
 OPC_ERR     EQU	0x63    ; Command station error
 OPC_CMDERR  EQU 0x6F    ; Errors from nodes during config
 
 OPC_EVNLF	EQU	0x70    ; Event slots left response
 OPC_NVRD	EQU	0x71    ; Request read of node variable
-OPC_NENRD   EQU 0x72    ; Reqeust read stored event by index
-OPC_RQNPN	EQU	0x73	; Request read module paramters
+OPC_NENRD   EQU 0x72    ; Request read stored event by index
+OPC_RQNPN	EQU	0x73	; Request read module parameters
 OPC_NUMEV   EQU 0x74    ; Number of events stored response
 OPC_EXTC2   EQU 0x7F    ; Extended opcode with 2 data bytes
 
@@ -150,6 +190,7 @@ OPC_REQEV	EQU	0xB2    ; Read event variable in learn mode
 OPC_ARON1	EQU	0xB3	; Accessory on response (1 data byte)
 OPC_AROF1  	EQU	0xB4    ; Accessory off response (1 data byte)
 OPC_NEVAL   EQU 0xB5    ; Event variable by index read response
+OPC_PNN		EQU	0xB6	; Response to QNN
 OPC_ASON1	EQU	0xB8	; Accessory short on with 1 data byte
 OPC_ASOF1	EQU	0xB9	; Accessory short off with 1 data byte
 OPC_ARSON1	EQU	0xBD	; Short response event on with one data byte
@@ -160,6 +201,7 @@ OPC_EXTC4   EQU 0xBF    ; Extended opcode with 4 data bytes
 
 OPC_RDCC5   EQU	0xC0    ; 5 byte DCC packet
 OPC_WCVOA   EQU	0xC1    ; Write CV ops mode by address
+OPC_FCLK	EQU	0xCF	; Fast clock
 
 OPC_ACON2   EQU 0xD0    ; On event with two data bytes
 OPC_ACOF2   EQU 0xD1    ; Off event with two data bytes
@@ -194,7 +236,7 @@ OPC_DDES	EQU	0xFA	; Short data frame aka device data event (device id plus 5 dat
 OPC_DDRS	EQU	0xFB	; Short data frame response aka device data response
 OPC_ARSON3	EQU	0xFD	; Short response event on with 3 data bytes
 OPC_ARSOF3  EQU	0xFE	; Short response event off with 3 data bytes
-OPC_EXTC6	EQU	0xFF	; Extendeed opcode with 6 data byes
+OPC_EXTC6	EQU	0xFF	; Extended opcode with 6 data byes
 
 
 ; Modes for STMOD
@@ -213,6 +255,8 @@ ERR_SESSION_NOT_PRESENT EQU	3
 ERR_CONSIST_EMPTY		EQU	4
 ERR_LOCO_NOT_FOUND    	EQU	5
 ERR_CMD_RX_BUF_OFLOW	EQU	6
+ERR_INVALID_REQUEST		EQU 7
+ERR_SESSION_CANCELLED	EQU 8
 
 ; Status codes for OPC_SSTAT
 
@@ -236,4 +280,23 @@ CMDERR_INV_PARAM_IDX	EQU 9
 CMDERR_INV_NV_IDX		EQU	10
 CMDERR_INV_EV_VALUE		EQU	11
 CMDERR_INV_NV_VALUE		EQU	12
+
+; Parameter index numbers (readable by OPC_RQNPN, returned in OPC_PARAN)
+
+PAR_MANU				EQU	1	; Manufacturer id
+PAR_MINVER				EQU 2	; Minor version letter
+PAR_MTYP				EQU 3	; Module type code				
+PAR_EVTNUM				EQU 4	; Number of events supported
+PAR_EVNUM				EQU	5	; Event variables per event
+PAR_NVNUM				EQU 6	; Number of Node variables
+PAR_MAJVER				EQU 7	; Major version number
+PAR_FLAGS				EQU 8	; Node flags
+
+; Flags in PAR_FLAGS
+
+PF_CONSUMER				equ	1
+PF_PRODUCER				equ	2
+PF_COMBI				equ	3
+PF_FLiM					equ 4
+
 
