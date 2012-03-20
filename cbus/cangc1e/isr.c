@@ -46,10 +46,10 @@ void isr_high(void) {
     TMR0L = tmr0_reload;
 
     //
-    // 1ms
+    // 10ms
     //
     if (--ticktimer == 0) {
-      ticktimer = 4;
+      ticktimer = 40;
       TickUpdate();
     }
 

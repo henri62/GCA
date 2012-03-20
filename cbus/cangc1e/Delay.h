@@ -98,8 +98,8 @@
 void DelayMs(unsigned char ms);
 
 #elif defined(MCHP_C18)
-#define Delay10us(us)                   Delay10TCYx(((CLOCK_FREQ/4000000)*us))
-#define DelayMs(ms)                     Delay1KTCYx((((CLOCK_FREQ/1000)*ms)/4000))
+#define Delay10us(us)                   Delay10TCYx(((CLOCK_FREQ/3200000)*us))
+#define DelayMs(ms)                     Delay1KTCYx((((CLOCK_FREQ/1000)*ms)/3200))
 
 #endif
 

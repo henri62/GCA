@@ -73,7 +73,7 @@
  * Clock frequency value.
  * This value is used to calculate Tick Counter value
  */
-#define CLOCK_FREQ              (40000000)      // Hz
+#define CLOCK_FREQ              (32000000)      // Hz
 
 
 // Some PIC18s have a Compatible 10-bit A/D which is operated differently

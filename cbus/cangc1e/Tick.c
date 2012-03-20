@@ -152,6 +152,8 @@ TICK TickGet(void)
  ********************************************************************/
 void TickUpdate(void)
 {
+    TickCount++;
+    /*
     if ( INTCON_TMR0IF )
     {
         TMR0H = TICK_COUNTER_HIGH;
@@ -164,6 +166,7 @@ void TickUpdate(void)
 
         INTCON_TMR0IF = 0;
     }
+    */
 }
 
 
