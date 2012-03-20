@@ -60,10 +60,10 @@
 
 /** D E F I N I T I O N S ****************************************************/
 /* Hardware interface to NIC. */
-#define MCP_RESET_TRIS	(TRISB_RB5)
-#define MCP_RESET_IO	(LATB5)
-#define MCP_CS_TRIS		(TRISB_RB3)
-#define MCP_CS_IO		(LATB3)
+#define MCP_RESET_TRIS	(TRISA_RA4)
+#define MCP_RESET_IO	(LATA4)
+#define MCP_CS_TRIS		(TRISB_RA5)
+#define MCP_CS_IO		(LATA5)
 // The following SPI pins are used but are not configurable
 //   RC3 is used for the SCK pin and is an output
 //   RC4 is used for the SDI pin and is an input
