@@ -75,6 +75,9 @@
     #include "DHCP.h"
 #endif
 
+#include "project.h"
+#include "cangc1e.h"
+#include "io.h"
 
 
 /*
@@ -218,6 +221,10 @@ void StackTask(void)
 
                 break;
             }
+
+            LED2 = LED_ON;
+            led2timer = 20;
+
 
             lbContinue = TRUE;
             if ( type.MACFrameType == MAC_IP )

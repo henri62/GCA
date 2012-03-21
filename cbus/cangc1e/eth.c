@@ -43,7 +43,7 @@ void initEth(void) {
    * Following steps must be performed for all applications using
    * PICmicro TCP/IP Stack.
    */
-  //TickInit();
+  //TickInit(); // The tick is initialized in cangc1e
 
   /*
    * Following steps must be performed for all applications using
