@@ -222,8 +222,8 @@ void StackTask(void)
                 break;
             }
 
-            LED2 = LED_ON;
-            led2timer = 20;
+            //LED2 = LED_ON;
+            //led2timer = 20;
 
 
             lbContinue = TRUE;
@@ -325,23 +325,20 @@ void StackTask(void)
 
         case SM_STACK_ICMP:
             smStack = SM_STACK_IDLE;
+            //LED2 = LED_ON;
+            //led2timer = 20;
 
 #if defined(STACK_USE_ICMP)
-            if ( dataCount <= (MAX_ICMP_DATA_LEN+8) )
-            {
-                if ( ICMPGet(&type.ICMPCode,
-                             data,
-                             (BYTE*)&dataCount,
-                             &ICMPId,
-                             &ICMPSeq) )
-                {
-					if ( type.ICMPCode == ICMP_ECHO_REQUEST )
-					{
-						lbContinue = TRUE;
-						smStack = SM_STACK_ICMP_REPLY;
-					}
-                }
+        if (dataCount <= (MAX_ICMP_DATA_LEN + 8)) {
+          LED2 = LED_ON;
+          led2timer = 20;
+          if (ICMPGet(&type.ICMPCode, data, (BYTE*) & dataCount, &ICMPId, &ICMPSeq)) {
+            if (type.ICMPCode == ICMP_ECHO_REQUEST) {
+              lbContinue = TRUE;
+              smStack = SM_STACK_ICMP_REPLY;
             }
+          }
+        }
 #endif
             MACDiscardRx();
             break;

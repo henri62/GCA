@@ -43,6 +43,8 @@ void setupIO(byte clr) {
   TRISCbits.TRISC2 = 0; /* LED3 */
   TRISAbits.TRISA0 = 1; /* SW */
 
+  // Enable internal pull-ups.
+  INTCON2bits.RBPU = 0;
 
   LED1 = LED_OFF;
   LED2 = LED_OFF;

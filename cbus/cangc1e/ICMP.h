@@ -42,7 +42,7 @@
 #include "MAC.h"
 
 // Windows ping uses 32 bytes, while MAC uses 56 bytes.
-#define MAX_ICMP_DATA       (32)
+#define MAX_ICMP_DATA       (56)
 
 #define MAX_ICMP_DATA_LEN   (MAX_ICMP_DATA)
 
