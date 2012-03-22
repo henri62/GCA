@@ -107,3 +107,14 @@ void lDelay(void) {
   } //		bra		ldely1
   //
 } //		return
+
+unsigned char getDataLen( unsigned char OPC ) {
+  if( OPC < 0x20 ) return 0;
+  if( OPC < 0x40 ) return 1;
+  if( OPC < 0x60 ) return 2;
+  if( OPC < 0x80 ) return 3;
+  if( OPC < 0xA0 ) return 4;
+  if( OPC < 0xC0 ) return 5;
+  if( OPC < 0xE0 ) return 6;
+  return 7;
+}

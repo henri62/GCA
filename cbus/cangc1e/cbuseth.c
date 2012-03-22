@@ -6,6 +6,8 @@
 
 #include "cbuseth.h"
 #include "cbus.h"
+#include "commands.h"
+#include "utils.h"
 
 static ram CANMsg CANMsgs[CANMSG_QSIZE];
 
@@ -38,16 +40,6 @@ static void CBusEthProcess(CBUSETH_HANDLE h);
      * 1d-7d -> data 2 byte HEXA
      * ;     -> end of frame
      */
-static byte getDataLen( unsigned char OPC ) {
-  if( OPC < 0x20 ) return 0;
-  if( OPC < 0x40 ) return 1;
-  if( OPC < 0x60 ) return 2;
-  if( OPC < 0x80 ) return 3;
-  if( OPC < 0xA0 ) return 4;
-  if( OPC < 0xC0 ) return 5;
-  if( OPC < 0xE0 ) return 6;
-  return 7;
-}
 
 static char hexa[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 static byte msg2ASCII(CANMsg* msg, char* s) {
@@ -149,8 +141,10 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
         cbusData[len] = '\0';
         TCPDiscard(ph->socket);
         // TODO: Check if the message is valid.
-        if( ASCII2Msg(cbusData, len, &canmsg) )
+        if( ASCII2Msg(cbusData, len, &canmsg) ) {
           canQueue(&canmsg);
+          parseCmdEth(&canmsg);
+        }
     }
 }
 

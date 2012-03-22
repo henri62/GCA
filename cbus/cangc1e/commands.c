@@ -43,9 +43,6 @@ ram unsigned char pnnCount = 0;
 //
 
 unsigned char parseCmd(void) {
-  unsigned char txed = 0;
-  //mode_word.s_full = 0;
-
   canmsg.opc  = rx_ptr->d0;
   canmsg.d[0] = rx_ptr->d1;
   canmsg.d[1] = rx_ptr->d2;
@@ -54,10 +51,23 @@ unsigned char parseCmd(void) {
   canmsg.d[4] = rx_ptr->d5;
   canmsg.d[5] = rx_ptr->d6;
   canmsg.d[6] = rx_ptr->d7;
-  canmsg.len = 7; // TODO: Adjust len to OPC
+  canmsg.len = getDataLen(canmsg.opc); // TODO: Adjust len to OPC
   ethQueue(&canmsg);
 
-  switch (rx_ptr->d0) {
+  rx_ptr->con = 0;
+  if (can_bus_off) {
+    // At least one buffer is now free
+    can_bus_off = 0;
+    PIE3bits.FIFOWMIE = 1;
+  }
+}
+
+
+unsigned char parseCmdEth(CANMsg* p_canmsg) {
+  unsigned char txed = 0;
+  CANMsg canmsg;
+
+  switch (p_canmsg->opc) {
 
     case OPC_QNN:
       canmsg.opc  = OPC_PNN;
@@ -67,23 +77,21 @@ unsigned char parseCmd(void) {
       canmsg.d[3] = params[2];
       canmsg.d[4] = NV1;
       canmsg.len = 5;
-      canQueue(&canmsg);
-      //LED2 = 1;
-      txed = 1;
+      ethQueue(&canmsg);
       break;
 
     case OPC_RQNPN:
       // Request to read a parameter
-      if (thisNN() == 1) {
-        doRqnpn((unsigned int) rx_ptr->d3);
+      if (thisNN(p_canmsg) == 1) {
+        doRqnpn((unsigned int) p_canmsg->d[2]);
       }
       break;
 
     case OPC_SNN:
     {
       if( Wait4NN ) {
-        unsigned char nnH = rx_ptr->d1;
-        unsigned char nnL = rx_ptr->d2;
+        unsigned char nnH = p_canmsg->d[0];
+        unsigned char nnL = p_canmsg->d[1];
         NN_temp = nnH * 256 + nnL;
         eeWrite(EE_NN, nnH);
         eeWrite(EE_NN+1, nnL);
@@ -104,7 +112,7 @@ unsigned char parseCmd(void) {
         canmsg.d[5] = params[5];
         canmsg.d[6] = params[6];
         canmsg.len = 7;
-        canQueue(&canmsg);
+        ethQueue(&canmsg);
         txed = 1;
       }
       break;
@@ -113,7 +121,7 @@ unsigned char parseCmd(void) {
       break;
 
     case OPC_NVRD:
-      if( thisNN() ) {
+      if( thisNN(p_canmsg) ) {
         byte nvnr = rx_ptr->d3;
         if( nvnr == 1 ) {
           canmsg.opc = OPC_NVANS;
@@ -122,7 +130,7 @@ unsigned char parseCmd(void) {
           canmsg.d[2] = nvnr;
           canmsg.d[3] = NV1;
           canmsg.len = 4;
-          canQueue(&canmsg);
+          ethQueue(&canmsg);
           txed = 1;
         }
         else if( nvnr == 2 ) {
@@ -139,14 +147,14 @@ unsigned char parseCmd(void) {
       break;
 
     case OPC_NVSET:
-      if( thisNN() ) {
-        byte nvnr = rx_ptr->d3;
+      if( thisNN(p_canmsg) ) {
+        byte nvnr = p_canmsg->d[2];
         if( nvnr == 1 ) {
-          NV1 = rx_ptr->d4;
+          NV1 = p_canmsg->d[3];
           eeWrite(EE_NV, NV1);
         }
         else if( nvnr == 2 ) {
-          CANID = rx_ptr->d4;
+          CANID = p_canmsg->d[3];
           eeWrite(EE_CANID, CANID);
         }
       }
@@ -155,14 +163,8 @@ unsigned char parseCmd(void) {
     default: break;
   }
 
-    rx_ptr->con = 0;
-    if (can_bus_off) {
-      // At least one buffer is now free
-      can_bus_off = 0;
-      PIE3bits.FIFOWMIE = 1;
-    }
 
-    return txed;
+  return txed;
 }
 
 void doRqnpn(unsigned int idx) {
@@ -173,12 +175,12 @@ void doRqnpn(unsigned int idx) {
     canmsg.d[2] = idx;
     canmsg.d[3] = params[idx - 1];
     canmsg.len = 4;
-    canQueue(&canmsg);
+    ethQueue(&canmsg);
   }
 }
 
-int thisNN() {
-  if ((((unsigned short) (rx_ptr->d1) << 8) + rx_ptr->d2) == NN_temp)
+int thisNN(CANMsg* p_canmsg) {
+  if ((((unsigned short) (p_canmsg->d[0]) << 8) + p_canmsg->d[1]) == NN_temp)
     return 1;
   else
     return 0;

@@ -25,8 +25,9 @@
 #define __COMMANDS_H
 
 unsigned char parseCmd(void);
+unsigned char parseCmdEth(CANMsg* canmsg);
 void doRqnpn(unsigned int);
-int thisNN(void);
+int thisNN(CANMsg* canmsg);
 
 
 #endif

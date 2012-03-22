@@ -31,6 +31,7 @@
 
 
 static ram CANMsg CANMsgs[CANMSG_QSIZE];
+
 ram CANMsg canmsg;
 
 #pragma romdata EEPROM
