@@ -72,16 +72,26 @@ static byte msg2ASCII(CANMsg* msg, char* s) {
 }
 
 static char hexb[] = {0,1,2,3,4,5,6,7,8,9,0,0,0,0,0,0,0,10,11,12,13,14,15};
-static void ASCII2Msg(unsigned char* s, CANMsg* msg) {
+static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
   byte len = 0;
   byte i;
-        
-  msg->opc = (hexb[s[7]]<<4) + hexb[s[8]];
+  unsigned char* s = ins;
+  for( i = 0; i < inlen; i++ ) {
+    if( s[i] == ':' && s[i+1] == 'S' ) {
+      s += i;
+      break;
+    }
+  }
+  if( i == inlen )
+    return 0;
+
+  msg->opc = (hexb[s[7]-0x30]<<4) + hexb[s[8]-0x30];
   len = getDataLen(msg->opc);
   for( i = 0; i < len; i++ ) {
-    msg->d[i] = (hexb[s[9+2*i]]<<4) + hexb[s[9+2*i+1]];
+    msg->d[i] = (hexb[s[9+2*i]-0x30]<<4) + hexb[s[9+2*i+1]-0x30];
   }
-  msg->len = len + 1;
+  msg->len = len;
+  return 1;
 }
 
 void CBusEthInit(void)
@@ -139,8 +149,8 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
         cbusData[len] = '\0';
         TCPDiscard(ph->socket);
         // TODO: Check if the message is valid.
-        ASCII2Msg(cbusData, &canmsg);
-        canQueue(&canmsg);
+        if( ASCII2Msg(cbusData, len, &canmsg) )
+          canQueue(&canmsg);
     }
 }
 
