@@ -161,6 +161,7 @@ void CBusEthBroadcast(CANMsg* msg)
     BYTE conn;
     char s[32];
     byte len = msg2ASCII(msg, s);
+    byte i;
 
     for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
       CBUSETH_INFO* ph = &HCB[conn];
@@ -171,10 +172,8 @@ void CBusEthBroadcast(CANMsg* msg)
       else {
         BYTE idx = 0;
         if( TCPIsPutReady(ph->socket) ) {
-          TCPPut(ph->socket, msg->opc);
-          while( TCPIsPutReady(ph->socket) && idx < len ) {
-            TCPPut(ph->socket, s[idx]);
-            idx++;
+          for( i = 0; i < len; i++ ) {
+            TCPPut(ph->socket, s[i]);
            }
          }
         TCPFlush(ph->socket);
