@@ -152,7 +152,7 @@
  * are required.
  */
 #define STACK_USE_ICMP
-#define STACK_USE_HTTP_SERVER
+//#define STACK_USE_HTTP_SERVER
 
 /*
  * For demo purpose only, each sample project defines one or more

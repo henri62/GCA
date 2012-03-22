@@ -59,10 +59,6 @@
 #include "TCP.h"
 #endif
 
-#if defined(STACK_USE_HTTP_SERVER)
-#include "HTTP.h"
-#endif
-
 #if defined(STACK_USE_ICMP)
     #include "ICMP.h"
 #endif
@@ -318,6 +314,8 @@ void StackTask(void)
 
 #if defined(STACK_USE_TCP)
         case SM_STACK_TCP:
+          LED2 = LED_ON;
+          led2timer = 20;
             if ( TCPProcess(&remoteNode, &tempLocalIP, dataCount) )
                 smStack = SM_STACK_IDLE;
             break;

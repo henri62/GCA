@@ -28,6 +28,7 @@
 #include "commands.h"
 #include "cangc1e.h"
 #include "io.h"
+#include "cbuseth.h"
 
 ram unsigned char pnnCount = 0;
 
@@ -44,6 +45,17 @@ ram unsigned char pnnCount = 0;
 unsigned char parseCmd(void) {
   unsigned char txed = 0;
   //mode_word.s_full = 0;
+
+  canmsg.opc  = rx_ptr->d0;
+  canmsg.d[0] = rx_ptr->d1;
+  canmsg.d[1] = rx_ptr->d2;
+  canmsg.d[2] = rx_ptr->d3;
+  canmsg.d[3] = rx_ptr->d4;
+  canmsg.d[4] = rx_ptr->d5;
+  canmsg.d[5] = rx_ptr->d6;
+  canmsg.d[6] = rx_ptr->d7;
+  canmsg.len = 7; // TODO: Adjust len to OPC
+  ethQueue(&canmsg);
 
   switch (rx_ptr->d0) {
 

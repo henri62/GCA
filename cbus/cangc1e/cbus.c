@@ -30,7 +30,7 @@
 #include "commands.h"
 
 
-ram CANMsg CANMsgs[CANMSG_QSIZE];
+static ram CANMsg CANMsgs[CANMSG_QSIZE];
 ram CANMsg canmsg;
 
 #pragma romdata EEPROM
