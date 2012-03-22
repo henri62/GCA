@@ -60,6 +60,9 @@
 #include "MAC.h"
 #include "Tick.h"
 #include "TCP.h"
+#include "project.h"
+#include "io.h"
+#include "cangc1e.h"
 
 /*
  * Max TCP data length is MAC_TX_BUFFER_SIZE - sizeof(TCP_HEADER) -
@@ -1392,6 +1395,9 @@ static void CloseSocket(SOCKET_INFO* ps)
     ps->TimeOut                 = TCP_START_TIMEOUT_VAL;
 
     ps->Flags.bIsTxInProgress   = FALSE;
+
+    LED3 = LED_OFF;
+    led3timer = 20;
 
     if ( ps->Flags.bServer )
     {
