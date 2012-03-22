@@ -8,6 +8,8 @@
 #include "cbus.h"
 #include "commands.h"
 #include "utils.h"
+#include "io.h"
+#include "cangc1e.h"
 
 static ram CANMsg CANMsgs[CANMSG_QSIZE];
 
@@ -156,23 +158,29 @@ void CBusEthBroadcast(CANMsg* msg)
     char s[32];
     byte len = msg2ASCII(msg, s);
     byte i;
+    byte wait;
 
     for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
       CBUSETH_INFO* ph = &HCB[conn];
-      if ( !TCPIsConnected(ph->socket) )
+      if ( TCPIsConnected(ph->socket) )
       {
-          continue;
-      }
-      else {
-        BYTE idx = 0;
+        wait = 0;
+        while( !TCPIsPutReady(ph->socket) && wait < 10 ) {
+          wait++;
+          delay();
+        }
         if( TCPIsPutReady(ph->socket) ) {
           for( i = 0; i < len; i++ ) {
             TCPPut(ph->socket, s[i]);
-           }
-         }
-        TCPFlush(ph->socket);
+          }
+          TCPFlush(ph->socket);
+        }
+        else {
+          LED3 = LED_OFF; /* signal error */
+          led3timer = 40;
+        }
       }
-  }
+   }
 }
 
 

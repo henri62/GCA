@@ -56,6 +56,7 @@ near unsigned char  can_bus_off;
 near unsigned short NN_temp;
 near unsigned char  led1timer;
 near unsigned char  led2timer;
+near unsigned char  led3timer;
 near unsigned char ticktimer;
 near unsigned char  CANID;
 near unsigned char  Latcount;

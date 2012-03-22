@@ -81,6 +81,13 @@ void doLEDTimers(void) {
     }
   }
 
+  if( led3timer > 0 ) {
+    led3timer--;
+    if( led3timer == 0 ) {
+      LED3 = LED_ON;
+    }
+  }
+
   if( Wait4NN ) {
     return;
   }
