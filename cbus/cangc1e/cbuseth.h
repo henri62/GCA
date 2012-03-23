@@ -10,7 +10,7 @@
 
 void CBusEthInit(void);
 void CBusEthServer(void);
-void CBusEthBroadcast(CANMsg* msg);
+unsigned char CBusEthBroadcast(CANMsg* msg);
 unsigned char ethQueue(CANMsg* msg);
 
 

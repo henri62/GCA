@@ -822,7 +822,7 @@ BOOL TCPIsGetReady(TCP_SOCKET s)
  ********************************************************************/
 void TCPTick(void)
 {
-#if !defined(TCP_NO_WAIT_FOR_ACK)
+#if 1 //!defined(TCP_NO_WAIT_FOR_ACK)
     TCP_SOCKET s;
     TICK diffTicks;
     TICK tick;

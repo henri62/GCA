@@ -32,6 +32,7 @@
 #include "io.h"
 #include "project.h"
 #include "eth.h"
+#include "cbuseth.h"
 
 
 
@@ -146,18 +147,9 @@ void main(void) {
       txed = parseCmd();
     }
 
-    if( checkInput(ioIdx) ) {
-      ioIdx++;
-      if( ioIdx >= 16 ) {
-        ioIdx = 0;
-      }
-    }
-
-    //LED2 = PORT_ON;
-    canSendQ();
-    //LED2 = PORT_OFF;
-
     doEth();
+
+    canSendQ();
 
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
@@ -172,7 +164,7 @@ void main(void) {
         canmsg.d[0] = NN_temp / 256;
         canmsg.d[1] = NN_temp % 256;
         canmsg.len = 2;
-        canQueue(&canmsg);
+        ethQueue(&canmsg);
         Wait4NN = 1;
       }
     }

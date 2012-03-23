@@ -11,7 +11,9 @@
 #include "io.h"
 #include "cangc1e.h"
 
-static ram CANMsg CANMsgs[CANMSG_QSIZE];
+#define WAIT_FOR_ALL_READY
+
+static ram CANMsg ETHMsgs[CANMSG_QSIZE];
 
 
 /*
@@ -95,6 +97,11 @@ void CBusEthInit(void)
   for ( i = 0; i <  MAX_CBUSETH_CONNECTIONS; i++ ) {
     HCB[i].socket = TCPListen(CBUSETH_PORT);
   }
+
+  for( i = 0; i < CANMSG_QSIZE; i++ ) {
+    ETHMsgs[i].status = CANMSG_FREE;
+  }
+
 }
 
 
@@ -110,13 +117,14 @@ void CBusEthServer(void)
 
 
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
-    if( CANMsgs[i].status == CANMSG_PENDING )
-      CANMsgs[i].status = CANMSG_FREE;
+    if( ETHMsgs[i].status == CANMSG_PENDING )
+      ETHMsgs[i].status = CANMSG_FREE;
   }
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
-    if( CANMsgs[i].status == CANMSG_OPEN ) {
-      CANMsgs[i].status = CANMSG_PENDING;
-      CBusEthBroadcast(&CANMsgs[i]);
+    if( ETHMsgs[i].status == CANMSG_OPEN ) {
+      if( CBusEthBroadcast(&ETHMsgs[i]) ) {
+        ETHMsgs[i].status = CANMSG_PENDING;
+      }
       break;
     }
   }
@@ -138,8 +146,7 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
         BYTE len = 0;
         CANMsg canmsg;
 
-        while( len < MAX_CBUSETH_CMD_LEN &&
-               TCPGet(ph->socket, &cbusData[len++]) );
+        while( len < MAX_CBUSETH_CMD_LEN && TCPGet(ph->socket, &cbusData[len++]) );
         cbusData[len] = '\0';
         TCPDiscard(ph->socket);
         // TODO: Check if the message is valid.
@@ -151,24 +158,37 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
 }
 
 
-void CBusEthBroadcast(CANMsg* msg)
+byte CBusEthBroadcast(CANMsg* msg)
 {
 
     BYTE conn;
     char s[32];
-    byte len = msg2ASCII(msg, s);
+    byte len;
     byte i;
     byte wait;
 
+#ifdef WAIT_FOR_ALL_READY
+    for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
+      CBUSETH_INFO* ph = &HCB[conn];
+      if ( TCPIsConnected(ph->socket) ) {
+        if( !TCPIsPutReady(ph->socket) ) {
+          return 0;
+        }
+      }
+    }
+#endif
+    len = msg2ASCII(msg, s);
     for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
       CBUSETH_INFO* ph = &HCB[conn];
       if ( TCPIsConnected(ph->socket) )
       {
         wait = 0;
+        
         while( !TCPIsPutReady(ph->socket) && wait < 10 ) {
           wait++;
           delay();
         }
+        
         if( TCPIsPutReady(ph->socket) ) {
           for( i = 0; i < len; i++ ) {
             TCPPut(ph->socket, s[i]);
@@ -181,6 +201,8 @@ void CBusEthBroadcast(CANMsg* msg)
         }
       }
    }
+    return 1;
+
 }
 
 
@@ -189,16 +211,19 @@ byte ethQueue(CANMsg* msg) {
   int i = 0;
   int n = 0;
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
-    if( CANMsgs[i].status == CANMSG_FREE ) {
-      CANMsgs[i].opc = msg->opc;
-      CANMsgs[i].len = msg->len;
+    if( ETHMsgs[i].status == CANMSG_FREE ) {
+      ETHMsgs[i].opc = msg->opc;
+      ETHMsgs[i].len = msg->len;
       for( n = 0; n < 7; n++ ) {
-        CANMsgs[i].d[n] = msg->d[n];
+        ETHMsgs[i].d[n] = msg->d[n];
       }
-      CANMsgs[i].status = CANMSG_OPEN;
+      ETHMsgs[i].status = CANMSG_OPEN;
       return 1;
     }
   }
+
+  LED3 = LED_OFF; /* signal error */
+  led3timer = 40;
   return 0;
 }
 
