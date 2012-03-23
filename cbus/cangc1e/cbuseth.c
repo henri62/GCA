@@ -22,6 +22,7 @@ static ram CANMsg ETHMsgs[CANMSG_QSIZE];
 typedef struct _CBUSETH_INFO
 {
     TCP_SOCKET socket;
+    unsigned char idle;
 } CBUSETH_INFO;
 typedef BYTE CBUSETH_HANDLE;
 
@@ -96,6 +97,7 @@ void CBusEthInit(void)
 
   for ( i = 0; i <  MAX_CBUSETH_CONNECTIONS; i++ ) {
     HCB[i].socket = TCPListen(CBUSETH_PORT);
+    HCB[i].idle = 0;
   }
 
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
@@ -145,6 +147,8 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
     if ( TCPIsGetReady(ph->socket) ) {
         BYTE len = 0;
         CANMsg canmsg;
+        ph->idle = 0;
+
 
         while( len < MAX_CBUSETH_CMD_LEN && TCPGet(ph->socket, &cbusData[len++]) );
         cbusData[len] = '\0';
@@ -154,6 +158,10 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
           canQueue(&canmsg);
           parseCmdEth(&canmsg);
         }
+    }
+    else if( ph->idle > 200 ) {
+      TCPDisconnect(ph->socket);
+      ph->idle = 0;
     }
 }
 
@@ -228,3 +236,13 @@ byte ethQueue(CANMsg* msg) {
 }
 
 
+/* called every 500ms */
+void CBusEthTick(void) {
+  byte conn;
+  for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
+    CBUSETH_INFO* ph = &HCB[conn];
+    if( TCPIsConnected(ph->socket) ) {
+      ph->idle++;
+    }
+  }
+}

@@ -26,6 +26,7 @@
 #include "cangc1e.h"
 #include "io.h"
 #include "eth.h"
+#include "cbuseth.h"
 
 #pragma udata access VARS
 near unsigned short led500ms_timer;
@@ -80,6 +81,7 @@ void isr_high(void) {
     if (--led500ms_timer == 0) {
         led500ms_timer = 2000;
         doLEDs();
+        CBusEthTick();
     }
 
 }

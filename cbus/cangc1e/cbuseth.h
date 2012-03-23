@@ -8,6 +8,7 @@
 
 #include "cbus.h"
 
+void CBusEthTick(void);
 void CBusEthInit(void);
 void CBusEthServer(void);
 unsigned char CBusEthBroadcast(CANMsg* msg);
