@@ -162,6 +162,8 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
     else if( ph->idle > 200 ) {
       TCPDisconnect(ph->socket);
       ph->idle = 0;
+      ph->socket = TCPListen(CBUSETH_PORT);
+
     }
 }
 
