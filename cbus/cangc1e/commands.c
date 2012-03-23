@@ -122,7 +122,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
 
     case OPC_NVRD:
       if( thisNN(p_canmsg) ) {
-        byte nvnr = rx_ptr->d3;
+        byte nvnr = p_canmsg->d[2];
         if( nvnr == 1 ) {
           canmsg.opc = OPC_NVANS;
           canmsg.d[0] = (NN_temp / 256) & 0xFF;
@@ -219,8 +219,13 @@ void doRqnpn(unsigned int idx) {
 }
 
 int thisNN(CANMsg* p_canmsg) {
-  if ((((unsigned short) (p_canmsg->d[0]) << 8) + p_canmsg->d[1]) == NN_temp)
+  unsigned short nn = (p_canmsg->d[0] << 8);
+  nn += p_canmsg->d[1];
+  if( nn == NN_temp ) {
+    LED3 = LED_OFF; /* signal match */
+    led3timer = 10;
     return 1;
+  }
   else
     return 0;
 

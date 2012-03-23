@@ -31,7 +31,7 @@
 
 #define EVT_NUM 0
 #define EVperEVT 0
-#define NV_NUM 1
+#define NV_NUM 16
 
 // EEPROM addresses
 #define EE_MAGIC 0
