@@ -24,6 +24,7 @@
 #include "project.h"
 #include "io.h"
 #include "cbuseth.h"
+#include "utils.h"
 
 void InitAppConfig(void);
 
@@ -63,30 +64,53 @@ void initEth(void) {
 
 
 void InitAppConfig(void) {
+
+
+  if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
+    eeWrite(EE_CLEAN, 0);
+    eeWrite(EE_IPADDR + 0, MY_DEFAULT_IP_ADDR_BYTE1);
+    eeWrite(EE_IPADDR + 1, MY_DEFAULT_IP_ADDR_BYTE2);
+    eeWrite(EE_IPADDR + 2, MY_DEFAULT_IP_ADDR_BYTE3);
+    eeWrite(EE_IPADDR + 3, MY_DEFAULT_IP_ADDR_BYTE4);
+
+    eeWrite(EE_NETMASK + 0, MY_DEFAULT_MASK_BYTE1);
+    eeWrite(EE_NETMASK + 1, MY_DEFAULT_MASK_BYTE2);
+    eeWrite(EE_NETMASK + 2, MY_DEFAULT_MASK_BYTE3);
+    eeWrite(EE_NETMASK + 3, MY_DEFAULT_MASK_BYTE4);
+
+    eeWrite(EE_MACADDR + 0, MY_DEFAULT_MAC_BYTE1);
+    eeWrite(EE_MACADDR + 1, MY_DEFAULT_MAC_BYTE2);
+    eeWrite(EE_MACADDR + 2, MY_DEFAULT_MAC_BYTE3);
+    eeWrite(EE_MACADDR + 3, MY_DEFAULT_MAC_BYTE4);
+    eeWrite(EE_MACADDR + 4, MY_DEFAULT_MAC_BYTE5);
+    eeWrite(EE_MACADDR + 5, MY_DEFAULT_MAC_BYTE6);
+  }
+
+
     /*
      * Load default configuration into RAM.
      */
-    AppConfig.MyIPAddr.v[0]     = MY_DEFAULT_IP_ADDR_BYTE1;
-    AppConfig.MyIPAddr.v[1]     = MY_DEFAULT_IP_ADDR_BYTE2;
-    AppConfig.MyIPAddr.v[2]     = MY_DEFAULT_IP_ADDR_BYTE3;
-    AppConfig.MyIPAddr.v[3]     = MY_DEFAULT_IP_ADDR_BYTE4;
+    AppConfig.MyIPAddr.v[0]     = eeRead(EE_IPADDR + 0);
+    AppConfig.MyIPAddr.v[1]     = eeRead(EE_IPADDR + 1);
+    AppConfig.MyIPAddr.v[2]     = eeRead(EE_IPADDR + 2);
+    AppConfig.MyIPAddr.v[3]     = eeRead(EE_IPADDR + 3);
 
-    AppConfig.MyMask.v[0]       = MY_DEFAULT_MASK_BYTE1;
-    AppConfig.MyMask.v[1]       = MY_DEFAULT_MASK_BYTE2;
-    AppConfig.MyMask.v[2]       = MY_DEFAULT_MASK_BYTE3;
-    AppConfig.MyMask.v[3]       = MY_DEFAULT_MASK_BYTE4;
+    AppConfig.MyMask.v[0]       = eeRead(EE_NETMASK + 0);
+    AppConfig.MyMask.v[1]       = eeRead(EE_NETMASK + 1);
+    AppConfig.MyMask.v[2]       = eeRead(EE_NETMASK + 2);
+    AppConfig.MyMask.v[3]       = eeRead(EE_NETMASK + 3);
 
-    AppConfig.MyGateway.v[0]    = MY_DEFAULT_GATE_BYTE1;
-    AppConfig.MyGateway.v[1]    = MY_DEFAULT_GATE_BYTE2;
-    AppConfig.MyGateway.v[2]    = MY_DEFAULT_GATE_BYTE3;
-    AppConfig.MyGateway.v[3]    = MY_DEFAULT_GATE_BYTE4;
+    AppConfig.MyGateway.v[0]    = AppConfig.MyMask.v[0];
+    AppConfig.MyGateway.v[1]    = AppConfig.MyMask.v[1];
+    AppConfig.MyGateway.v[2]    = AppConfig.MyMask.v[2];
+    AppConfig.MyGateway.v[3]    = AppConfig.MyMask.v[3];
 
-    AppConfig.MyMACAddr.v[0]    = MY_DEFAULT_MAC_BYTE1;
-    AppConfig.MyMACAddr.v[1]    = MY_DEFAULT_MAC_BYTE2;
-    AppConfig.MyMACAddr.v[2]    = MY_DEFAULT_MAC_BYTE3;
-    AppConfig.MyMACAddr.v[3]    = MY_DEFAULT_MAC_BYTE4;
-    AppConfig.MyMACAddr.v[4]    = MY_DEFAULT_MAC_BYTE5;
-    AppConfig.MyMACAddr.v[5]    = MY_DEFAULT_MAC_BYTE6;
+    AppConfig.MyMACAddr.v[0]    = eeRead(EE_MACADDR + 0);
+    AppConfig.MyMACAddr.v[1]    = eeRead(EE_MACADDR + 1);
+    AppConfig.MyMACAddr.v[2]    = eeRead(EE_MACADDR + 2);
+    AppConfig.MyMACAddr.v[3]    = eeRead(EE_MACADDR + 3);
+    AppConfig.MyMACAddr.v[4]    = eeRead(EE_MACADDR + 4);
+    AppConfig.MyMACAddr.v[5]    = eeRead(EE_MACADDR + 5);
 
 #if defined(STACK_USE_DHCP) || defined(STACK_USE_IP_GLEANING)
     AppConfig.Flags.bIsDHCPEnabled = TRUE;

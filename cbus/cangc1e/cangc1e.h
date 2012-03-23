@@ -37,7 +37,15 @@
 #define EE_MAGIC 0
 #define EE_NV 1          // 1 byte configuration
 #define EE_NN 2          // 2 bytes node number of this unit
-#define EE_CANID 4       // 1 byte CANID
+#define EE_CANID EE_NN + 2       // 1 byte CANID
+#define EE_IPADDR EE_CANID + 1
+#define EE_NETMASK EE_IPADDR + 4
+#define EE_MACADDR EE_NETMASK + 4
+#define EE_CLEAN EE_MACADDR + 6
+
+
+
+
 
 // values
 #define MAGIC 93
