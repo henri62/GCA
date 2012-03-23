@@ -36,10 +36,7 @@ void writeOutput(int port, unsigned char val);
 unsigned char readInput(int port);
 void doIOTimers(void);
 void doLEDTimers(void);
-unsigned char checkInput(unsigned char idx);
 void doLEDs(void);
-void saveOutputStates(void);
-void restoreOutputStates(void);
 void setOutput(ushort nn, ushort addr, byte on);
 unsigned char checkFlimSwitch(void);
 

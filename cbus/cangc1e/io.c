@@ -127,21 +127,19 @@ void saveOutputStates(void) {
 
 
 
-void restoreOutputStates(void) {
-  int idx = 0;
-  //byte o1 = eeRead(EE_PORTSTAT + 0);
-
-}
-
-
-
+static unsigned char __LED3 = 0;
 void doLEDs(void) {
-}
+  if( Wait4NN || isLearning) {
+    LED3 = __LED3;
+    __LED3 ^= 1;
+  }
+  else if(__LED3 == 0) {
+    __LED3 = 1;
+    LED3 = LED_ON;
+  }
 
-byte getPortStates(int group) {
 }
 
 
 void setOutput(ushort nn, ushort addr, byte on) {
-  int i = 0;
 }
