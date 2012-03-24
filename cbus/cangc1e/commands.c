@@ -173,6 +173,16 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
           ethQueue(&canmsg);
           txed = 1;
         }
+        else if( nvnr == 17) {
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = (NN_temp % 256) & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = eeRead(EE_IDLETIME);
+          canmsg.len = 4;
+          ethQueue(&canmsg);
+          txed = 1;
+        }
       }
       break;
 
@@ -195,6 +205,10 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
         }
         else if( nvnr > 10 && nvnr < 17) {
           eeWrite(EE_MACADDR+nvnr-11, p_canmsg->d[3]);
+        }
+        else if( nvnr == 17 ) {
+          IdleTime = p_canmsg->d[3];
+          eeWrite(EE_IDLETIME, IdleTime);
         }
       }
       break;

@@ -42,6 +42,7 @@
 #define EE_NETMASK EE_IPADDR + 4
 #define EE_MACADDR EE_NETMASK + 4
 #define EE_CLEAN EE_MACADDR + 6
+#define EE_IDLETIME EE_CLEAN + 1
 
 
 
@@ -52,7 +53,8 @@
 
 // node var 1
 #define CFG_ALL  0xFF
-#define CFG_TCPTIMEOUT  0x01
+#define CFG_IDLE_TIMEOUT    0x01
+#define CFG_POWEROFF_ATIDLE 0x02
 
 
 
@@ -60,6 +62,7 @@
 extern near unsigned short NN_temp;
 extern near unsigned char NV1;
 extern near unsigned char CANID;
+extern near unsigned char IdleTime;
 extern near unsigned char led1timer;
 extern near unsigned char led2timer;
 extern near unsigned char led3timer;

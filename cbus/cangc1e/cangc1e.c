@@ -58,8 +58,9 @@ near unsigned short NN_temp;
 near unsigned char  led1timer;
 near unsigned char  led2timer;
 near unsigned char  led3timer;
-near unsigned char ticktimer;
+near unsigned char  ticktimer;
 near unsigned char  CANID;
+near unsigned char  IdleTime;
 near unsigned char  Latcount;
 near unsigned char  NV1;
 near unsigned char  ioIdx;
@@ -118,8 +119,9 @@ void main(void) {
 
   NV1 = eeRead(EE_NV);
   if( NV1 == 0xFF ) {
-    eeWrite(EE_NV, CFG_TCPTIMEOUT);
-    NV1 = CFG_TCPTIMEOUT;
+    eeWrite(EE_NV, CFG_IDLE_TIMEOUT);
+    NV1 = CFG_IDLE_TIMEOUT;
+    IdleTime = 120; // 120 * 500ms = 60 sec.
   }
 
   initEth();

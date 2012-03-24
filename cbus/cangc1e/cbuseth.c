@@ -29,6 +29,7 @@
 #include "utils.h"
 #include "io.h"
 #include "cangc1e.h"
+#include "cbusdefs.h"
 
 #define WAIT_FOR_ALL_READY
 
@@ -178,11 +179,14 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
           parseCmdEth(&canmsg);
         }
     }
-    else if( ph->idle > 200 ) {
+    else if( ph->idle > IdleTime ) {
       TCPDisconnect(ph->socket);
-      ph->idle = 0;
-      ph->socket = TCPListen(CBUSETH_PORT);
-
+      if( NV1 & CFG_POWEROFF_ATIDLE ) {
+        CANMsg canmsg;
+        canmsg.opc = OPC_RTOF;
+        canmsg.len = 0;
+        canQueue(&canmsg);
+      }
     }
 }
 
@@ -260,7 +264,7 @@ byte ethQueue(CANMsg* msg) {
 /* called every 500ms */
 void CBusEthTick(void) {
   byte conn;
-  if( NV1 & CFG_TCPTIMEOUT ) {
+  if( NV1 & CFG_IDLE_TIMEOUT ) {
     for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
       CBUSETH_INFO* ph = &HCB[conn];
       if( TCPIsConnected(ph->socket) ) {
