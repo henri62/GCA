@@ -52,6 +52,7 @@
 
 // node var 1
 #define CFG_ALL  0xFF
+#define CFG_TCPTIMEOUT  0x01
 
 
 

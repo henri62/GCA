@@ -241,10 +241,12 @@ byte ethQueue(CANMsg* msg) {
 /* called every 500ms */
 void CBusEthTick(void) {
   byte conn;
-  for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
-    CBUSETH_INFO* ph = &HCB[conn];
-    if( TCPIsConnected(ph->socket) ) {
-      ph->idle++;
+  if( NV1 & CFG_TCPTIMEOUT ) {
+    for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
+      CBUSETH_INFO* ph = &HCB[conn];
+      if( TCPIsConnected(ph->socket) ) {
+        ph->idle++;
+      }
     }
   }
 }

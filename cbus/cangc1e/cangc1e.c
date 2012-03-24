@@ -118,8 +118,8 @@ void main(void) {
 
   NV1 = eeRead(EE_NV);
   if( NV1 == 0xFF ) {
-    eeWrite(EE_NV, 0);
-    NV1 = 0;
+    eeWrite(EE_NV, CFG_TCPTIMEOUT);
+    NV1 = CFG_TCPTIMEOUT;
   }
 
   initEth();
