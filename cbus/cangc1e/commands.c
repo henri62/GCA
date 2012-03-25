@@ -67,12 +67,14 @@ unsigned char parseCmd(void) {
  * returns TRUE if the OPC can be broadcasted.
  */
 unsigned char parseCmdEth(CANMsg* p_canmsg) {
+  byte broadcast = TRUE;
   CANMsg canmsg;
 
   switch (p_canmsg->opc) {
 
     case OPC_ACK:
-      return FALSE;
+      broadcast = FALSE;
+      break;
 
     case OPC_QNN:
       canmsg.opc  = OPC_PNN;
@@ -89,7 +91,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
       // Request to read a parameter
       if (thisNN(p_canmsg) == 1) {
         doRqnpn((unsigned int) p_canmsg->d[2]);
-        return FALSE;
+        broadcast = FALSE;
       }
       break;
 
@@ -102,7 +104,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
         eeWrite(EE_NN, nnH);
         eeWrite(EE_NN+1, nnL);
         Wait4NN = 0;
-        return FALSE;
+        broadcast = FALSE;
       }
       break;
     }
@@ -120,7 +122,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
         canmsg.d[6] = params[6];
         canmsg.len = 7;
         ethQueue(&canmsg);
-        return FALSE;
+        broadcast = FALSE;
       }
       break;
 
@@ -135,7 +137,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
           canmsg.d[3] = NV1;
           canmsg.len = 4;
           ethQueue(&canmsg);
-          return FALSE;
+          broadcast = FALSE;
         }
         else if( nvnr == 2 ) {
           canmsg.opc = OPC_NVANS;
@@ -145,7 +147,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
           canmsg.d[3] = CANID;
           canmsg.len = 4;
           ethQueue(&canmsg);
-          return FALSE;
+          broadcast = FALSE;
         }
         else if( nvnr > 2 && nvnr < 7) {
           canmsg.opc = OPC_NVANS;
@@ -155,7 +157,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
           canmsg.d[3] = eeRead(EE_IPADDR+nvnr-3);
           canmsg.len = 4;
           ethQueue(&canmsg);
-          return FALSE;
+          broadcast = FALSE;
         }
         else if( nvnr > 6 && nvnr < 11) {
           canmsg.opc = OPC_NVANS;
@@ -165,7 +167,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
           canmsg.d[3] = eeRead(EE_NETMASK+nvnr-7);
           canmsg.len = 4;
           ethQueue(&canmsg);
-          return FALSE;
+          broadcast = FALSE;
         }
         else if( nvnr > 10 && nvnr < 17) {
           canmsg.opc = OPC_NVANS;
@@ -175,7 +177,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
           canmsg.d[3] = eeRead(EE_MACADDR+nvnr-11);
           canmsg.len = 4;
           ethQueue(&canmsg);
-          return FALSE;
+          broadcast = FALSE;
         }
         else if( nvnr == 17) {
           canmsg.opc = OPC_NVANS;
@@ -185,7 +187,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
           canmsg.d[3] = eeRead(EE_IDLETIME);
           canmsg.len = 4;
           ethQueue(&canmsg);
-          return FALSE;
+          broadcast = FALSE;
         }
       }
       break;
@@ -214,7 +216,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
           IdleTime = p_canmsg->d[3];
           eeWrite(EE_IDLETIME, IdleTime);
         }
-        return FALSE;
+        broadcast = FALSE;
       }
       break;
 
@@ -223,7 +225,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg) {
   }
 
 
-  return TRUE;
+  return broadcast;
 }
 
 void doRqnpn(unsigned int idx) {
@@ -238,10 +240,10 @@ void doRqnpn(unsigned int idx) {
   }
 }
 
-int thisNN(CANMsg* p_canmsg) {
-  unsigned short nn = (p_canmsg->d[0] << 8);
-  nn += p_canmsg->d[1];
-  if( nn == NN_temp ) {
+
+
+byte thisNN(CANMsg* p_canmsg) {
+  if ((((unsigned short) (p_canmsg->d[0]) << 8) + p_canmsg->d[1]) == NN_temp) {
     LED3 = LED_OFF; /* signal match */
     led3timer = 10;
     return 1;

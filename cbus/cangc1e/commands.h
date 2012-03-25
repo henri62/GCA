@@ -27,7 +27,7 @@
 unsigned char parseCmd(void);
 unsigned char parseCmdEth(CANMsg* canmsg);
 void doRqnpn(unsigned int);
-int thisNN(CANMsg* canmsg);
+unsigned char thisNN(CANMsg* canmsg);
 
 
 #endif
