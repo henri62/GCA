@@ -176,8 +176,9 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
         TCPDiscard(ph->socket);
         // TODO: Check if the message is valid.
         if( ASCII2Msg(cbusData, len, &canmsg) ) {
-          canQueue(&canmsg);
-          parseCmdEth(&canmsg);
+          if( parseCmdEth(&canmsg) ) {
+            canQueue(&canmsg);
+          }
         }
     }
     else if( ph->idle > IdleTime ) {
