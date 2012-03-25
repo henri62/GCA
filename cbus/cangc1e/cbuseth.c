@@ -160,6 +160,7 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
     CBUSETH_INFO* ph = &HCB[h];
 
     if ( !TCPIsConnected(ph->socket) ) {
+        ph->idle = 0;
         return;
     }
 
@@ -181,6 +182,7 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
     }
     else if( ph->idle > IdleTime ) {
       TCPDisconnect(ph->socket);
+      ph->idle = 0;
       if( NV1 & CFG_POWEROFF_ATIDLE ) {
         CANMsg canmsg;
         canmsg.opc = OPC_RTOF;

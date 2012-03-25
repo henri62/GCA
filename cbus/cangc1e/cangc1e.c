@@ -119,8 +119,8 @@ void main(void) {
 
   NV1 = eeRead(EE_NV);
   if( NV1 == 0xFF ) {
-    eeWrite(EE_NV, CFG_IDLE_TIMEOUT);
-    NV1 = CFG_IDLE_TIMEOUT;
+    eeWrite(EE_NV, 0);
+    NV1 = 0;
     IdleTime = 120; // 120 * 500ms = 60 sec.
   }
 
