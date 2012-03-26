@@ -24,8 +24,11 @@
 #ifndef __COMMANDS_H
 #define __COMMANDS_H
 
+#define CAN_FRAME 1
+#define ETH_FRAME 2
+
 unsigned char parseCmd(void);
-unsigned char parseCmdEth(CANMsg* canmsg);
+unsigned char parseCmdEth(CANMsg* canmsg, unsigned char frametype);
 void doRqnpn(unsigned int);
 unsigned char thisNN(CANMsg* canmsg);
 

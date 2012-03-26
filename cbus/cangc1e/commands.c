@@ -51,7 +51,7 @@ unsigned char parseCmd(void) {
   canmsg.d[4] = rx_ptr->d5;
   canmsg.d[5] = rx_ptr->d6;
   canmsg.d[6] = rx_ptr->d7;
-  canmsg.len = getDataLen(canmsg.opc); // TODO: Adjust len to OPC
+  canmsg.len = getDataLen(canmsg.opc, FALSE);
   ethQueue(&canmsg);
 
   rx_ptr->con = 0;
@@ -66,9 +66,17 @@ unsigned char parseCmd(void) {
 /*
  * returns TRUE if the OPC can be broadcasted.
  */
-unsigned char parseCmdEth(CANMsg* p_canmsg) {
+unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
   byte broadcast = TRUE;
   CANMsg canmsg;
+
+  if( frametype == ETH_FRAME ) {
+    switch (p_canmsg->opc) {
+      case 0:
+        break;
+    }
+    return FALSE;
+  }
 
   switch (p_canmsg->opc) {
 

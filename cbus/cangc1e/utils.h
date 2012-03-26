@@ -31,6 +31,6 @@ void eeWriteShort(unsigned char addr, unsigned short data);
 void delay(void);
 void lDelay(void);
 
-unsigned char getDataLen( unsigned char OPC );
+unsigned char getDataLen( unsigned char OPC, unsigned char eth );
 
 #endif

@@ -52,7 +52,7 @@ typedef BYTE CBUSETH_HANDLE;
 static CBUSETH_INFO HCB[MAX_CBUSETH_CONNECTIONS];
 
 
-static void CBusEthProcess(CBUSETH_HANDLE h);
+static byte CBusEthProcess(CBUSETH_HANDLE h);
 
 
 
@@ -68,11 +68,11 @@ static void CBusEthProcess(CBUSETH_HANDLE h);
 
 static char hexa[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 static byte msg2ASCII(CANMsg* msg, char* s) {
-  byte len = getDataLen(msg->opc);
+  byte len = getDataLen(msg->opc, ((msg->len&0x80)?TRUE:FALSE));
   byte i;
   byte idx = 9;
   s[0] = ':';
-  s[1] = 'S';
+  s[1] = ((msg->len & 0x80) ? 'Y':'S');
   s[2] = '0';
   s[3] = '0';
   s[4] = '0';
@@ -88,13 +88,20 @@ static byte msg2ASCII(CANMsg* msg, char* s) {
   return idx+i*2+1;
 }
 
+/*  StrOp.fmtb( frame+1, ":%c%02X%02XN%02X;", eth?'Y':'S', (0x80 + (prio << 5) + (cid >> 3)) &0xFF, (cid << 5) & 0xFF, cmd[0] );*/
 static char hexb[] = {0,1,2,3,4,5,6,7,8,9,0,0,0,0,0,0,0,10,11,12,13,14,15};
 static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
   byte len = 0;
   byte i;
+  byte type = 1;
+  byte sidh, sidl;
+
   unsigned char* s = ins;
   for( i = 0; i < inlen; i++ ) {
-    if( s[i] == ':' && s[i+1] == 'S' ) {
+    if( s[i] == ':' && ( s[i+1] == 'S' || s[i+1] == 'Y' ) ) {
+      if( s[i+1] == 'Y' ) {
+        type = 2;
+      }
       s += i;
       break;
     }
@@ -102,13 +109,17 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
   if( i == inlen )
     return 0;
 
+  sidh = (hexb[s[1]-0x30]<<4) + hexb[s[2]-0x30];
+  sidl = (hexb[s[3]-0x30]<<4) + hexb[s[4]-0x30];
+  CANID = (sidl >> 5 ) + ((sidh&0x0F) << 3);
+
   msg->opc = (hexb[s[7]-0x30]<<4) + hexb[s[8]-0x30];
-  len = getDataLen(msg->opc);
+  len = getDataLen(msg->opc, FALSE);
   for( i = 0; i < len; i++ ) {
     msg->d[i] = (hexb[s[9+2*i]-0x30]<<4) + hexb[s[9+2*i+1]-0x30];
   }
   msg->len = len;
-  return 1;
+  return type;
 }
 
 void CBusEthInit(void)
@@ -127,15 +138,29 @@ void CBusEthInit(void)
 }
 
 
+static byte nrClients = 0;
 
 void CBusEthServer(void)
 {
   BYTE conn;
   BYTE i;
+  byte nrconn = 0;
 
   for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
-    CBusEthProcess(conn);
+    if( CBusEthProcess(conn) )
+      nrconn++;
   }
+
+  if( nrconn != nrClients ) {
+    CANMsg canmsg;
+    canmsg.opc = 1;
+    canmsg.d[0] = 0;
+    canmsg.d[1] = nrconn;
+    canmsg.len = 0x80 + 2;
+    ethQueue(&canmsg);
+    nrClients = nrconn;
+  }
+
 
 
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
@@ -144,7 +169,7 @@ void CBusEthServer(void)
   }
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( ETHMsgs[i].status == CANMSG_OPEN ) {
-      if( CBusEthBroadcast(&ETHMsgs[i]) ) {
+      if( nrconn == 0 || CBusEthBroadcast(&ETHMsgs[i]) ) {
         ETHMsgs[i].status = CANMSG_PENDING;
       }
       break;
@@ -154,19 +179,20 @@ void CBusEthServer(void)
 }
 
 
-static void CBusEthProcess(CBUSETH_HANDLE h)
+static byte CBusEthProcess(CBUSETH_HANDLE h)
 {
     BYTE cbusData[MAX_CBUSETH_CMD_LEN+1];
     CBUSETH_INFO* ph = &HCB[h];
 
     if ( !TCPIsConnected(ph->socket) ) {
         ph->idle = 0;
-        return;
+        return FALSE;
     }
 
 
     if ( TCPIsGetReady(ph->socket) ) {
         BYTE len = 0;
+        byte type;
         CANMsg canmsg;
         ph->idle = 0;
 
@@ -175,8 +201,9 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
         cbusData[len] = '\0';
         TCPDiscard(ph->socket);
         // TODO: Check if the message is valid.
-        if( ASCII2Msg(cbusData, len, &canmsg) ) {
-          if( parseCmdEth(&canmsg) ) {
+        type = ASCII2Msg(cbusData, len, &canmsg);
+        if( type > 0 ) {
+          if( parseCmdEth(&canmsg, type) ) {
             canQueue(&canmsg);
           }
         }
@@ -191,6 +218,8 @@ static void CBusEthProcess(CBUSETH_HANDLE h)
         canQueue(&canmsg);
       }
     }
+
+    return TRUE;
 }
 
 
