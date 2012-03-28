@@ -18,6 +18,7 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <string.h>
 
 #include "StackTsk.h"
 #include "TCP.h"
@@ -94,7 +95,7 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
   byte len = 0;
   byte i;
   byte type = 1;
-  byte sidh, sidl;
+  byte sidh, sidl, canid;
 
   unsigned char* s = ins;
   for( i = 0; i < inlen; i++ ) {
@@ -111,7 +112,13 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
 
   sidh = (hexb[s[1]-0x30]<<4) + hexb[s[2]-0x30];
   sidl = (hexb[s[3]-0x30]<<4) + hexb[s[4]-0x30];
-  CANID = (sidl >> 5 ) + ((sidh&0x0F) << 3);
+  canid = (sidl >> 5 ) + ((sidh&0x0F) << 3);
+
+  if( CANID != canid ) {
+    CANID = canid;
+    Tx1[sidh] = 0b10110000 | (CANID & 0x78) >>3;
+    Tx1[sidl] = (CANID & 0x07) << 5;
+  }
 
   msg->opc = (hexb[s[7]-0x30]<<4) + hexb[s[8]-0x30];
   len = getDataLen(msg->opc, FALSE);
@@ -144,6 +151,7 @@ void CBusEthServer(void)
 {
   BYTE conn;
   BYTE i;
+  char idx = -1;
   byte nrconn = 0;
 
   for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
@@ -166,7 +174,17 @@ void CBusEthServer(void)
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( ETHMsgs[i].status == CANMSG_PENDING )
       ETHMsgs[i].status = CANMSG_FREE;
+    else if( idx == -1 && ETHMsgs[i].status == CANMSG_OPEN ) {
+      idx = i;
+    }
   }
+
+  if( idx != -1 ) {
+    if( nrconn == 0 || CBusEthBroadcast(&ETHMsgs[idx]) ) {
+      ETHMsgs[idx].status = CANMSG_PENDING;
+    }
+  }
+  /*
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( ETHMsgs[i].status == CANMSG_OPEN ) {
       if( nrconn == 0 || CBusEthBroadcast(&ETHMsgs[i]) ) {
@@ -175,7 +193,7 @@ void CBusEthServer(void)
       break;
     }
   }
-
+  */
 }
 
 
@@ -277,11 +295,14 @@ byte ethQueue(CANMsg* msg) {
   int n = 0;
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( ETHMsgs[i].status == CANMSG_FREE ) {
+      memcpy(&ETHMsgs[i], (const void*)msg, sizeof(CANMsg));
+      /*
       ETHMsgs[i].opc = msg->opc;
       ETHMsgs[i].len = msg->len;
       for( n = 0; n < 7; n++ ) {
         ETHMsgs[i].d[n] = msg->d[n];
       }
+      */
       ETHMsgs[i].status = CANMSG_OPEN;
       return 1;
     }

@@ -20,7 +20,7 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
+#include <string.h>
 
 #include "project.h"
 #include "cangc1e.h"
@@ -185,11 +185,14 @@ byte canQueue(CANMsg* msg) {
   int n = 0;
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( CANMsgs[i].status == CANMSG_FREE ) {
+      memcpy(&CANMsgs[i], (const void*)msg, sizeof(CANMsg));
+      /*
       CANMsgs[i].opc = msg->opc;
       CANMsgs[i].len = msg->len;
       for( n = 0; n < 7; n++ ) {
         CANMsgs[i].d[n] = msg->d[n];
       }
+      */
       CANMsgs[i].status = CANMSG_OPEN;
       return 1;
     }
@@ -235,11 +238,22 @@ void canTxQ(CANMsg* msg) {
 
 void canSendQ(void) {
   if( TXB1CONbits.TXREQ == 0 ) {
-    int i;
+    byte i;
+    char idx = -1;
+    
     for( i = 0; i < CANMSG_QSIZE; i++ ) {
       if( CANMsgs[i].status == CANMSG_PENDING )
         CANMsgs[i].status = CANMSG_FREE;
+      else if(idx == -1 && CANMsgs[i].status == CANMSG_OPEN ) {
+        idx = i;
+      }
     }
+
+    if( idx != -1 ) {
+      CANMsgs[idx].status = CANMSG_PENDING;
+      canTxQ(&CANMsgs[idx]);
+    }
+    /*
     for( i = 0; i < CANMSG_QSIZE; i++ ) {
       if( CANMsgs[i].status == CANMSG_OPEN ) {
         CANMsgs[i].status = CANMSG_PENDING;
@@ -247,6 +261,7 @@ void canSendQ(void) {
         break;
       }
     }
+    */
   }
 }
 

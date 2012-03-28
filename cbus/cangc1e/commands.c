@@ -80,10 +80,6 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
 
   switch (p_canmsg->opc) {
 
-    case OPC_ACK:
-      broadcast = FALSE;
-      break;
-
     case OPC_QNN:
       canmsg.opc  = OPC_PNN;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
