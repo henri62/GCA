@@ -194,6 +194,8 @@ byte canQueue(CANMsg* msg) {
       }
       */
       CANMsgs[i].status = CANMSG_OPEN;
+      if( i > maxcanq )
+        maxcanq = i;
       return 1;
     }
   }

@@ -66,6 +66,8 @@ near unsigned char  NV1;
 near unsigned char  ioIdx;
 near unsigned char  Wait4NN;
 near unsigned char  isLearning;
+near unsigned char  maxcanq;
+near unsigned char  maxethq;
 
 
 volatile near unsigned char tmr0_reload;
@@ -115,6 +117,8 @@ void main(void) {
   ioIdx = 0;
   Wait4NN = FALSE;
   isLearning = FALSE;
+  maxcanq = 0;
+  maxethq = 0;
 
 
   NV1 = eeRead(EE_NV);
@@ -124,9 +128,11 @@ void main(void) {
     IdleTime = 120; // 120 * 500ms = 60 sec.
   }
 
-  initEth();
-
   initIO();
+
+  delay();
+
+  initEth();
 
   NN_temp  = eeRead(EE_NN) * 256;
   NN_temp += eeRead(EE_NN+1);
@@ -175,6 +181,8 @@ void main(void) {
       }
     }
 
+
+    
   }
 
 }

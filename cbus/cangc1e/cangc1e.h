@@ -71,5 +71,7 @@ extern near unsigned char ioIdx;
 extern volatile near unsigned char tmr0_reload;
 extern near unsigned char Wait4NN;
 extern near unsigned char isLearning;
+extern near unsigned char maxcanq;
+extern near unsigned char maxethq;
 
 #endif

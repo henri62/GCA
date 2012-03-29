@@ -164,7 +164,9 @@ void CBusEthServer(void)
     canmsg.opc = 1;
     canmsg.d[0] = 0;
     canmsg.d[1] = nrconn;
-    canmsg.len = 0x80 + 2;
+    canmsg.d[2] = maxcanq;
+    canmsg.d[3] = maxethq;
+    canmsg.len = 0x80 + 4;
     ethQueue(&canmsg);
     nrClients = nrconn;
   }
@@ -304,6 +306,8 @@ byte ethQueue(CANMsg* msg) {
       }
       */
       ETHMsgs[i].status = CANMSG_OPEN;
+      if( i > maxethq )
+        maxethq = i;
       return 1;
     }
   }

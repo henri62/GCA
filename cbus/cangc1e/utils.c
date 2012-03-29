@@ -120,7 +120,7 @@ unsigned char getDataLen( unsigned char OPC, unsigned char eth ) {
     return 7;
   }
   else {
-    if( OPC == 1 ) return 2;
+    if( OPC == 1 ) return 4;
   }
   return 0;
 }
