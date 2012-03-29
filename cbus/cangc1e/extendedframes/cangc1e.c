@@ -66,6 +66,8 @@ near unsigned char  NV1;
 near unsigned char  ioIdx;
 near unsigned char  Wait4NN;
 near unsigned char  isLearning;
+near unsigned char  maxcanq;
+near unsigned char  maxethq;
 
 
 volatile near unsigned char tmr0_reload;
@@ -115,6 +117,8 @@ void main(void) {
   ioIdx = 0;
   Wait4NN = FALSE;
   isLearning = FALSE;
+  maxcanq = 0;
+  maxethq = 0;
 
 
   NV1 = eeRead(EE_NV);
@@ -144,12 +148,19 @@ void main(void) {
 
   // Loop forever (nothing lasts forever...)
   while (1) {
+    unsigned char txed = 0;
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
       // Decode the new command
       LED1 = LED_ON;
       led1timer = 20;
-      parseCmd();
+      ethQueueRaw();
+      rx_ptr->con = 0;
+      if (can_bus_off) {
+        // At least one buffer is now free
+        can_bus_off = 0;
+        PIE3bits.FIFOWMIE = 1;
+      }
     }
 
     doEth();
@@ -165,10 +176,10 @@ void main(void) {
         Wait4NN = 0;
       }
       else {
-        canmsg.opc = OPC_NNACK;
-        canmsg.d[0] = NN_temp / 256;
-        canmsg.d[1] = NN_temp % 256;
-        canmsg.len = 2;
+        canmsg.b[d0]  = OPC_NNACK;
+        canmsg.b[d1]  = NN_temp / 256;
+        canmsg.b[d2]  = NN_temp % 256;
+        canmsg.b[dlc] = 3;
         ethQueue(&canmsg);
         Wait4NN = 1;
       }

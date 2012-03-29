@@ -1,4 +1,6 @@
 /*
+ Copyright (C) MERG CBUS
+
  Rocrail - Model Railroad Software
 
  Copyright (C) Rob Versluis <r.j.versluis@rocrail.net>
@@ -18,21 +20,17 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CBUSETH_H
-#define CBUSETH_H
 
-#define CBUSETH_PORT            (5550)
-#define MAX_CBUSETH_CONNECTIONS (4)
-#define MAX_CBUSETH_CMD_LEN     (50)
+#ifndef __COMMANDS_H
+#define __COMMANDS_H
 
-#include "cbus.h"
+#define CAN_FRAME 1
+#define ETH_FRAME 2
+#define EXT_FRAME 3
 
-void CBusEthTick(void);
-void CBusEthInit(void);
-void CBusEthServer(void);
-unsigned char CBusEthBroadcast(CANMsg* msg);
-unsigned char ethQueue(CANMsg* msg);
-unsigned char ethQueueRaw(void);
+unsigned char parseCmdEth(CANMsg* canmsg, unsigned char frametype);
+void doRqnpn(unsigned int);
+unsigned char thisNN(CANMsg* canmsg);
 
 
 #endif

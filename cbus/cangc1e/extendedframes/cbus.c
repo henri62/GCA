@@ -20,7 +20,7 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
+#include <string.h>
 
 #include "project.h"
 #include "cangc1e.h"
@@ -30,10 +30,7 @@
 #include "commands.h"
 
 
-#pragma udata VARS_CAN_ARRAYS1
-static far CANMsg CANMsgs[CANMSG_QSIZE];
-#pragma udata VARS_CAN_ARRAYS2
-static far EXTMsg EXTMsgs[EXTMSG_QSIZE];
+static ram CANMsg CANMsgs[CANMSG_QSIZE];
 
 ram CANMsg canmsg;
 
@@ -88,23 +85,24 @@ BRGCON3: 0x03
   // TX drives Vdd when recessive, CAN capture to CCP1 disabled
   CIOCON = 0b00100000;
 
-  RXFCON0 = 1; // Only filter 0 enabled
-  RXFCON1 = 0;
+  RXFCON0 = 3; // filter 0 and 1 enabled
+  RXFCON1 = 3;
   SDFLC = 0;
 
   // Setup masks so all filter bits are ignored apart from EXIDEN
   RXM0SIDH = 0;
-  RXM0SIDL = 0x08;
+  RXM0SIDL = 0x00; //0 = Both standard and extended identifier messages will be accepted
   RXM0EIDH = 0;
   RXM0EIDL = 0;
   RXM1SIDH = 0;
-  RXM1SIDL = 0x08;
+  RXM1SIDL = 0x00; //0 = Both standard and extended identifier messages will be accepted
   RXM1EIDH = 0;
   RXM1EIDL = 0;
 
   // Set filter 0 for standard ID only to reject bootloader messages
   RXF0SIDL = 0x80;
-  //RXF1SIDL = 0x84;
+  // Set filter 1 for extended ID only to receive bootloader messages
+  RXF1SIDL = 0x88;
 
   // Link all filters to RXB0 - maybe only neccessary to link 1
   RXFBCON0 = 0;
@@ -139,9 +137,6 @@ BRGCON3: 0x03
 
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     CANMsgs[i].status = CANMSG_FREE;
-  }
-  for( i = 0; i < EXTMSG_QSIZE; i++ ) {
-    EXTMsgs[i].status = CANMSG_FREE;
   }
 }
 
@@ -192,37 +187,10 @@ byte canQueue(CANMsg* msg) {
   int n = 0;
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( CANMsgs[i].status == CANMSG_FREE ) {
-      CANMsgs[i].opc = msg->opc;
-      CANMsgs[i].len = msg->len;
-      for( n = 0; n < 7; n++ ) {
-        CANMsgs[i].d[n] = msg->d[n];
-      }
+      memcpy(&CANMsgs[i], (const void*)msg, sizeof(CANMsg));
       CANMsgs[i].status = CANMSG_OPEN;
-      return 1;
-    }
-  }
-
-  LED3 = LED_OFF; /* signal error */
-  led3timer = 40;
-  return 0;
-}
-
-
-
-byte canExtQueue(EXTMsg* msg) {
-  int i = 0;
-  int n = 0;
-  for( i = 0; i < EXTMSG_QSIZE; i++ ) {
-    if( EXTMsgs[i].status == CANMSG_FREE ) {
-      EXTMsgs[i].sidh = msg->sidh;
-      EXTMsgs[i].sidl = msg->sidl;
-      EXTMsgs[i].eidh = msg->eidh;
-      EXTMsgs[i].eidl = msg->eidl;
-      EXTMsgs[i].dlc  = msg->dlc;
-      for( n = 0; n < 8; n++ ) {
-        EXTMsgs[i].d[n] = msg->d[n];
-      }
-      EXTMsgs[i].status = CANMSG_OPEN;
+      if( i > maxcanq )
+        maxcanq = i;
       return 1;
     }
   }
@@ -239,18 +207,12 @@ void canTxQ(CANMsg* msg) {
 	unsigned char *ptr_fsr1;
 	unsigned char i;
 
-  Tx1[dlc]  = (msg->len & 0x0F) + 1;	// data length + opc
-  Tx1[sidh] = 0b10110000 | (CANID & 0x78) >> 3;
-  Tx1[sidl] = (CANID & 0x07) << 5;
+  msg->b[con]  = rx_ptr->con;
+  msg->b[sidh] = 0b10110000 | (CANID & 0x78) >>3;
+	msg->b[sidl] &= 0b00011111;	// clear old canid
+  msg->b[sidl] |= (CANID & 0x07) << 5;
 
-  Tx1[d0] = msg->opc;
-  Tx1[d1] = msg->d[0];
-  Tx1[d2] = msg->d[1];
-  Tx1[d3] = msg->d[2];
-  Tx1[d4] = msg->d[3];
-  Tx1[d5] = msg->d[4];
-  Tx1[d6] = msg->d[5];
-  Tx1[d7] = msg->d[6];
+
 	Latcount = 10;
 
   LED1 = LED_ON;
@@ -259,40 +221,7 @@ void canTxQ(CANMsg* msg) {
   tx_idx = 0;
   ptr_fsr1 = &TXB1CON;
   for( i = 0; i < 14; i++ ) {
-    *(ptr_fsr1++) = Tx1[tx_idx++];
-  }
-
-  TXB1CONbits.TXREQ = 1;
-}
-
-
-void canExtTxQ(EXTMsg* msg) {
-	unsigned char tx_idx;
-	unsigned char *ptr_fsr1;
-	unsigned char i;
-
-  Tx1[dlc]  = msg->dlc;	// data length
-  Tx1[sidh] = 0b10110000 | (CANID & 0x78) >> 3;
-  Tx1[sidl] = (CANID & 0x07) << 5;
-  Tx1[sidl] |= msg->sidl & 0x0F;
-
-  Tx1[d0] = msg->d[0];
-  Tx1[d1] = msg->d[1];
-  Tx1[d2] = msg->d[2];
-  Tx1[d3] = msg->d[3];
-  Tx1[d4] = msg->d[4];
-  Tx1[d5] = msg->d[5];
-  Tx1[d6] = msg->d[6];
-  Tx1[d7] = msg->d[7];
-	Latcount = 10;
-
-  LED1 = LED_ON;
-  led1timer = 20;
-
-  tx_idx = 0;
-  ptr_fsr1 = &TXB1CON;
-  for( i = 0; i < 14; i++ ) {
-    *(ptr_fsr1++) = Tx1[tx_idx++];
+    *(ptr_fsr1++) = msg->b[tx_idx++];
   }
 
   TXB1CONbits.TXREQ = 1;
@@ -302,34 +231,20 @@ void canExtTxQ(EXTMsg* msg) {
 void canSendQ(void) {
   if( TXB1CONbits.TXREQ == 0 ) {
     byte i;
-    byte broadcasted = FALSE;
+    char idx = -1;
+    
     for( i = 0; i < CANMSG_QSIZE; i++ ) {
       if( CANMsgs[i].status == CANMSG_PENDING )
         CANMsgs[i].status = CANMSG_FREE;
-    }
-    for( i = 0; i < CANMSG_QSIZE; i++ ) {
-      if( CANMsgs[i].status == CANMSG_OPEN ) {
-        CANMsgs[i].status = CANMSG_PENDING;
-        canTxQ(&CANMsgs[i]);
-        broadcasted = TRUE;
-        break;
+      else if(idx == -1 && CANMsgs[i].status == CANMSG_OPEN ) {
+        idx = i;
       }
     }
 
-    if( !broadcasted ) {
-      for( i = 0; i < EXTMSG_QSIZE; i++ ) {
-        if( EXTMsgs[i].status == CANMSG_PENDING )
-          EXTMsgs[i].status = CANMSG_FREE;
-      }
-      for( i = 0; i < EXTMSG_QSIZE; i++ ) {
-        if( EXTMsgs[i].status == CANMSG_OPEN ) {
-          EXTMsgs[i].status = CANMSG_PENDING;
-          canExtTxQ(&EXTMsgs[i]);
-          break;
-        }
-      }
+    if( idx != -1 ) {
+      CANMsgs[idx].status = CANMSG_PENDING;
+      canTxQ(&CANMsgs[idx]);
     }
-
   }
 }
 
