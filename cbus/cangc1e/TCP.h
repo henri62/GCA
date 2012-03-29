@@ -266,7 +266,8 @@ BOOL        TCPIsPutReady(TCP_SOCKET s);
  *
  * Note:            None
  ********************************************************************/
-BOOL        TCPPut(TCP_SOCKET socket, BYTE byte);
+BOOL TCPPut(TCP_SOCKET socket, BYTE byte);
+BOOL TCPPutArray(TCP_SOCKET s, BYTE* bytes, WORD len);
 
 
 /*********************************************************************

@@ -157,11 +157,12 @@ void main(void) {
       LED1 = LED_ON;
       led1timer = 20;
       txed = parseCmd();
+      doEth();
     }
 
-    doEth();
-
     canSendQ();
+
+    doEth();
 
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;

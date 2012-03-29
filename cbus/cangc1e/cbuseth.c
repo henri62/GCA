@@ -53,7 +53,7 @@ typedef BYTE CBUSETH_HANDLE;
 static CBUSETH_INFO HCB[MAX_CBUSETH_CONNECTIONS];
 
 
-static byte CBusEthProcess(CBUSETH_HANDLE h);
+static byte CBusEthProcess(void);
 
 
 
@@ -71,7 +71,6 @@ static char hexa[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E
 static byte msg2ASCII(CANMsg* msg, char* s) {
   byte len = getDataLen(msg->opc, ((msg->len&0x80)?TRUE:FALSE));
   byte i;
-  byte idx = 9;
   s[0] = ':';
   s[1] = ((msg->len & 0x80) ? 'Y':'S');
   s[2] = '0';
@@ -82,11 +81,32 @@ static byte msg2ASCII(CANMsg* msg, char* s) {
   s[7] = hexa[msg->opc >> 4];
   s[8] = hexa[msg->opc & 0x0F];
   for( i = 0; i < len; i++) {
-    s[idx + i*2]     = hexa[msg->d[i] >> 4];
-    s[idx + i*2 + 1] = hexa[msg->d[i] & 0x0F];
+    s[9 + i*2]     = hexa[msg->d[i] >> 4];
+    s[9 + i*2 + 1] = hexa[msg->d[i] & 0x0F];
   } 
-  s[idx+i*2] = ';';
-  return idx+i*2+1;
+  s[9+i*2] = ';';
+  return 9+i*2+1;
+}
+
+static byte msg2BinASCII(CANMsg* msg, char* s) {
+  if( msg->len & 0x80 ) {
+    return msg2ASCII(msg, s);
+  }
+  else {
+    byte len = getDataLen(msg->opc, FALSE);
+    byte i;
+    s[0] = ':';
+    s[1] = 's';
+    s[2] = 0;
+    s[3] = 0;
+    s[4] = 'N';
+    s[5] = msg->opc;
+    for( i = 0; i < len; i++) {
+      s[6 + i] = msg->d[i];
+    }
+    s[6+i] = ';';
+    return 6+i+1;
+  }
 }
 
 /*  StrOp.fmtb( frame+1, ":%c%02X%02XN%02X;", eth?'Y':'S', (0x80 + (prio << 5) + (cid >> 3)) &0xFF, (cid << 5) & 0xFF, cmd[0] );*/
@@ -149,15 +169,11 @@ static byte nrClients = 0;
 
 void CBusEthServer(void)
 {
-  BYTE conn;
   BYTE i;
   char idx = -1;
   byte nrconn = 0;
 
-  for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
-    if( CBusEthProcess(conn) )
-      nrconn++;
-  }
+  nrconn = CBusEthProcess();
 
   if( nrconn != nrClients ) {
     CANMsg canmsg;
@@ -186,36 +202,29 @@ void CBusEthServer(void)
       ETHMsgs[idx].status = CANMSG_PENDING;
     }
   }
-  /*
-  for( i = 0; i < CANMSG_QSIZE; i++ ) {
-    if( ETHMsgs[i].status == CANMSG_OPEN ) {
-      if( nrconn == 0 || CBusEthBroadcast(&ETHMsgs[i]) ) {
-        ETHMsgs[i].status = CANMSG_PENDING;
-      }
-      break;
-    }
-  }
-  */
 }
 
 
-static byte CBusEthProcess(CBUSETH_HANDLE h)
+static byte CBusEthProcess(void)
 {
+  byte conn;
+  byte nrconn = 0;
+
+  for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
     BYTE cbusData[MAX_CBUSETH_CMD_LEN+1];
-    CBUSETH_INFO* ph = &HCB[h];
+    CBUSETH_INFO* ph = &HCB[conn];
 
     if ( !TCPIsConnected(ph->socket) ) {
-        ph->idle = 0;
-        return FALSE;
+      ph->idle = 0;
+      continue;
     }
-
+    nrconn++;
 
     if ( TCPIsGetReady(ph->socket) ) {
         BYTE len = 0;
         byte type;
         CANMsg canmsg;
         ph->idle = 0;
-
 
         while( len < MAX_CBUSETH_CMD_LEN && TCPGet(ph->socket, &cbusData[len++]) );
         cbusData[len] = '\0';
@@ -239,7 +248,8 @@ static byte CBusEthProcess(CBUSETH_HANDLE h)
       }
     }
 
-    return TRUE;
+  }
+    return nrconn;
 }
 
 
@@ -249,7 +259,6 @@ byte CBusEthBroadcast(CANMsg* msg)
     BYTE conn;
     char s[32];
     byte len;
-    byte i;
     byte wait;
 
 #ifdef WAIT_FOR_ALL_READY
@@ -257,36 +266,38 @@ byte CBusEthBroadcast(CANMsg* msg)
       CBUSETH_INFO* ph = &HCB[conn];
       if ( TCPIsConnected(ph->socket) ) {
         if( !TCPIsPutReady(ph->socket) ) {
-          return 0;
+          return FALSE;
         }
       }
     }
 #endif
+    
     len = msg2ASCII(msg, s);
+    //len = msg2BinASCII(msg, s);
     for ( conn = 0;  conn < MAX_CBUSETH_CONNECTIONS; conn++ ) {
       CBUSETH_INFO* ph = &HCB[conn];
       if ( TCPIsConnected(ph->socket) )
       {
         wait = 0;
         
+#ifndef WAIT_FOR_ALL_READY
         while( !TCPIsPutReady(ph->socket) && wait < 10 ) {
           wait++;
           delay();
         }
         
+#endif
         if( TCPIsPutReady(ph->socket) ) {
-          for( i = 0; i < len; i++ ) {
-            TCPPut(ph->socket, s[i]);
-          }
+          TCPPutArray(ph->socket, (byte*)s, len);
           TCPFlush(ph->socket);
         }
         else {
           LED3 = LED_OFF; /* signal error */
           led3timer = 40;
         }
-      }
-   }
-    return 1;
+    }
+  }
+  return TRUE;
 
 }
 
@@ -298,13 +309,6 @@ byte ethQueue(CANMsg* msg) {
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( ETHMsgs[i].status == CANMSG_FREE ) {
       memcpy(&ETHMsgs[i], (const void*)msg, sizeof(CANMsg));
-      /*
-      ETHMsgs[i].opc = msg->opc;
-      ETHMsgs[i].len = msg->len;
-      for( n = 0; n < 7; n++ ) {
-        ETHMsgs[i].d[n] = msg->d[n];
-      }
-      */
       ETHMsgs[i].status = CANMSG_OPEN;
       if( i > maxethq )
         maxethq = i;

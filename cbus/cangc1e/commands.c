@@ -20,6 +20,7 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <string.h>
 
 #include "project.h"
 #include "cbusdefs.h"
@@ -44,6 +45,8 @@ ram unsigned char pnnCount = 0;
 
 unsigned char parseCmd(void) {
   canmsg.opc  = rx_ptr->d0;
+  memcpy(canmsg.d, (const void*)&rx_ptr->d1, 7);
+  /*
   canmsg.d[0] = rx_ptr->d1;
   canmsg.d[1] = rx_ptr->d2;
   canmsg.d[2] = rx_ptr->d3;
@@ -51,6 +54,7 @@ unsigned char parseCmd(void) {
   canmsg.d[4] = rx_ptr->d5;
   canmsg.d[5] = rx_ptr->d6;
   canmsg.d[6] = rx_ptr->d7;
+  */
   canmsg.len = getDataLen(canmsg.opc, FALSE);
   ethQueue(&canmsg);
 

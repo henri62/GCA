@@ -638,6 +638,57 @@ BOOL TCPPut(TCP_SOCKET s, BYTE byte)
 
 
 
+BOOL TCPPutArray(TCP_SOCKET s, BYTE* bytes, WORD len)
+{
+    WORD tempTxCount;       // This is a fix for HITECH bug
+    SOCKET_INFO* ps;
+
+    ps = &TCB[s];
+
+    if ( ps->TxBuffer == INVALID_BUFFER )
+    {
+        ps->TxBuffer = MACGetTxBuffer();
+
+        // This function is used to transmit data only.  And every data packet
+        // must be ack'ed by remote node.  Until this packet is ack'ed by
+        // remote node, we must preserve its content so that we can retransmit
+        // if we need to.
+        MACReserveTxBuffer(ps->TxBuffer);
+
+        ps->TxCount = 0;
+
+        IPSetTxBuffer(ps->TxBuffer, sizeof(TCP_HEADER));
+    }
+
+    /*
+     * HITECH does not seem to compare ps->TxCount as it is.
+     * Copying it to local variable and then comparing seems to work.
+     */
+    tempTxCount = ps->TxCount;
+    if ( tempTxCount >= MAX_TCP_DATA_LEN )
+        return FALSE;
+
+    ps->Flags.bIsTxInProgress = TRUE;
+
+    MACPutArray(bytes, len);
+
+    // REMOVE
+    //tempTxCount = ps->TxCount;
+    tempTxCount += len;
+    ps->TxCount = tempTxCount;
+
+    //ps->TxCount++;
+    //tempTxCount = ps->TxCount;
+    if ( tempTxCount >= MAX_TCP_DATA_LEN )
+        TCPFlush(s);
+    //if ( TCB[s].TxCount >= MAX_TCP_DATA_LEN )
+    //    TCPFlush(s);
+
+    return TRUE;
+}
+
+
+
 /*********************************************************************
  * Function:        BOOL TCPDiscard(TCP_SOCKET s)
  *
