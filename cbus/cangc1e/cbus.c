@@ -85,22 +85,24 @@ BRGCON3: 0x03
   // TX drives Vdd when recessive, CAN capture to CCP1 disabled
   CIOCON = 0b00100000;
 
-  RXFCON0 = 1; // Only filter 0 enabled
-  RXFCON1 = 0;
+  RXFCON0 = 3; // filter 0 and 1 enabled
+  RXFCON1 = 3;
   SDFLC = 0;
 
   // Setup masks so all filter bits are ignored apart from EXIDEN
   RXM0SIDH = 0;
-  RXM0SIDL = 0x08;
+  RXM0SIDL = 0x00; //0 = Both standard and extended identifier messages will be accepted
   RXM0EIDH = 0;
   RXM0EIDL = 0;
   RXM1SIDH = 0;
-  RXM1SIDL = 0x08;
+  RXM1SIDL = 0x00; //0 = Both standard and extended identifier messages will be accepted
   RXM1EIDH = 0;
   RXM1EIDL = 0;
 
   // Set filter 0 for standard ID only to reject bootloader messages
   RXF0SIDL = 0x80;
+  // Set filter 1 for extended ID only to receive bootloader messages
+  RXF1SIDL = 0x80;
 
   // Link all filters to RXB0 - maybe only neccessary to link 1
   RXFBCON0 = 0;
@@ -186,13 +188,6 @@ byte canQueue(CANMsg* msg) {
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( CANMsgs[i].status == CANMSG_FREE ) {
       memcpy(&CANMsgs[i], (const void*)msg, sizeof(CANMsg));
-      /*
-      CANMsgs[i].opc = msg->opc;
-      CANMsgs[i].len = msg->len;
-      for( n = 0; n < 7; n++ ) {
-        CANMsgs[i].d[n] = msg->d[n];
-      }
-      */
       CANMsgs[i].status = CANMSG_OPEN;
       if( i > maxcanq )
         maxcanq = i;
@@ -212,17 +207,12 @@ void canTxQ(CANMsg* msg) {
 	unsigned char *ptr_fsr1;
 	unsigned char i;
 
-  Tx1[dlc] = msg->len + 1;	// data length + opc
-	Tx1[sidh] &= 0b00001111;	// clear old priority
-	Tx1[sidh] |= 0b10110000;	// low priority
-  Tx1[d0] = msg->opc;
-  Tx1[d1] = msg->d[0];
-  Tx1[d2] = msg->d[1];
-  Tx1[d3] = msg->d[2];
-  Tx1[d4] = msg->d[3];
-  Tx1[d5] = msg->d[4];
-  Tx1[d6] = msg->d[5];
-  Tx1[d7] = msg->d[6];
+  msg->b[con]  = rx_ptr->con;
+  msg->b[sidh] = 0b10110000 | (CANID & 0x78) >>3;
+	msg->b[sidl] &= 0b00011111;	// clear old canid
+  msg->b[sidl] |= (CANID & 0x07) << 5;
+
+
 	Latcount = 10;
 
   LED1 = LED_ON;
@@ -231,7 +221,7 @@ void canTxQ(CANMsg* msg) {
   tx_idx = 0;
   ptr_fsr1 = &TXB1CON;
   for( i = 0; i < 14; i++ ) {
-    *(ptr_fsr1++) = Tx1[tx_idx++];
+    *(ptr_fsr1++) = msg->b[tx_idx++];
   }
 
   TXB1CONbits.TXREQ = 1;
@@ -255,15 +245,6 @@ void canSendQ(void) {
       CANMsgs[idx].status = CANMSG_PENDING;
       canTxQ(&CANMsgs[idx]);
     }
-    /*
-    for( i = 0; i < CANMSG_QSIZE; i++ ) {
-      if( CANMsgs[i].status == CANMSG_OPEN ) {
-        CANMsgs[i].status = CANMSG_PENDING;
-        canTxQ(&CANMsgs[i]);
-        break;
-      }
-    }
-    */
   }
 }
 

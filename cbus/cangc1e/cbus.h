@@ -59,16 +59,18 @@ enum bufbytes {
 	d7
 };
 
+#define opc d0
+
 unsigned char fifoEmpty(void);
 
 typedef struct {
 	unsigned char con;
 	unsigned char sidh;
-	unsigned char sidl;
+	unsigned char sidl; // & 0x04 --> extended flag
 	unsigned char eidh;
 	unsigned char eidl;
-	unsigned char dlc;
-	unsigned char d0;
+	unsigned char dlc;  // & 0x0F --> data length 1...8
+	unsigned char d0;   // OPC
 	unsigned char d1;
 	unsigned char d2;
 	unsigned char d3;
@@ -83,15 +85,13 @@ extern ecan_rx_buffer * rx_ptr;
 
 typedef struct {
   unsigned char status;
-  unsigned char opc;
-  unsigned char len;
-  unsigned char d[7];
+  unsigned char b[14];
 } CANMsg;
 
 extern ram CANMsg canmsg;
 
 
-#define CANMSG_QSIZE   24
+#define CANMSG_QSIZE   15
 #define CANMSG_FREE    0x00
 #define CANMSG_OPEN    0x01
 #define CANMSG_PENDING 0x02

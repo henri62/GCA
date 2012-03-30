@@ -25,6 +25,8 @@
 #define MAX_CBUSETH_CONNECTIONS (4)
 #define MAX_CBUSETH_CMD_LEN     (50)
 
+#define RC_UNKNOWN_ASCII_FRAME 1
+
 #include "cbus.h"
 
 void CBusEthTick(void);
@@ -32,6 +34,7 @@ void CBusEthInit(void);
 void CBusEthServer(void);
 unsigned char CBusEthBroadcast(CANMsg* msg);
 unsigned char ethQueue(CANMsg* msg);
+unsigned char ethQueueRaw(void);
 
 
 #endif

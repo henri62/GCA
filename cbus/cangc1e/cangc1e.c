@@ -150,19 +150,18 @@ void main(void) {
 
   // Loop forever (nothing lasts forever...)
   while (1) {
-    unsigned char txed = 0;
+
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
       // Decode the new command
       LED1 = LED_ON;
       led1timer = 20;
-      txed = parseCmd();
-      doEth();
+      ethQueueRaw();
     }
 
-    canSendQ();
-
     doEth();
+
+    canSendQ();
 
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
@@ -173,10 +172,9 @@ void main(void) {
         Wait4NN = 0;
       }
       else {
-        canmsg.opc = OPC_NNACK;
-        canmsg.d[0] = NN_temp / 256;
-        canmsg.d[1] = NN_temp % 256;
-        canmsg.len = 2;
+        canmsg.b[d0] = OPC_NNACK;
+        canmsg.b[d1] = NN_temp / 256;
+        canmsg.b[d2] = NN_temp % 256;
         ethQueue(&canmsg);
         Wait4NN = 1;
       }
