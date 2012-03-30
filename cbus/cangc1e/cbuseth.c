@@ -124,7 +124,6 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
   byte len = 0;
   byte i;
   byte type = CAN_FRAME;
-  byte sidh, sidl, canid;
 
   unsigned char* s = ins;
   for( i = 0; i < inlen; i++ ) {
@@ -156,16 +155,19 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
       msg->b[d0+i] = (hexb[s[11+2*i]-0x30]<<4) + hexb[s[11+2*i+1]-0x30];
     }
     msg->b[dlc] = i;
-    msg->b[sidl] |= 0x08; // signal extended message
+    //msg->b[sidl] |= 0x08; // signal extended message
   }
   else {
-    sidh = (hexb[s[2]-0x30]<<4) + hexb[s[3]-0x30];
-    sidl = (hexb[s[4]-0x30]<<4) + hexb[s[5]-0x30];
-    canid = (sidl >> 5 ) + ((sidh&0x0F) << 3);
+    byte l_sidh, l_sidl, canid;
+    l_sidh = (hexb[s[2]-0x30]<<4) + hexb[s[3]-0x30];
+    l_sidl = (hexb[s[4]-0x30]<<4) + hexb[s[5]-0x30];
+    canid = (l_sidl >> 5 ) + ((l_sidh&0x0F) << 3);
 
     if( CANID != canid ) {
       CANID = canid;
     }
+    msg->b[sidh] = l_sidh;
+    msg->b[sidl] = l_sidl;
 
     msg->b[d0] = (hexb[s[7]-0x30]<<4) + hexb[s[8]-0x30];
     len = getDataLen(msg->b[d0], FALSE);
