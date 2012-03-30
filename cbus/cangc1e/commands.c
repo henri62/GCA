@@ -51,7 +51,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
   CANMsg canmsg;
 
   if( frametype == EXT_FRAME ) {
-    return FALSE;
+    return TRUE;
   }
 
 
