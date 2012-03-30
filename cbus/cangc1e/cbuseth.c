@@ -152,8 +152,8 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
     msg->b[eidh] = (hexb[s[6]-0x30]<<4) + hexb[s[7]-0x30];
     msg->b[eidl] = (hexb[s[8]-0x30]<<4) + hexb[s[9]-0x30];
     // copying all data bytes:
-    for( i = 0; i < 8 && s[10+2*i] != ';'; i++ ) {
-      msg->b[d0+i] = (hexb[s[10+2*i]-0x30]<<4) + hexb[s[10+2*i+1]-0x30];
+    for( i = 0; i < 8 && s[11+2*i] != ';'; i++ ) {
+      msg->b[d0+i] = (hexb[s[11+2*i]-0x30]<<4) + hexb[s[11+2*i+1]-0x30];
     }
     msg->b[dlc] = i;
     msg->b[sidl] |= 0x08; // signal extended message
