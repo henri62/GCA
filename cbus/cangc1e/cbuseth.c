@@ -159,8 +159,8 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
     msg->b[sidl] |= 0x08; // signal extended message
   }
   else {
-    sidh = (hexb[s[1]-0x30]<<4) + hexb[s[2]-0x30];
-    sidl = (hexb[s[3]-0x30]<<4) + hexb[s[4]-0x30];
+    sidh = (hexb[s[2]-0x30]<<4) + hexb[s[3]-0x30];
+    sidl = (hexb[s[4]-0x30]<<4) + hexb[s[5]-0x30];
     canid = (sidl >> 5 ) + ((sidh&0x0F) << 3);
 
     if( CANID != canid ) {
