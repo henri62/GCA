@@ -189,8 +189,8 @@ byte canQueue(CANMsg* msg) {
     if( CANMsgs[i].status == CANMSG_FREE ) {
       memcpy(&CANMsgs[i], (const void*)msg, sizeof(CANMsg));
       CANMsgs[i].status = CANMSG_OPEN;
-      if( i > maxcanq )
-        maxcanq = i;
+      if( i+1 > maxcanq )
+        maxcanq = i+1;
       return 1;
     }
   }

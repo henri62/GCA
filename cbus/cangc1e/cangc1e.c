@@ -68,6 +68,7 @@ near unsigned char  Wait4NN;
 near unsigned char  isLearning;
 near unsigned char  maxcanq;
 near unsigned char  maxethq;
+near unsigned char  currentEthQ;
 
 
 volatile near unsigned char tmr0_reload;
@@ -157,6 +158,10 @@ void main(void) {
       LED1 = LED_ON;
       led1timer = 20;
       ethQueueRaw();
+      if(currentEthQ >= CANMSG_QSIZE ) {
+        // must do a broadcast to avoid a queue overflow
+        CBusEthBroadcastAll();
+      }
     }
 
     doEth();

@@ -52,6 +52,8 @@ typedef BYTE CBUSETH_HANDLE;
 
 
 static CBUSETH_INFO HCB[MAX_CBUSETH_CONNECTIONS];
+static byte nrClients = 0;
+
 
 
 static byte CBusEthProcess(void);
@@ -191,7 +193,25 @@ void CBusEthInit(void)
 }
 
 
-static byte nrClients = 0;
+void CBusEthBroadcastAll(void) {
+  BYTE i;
+  char idx = -1;
+  for( i = 0; i < CANMSG_QSIZE; i++ ) {
+    if( ETHMsgs[i].status == CANMSG_PENDING )
+      ETHMsgs[i].status = CANMSG_FREE;
+    else if( idx == -1 && ETHMsgs[i].status == CANMSG_OPEN ) {
+      idx = i;
+    }
+  }
+
+  if( idx != -1 ) {
+    if( nrClients == 0 || CBusEthBroadcast(&ETHMsgs[idx]) ) {
+      ETHMsgs[idx].status = CANMSG_PENDING;
+    }
+  }
+
+}
+
 
 void CBusEthServer(void)
 {
@@ -214,20 +234,8 @@ void CBusEthServer(void)
   }
 
 
+  CBusEthBroadcastAll();
 
-  for( i = 0; i < CANMSG_QSIZE; i++ ) {
-    if( ETHMsgs[i].status == CANMSG_PENDING )
-      ETHMsgs[i].status = CANMSG_FREE;
-    else if( idx == -1 && ETHMsgs[i].status == CANMSG_OPEN ) {
-      idx = i;
-    }
-  }
-
-  if( idx != -1 ) {
-    if( nrconn == 0 || CBusEthBroadcast(&ETHMsgs[idx]) ) {
-      ETHMsgs[idx].status = CANMSG_PENDING;
-    }
-  }
 }
 
 
@@ -361,8 +369,9 @@ byte ethQueueRaw(void) {
     if( ETHMsgs[i].status == CANMSG_FREE ) {
       memcpy(ETHMsgs[i].b, (void*)rx_ptr, 14);
       ETHMsgs[i].status = CANMSG_OPEN;
-      if( i > maxethq )
-        maxethq = i;
+      currentEthQ = i+1;
+      if( i+1 > maxethq )
+        maxethq = i+1;
       return 1;
     }
   }

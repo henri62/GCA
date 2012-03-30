@@ -32,6 +32,7 @@
 void CBusEthTick(void);
 void CBusEthInit(void);
 void CBusEthServer(void);
+void CBusEthBroadcastAll(void);
 unsigned char CBusEthBroadcast(CANMsg* msg);
 unsigned char ethQueue(CANMsg* msg);
 unsigned char ethQueueRaw(void);
