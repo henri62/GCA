@@ -86,7 +86,7 @@ static byte msg2ASCII(CANMsg* msg, char* s) {
     s[7] = hexa[msg->b[eidh] & 0x0F];
     s[8] = hexa[msg->b[eidl] >> 4];
     s[9] = hexa[msg->b[eidl] & 0x0F];
-    s[10] = 'N';
+    s[10] = ((msg->b[dlc] & 0x40) ? 'R':'N');
     for( i = 0; i < len; i++) {
       s[11 + i*2]     = hexa[msg->b[d0+i] >> 4];
       s[11 + i*2 + 1] = hexa[msg->b[d0+i] & 0x0F];
@@ -105,7 +105,7 @@ static byte msg2ASCII(CANMsg* msg, char* s) {
     s[3] = '0';
     s[4] = '0';
     s[5] = '0';
-    s[6] = 'N';
+    s[6] = ((msg->b[dlc] & 0x40) ? 'R':'N');
     s[7] = hexa[msg->b[d0] >> 4];
     s[8] = hexa[msg->b[d0] & 0x0F];
     for( i = 0; i < len; i++) {
@@ -155,7 +155,8 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
       msg->b[d0+i] = (hexb[s[11+2*i]-0x30]<<4) + hexb[s[11+2*i+1]-0x30];
     }
     msg->b[dlc] = i;
-    //msg->b[sidl] |= 0x08; // signal extended message
+    if(s[10] == 'R')
+      msg->b[dlc] |= 0x40;
   }
   else {
     byte l_sidh, l_sidl, canid;
@@ -175,6 +176,8 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
       msg->b[d1+i] = (hexb[s[9+2*i]-0x30]<<4) + hexb[s[9+2*i+1]-0x30];
     }
     msg->b[dlc] = len + 1;
+    if(s[6] == 'R')
+      msg->b[dlc] |= 0x40;
   }
   return type;
 }
