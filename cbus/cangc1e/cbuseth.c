@@ -165,7 +165,8 @@ static byte ASCII2Msg(unsigned char* ins, byte inlen, CANMsg* msg) {
     canid = (l_sidl >> 5 ) + ((l_sidh&0x0F) << 3);
 
     if( CANID != canid ) {
-      CANID = canid;
+      // Use own CANID
+      //CANID = canid;
     }
     msg->b[sidh] = l_sidh;
     msg->b[sidl] = l_sidl;
