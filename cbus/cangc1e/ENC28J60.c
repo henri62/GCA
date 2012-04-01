@@ -668,9 +668,9 @@ void MACFlush(void)
 	// This is a silicon errata workaround
 	if(ReadETHReg(EIR).EIRbits.TXERIF)
 	{
-		BFCReg(EIR, EIR_TXERIF);
 		BFSReg(ECON1, ECON1_TXRST);
 		BFCReg(ECON1, ECON1_TXRST);
+		BFCReg(EIR, EIR_TXERIF);
 	}
 
 	// Start the transmission
