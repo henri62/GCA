@@ -101,10 +101,10 @@ static byte msg2ASCII(CANMsg* msg, char* s) {
     byte idx = 9;
     s[0] = ':';
     s[1] = ((msg->b[dlc] & 0x80) ? 'Y':'S');
-    s[2] = '0';
-    s[3] = '0';
-    s[4] = '0';
-    s[5] = '0';
+    s[2] = hexa[msg->b[sidh] >> 4];
+    s[3] = hexa[msg->b[sidh] & 0x0F];
+    s[4] = hexa[msg->b[sidl] >> 4];
+    s[5] = hexa[msg->b[sidl] & 0x0F];
     s[6] = ((msg->b[dlc] & 0x40) ? 'R':'N');
     s[7] = hexa[msg->b[d0] >> 4];
     s[8] = hexa[msg->b[d0] & 0x0F];
