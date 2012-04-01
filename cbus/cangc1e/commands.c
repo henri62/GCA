@@ -66,6 +66,8 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
   switch (p_canmsg->b[d0]) {
 
     case OPC_QNN:
+      canmsg.b[sidh] = (CANID >> 3);
+      canmsg.b[sidl] = (CANID << 5);
       canmsg.b[d0]  = OPC_PNN;
       canmsg.b[d1]  = (NN_temp / 256) & 0xFF;
       canmsg.b[d2]  = (NN_temp % 256) & 0xFF;
@@ -101,6 +103,8 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
 
     case OPC_RQNP:
       if( Wait4NN ) {
+        canmsg.b[sidh] = (CANID >> 3);
+        canmsg.b[sidl] = (CANID << 5);
         canmsg.b[d0]  = OPC_PARAMS;
         canmsg.b[d1]  = params[0];
         canmsg.b[d2]  = params[1];
@@ -118,6 +122,8 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
     case OPC_NVRD:
       if( thisNN(p_canmsg) ) {
         byte nvnr = p_canmsg->b[d3];
+        canmsg.b[sidh] = (CANID >> 3);
+        canmsg.b[sidl] = (CANID << 5);
         canmsg.b[d0] = OPC_NVANS;
         canmsg.b[d1]  = (NN_temp / 256) & 0xFF;
         canmsg.b[d2]  = (NN_temp % 256) & 0xFF;
