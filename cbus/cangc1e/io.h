@@ -28,7 +28,8 @@
 #define LED1    PORTCbits.RC2   // cbus activity
 #define LED2    PORTCbits.RC0   // ethernet activity
 #define LED3    PORTCbits.RC1   // running
-#define SW      PORTAbits.RA0
+#define SW      PORTAbits.RA0   // FLiM button
+#define JP2     PORTCbits.RC6   // option jumper 2
 
 
 void setupIO(byte clr);

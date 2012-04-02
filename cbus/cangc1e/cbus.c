@@ -65,6 +65,9 @@ void cbusSetup(void) {
 BRGCON1: 0x03
 BRGCON2: 0xDE
 BRGCON3: 0x03
+ *
+ * 125KHz @ 16MHz –	BRGCON1=0x7 BRGCON2=0xC9 BRGCON3=0x02
+ * 125KHz @ 40MHz – BRGCON1=0xF BRGCON2=0xD1 BRGCON3=0x03
 */
   /*
    * Baud rate setting.

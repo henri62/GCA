@@ -42,6 +42,7 @@ void setupIO(byte clr) {
   TRISCbits.TRISC1 = 0; /* LED2 */
   TRISCbits.TRISC2 = 0; /* LED3 */
   TRISAbits.TRISA0 = 1; /* SW */
+  TRISCbits.TRISC6 = 1; /* JP2 */
 
   // Enable internal pull-ups.
   INTCON2bits.RBPU = 0;
