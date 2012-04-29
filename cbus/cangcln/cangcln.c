@@ -58,7 +58,8 @@ near unsigned short NN_temp;
 near unsigned char  CANID;
 near unsigned char  Latcount;
 near unsigned char  NV1;
-near unsigned char  led1timer;
+near unsigned char  ledCBUStimer;
+near unsigned char  ledCBUSERRtimer;
 near unsigned char  pointtimer;
 near unsigned char  ioIdx;
 near unsigned char  Wait4NN;
@@ -114,7 +115,8 @@ void main(void) {
 
   lDelay();
 
-  led1timer = 0;
+  ledCBUStimer = 0;
+  ledCBUSERRtimer = 0;
   pointtimer = 0;
   doSOD = 0;
   ioIdx = 0;
@@ -157,7 +159,7 @@ void main(void) {
     while (fifoEmpty() == 0) {
       // Decode the new command
       LED1 = 1;
-      led1timer = 20;
+      ledCBUStimer = 20;
       txed = parseCmd();
     }
 

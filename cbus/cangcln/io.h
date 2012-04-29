@@ -26,15 +26,15 @@
 
 
 #define LED1    PORTBbits.RB4   // cbus activity
-#define LED4    PORTBbits.RB5   // cbus activity
+#define LED4    PORTBbits.RB5   // cbus error
 #define LED2    PORTCbits.RC3   // learning mode
 #define LED3    PORTCbits.RC2   // running
 
 #define SW      PORTAbits.RA0	// Flim switch
 
 
-#define LNTX    PORTCbits.RC6
-#define LNRX    PORTCbits.RC7
+#define LED5    PORTCbits.RC6 // LocoNet activity
+#define LED6    PORTCbits.RC7 // LocoNet error
 
 
 typedef struct {

@@ -59,7 +59,8 @@
 extern near unsigned short NN_temp;
 extern near unsigned char  NV1;
 extern near unsigned char  CANID;
-extern near unsigned char  led1timer;
+extern near unsigned char  ledCBUStimer;
+extern near unsigned char  ledCBUSERRtimer;
 extern near unsigned char  ioIdx;
 extern near unsigned char  Wait4NN;
 extern near unsigned char  isLearning;

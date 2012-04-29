@@ -172,9 +172,9 @@ void scanLN(void) {
 
     //LED2 = PORT_ON;
 
-    inC = PORTC;
+    //inC = PORTC;
 
-    scan(0,0x01,0);
+    //scan(0,0x01,0);
 
     //LED2 = PORT_OFF;
   }

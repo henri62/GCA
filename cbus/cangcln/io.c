@@ -41,17 +41,21 @@ void setupIO(byte clr) {
   ADCON1 = 0x0F;
 
   TRISBbits.TRISB4 = 0;  // LED1 cbus activity
+  TRISBbits.TRISB5 = 0;  // LED4 cbus error
   TRISCbits.TRISC3 = 0;  // LED2 learning mode
   TRISCbits.TRISC2 = 0;  // LED3 running
 
   TRISAbits.TRISA0 = 1; /* SW */
 
-  TRISCbits.TRISC6 = 1; /* LNTX */
-  TRISCbits.TRISC7 = 1; /* LNRX */
+  TRISCbits.TRISC6 = 1; /* LocoNet activity */
+  TRISCbits.TRISC7 = 1; /* LocoNet error */
 
   LED1   = PORT_OFF;
   LED2   = PORT_OFF;
   LED3   = PORT_OFF;
+  LED4   = PORT_OFF;
+  LED5   = PORT_OFF;
+  LED6   = PORT_OFF;
 
   if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
     eeWrite(EE_CLEAN, 0);
@@ -63,10 +67,16 @@ void setupIO(byte clr) {
 
 // Called every 3ms.
 void doLEDTimers(void) {
-  if( led1timer > 0 ) {
-    led1timer--;
-    if( led1timer == 0 ) {
+  if( ledCBUStimer > 0 ) {
+    ledCBUStimer--;
+    if( ledCBUStimer == 0 ) {
       LED1 = 0;
+    }
+  }
+  if( ledCBUSERRtimer > 0 ) {
+    ledCBUSERRtimer--;
+    if( ledCBUSERRtimer == 0 ) {
+      LED4 = 0;
     }
   }
 

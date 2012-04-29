@@ -87,7 +87,10 @@ void isr_low(void) {
       if (Latcount == 0) { // already tried higher priority
         can_transmit_failed = 1;
         TXB1CONbits.TXREQ = 0;
-      } else if (--Latcount == 0) { // Allow tries at lower level priority first
+        ledCBUSERRtimer = 1000;
+        LED4 = 1;
+      }
+      else if (--Latcount == 0) { // Allow tries at lower level priority first
         TXB1CONbits.TXREQ = 0;
         Tx1[sidh] &= 0b00111111; // change priority
         TXB1CONbits.TXREQ = 1; // try again
@@ -97,6 +100,8 @@ void isr_low(void) {
     if (TXB1CONbits.TXERR) { // bus error
       can_transmit_failed = 1;
       TXB1CONbits.TXREQ = 0;
+      ledCBUSERRtimer = 5000;
+      LED4 = 1;
     }
 
   }
