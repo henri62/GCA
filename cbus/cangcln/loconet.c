@@ -113,40 +113,45 @@
 #include "utils.h"
 #include "cbusdefs.h"
 
-#pragma udata access VARS_RFID
+#pragma udata access VARS_LOCONET
 near byte work;
+near byte LNstatus;
+near byte sampledata;
+near byte dataready;
+near byte sample;
+near byte bitcnt;
 
 #define scan(port,mask,shft) \
 { \
-  if( RFID[port].status == STATUS_WAITSTART && (inC & mask) == 0 ) { \
-    RFID[port].status = STATUS_CONFSTART; \
+  if( LNstatus == STATUS_WAITSTART && (inC & mask) == 0 ) { \
+    LNstatus = STATUS_CONFSTART; \
   } \
-  else if(RFID[port].status != STATUS_WAITSTART) { \
-    if( RFID[port].status == STATUS_CONFSTART ) { \
+  else if(LNstatus != STATUS_WAITSTART) { \
+    if( LNstatus == STATUS_CONFSTART ) { \
       if((inC & mask) == 0) \
-        RFID[port].status = STATUS_IGN1; \
+        LNstatus = STATUS_IGN1; \
       else \
-        RFID[port].status = STATUS_WAITSTART; \
+        LNstatus = STATUS_WAITSTART; \
     } \
-    else if( RFID[port].status == STATUS_IGN1 ) { \
-      RFID[port].status = STATUS_IGN2; \
+    else if( LNstatus == STATUS_IGN1 ) { \
+      LNstatus = STATUS_IGN2; \
     } \
-    else if( RFID[port].status == STATUS_IGN2 ) { \
-      RFID[port].status = STATUS_SAMPLE;  \
+    else if( LNstatus == STATUS_IGN2 ) { \
+      LNstatus = STATUS_SAMPLE;  \
     } \
-    else if( RFID[port].status == STATUS_SAMPLE ) { \
-      if( RFID[port].bitcnt == 8 ) { \
-        RFID[port].sampledata = RFID[port].sample; \
-        RFID[port].dataready  = TRUE; \
-        RFID[port].sample = 0; \
-        RFID[port].bitcnt = 0; \
-        RFID[port].status = STATUS_WAITSTART; \
+    else if( LNstatus == STATUS_SAMPLE ) { \
+      if( bitcnt == 8 ) { \
+        sampledata = sample; \
+        dataready  = TRUE; \
+        sample = 0; \
+        bitcnt = 0; \
+        LNstatus = STATUS_WAITSTART; \
       } \
       else { \
-        RFID[port].status = STATUS_IGN1; \
-        RFID[port].sample >>= 1; \
-        RFID[port].sample |= ((inC & mask) << (7-shft)); \
-        RFID[port].bitcnt++; \
+        LNstatus = STATUS_IGN1; \
+        sample >>= 1; \
+        sample |= ((inC & mask) << (7-shft)); \
+        bitcnt++; \
       } \
     } \
   } \
@@ -170,13 +175,6 @@ void scanLN(void) {
     inC = PORTC;
 
     scan(0,0x01,0);
-    scan(1,0x02,1);
-    scan(2,0x04,2);
-    scan(3,0x08,3);
-    scan(4,0x80,7);
-    scan(5,0x40,6);
-    scan(6,0x20,5);
-    scan(7,0x10,4);
 
     //LED2 = PORT_OFF;
   }
@@ -199,20 +197,11 @@ byte checksumLN(byte* rfid, byte crc) {
 
 
 void initLN(void) {
-  byte i, n;
-  
-  for( i = 0; i < 8; i++ ) {
-    RFID[i].dataready  = 0;
-    RFID[i].sampledata = 0;
-    RFID[i].status     = 0;
-    RFID[i].sample     = 0;
-    RFID[i].bitcnt     = 0;
-    RFID[i].rawcnt     = 0;
-    for( n = 0; n < 5; n++ )
-      RFID[i].data[n] = 0;
-    for( n = 0; n < 10; n++ )
-      RFID[i].raw[n] = 0;
-  }
+  LNstatus = STATUS_WAITSTART;
+  sampledata = 0;
+  dataready  = FALSE;
+  sample = 0;
+  bitcnt = 0;
 
 }
 

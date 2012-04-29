@@ -27,7 +27,6 @@
 unsigned char parseCmd(void);
 void doRqnpn(unsigned int);
 int thisNN(void);
-unsigned char doPortEvent(int i );
 
 
 #endif

@@ -25,91 +25,37 @@
 #define __IO_H
 
 
-#define LED1    PORTBbits.RB5   // cbus activity
-#define LED2    PORTBbits.RB6   // learning mode
-#define LED3    PORTBbits.RB7   // running
+#define LED1    PORTBbits.RB4   // cbus activity
+#define LED4    PORTBbits.RB5   // cbus activity
+#define LED2    PORTCbits.RC3   // learning mode
+#define LED3    PORTCbits.RC2   // running
 
-#define SW      PORTAbits.RA2	// Flim switch
+#define SW      PORTAbits.RA0	// Flim switch
 
 
-#define RFID1   PORTCbits.RC0
-#define RFID2   PORTCbits.RC1
-#define RFID3   PORTCbits.RC2
-#define RFID4   PORTCbits.RC3
-#define RFID5   PORTCbits.RC7
-#define RFID6   PORTCbits.RC6
-#define RFID7   PORTCbits.RC5
-#define RFID8   PORTCbits.RC4
+#define LNTX    PORTCbits.RC6
+#define LNRX    PORTCbits.RC7
 
-#define SENS1   PORTAbits.RA0
-#define SENS2   PORTAbits.RA1
-#define SENS3   PORTAbits.RA3
-#define SENS4   PORTAbits.RA4
-#define SENS5   PORTAbits.RA5
-#define SENS6   PORTBbits.RB0
-#define SENS7   PORTBbits.RB4
-#define SENS8   PORTBbits.RB1
-
-#define SENS1_MASK_A 0x01
-#define SENS2_MASK_A 0x02
-#define SENS3_MASK_A 0x08
-#define SENS4_MASK_A 0x10
-#define SENS5_MASK_A 0x20
-
-#define SENS6_MASK_B 0x01
-#define SENS7_MASK_B 0x10
-#define SENS8_MASK_B 0x02
 
 typedef struct {
-  byte   config;
+  byte   opc;
   byte   data[5];
-  int    addr;
-
-  byte   sample;
-  byte   bitcnt;
-  byte   status;
-
-  byte   sampledata;
-  byte   dataready;
-  
-  byte   raw[10];
-  byte   rawcnt;
-  byte   rawcntwd;
-  byte   rawcrc[2];
-  byte   timedoff;
-  byte   timer;
-} RFIDDef;
+} LNPACKET;
 
 typedef struct {
-  byte   status;
-  byte   timer;
-  byte   timedoff;
-  int    addr;
-} SENSDef;
-
-typedef struct {
+  byte   opc;
   byte   data[5];
-} AllowedRFIDDef;
+} CBUSPACKET;
 
 
-extern far RFIDDef RFID[8];
-extern far SENSDef Sensor[8];
-extern far AllowedRFIDDef AllowedRFID[5];
 extern near unsigned char led1timer;
 
 
 void setupIO(byte clr);
 void doLEDTimers(void);
-unsigned char checkInput(unsigned char idx, unsigned char sod);
 void doLED250(void);
 void doLEDs(void);
-void saveOutputStates(void);
-void setOutput(ushort nn, ushort addr, byte on);
 unsigned char checkFlimSwitch(void);
-unsigned char readInput(int idx);
-void doIOTimers(void);
-void doTimedOff(int i);
-unsigned char sodRFID(unsigned char i);
 
 
 #endif	// __IO_H

@@ -46,10 +46,9 @@
 
 
 #pragma udata VARS_MAIN_ARRAYS1
-far RFIDDef RFID[8];
+far LNPACKET LNBuffer[8];
 #pragma udata VARS_MAIN_ARRAYS2
-far SENSDef Sensor[8];
-far AllowedRFIDDef AllowedRFID[5];
+far CBUSPACKET CBusBuffer[8];
 
 #pragma udata access VARS_MAIN
 near unsigned char  can_transmit_timeout;
@@ -161,30 +160,6 @@ void main(void) {
       led1timer = 20;
       txed = parseCmd();
     }
-
-    doTimedOff(ioIdx);
-    
-    if( checkInput(ioIdx, doSOD) ) {
-      if( doSOD ) {
-        sodRFID(ioIdx);
-      }
-      ioIdx++;
-      if( ioIdx >= 8 ) {
-        ioIdx = 0;
-        doSOD = 0;
-      }
-    }
-
-    if( l3 ) {
-      if( doPortEvent(evIdx) ) {
-        evIdx++;
-        if( evIdx >= 16 ) {
-          evIdx = 0;
-          doEV = 0;
-        }
-      }
-    }
-
 
     //LED2 = PORT_ON;
     canSendQ();
