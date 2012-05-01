@@ -197,7 +197,7 @@ void initTimers(void) {
   led_timer = 4;  // 4ms
 
   // ***** Timer0 *****
-  // 32000000/4/2/139 == 28776,98 Hz.
+  // 32000000/4/2/80 == 50kHz.
   T0CON = 0;
   // pre scaler 2:
   T0CONbits.PSA   = 0;
