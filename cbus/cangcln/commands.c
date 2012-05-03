@@ -190,7 +190,7 @@ unsigned char parseCmd(void) {
     case OPC_NNULN:
       if( thisNN() ) {
         isLearning = FALSE;
-        LED2 = PORT_OFF;
+        LED6_FLIM = PORT_OFF;
       }
       break;
 

@@ -112,8 +112,9 @@
 #include "cbus.h"
 #include "utils.h"
 #include "cbusdefs.h"
+#include "lnconst.h"
 
-#pragma udata access VARS_LOCONET
+#pragma udata access VARS_LOCONET1
 near byte work;
 near byte LNstatus;
 near byte sampledata;
@@ -121,75 +122,145 @@ near byte dataready;
 near byte sample;
 near byte bitcnt;
 
-#define scan(port,mask,shft) \
-{ \
-  if( LNstatus == STATUS_WAITSTART && (inC & mask) == 0 ) { \
-    LNstatus = STATUS_CONFSTART; \
-  } \
-  else if(LNstatus != STATUS_WAITSTART) { \
-    if( LNstatus == STATUS_CONFSTART ) { \
-      if((inC & mask) == 0) \
-        LNstatus = STATUS_IGN1; \
-      else \
-        LNstatus = STATUS_WAITSTART; \
-    } \
-    else if( LNstatus == STATUS_IGN1 ) { \
-      LNstatus = STATUS_IGN2; \
-    } \
-    else if( LNstatus == STATUS_IGN2 ) { \
-      LNstatus = STATUS_SAMPLE;  \
-    } \
-    else if( LNstatus == STATUS_SAMPLE ) { \
-      if( bitcnt == 8 ) { \
-        sampledata = sample; \
-        dataready  = TRUE; \
-        sample = 0; \
-        bitcnt = 0; \
-        LNstatus = STATUS_WAITSTART; \
-      } \
-      else { \
-        LNstatus = STATUS_IGN1; \
-        sample >>= 1; \
-        sample |= ((inC & mask) << (7-shft)); \
-        bitcnt++; \
-      } \
-    } \
-  } \
-}
+#pragma udata VARS_LOCONET2
+far byte LNPacket[32];
+far byte LNIndex;
+far byte LNSize;
 
-
-
-// TMR0 generates a heartbeat every 32000000/4/2/139 == 28776,98 Hz.
+// TMR0 generates a heartbeat every 32000000/4/2/80 == 50kHz.
 #pragma interrupt scanLN
 void scanLN(void) {
 
   // Timer0 interrupt handler
   if( INTCONbits.T0IF ) {
-    byte inC;
+    byte inLN = LNRX;
 
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
-    TMR0L = 256 - 139 + 10;   // Reset counter with a correction of 10 cycles
+    TMR0L = 256 - 80;         // Reset counter with a correction of 10 cycles
 
-    //LED2 = PORT_ON;
+    //LED4_LNRX = PORT_ON;
 
-    //inC = PORTC;
+    if( LNstatus == STATUS_WAITSTART && inLN == 0 ) {
+      LNstatus = STATUS_CONFSTART;
+    }
+    else if(LNstatus != STATUS_WAITSTART) {
+      if( LNstatus == STATUS_CONFSTART ) {
+        if(inLN == 0)
+          LNstatus = STATUS_IGN1;
+        else
+          LNstatus = STATUS_WAITSTART;
+      }
+      else if( LNstatus == STATUS_IGN1 ) {
+        LNstatus = STATUS_IGN2;
+      }
+      else if( LNstatus == STATUS_IGN2 ) {
+        LNstatus = STATUS_SAMPLE;
+      }
+      else if( LNstatus == STATUS_SAMPLE ) {
+        if( bitcnt == 8 ) {
+          sampledata = sample;
+          dataready  = TRUE;
+          sample = 0;
+          bitcnt = 0;
+          LNstatus = STATUS_WAITSTART;
+        }
+        else {
+          LNstatus = STATUS_IGN1;
+          sample >>= 1;
+          sample |= inLN;
+          bitcnt++;
+        }
+      }
+    }
 
-    //scan(0,0x01,0);
-
-    //LED2 = PORT_OFF;
+    //LED4_LNRX = PORT_OFF;
   }
 
 }
 
 
-byte checksumLN(byte* rfid, byte crc) {
-  byte x;
-  x  = rfid[0];
-  x ^= rfid[1];
-  x ^= rfid[2];
-  x ^= rfid[3];
-  x ^= rfid[4];
+void ln2CBus(void) {
+  switch( LNPacket[0]) {
+    case OPC_GPON:
+        canmsg.opc = OPC_RTON;
+        canmsg.len = 0;
+        canQueue(&canmsg);
+      break;
+    case OPC_GPOFF:
+        canmsg.opc = OPC_RTOF;
+        canmsg.len = 0;
+        canQueue(&canmsg);
+      break;
+  }
+  
+}
 
+byte getLNSize(byte opc) {
+  if( opc == 0xE0 ) {
+    /* Uhli exceptions */
+    return 0;
+  }
+  else {
+    switch (opc & 0xf0) {
+    case 0x80:
+        return 2;
+    case 0xa0:
+    case 0xb0:
+        return 4;
+    case 0xc0:
+        return 6;
+    case 0xe0:
+      return -1; // Next byte is size.
+    }
+  }
+  return 0;
+}
+
+void doLocoNet(void) {
+  if( dataready ) {
+    byte b = sampledata;
+    if( LNIndex == 0 ) {
+      if( b & 0x80 == 0 ) {
+        // invalid start
+        return;
+      }
+
+      LED4_LNRX = PORT_ON;
+      ledLNRXtimer = 20;
+
+      // OPC
+      LNSize = getLNSize(b);
+      if( LNSize == 0 ) {
+        // invalid OPC
+        return;
+      }
+
+    }
+
+    if( LNSize == -1 && LNIndex == 1 ) {
+      LNSize = b & 0x7F;
+    }
+
+    if( LNIndex < 32 ) {
+      LNPacket[LNIndex] = b;
+      LNIndex++;
+      if( LNIndex == LNSize ) {
+        // Packet complete.
+        LNIndex = 0;
+        // TODO: Translate to CBUS.
+        ln2CBus();
+      }
+    }
+    else {
+      // reset
+      LNIndex = 0;
+    }
+  }
+}
+
+
+byte checksumLN(byte* ln, byte crc) {
+  byte x;
   return x == crc ? TRUE:FALSE;
 }
 
@@ -202,6 +273,6 @@ void initLN(void) {
   dataready  = FALSE;
   sample = 0;
   bitcnt = 0;
-
+  LNIndex = 0;
 }
 

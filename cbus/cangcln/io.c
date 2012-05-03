@@ -40,22 +40,25 @@ void setupIO(byte clr) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
 
-  TRISBbits.TRISB4 = 0;  // LED1 cbus activity
-  TRISBbits.TRISB5 = 0;  // LED4 cbus error
-  TRISCbits.TRISC3 = 0;  // LED2 learning mode
-  TRISCbits.TRISC2 = 0;  // LED3 running
+
+  TRISBbits.TRISB4 = 0;  // LED1 CBUS activity TX
+  TRISBbits.TRISB5 = 0;  // LED2 CBUS activity RX
+  TRISCbits.TRISC3 = 0;  // LED6 Learning mode
+  TRISCbits.TRISC2 = 0;  // LED5 Running
 
   TRISAbits.TRISA0 = 1; /* SW */
 
-  TRISCbits.TRISC6 = 1; /* LocoNet activity */
-  TRISCbits.TRISC7 = 1; /* LocoNet error */
+  TRISCbits.TRISC4 = 0; /* LED3 LocoNet activity TX */
+  TRISCbits.TRISC5 = 0; /* LED4 LocoNet activity RX */
+  TRISCbits.TRISC6 = 0; /* LocoNet TX */
+  TRISCbits.TRISC7 = 1; /* LocoNet RX */
 
-  LED1   = PORT_OFF;
-  LED2   = PORT_OFF;
-  LED3   = PORT_OFF;
-  LED4   = PORT_OFF;
-  LED5   = PORT_OFF;
-  LED6   = PORT_OFF;
+  LED1_CBUSTX   = PORT_OFF;
+  LED2_CBUSRX   = PORT_OFF;
+  LED3_LNTX     = PORT_OFF;
+  LED4_LNRX     = PORT_OFF;
+  LED5_RUN      = PORT_OFF;
+  LED6_FLIM     = PORT_OFF;
 
   if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
     eeWrite(EE_CLEAN, 0);
@@ -67,16 +70,28 @@ void setupIO(byte clr) {
 
 // Called every 3ms.
 void doLEDTimers(void) {
-  if( ledCBUStimer > 0 ) {
-    ledCBUStimer--;
-    if( ledCBUStimer == 0 ) {
-      LED1 = 0;
+  if( ledCBUSRXtimer > 0 ) {
+    ledCBUSRXtimer--;
+    if( ledCBUSRXtimer == 0 ) {
+      LED2_CBUSRX = 0;
     }
   }
-  if( ledCBUSERRtimer > 0 ) {
-    ledCBUSERRtimer--;
-    if( ledCBUSERRtimer == 0 ) {
-      LED4 = 0;
+  if( ledCBUSTXtimer > 0 ) {
+    ledCBUSTXtimer--;
+    if( ledCBUSTXtimer == 0 ) {
+      LED1_CBUSTX = 0;
+    }
+  }
+  if( ledLNTXtimer > 0 ) {
+    ledLNTXtimer--;
+    if( ledLNTXtimer == 0 ) {
+      LED3_LNTX = 0;
+    }
+  }
+  if( ledLNRXtimer > 0 ) {
+    ledLNRXtimer--;
+    if( ledLNRXtimer == 0 ) {
+      LED4_LNRX = 0;
     }
   }
 
@@ -90,14 +105,14 @@ unsigned char checkFlimSwitch(void) {
 
 
 
-static unsigned char __LED2 = 0;
+static unsigned char __LED6_FLIM = 0;
 void doLEDs(void) {
   if( Wait4NN || isLearning) {
-    LED2 = __LED2;
-    __LED2 ^= 1;
+    LED6_FLIM = __LED6_FLIM;
+    __LED6_FLIM ^= 1;
   }
   else {
-    LED2 = PORT_OFF;
+    LED6_FLIM = PORT_OFF;
   }
 
 }

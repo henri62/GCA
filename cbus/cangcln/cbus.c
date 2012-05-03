@@ -221,8 +221,8 @@ void canTxQ(CANMsg* msg) {
   Tx1[d7] = msg->d[6];
 	Latcount = 10;
 
-  LED1 = 1;
-  ledCBUStimer = 20;
+  LED1_CBUSTX = 1;
+  ledCBUSTXtimer = 20;
 
   tx_idx = 0;
   ptr_fsr1 = &TXB1CON;

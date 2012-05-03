@@ -58,8 +58,10 @@ near unsigned short NN_temp;
 near unsigned char  CANID;
 near unsigned char  Latcount;
 near unsigned char  NV1;
-near unsigned char  ledCBUStimer;
-near unsigned char  ledCBUSERRtimer;
+near unsigned char  ledCBUSTXtimer;
+near unsigned char  ledCBUSRXtimer;
+near unsigned char  ledLNTXtimer;
+near unsigned char  ledLNRXtimer;
 near unsigned char  pointtimer;
 near unsigned char  ioIdx;
 near unsigned char  Wait4NN;
@@ -115,8 +117,10 @@ void main(void) {
 
   lDelay();
 
-  ledCBUStimer = 0;
-  ledCBUSERRtimer = 0;
+  ledCBUSTXtimer = 0;
+  ledCBUSRXtimer = 0;
+  ledLNTXtimer = 0;
+  ledLNRXtimer = 0;
   pointtimer = 0;
   doSOD = 0;
   ioIdx = 0;
@@ -148,7 +152,7 @@ void main(void) {
   if( SOD == 0 || SOD == 0xFFFF )
     SOD = DEFAULT_SOD;
 
-  LED3 = PORT_ON; /* signal running system */
+  LED5_RUN = PORT_ON; /* signal running system */
 
   // Loop forever (nothing lasts forever...)
   while (1) {
@@ -158,14 +162,15 @@ void main(void) {
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
       // Decode the new command
-      LED1 = 1;
-      ledCBUStimer = 20;
+      LED2_CBUSRX = 1;
+      ledCBUSRXtimer = 20;
       txed = parseCmd();
     }
 
-    //LED2 = PORT_ON;
+    doLocoNet();
+
     canSendQ();
-    //LED2 = PORT_OFF;
+
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
     }
@@ -207,7 +212,7 @@ void initTimers(void) {
   // 8 bit counter
   T0CONbits.T08BIT = 1;
   TMR0H = 0;
-  TMR0L = 256 - 139;
+  TMR0L = 256 - 80;
   // timer on
   T0CONbits.TMR0ON = 1;
   // interrupt

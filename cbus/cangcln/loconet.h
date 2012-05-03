@@ -29,6 +29,7 @@
 
 extern void scanLN(void);
 void initLN(void);
+void doLocoNet(void);
 
 #define STATUS_WAITSTART 0x00
 #define STATUS_CONFSTART 0x01

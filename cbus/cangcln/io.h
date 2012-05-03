@@ -25,16 +25,17 @@
 #define __IO_H
 
 
-#define LED1    PORTBbits.RB4   // cbus activity
-#define LED4    PORTBbits.RB5   // cbus error
-#define LED2    PORTCbits.RC3   // learning mode
-#define LED3    PORTCbits.RC2   // running
+#define LED1_CBUSTX PORTBbits.RB4   // CBUS activity TX
+#define LED2_CBUSRX PORTBbits.RB5   // CBUS activity RX
+#define LED3_LNTX   PORTCbits.RC4   // LocoNet activity TX
+#define LED4_LNRX   PORTCbits.RC5   // LocoNet activity RX
+#define LED5_RUN    PORTCbits.RC2   // running
+#define LED6_FLIM   PORTCbits.RC3   // learning mode
 
 #define SW      PORTAbits.RA0	// Flim switch
 
-
-#define LED5    PORTCbits.RC6 // LocoNet activity
-#define LED6    PORTCbits.RC7 // LocoNet error
+#define LNTX    PORTCbits.RC6   // LocoNet TX
+#define LNRX    PORTCbits.RC7   // LocoNet RX
 
 
 typedef struct {
