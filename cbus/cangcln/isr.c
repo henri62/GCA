@@ -52,6 +52,8 @@ void isr_low(void) {
     PIR1bits.TMR2IF = 0; // Clear interrupt flag
     TMR2 = 0; // reset counter
 
+    LocoNetWD();
+
     // I/O timeout - 5ms
     if (--led_timer == 0) {
       led_timer = 5;
