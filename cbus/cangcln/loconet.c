@@ -53,7 +53,7 @@ void scanLN(void) {
     byte inLN = LNRX;
 
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
-    TMR0L = 256 - 80 + 12;         // Reset counter with a correction of 10 cycles
+    TMR0L = 256 - 80 + 18;         // Reset counter with a correction of 10 cycles
 
     LED3_LNTX = PORT_ON;
 
@@ -77,8 +77,14 @@ void scanLN(void) {
       }
       else if( LNstatus == STATUS_SAMPLE ) {
         if( bitcnt == 8 ) {
-          sampledata = sample;
-          dataready  = TRUE;
+          if( inLN == 1 ) {
+            sampledata = sample;
+            dataready  = TRUE;
+          }
+          else {
+            // No stop bit; Framing error.
+            LNIndex = 0;
+          }
           sample = 0;
           bitcnt = 0;
           LNstatus = STATUS_WAITSTART;
@@ -113,6 +119,8 @@ void ln2CBusErr(void) {
 }
 
 void ln2CBus(void) {
+  LED4_LNRX = PORT_ON;
+  ledLNRXtimer = 20;
   switch( LNPacket[0]) {
     case OPC_GPON:
         canmsg.opc = OPC_RTON;
@@ -160,9 +168,6 @@ void doLocoNet(void) {
         // invalid start
         return;
       }
-
-      LED4_LNRX = PORT_ON;
-      ledLNRXtimer = 20;
 
       memset(LNPacket, 0, sizeof(LNPacket));
 
