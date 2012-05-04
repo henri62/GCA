@@ -59,6 +59,7 @@ void setupIO(byte clr) {
   LED4_LNRX     = PORT_OFF;
   LED5_RUN      = PORT_OFF;
   LED6_FLIM     = PORT_OFF;
+  LNTX          = PORT_OFF;
 
   if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
     eeWrite(EE_CLEAN, 0);

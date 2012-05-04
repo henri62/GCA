@@ -20,7 +20,7 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
+#include <string.h>
 #include "project.h"
 #include "cangcln.h"
 #include "io.h"
@@ -57,6 +57,8 @@ void scanLN(void) {
 
     LED3_LNTX = PORT_ON;
 
+    //inLN = !inLN & 0x01;
+    
     if( LNstatus == STATUS_WAITSTART && inLN == 0 ) {
       LNstatus = STATUS_CONFSTART;
     }
@@ -84,7 +86,7 @@ void scanLN(void) {
         else {
           LNstatus = STATUS_IGN1;
           sample >>= 1;
-          sample |= inLN;
+          sample |= (inLN << 7);
           bitcnt++;
         }
       }
@@ -95,6 +97,20 @@ void scanLN(void) {
 
 }
 
+
+void ln2CBusErr(void) {
+  canmsg.opc = OPC_ACON3;
+  canmsg.d[0] = LNPacket[0];
+  canmsg.d[1] = LNPacket[1];
+  canmsg.d[2] = LNPacket[2];
+  canmsg.d[3] = LNPacket[3];
+  canmsg.d[4] = LNPacket[4];
+  canmsg.d[5] = LNPacket[5];
+  canmsg.d[6] = LNPacket[6];
+  canmsg.len = 7;
+  canQueue(&canmsg);
+  
+}
 
 void ln2CBus(void) {
   switch( LNPacket[0]) {
@@ -109,13 +125,13 @@ void ln2CBus(void) {
         canQueue(&canmsg);
       break;
   }
-  
+
 }
 
 byte getLNSize(byte opc) {
   if( opc == 0xE0 ) {
     /* Uhli exceptions */
-    return 0;
+    return -2;
   }
   else {
     switch (opc & 0xf0) {
@@ -148,10 +164,15 @@ void doLocoNet(void) {
       LED4_LNRX = PORT_ON;
       ledLNRXtimer = 20;
 
+      memset(LNPacket, 0, sizeof(LNPacket));
+
       // OPC
       LNSize = getLNSize(b);
-      if( LNSize == 0 ) {
+      if( LNSize == 0 || LNSize == -2 ) {
         // invalid OPC
+        LNPacket[0] = b;
+        LNPacket[1] = LNSize;
+        ln2CBusErr();
         return;
       }
 
