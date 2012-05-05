@@ -31,6 +31,20 @@ extern void scanLN(void);
 void initLN(void);
 void doLocoNet(void);
 void LocoNetWD(void);
+void send2LocoNet(void);
+
+typedef struct {
+  byte   status;
+  byte   data[16];
+  byte   len;
+} LNPACKET;
+
+#define LN_BUFFER_SIZE 14
+
+#define LN_STATUS_FREE 0
+#define LN_STATUS_USED 1
+#define LN_STATUS_PENDING 2
+
 
 #define STATUS_WAITSTART 0x00
 #define STATUS_CONFSTART 0x01
@@ -47,6 +61,10 @@ void LocoNetWD(void);
 
 #define STX 0x02
 #define ETX 0x03
+
+#define LN_MODE_READ 0
+#define LN_MODE_WRITE 1
+#define LN_MODE_WRITE_REQ 2
 
 
 #endif

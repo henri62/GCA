@@ -46,8 +46,6 @@
 
 
 #pragma udata VARS_MAIN_ARRAYS1
-far LNPACKET LNBuffer[8];
-#pragma udata VARS_MAIN_ARRAYS2
 far CBUSPACKET CBusBuffer[8];
 
 #pragma udata access VARS_MAIN

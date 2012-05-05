@@ -37,12 +37,23 @@ near byte sampledata;
 near byte dataready;
 near byte sample;
 near byte bitcnt;
+near byte mode;
+near byte txtry;
+near byte samplepart;
+near byte idle;
 
 #pragma udata VARS_LOCONET2
 far byte LNPacket[32];
 far byte LNIndex;
 far byte LNSize;
 far byte LNTimeout;
+far byte LNByteIndex;
+far byte LNBitIndex;
+
+#pragma udata VARS_LOCONET3
+far LNPACKET LNBuffer[LN_BUFFER_SIZE];
+far byte LNBufferIndex;
+
 
 // TMR0 generates a heartbeat every 32000000/4/2/80 == 50kHz.
 #pragma interrupt scanLN
@@ -57,9 +68,12 @@ void scanLN(void) {
 
     LED3_LNTX = PORT_ON;
 
-    //inLN = !inLN & 0x01;
+    samplepart++;
+    if( samplepart > 2 )
+      samplepart = 0;
     
     if( LNstatus == STATUS_WAITSTART && inLN == 0 ) {
+      idle = 0;
       LNstatus = STATUS_CONFSTART;
     }
     else if(LNstatus != STATUS_WAITSTART) {
@@ -95,6 +109,45 @@ void scanLN(void) {
           sample |= (inLN << 7);
           bitcnt++;
         }
+      }
+    }
+
+    if( samplepart == 0 ) {
+      if( inLN == 1 && mode == LN_MODE_WRITE_REQ ) {
+        idle++;
+        if( mode == LN_MODE_WRITE && txtry > 20 ) {
+          // Give up...
+          mode = LN_MODE_READ;
+        }
+        else if( idle > (6 + (20-txtry))) {
+          byte i;
+          for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+            if( LNBuffer[i].status == LN_STATUS_USED) {
+              LNBuffer[i].status = LN_STATUS_PENDING;
+              LNIndex = i;
+              break;
+            }
+          }
+          if( i < LN_BUFFER_SIZE ) {
+            // Try to send...
+            txtry++;
+            mode = LN_MODE_WRITE;
+            LNByteIndex = 0;
+            LNBitIndex = 0;
+
+            LED3_LNTX = PORT_ON;
+            ledLNTXtimer = 20;
+          }
+          else {
+            // nothing todo...
+            mode = LN_MODE_READ;
+          }
+        }
+      }
+
+      // The write...
+      if( mode == LN_MODE_WRITE ) {
+
       }
     }
 
@@ -217,15 +270,12 @@ void LocoNetWD(void) {
 }
 
 
-byte checksumLN(byte* ln, byte crc) {
-  byte x;
-  return x == crc ? TRUE:FALSE;
-}
-
-
-
-
 void initLN(void) {
+  byte i;
+  for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+    LNBuffer[i].status = LN_STATUS_FREE;
+  }
+
   LNstatus = STATUS_WAITSTART;
   sampledata = 0;
   dataready  = FALSE;
@@ -233,5 +283,55 @@ void initLN(void) {
   bitcnt = 0;
   LNIndex = 0;
   LNTimeout = 0;
+  samplepart = 0;
+  mode = LN_MODE_READ;
 }
 
+void checksumLN(byte idx) {
+  byte chksum = 0xff;
+  int i;
+  for (i = 0; i < LNBuffer[idx].len-1; i++) {
+    chksum ^= LNBuffer[idx].data[i];
+  }
+  LNBuffer[idx].data[i] = chksum;
+}
+
+void send2LocoNet(void) {
+  byte i = 0;
+  for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+    if( LNBuffer[i].status == LN_STATUS_FREE) {
+      break;
+    }
+  }
+
+  if( i >= LN_BUFFER_SIZE ) {
+    // Buffer overflow...
+    LED6_FLIM = PORT_ON;
+    return;
+  }
+
+  if( mode != LN_MODE_WRITE_REQ ) {
+    idle = 0; // reset idle timer
+    txtry = 0;
+  }
+
+  switch(rx_ptr->d0) {
+    case OPC_RTON:
+      LNBuffer[i].len = 2;
+      LNBuffer[i].data[0] = OPC_GPON;
+      checksumLN(i);
+      LNBuffer[i].status = LN_STATUS_USED;
+      if( mode == LN_MODE_READ )
+        mode = LN_MODE_WRITE_REQ;
+      break;
+    case OPC_RTOF:
+      LNBuffer[i].len = 2;
+      LNBuffer[i].data[0] = OPC_GPOFF;
+      checksumLN(i);
+      LNBuffer[i].status = LN_STATUS_USED;
+      if( mode == LN_MODE_READ )
+        mode = LN_MODE_WRITE_REQ;
+      break;
+  }
+
+}

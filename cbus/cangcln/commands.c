@@ -28,6 +28,7 @@
 #include "commands.h"
 #include "cangcln.h"
 #include "io.h"
+#include "loconet.h"
 
 
 
@@ -51,6 +52,8 @@ near byte nnL;
 unsigned char parseCmd(void) {
   unsigned char txed = 0;
   //mode_word.s_full = 0;
+
+  send2LocoNet();
 
   switch (rx_ptr->d0) {
 
@@ -127,15 +130,6 @@ unsigned char parseCmd(void) {
         canmsg.len = 7;
         canQueue(&canmsg);
         txed = 1;
-      }
-      break;
-
-    case OPC_RTOF:
-      if( NV1 & CFG_SAVERFID ) {
-        byte i;
-        for( i = 0; i < 8; i++ ) {
-          // save rfid for SoD
-        }
       }
       break;
 

@@ -41,11 +41,6 @@
 typedef struct {
   byte   opc;
   byte   data[5];
-} LNPACKET;
-
-typedef struct {
-  byte   opc;
-  byte   data[5];
 } CBUSPACKET;
 
 
