@@ -49,6 +49,7 @@ far byte LNSize;
 far byte LNTimeout;
 far byte LNByteIndex;
 far byte LNBitIndex;
+far byte LNWrittenBit;
 
 #pragma udata VARS_LOCONET3
 far LNPACKET LNBuffer[LN_BUFFER_SIZE];
@@ -66,11 +67,13 @@ void scanLN(void) {
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
     TMR0L = 256 - 80 + 18;         // Reset counter with a correction of 10 cycles
 
-    LED3_LNTX = PORT_ON;
+    //LNSCAN = PORT_ON;
 
     samplepart++;
-    if( samplepart > 2 )
+    if( samplepart > 2 ) {
       samplepart = 0;
+      LNSCAN = PORT_ON;
+    }
     
     if( LNstatus == STATUS_WAITSTART && inLN == 0 ) {
       idle = 0;
@@ -134,6 +137,7 @@ void scanLN(void) {
             mode = LN_MODE_WRITE;
             LNByteIndex = 0;
             LNBitIndex = 0;
+            LNWrittenBit = 1;
 
             LED3_LNTX = PORT_ON;
             ledLNTXtimer = 20;
@@ -147,11 +151,42 @@ void scanLN(void) {
 
       // The write...
       if( mode == LN_MODE_WRITE ) {
+        // Check if the inLN equals the last send bit for collision detection.
+        if( LNWrittenBit != inLN ) {
+          // Collision!
+          LNByteIndex = 0;
+          LNBitIndex = 0;
+          mode = LN_MODE_WRITE_REQ;
+          LED6_FLIM = PORT_ON;
+        }
+        else {
+          if( LNBitIndex == 0 ) {
+            // Start bit
+            LNWrittenBit = PORT_OFF;
+          }
+          else if( LNBitIndex == 9 ) {
+            // Stop bit
+            LNWrittenBit = PORT_ON;
+            LNBitIndex = 0;
+            LNByteIndex++;
+            if( LNBuffer[LNIndex].len == LNByteIndex ) {
+              mode = LN_MODE_READ;
+            }
+          }
+          else {
+            LNWrittenBit = (LNBuffer[LNIndex].data[LNByteIndex] >> (LNBitIndex-1)) & 0x01;
+          }
+        }
+        LNTX = LNWrittenBit ^ 0x01; // Invert?
+        LNBitIndex++;
 
+        if( mode == LN_MODE_READ ) {
+          LNTX = PORT_OFF;
+        }
       }
     }
 
-    LED3_LNTX = PORT_OFF;
+    LNSCAN = PORT_OFF;
   }
 
 }

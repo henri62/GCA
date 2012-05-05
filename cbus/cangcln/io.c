@@ -47,6 +47,7 @@ void setupIO(byte clr) {
   TRISCbits.TRISC2 = 0;  // LED5 Running
 
   TRISAbits.TRISA0 = 1; /* SW */
+  TRISAbits.TRISA1 = 0; /* LNSCAN */
 
   TRISCbits.TRISC4 = 0; /* LED3 LocoNet activity TX */
   TRISCbits.TRISC5 = 0; /* LED4 LocoNet activity RX */
@@ -60,6 +61,7 @@ void setupIO(byte clr) {
   LED5_RUN      = PORT_OFF;
   LED6_FLIM     = PORT_OFF;
   LNTX          = PORT_OFF;
+  LNSCAN        = PORT_OFF;
 
   if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
     eeWrite(EE_CLEAN, 0);
