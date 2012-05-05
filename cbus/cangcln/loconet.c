@@ -67,15 +67,15 @@ void scanLN(void) {
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
     TMR0L = 256 - 80 + 18;         // Reset counter with a correction of 10 cycles
 
-    //LNSCAN = PORT_ON;
+    LNSCAN = PORT_ON;
 
     samplepart++;
     if( samplepart > 2 ) {
       samplepart = 0;
-      LNSCAN = PORT_ON;
+      //LNSCAN = PORT_ON;
     }
     
-    if( LNstatus == STATUS_WAITSTART && inLN == 0 ) {
+    if( mode != LN_MODE_WRITE && LNstatus == STATUS_WAITSTART && inLN == 0 ) {
       idle = 0;
       LNstatus = STATUS_CONFSTART;
     }
@@ -116,11 +116,19 @@ void scanLN(void) {
     }
 
     if( samplepart == 0 ) {
+      if( mode == LN_MODE_READ ) {
+        // End of stop bit.
+        LNTX = PORT_OFF;
+      }
+
+
+
       if( inLN == 1 && mode == LN_MODE_WRITE_REQ ) {
         idle++;
         if( mode == LN_MODE_WRITE && txtry > 20 ) {
           // Give up...
           mode = LN_MODE_READ;
+          LED6_FLIM = PORT_ON;
         }
         else if( idle > (6 + (20-txtry))) {
           byte i;
@@ -163,6 +171,7 @@ void scanLN(void) {
           if( LNBitIndex == 0 ) {
             // Start bit
             LNWrittenBit = PORT_OFF;
+            LNBitIndex++;
           }
           else if( LNBitIndex == 9 ) {
             // Stop bit
@@ -175,15 +184,14 @@ void scanLN(void) {
           }
           else {
             LNWrittenBit = (LNBuffer[LNIndex].data[LNByteIndex] >> (LNBitIndex-1)) & 0x01;
+            LNBitIndex++;
           }
         }
         LNTX = LNWrittenBit ^ 0x01; // Invert?
-        LNBitIndex++;
 
-        if( mode == LN_MODE_READ ) {
-          LNTX = PORT_OFF;
-        }
       }
+
+
     }
 
     LNSCAN = PORT_OFF;
@@ -204,6 +212,20 @@ void ln2CBusErr(void) {
   canmsg.len = 7;
   canQueue(&canmsg);
   
+}
+
+void ln2CBusDebug(byte idx) {
+  canmsg.opc = OPC_ACON3;
+  canmsg.d[0] = LNBuffer[idx].data[0];
+  canmsg.d[1] = LNBuffer[idx].data[1];
+  canmsg.d[2] = LNBuffer[idx].data[2];
+  canmsg.d[3] = LNBuffer[idx].data[3];
+  canmsg.d[4] = LNBuffer[idx].data[4];
+  canmsg.d[5] = LNBuffer[idx].data[5];
+  canmsg.d[6] = LNBuffer[idx].data[6];
+  canmsg.len = 7;
+  canQueue(&canmsg);
+
 }
 
 void ln2CBus(void) {
@@ -358,6 +380,7 @@ void send2LocoNet(void) {
       LNBuffer[i].status = LN_STATUS_USED;
       if( mode == LN_MODE_READ )
         mode = LN_MODE_WRITE_REQ;
+      ln2CBusDebug(i);
       break;
     case OPC_RTOF:
       LNBuffer[i].len = 2;
@@ -366,6 +389,7 @@ void send2LocoNet(void) {
       LNBuffer[i].status = LN_STATUS_USED;
       if( mode == LN_MODE_READ )
         mode = LN_MODE_WRITE_REQ;
+      ln2CBusDebug(i);
       break;
   }
 
