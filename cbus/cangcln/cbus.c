@@ -21,7 +21,7 @@
 */
 
 
-
+#include <string.h>
 #include "project.h"
 #include "cangcln.h"
 #include "cbus.h"
@@ -187,11 +187,7 @@ byte canQueue(CANMsg* msg) {
   int n = 0;
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( CANMsgs[i].status == CANMSG_FREE ) {
-      CANMsgs[i].opc = msg->opc;
-      CANMsgs[i].len = msg->len;
-      for( n = 0; n < 7; n++ ) {
-        CANMsgs[i].d[n] = msg->d[n];
-      }
+      memcpy(&CANMsgs[i], (const void*)msg, sizeof(CANMsg));
       CANMsgs[i].status = CANMSG_OPEN;
       //LED2 = PORT_OFF;
       return 1;

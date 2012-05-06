@@ -154,21 +154,23 @@ void main(void) {
 
   // Loop forever (nothing lasts forever...)
   while (1) {
-    unsigned char txed = 0;
-    l3 ^= 1;
 
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
       // Decode the new command
       LED2_CBUSRX = 1;
       ledCBUSRXtimer = 20;
-      txed = parseCmd();
+      parseCmd();
     }
 
-    doLocoNet();
+    while( doLocoNet() ) {
+      ;
+    }
+
 
     canSendQ();
 
+    
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
     }
@@ -186,6 +188,7 @@ void main(void) {
         Wait4NN = 1;
       }
     }
+    
 
   }
 

@@ -29,7 +29,7 @@
 
 extern void scanLN(void);
 void initLN(void);
-void doLocoNet(void);
+byte doLocoNet(void);
 void LocoNetWD(void);
 void send2LocoNet(void);
 

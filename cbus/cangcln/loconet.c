@@ -41,8 +41,16 @@ near byte mode;
 near byte txtry;
 near byte samplepart;
 near byte idle;
+near byte overrun;
+
 
 #pragma udata VARS_LOCONET2
+far byte SampleData[8];
+far byte SampleFlag;
+far byte readP;
+far byte writeP;
+
+#pragma udata VARS_LOCONET3
 far byte LNPacket[32];
 far byte LNIndex;
 far byte LNSize;
@@ -51,7 +59,7 @@ far byte LNByteIndex;
 far byte LNBitIndex;
 far byte LNWrittenBit;
 
-#pragma udata VARS_LOCONET3
+#pragma udata VARS_LOCONET4
 far LNPACKET LNBuffer[LN_BUFFER_SIZE];
 far byte LNBufferIndex;
 
@@ -96,7 +104,15 @@ void scanLN(void) {
         if( bitcnt == 8 ) {
           if( inLN == 1 ) {
             sampledata = sample;
+            if(dataready)
+              overrun = TRUE;
             dataready  = TRUE;
+
+            SampleData[writeP] = sample;
+            SampleFlag |= (1 << writeP);
+            writeP++;
+            if( writeP > 7 )
+              writeP = 0;
           }
           else {
             // No stop bit; Framing error.
@@ -128,6 +144,7 @@ void scanLN(void) {
         if( mode == LN_MODE_WRITE && txtry > 20 ) {
           // Give up...
           mode = LN_MODE_READ;
+          Wait4NN = TRUE;
           LED6_FLIM = PORT_ON;
         }
         else if( idle > (6 + (20-txtry))) {
@@ -165,6 +182,7 @@ void scanLN(void) {
           LNByteIndex = 0;
           LNBitIndex = 0;
           mode = LN_MODE_WRITE_REQ;
+          Wait4NN = TRUE;
           LED6_FLIM = PORT_ON;
         }
         else {
@@ -202,7 +220,7 @@ void scanLN(void) {
 
 
 void ln2CBusErr(void) {
-  canmsg.opc = OPC_ACON3;
+  canmsg.opc = 0xEA;
   canmsg.d[0] = LNPacket[0];
   canmsg.d[1] = LNPacket[1];
   canmsg.d[2] = LNPacket[2];
@@ -212,11 +230,13 @@ void ln2CBusErr(void) {
   canmsg.d[6] = LNPacket[6];
   canmsg.len = 7;
   canQueue(&canmsg);
-  
+  Wait4NN = TRUE;
+  LED6_FLIM = PORT_ON;
+
 }
 
 void ln2CBusDebug(byte idx) {
-  canmsg.opc = OPC_ACON3;
+  canmsg.opc = 0xEA;
   canmsg.d[0] = LNBuffer[idx].data[0];
   canmsg.d[1] = LNBuffer[idx].data[1];
   canmsg.d[2] = LNBuffer[idx].data[2];
@@ -266,10 +286,9 @@ void ln2CBus(void) {
 
     case OPC_SW_REQ:
     case OPC_SW_STATE:
-      value = (LNPacket[2] & 0x10) >> 4;
-      addr = ((LNPacket[2] & 0x0f) * 128) + (LNPacket[1] & 0x7f);
+      addr = ((LNPacket[2] & 0x0f) << 7 ) + (LNPacket[1] & 0x7f);
       addr += (LNPacket[2] & 0x20) >> 5;
-      canmsg.opc = value ? OPC_ASON:OPC_ASOF;
+      canmsg.opc = (LNPacket[2] & 0x10) ? OPC_ASON:OPC_ASOF;
       canmsg.d[0] = 0;
       canmsg.d[1] = 0;
       canmsg.d[2] = addr / 256;
@@ -359,34 +378,76 @@ byte getLNSize(byte opc) {
   return 0;
 }
 
-void doLocoNet(void) {
-  if( dataready ) {
-    byte b = sampledata;
-    dataready = FALSE;
+byte doLocoNet(void) {
+  /*
+
+  SampleData[writeP] = sample;
+  SampleFlag |= (1 << writeP);
+  writeP++;
+  if( writeP > 7 )
+    writeP = 0;
+
+   */
+
+  if( SampleFlag & (1 << readP) ) {
+    byte b = SampleData[readP];
+    SampleFlag &= ~(1 << readP);
+    readP++;
+    if( readP > 7 )
+      readP = 0;
+
     LNTimeout = 0;
     
     if( LNIndex == 0 ) {
       if( b & 0x80 == 0 ) {
         // invalid start
-        return;
+        return 1;
       }
 
-      memset(LNPacket, 0, sizeof(LNPacket));
+      //memset(LNPacket, 0, sizeof(LNPacket));
 
       // OPC
-      LNSize = getLNSize(b);
+      //LNSize = getLNSize(b);
+
+      if( b == 0xE0 ) {
+        /* Uhli exceptions */
+        LNSize = -2;
+      }
+      else if( (b & 0xf0) == 0x80 )
+        LNSize = 2;
+      else if( (b & 0xf0) == 0xA0 )
+        LNSize = 4;
+      else if( (b & 0xf0) == 0xB0 )
+        LNSize = 4;
+      else if( (b & 0xf0) == 0xC0 )
+        LNSize = 6;
+      else if( (b & 0xf0) == 0xE0 )
+        LNSize = -1;
+      else
+        LNSize = 0;
+
+
       if( LNSize == 0 || LNSize == -2 ) {
         // invalid OPC
         LNPacket[0] = b;
         LNPacket[1] = LNSize;
+        LNPacket[2] = 0x0A;
+        LNPacket[3] = overrun;
+        LNPacket[4] = 0xFF;
+        overrun = FALSE;
         ln2CBusErr();
-        return;
+        return 1;
       }
 
     }
 
     if( LNSize == -1 && LNIndex == 1 ) {
       LNSize = b & 0x7F;
+      //LNPacket[1] = LNSize;
+      //LNPacket[2] = 2;
+      //LNPacket[3] = overrun;
+      //overrun = FALSE;
+      //ln2CBusErr(); // debug
     }
 
     if( LNIndex < 32 ) {
@@ -403,7 +464,12 @@ void doLocoNet(void) {
       // reset
       LNIndex = 0;
     }
+
+    return 1;
   }
+
+
+  return 0;
 }
 
 
@@ -428,11 +494,16 @@ void initLN(void) {
   LNstatus = STATUS_WAITSTART;
   sampledata = 0;
   dataready  = FALSE;
+  SampleFlag = 0;
+  readP = 0;
+  writeP = 0;
+
   sample = 0;
   bitcnt = 0;
   LNIndex = 0;
   LNTimeout = 0;
   samplepart = 0;
+  overrun = FALSE;
   mode = LN_MODE_READ;
 }
 
@@ -456,6 +527,7 @@ void send2LocoNet(void) {
 
   if( i >= LN_BUFFER_SIZE ) {
     // Buffer overflow...
+    Wait4NN = TRUE;
     LED6_FLIM = PORT_ON;
     return;
   }
