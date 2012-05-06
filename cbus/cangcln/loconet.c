@@ -486,12 +486,21 @@ void send2LocoNet(void) {
       //ln2CBusDebug(i);
       break;
 
+    case OPC_RESTP:
+      LNBuffer[i].len = 2;
+      LNBuffer[i].data[0] = OPC_IDLE;
+      checksumLN(i);
+      LNBuffer[i].status = LN_STATUS_USED;
+      if( mode == LN_MODE_READ )
+        mode = LN_MODE_WRITE_REQ;
+      break;
+
     case OPC_ASRQ:
       addr  = rx_ptr->d3 * 256;
       addr += rx_ptr->d4;
       if( addr == SOD ) {
         // Start Of Day
-        LNBuffer[i].len = 2;
+        LNBuffer[i].len = 4;
         LNBuffer[i].data[0] = OPC_SW_REQ;
         LNBuffer[i].data[1] = 1017&0x7F;
         LNBuffer[i].data[2] = (1017/128)&0x0F;
@@ -499,8 +508,39 @@ void send2LocoNet(void) {
         LNBuffer[i].status = LN_STATUS_USED;
         if( mode == LN_MODE_READ )
           mode = LN_MODE_WRITE_REQ;
-        }
+      }
       break;
+
+    case OPC_ACON:
+    case OPC_ACOF:
+      addr  = rx_ptr->d3 * 256;
+      addr += rx_ptr->d4;
+      if( addr < 1024 ) {
+        // Switch
+        LNBuffer[i].len = 4;
+        LNBuffer[i].data[0] = OPC_SW_REQ;
+        LNBuffer[i].data[1] = addr & 0x7F;
+        LNBuffer[i].data[2] = (addr >> 7)&0x0F;
+        LNBuffer[i].data[2] |= ((rx_ptr->d0 == OPC_ACON) ? 0x10:0x00);
+        checksumLN(i);
+        LNBuffer[i].status = LN_STATUS_USED;
+        if( mode == LN_MODE_READ )
+          mode = LN_MODE_WRITE_REQ;
+      }
+      else {
+        // Sensor
+        LNBuffer[i].len = 4;
+        LNBuffer[i].data[0] = OPC_INPUT_REP;
+        LNBuffer[i].data[1] = addr & 0x7F;
+        LNBuffer[i].data[2] = (addr >> 7)&0x0F;
+        LNBuffer[i].data[2] |= ((rx_ptr->d0 == OPC_ACON) ? 0x10:0x00);
+        checksumLN(i);
+        LNBuffer[i].status = LN_STATUS_USED;
+        if( mode == LN_MODE_READ )
+          mode = LN_MODE_WRITE_REQ;
+      }
+      break;
+
   }
 
 }
