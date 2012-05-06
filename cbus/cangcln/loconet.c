@@ -446,6 +446,7 @@ void checksumLN(byte idx) {
 }
 
 void send2LocoNet(void) {
+  unsigned int addr;
   byte i = 0;
   for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
     if( LNBuffer[i].status == LN_STATUS_FREE) {
@@ -474,6 +475,7 @@ void send2LocoNet(void) {
         mode = LN_MODE_WRITE_REQ;
       //ln2CBusDebug(i);
       break;
+
     case OPC_RTOF:
       LNBuffer[i].len = 2;
       LNBuffer[i].data[0] = OPC_GPOFF;
@@ -482,6 +484,22 @@ void send2LocoNet(void) {
       if( mode == LN_MODE_READ )
         mode = LN_MODE_WRITE_REQ;
       //ln2CBusDebug(i);
+      break;
+
+    case OPC_ASRQ:
+      addr  = rx_ptr->d3 * 256;
+      addr += rx_ptr->d4;
+      if( addr == SOD ) {
+        // Start Of Day
+        LNBuffer[i].len = 2;
+        LNBuffer[i].data[0] = OPC_SW_REQ;
+        LNBuffer[i].data[1] = 1017&0x7F;
+        LNBuffer[i].data[2] = (1017/128)&0x0F;
+        checksumLN(i);
+        LNBuffer[i].status = LN_STATUS_USED;
+        if( mode == LN_MODE_READ )
+          mode = LN_MODE_WRITE_REQ;
+        }
       break;
   }
 
