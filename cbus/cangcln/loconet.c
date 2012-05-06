@@ -179,6 +179,7 @@ void scanLN(void) {
             LNBitIndex = 0;
             LNByteIndex++;
             if( LNBuffer[LNIndex].len == LNByteIndex ) {
+              LNBuffer[LNIndex].status = LN_STATUS_FREE;
               mode = LN_MODE_READ;
             }
           }
@@ -229,19 +230,110 @@ void ln2CBusDebug(byte idx) {
 }
 
 void ln2CBus(void) {
+  unsigned int addr;
+  unsigned int value;
+  byte dir, type;
+
   LED4_LNRX = PORT_ON;
   ledLNRXtimer = 20;
   switch( LNPacket[0]) {
+
     case OPC_GPON:
-        canmsg.opc = OPC_RTON;
-        canmsg.len = 0;
-        canQueue(&canmsg);
+      canmsg.opc = OPC_RTON;
+      canmsg.len = 0;
+      canQueue(&canmsg);
       break;
+
     case OPC_GPOFF:
-        canmsg.opc = OPC_RTOF;
-        canmsg.len = 0;
-        canQueue(&canmsg);
+      canmsg.opc = OPC_RTOF;
+      canmsg.len = 0;
+      canQueue(&canmsg);
       break;
+
+    case OPC_INPUT_REP:
+      addr = ((unsigned int) LNPacket[1] & 0x007f) |
+             (((unsigned int) LNPacket[2] & 0x000f) << 7);
+      addr = 1 + addr * 2 + ((((unsigned int) LNPacket[2] & 0x0020) >> 5));
+      value = (LNPacket[2] & 0x10) >> 4;
+      canmsg.opc = value ? OPC_ASON:OPC_ASOF;
+      canmsg.d[0] = 0;
+      canmsg.d[1] = 0;
+      canmsg.d[2] = addr / 256;
+      canmsg.d[3] = addr % 256;
+      canmsg.len = 4;
+      canQueue(&canmsg);
+      break;
+
+    case OPC_SW_REQ:
+    case OPC_SW_STATE:
+      value = (LNPacket[2] & 0x10) >> 4;
+      addr = ((LNPacket[2] & 0x0f) * 128) + (LNPacket[1] & 0x7f);
+      addr += (LNPacket[2] & 0x20) >> 5;
+      canmsg.opc = value ? OPC_ASON:OPC_ASOF;
+      canmsg.d[0] = 0;
+      canmsg.d[1] = 0;
+      canmsg.d[2] = addr / 256;
+      canmsg.d[3] = addr % 256;
+      canmsg.len = 4;
+      canQueue(&canmsg);
+      break;
+
+    case OPC_LISSY_REP: // E4
+      addr  = LNPacket[4] & 0x7F;
+      value = ( LNPacket[6] & 0x7F ) + 128 * ( LNPacket[5] & 0x7F ); // Ident.
+      dir   = ( LNPacket[3] & 0x20 ) ? TRUE:FALSE;
+      canmsg.opc  = OPC_ACON3;
+      canmsg.d[0] = 0;
+      canmsg.d[1] = 0;
+      canmsg.d[2] = addr / 256;
+      canmsg.d[3] = addr % 256;
+      canmsg.d[4] = value / 256;
+      canmsg.d[5] = value % 256;
+      canmsg.d[6] = 0;
+      canmsg.len = 7;
+      canQueue(&canmsg);
+      break;
+
+    case OPC_MULTI_SENSE:
+      type = LNPacket[1] & OPC_MULTI_SENSE_MSG;
+      if( type == OPC_MULTI_SENSE_PRESENT || type == OPC_MULTI_SENSE_ABSENT ) {
+        char zone;
+        byte present;
+        byte enter;
+        unsigned int locoaddr;
+        addr      = ( (LNPacket[1]&0x1F) * 128 ) + LNPacket[2];
+        enter     = (LNPacket[1] & 0x20) != 0 ? TRUE:FALSE;
+
+        addr++;
+
+        if (LNPacket[3]==0x7D)
+          locoaddr=LNPacket[4];
+        else
+          locoaddr=LNPacket[3]*128+LNPacket[4];
+
+        if      ((LNPacket[2]&0x0F) == 0x00) zone = 'A';
+        else if ((LNPacket[2]&0x0F) == 0x02) zone = 'B';
+        else if ((LNPacket[2]&0x0F) == 0x04) zone = 'C';
+        else if ((LNPacket[2]&0x0F) == 0x06) zone = 'D';
+        else if ((LNPacket[2]&0x0F) == 0x08) zone = 'E';
+        else if ((LNPacket[2]&0x0F) == 0x0A) zone = 'F';
+        else if ((LNPacket[2]&0x0F) == 0x0C) zone = 'G';
+        else if ((LNPacket[2]&0x0F) == 0x0E) zone = 'H';
+        
+        canmsg.opc  = (type == OPC_MULTI_SENSE_PRESENT) ? OPC_ACON3:OPC_ACOF3;
+        canmsg.d[0] = 0;
+        canmsg.d[1] = 0;
+        canmsg.d[2] = addr / 256;
+        canmsg.d[3] = addr % 256;
+        canmsg.d[4] = locoaddr / 256;
+        canmsg.d[5] = locoaddr % 256;
+        canmsg.d[6] = zone;
+        canmsg.len = 7;
+        canQueue(&canmsg);
+        
+      }
+      break;
+
   }
 
 }
@@ -380,7 +472,7 @@ void send2LocoNet(void) {
       LNBuffer[i].status = LN_STATUS_USED;
       if( mode == LN_MODE_READ )
         mode = LN_MODE_WRITE_REQ;
-      ln2CBusDebug(i);
+      //ln2CBusDebug(i);
       break;
     case OPC_RTOF:
       LNBuffer[i].len = 2;
@@ -389,7 +481,7 @@ void send2LocoNet(void) {
       LNBuffer[i].status = LN_STATUS_USED;
       if( mode == LN_MODE_READ )
         mode = LN_MODE_WRITE_REQ;
-      ln2CBusDebug(i);
+      //ln2CBusDebug(i);
       break;
   }
 
