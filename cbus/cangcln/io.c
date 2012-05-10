@@ -65,6 +65,12 @@ void setupIO(byte clr) {
 
   if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
     eeWrite(EE_CLEAN, 0);
+    eeWrite(EE_NV, 0);
+    eeWriteShort(EE_SOD, 4711);
+    eeWriteShort(EE_SWSTART, 0);
+    eeWriteShort(EE_SWEND, 1023);
+    eeWriteShort(EE_FBSTART, 1024);
+    eeWriteShort(EE_FBEND, 2048);
   }
 
 

@@ -29,9 +29,9 @@
 #define MAJOR_VER 1
 #define MINOR_VER 'a'	// Minor version character
 
-#define EVT_NUM 16
+#define EVT_NUM 5
 #define EVperEVT 0
-#define NV_NUM 27
+#define NV_NUM 2
 
 // EEPROM addresses
 #define EE_CLEAN 0
@@ -39,19 +39,19 @@
 #define EE_NN 2          // 2 bytes node number of this unit
 #define EE_SOD EE_NN + 2     // 2 bytes start off day address to report all input states
 #define EE_CANID EE_SOD + 2  // 1 byte CANID
-#define EE_PORT_ADDR EE_CANID + 1  // 2 short event port 1
-#define EE_RFID EE_PORT_ADDR + 32  // allowed RFID's
-#define EE_SCANRFID EE_RFID + 25
+#define EE_SWSTART EE_CANID + 1  // 2 short event port 1
+#define EE_SWEND EE_SWSTART + 2  // 2 short event port 1
+#define EE_FBSTART EE_SWEND + 2  // 2 short event port 1
+#define EE_FBEND EE_FBSTART + 2  // 2 short event port 1
 
 // values
 #define MAGIC 93
 
 // node var 1
 #define CFG_ALL  0xFF
-#define CFG_SAVERFID 0x01
-#define CFG_CHECKRFID 0x02
-#define CFG_RELEASERFID 0x04
-#define CFG_ACCRFID 0x08
+#define CFG_READONLY 0x01
+#define CFG_ENABLE_FB2LN 0x02
+#define CFG_ENABLE_SOD 0x04
 
 
 
@@ -70,6 +70,10 @@ extern near unsigned short SOD;
 extern near unsigned char  doSOD;
 extern near unsigned char  doEV;
 extern near unsigned char  evIdx;
+extern far unsigned short SWStart;
+extern far unsigned short SWEnd;
+extern far unsigned short FBStart;
+extern far unsigned short FBEnd;
 extern volatile near unsigned char tmr0_reload;
 
 

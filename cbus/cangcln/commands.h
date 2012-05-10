@@ -27,6 +27,7 @@
 unsigned char parseCmd(void);
 void doRqnpn(unsigned int);
 int thisNN(void);
+unsigned char doEvent(int i );
 
 
 #endif

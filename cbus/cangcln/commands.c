@@ -53,7 +53,9 @@ unsigned char parseCmd(void) {
   unsigned char txed = 0;
   //mode_word.s_full = 0;
 
-  send2LocoNet();
+  if( !(NV1 & CFG_READONLY)) {
+    send2LocoNet();
+  }
 
   switch (rx_ptr->d0) {
 
@@ -64,22 +66,6 @@ unsigned char parseCmd(void) {
         ioIdx = 0;
         doSOD = 1;
       }
-      break;
-    }
-
-    case OPC_ACON:
-    case OPC_ASON:
-    {
-      nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
-      addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      break;
-    }
-
-    case OPC_ACOF:
-    case OPC_ASOF:
-    {
-      nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
-      addr = rx_ptr->d3 * 256 + rx_ptr->d4;
       break;
     }
 
@@ -109,8 +95,7 @@ unsigned char parseCmd(void) {
         nnH = rx_ptr->d1;
         nnL = rx_ptr->d2;
         NN_temp = nnH * 256 + nnL;
-        eeWrite(EE_NN, nnH);
-        eeWrite(EE_NN+1, nnL);
+        eeWriteShort(EE_NN, NN_temp);
         Wait4NN = 0;
       }
       break;
@@ -194,6 +179,27 @@ unsigned char parseCmd(void) {
         addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
         idx = rx_ptr->d5;
         var = rx_ptr->d6;
+
+        if( idx == 0 ) {
+          SOD = addr;
+          eeWriteShort(EE_SOD, addr);
+        }
+        else if( idx == 1 ) {
+          SWStart = addr;
+          eeWriteShort(EE_SWSTART, addr);
+        }
+        else if( idx == 2 ) {
+          SWEnd = addr;
+          eeWriteShort(EE_SWEND, addr);
+        }
+        else if( idx == 3 ) {
+          FBStart = addr;
+          eeWriteShort(EE_FBSTART, addr);
+        }
+        else if( idx == 4 ) {
+          FBEnd = addr;
+          eeWriteShort(EE_SWEND, addr);
+        }
       }
       break;
 
@@ -201,18 +207,6 @@ unsigned char parseCmd(void) {
       if( thisNN() ) {
         doEV = 1;
         evIdx = 0;
-        // start of day event
-        canmsg.opc = OPC_ENRSP;
-        canmsg.d[0] = (NN_temp / 256) & 0xFF;
-        canmsg.d[1] = NN_temp & 0xFF;
-        canmsg.d[2] = 0;
-        canmsg.d[3] = 0;
-        canmsg.d[4] = SOD / 256;
-        canmsg.d[5] = SOD % 256;
-        canmsg.d[6] = 16;
-        canmsg.len = 7;
-        canQueue(&canmsg);
-        txed = 1;
       }
       break;
 
@@ -251,3 +245,68 @@ int thisNN() {
 
 }
 
+unsigned char doEvent(int i ) {
+  if( doEV ) {
+    if( i == 0 ) {
+      canmsg.opc = OPC_ENRSP;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = NN_temp & 0xFF;
+      canmsg.d[2] = 0;
+      canmsg.d[3] = 0;
+      canmsg.d[4] = SOD / 256;
+      canmsg.d[5] = SOD % 256;
+      canmsg.d[6] = i;
+      canmsg.len = 7;
+      return canQueue(&canmsg);
+    }
+    if( i == 1 ) {
+      canmsg.opc = OPC_ENRSP;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = NN_temp & 0xFF;
+      canmsg.d[2] = 0;
+      canmsg.d[3] = 0;
+      canmsg.d[4] = SWStart / 256;
+      canmsg.d[5] = SWStart % 256;
+      canmsg.d[6] = i;
+      canmsg.len = 7;
+      return canQueue(&canmsg);
+    }
+    if( i == 2 ) {
+      canmsg.opc = OPC_ENRSP;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = NN_temp & 0xFF;
+      canmsg.d[2] = 0;
+      canmsg.d[3] = 0;
+      canmsg.d[4] = SWEnd / 256;
+      canmsg.d[5] = SWEnd % 256;
+      canmsg.d[6] = i;
+      canmsg.len = 7;
+      return canQueue(&canmsg);
+    }
+    if( i == 3 ) {
+      canmsg.opc = OPC_ENRSP;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = NN_temp & 0xFF;
+      canmsg.d[2] = 0;
+      canmsg.d[3] = 0;
+      canmsg.d[4] = FBStart / 256;
+      canmsg.d[5] = FBStart % 256;
+      canmsg.d[6] = i;
+      canmsg.len = 7;
+      return canQueue(&canmsg);
+    }
+    if( i == 4 ) {
+      canmsg.opc = OPC_ENRSP;
+      canmsg.d[0] = (NN_temp / 256) & 0xFF;
+      canmsg.d[1] = NN_temp & 0xFF;
+      canmsg.d[2] = 0;
+      canmsg.d[3] = 0;
+      canmsg.d[4] = FBEnd / 256;
+      canmsg.d[5] = FBEnd % 256;
+      canmsg.d[6] = i;
+      canmsg.len = 7;
+      return canQueue(&canmsg);
+    }
+  }
+  return 1;
+}

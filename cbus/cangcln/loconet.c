@@ -570,7 +570,7 @@ void send2LocoNet(void) {
     case OPC_ASRQ:
       addr  = rx_ptr->d3 * 256;
       addr += rx_ptr->d4;
-      if( addr == SOD ) {
+      if( addr == SOD && (NV1 & CFG_ENABLE_SOD) ) {
         // Start Of Day
         LNBuffer[i].len = 4;
         LNBuffer[i].data[0] = OPC_SW_REQ;
@@ -587,7 +587,7 @@ void send2LocoNet(void) {
     case OPC_ACOF:
       addr  = rx_ptr->d3 * 256;
       addr += rx_ptr->d4;
-      if( addr < 1024 ) {
+      if( addr >= SWStart && addr <= SWEnd ) {
         // Switch
         LNBuffer[i].len = 4;
         LNBuffer[i].data[0] = OPC_SW_REQ;
@@ -599,7 +599,7 @@ void send2LocoNet(void) {
         if( mode == LN_MODE_READ )
           mode = LN_MODE_WRITE_REQ;
       }
-      else {
+      else if( (NV1 & CFG_ENABLE_FB2LN) && addr >= FBStart && addr <= FBEnd ) {
         // Sensor
         LNBuffer[i].len = 4;
         LNBuffer[i].data[0] = OPC_INPUT_REP;

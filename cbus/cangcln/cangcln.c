@@ -48,7 +48,7 @@
 #pragma udata VARS_MAIN_ARRAYS1
 far CBUSPACKET CBusBuffer[8];
 
-#pragma udata access VARS_MAIN
+#pragma udata access VARS_MAIN_1
 near unsigned char  can_transmit_timeout;
 near unsigned char  can_transmit_failed;
 near unsigned char  can_bus_off;
@@ -68,9 +68,14 @@ near unsigned short SOD;
 near unsigned char  doSOD;
 near unsigned char  doEV;
 near unsigned char  evIdx;
-
-
 volatile near unsigned char tmr0_reload;
+
+#pragma udata VARS_MAIN_2
+far unsigned short SWStart;
+far unsigned short SWEnd;
+far unsigned short FBStart;
+far unsigned short FBEnd;
+
 
 
   /*
@@ -126,6 +131,11 @@ void main(void) {
   evIdx = 0;
   Wait4NN = FALSE;
   isLearning = FALSE;
+  SWStart = 0;
+  SWEnd = 1023;
+  FBStart = 1024;
+  FBEnd = 2048;
+
 
   NV1 = eeRead(EE_NV);
 
@@ -133,8 +143,7 @@ void main(void) {
   initLN();
   initTimers();
 
-  NN_temp  = eeRead(EE_NN) * 256;
-  NN_temp += eeRead(EE_NN+1);
+  NN_temp  = eeReadShort(EE_NN);
   if( NN_temp == 0 || NN_temp == 0xFFFF )
     NN_temp = DEFAULT_NN;
 
@@ -145,15 +154,31 @@ void main(void) {
 
   delay();
 
-  SOD  = eeRead(EE_SOD) * 256;
-  SOD += eeRead(EE_SOD+1);
+  SOD  = eeReadShort(EE_SOD);
   if( SOD == 0 || SOD == 0xFFFF )
     SOD = DEFAULT_SOD;
+
+  SWStart  = eeReadShort(EE_SWSTART);
+  if( SWStart == 0 || SWStart == 0xFFFF )
+    SWStart = 0;
+
+  SWEnd  = eeReadShort(EE_SWEND);
+  if( SWEnd == 0 || SWEnd == 0xFFFF )
+    SWEnd = 1023;
+
+  FBStart  = eeReadShort(EE_FBSTART);
+  if( FBStart == 0 || FBStart == 0xFFFF )
+    FBStart = 1024;
+
+  FBEnd  = eeReadShort(EE_FBEND);
+  if( FBEnd == 0 || FBEnd == 0xFFFF )
+    FBEnd = 2048;
 
   LED5_RUN = PORT_ON; /* signal running system */
 
   // Loop forever (nothing lasts forever...)
   while (1) {
+    l3 ^= 1;
 
     // Check for Rx packet and setup pointer to it
     while (fifoEmpty() == 0) {
@@ -170,7 +195,16 @@ void main(void) {
 
     canSendQ();
 
-    
+    if( l3 ) {
+      if( doEvent(evIdx) ) {
+        evIdx++;
+        if( evIdx >= 4 ) {
+          evIdx = 0;
+          doEV = 0;
+        }
+      }
+    }
+
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
     }
