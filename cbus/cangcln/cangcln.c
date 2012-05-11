@@ -198,7 +198,7 @@ void main(void) {
     if( l3 ) {
       if( doEvent(evIdx) ) {
         evIdx++;
-        if( evIdx >= 4 ) {
+        if( evIdx >= 5 ) {
           evIdx = 0;
           doEV = 0;
         }
