@@ -198,7 +198,7 @@ unsigned char parseCmd(void) {
         }
         else if( idx == 4 ) {
           FBEnd = addr;
-          eeWriteShort(EE_SWEND, addr);
+          eeWriteShort(EE_FBEND, addr);
         }
       }
       break;
