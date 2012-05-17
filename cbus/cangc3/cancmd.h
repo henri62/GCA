@@ -107,6 +107,7 @@ extern volatile near unsigned char tmr0_reload;
 extern const rom unsigned char params[7];
 extern near unsigned short LEDCanActTimer;
 extern near unsigned short PowerButtonTimer;
+extern near unsigned char PowerON;
 
 
 #endif	// __SPROG_H

@@ -73,6 +73,7 @@ void parse_cmd(void) {
         case OPC_RTOF:
         case OPC_RTON:
             // Track power control
+            PowerON = ((rx_ptr->d0 == OPC_RTOF) ? 1:0);
             power_control(rx_ptr->d0);
             break;
 
