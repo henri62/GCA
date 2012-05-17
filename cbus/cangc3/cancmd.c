@@ -205,7 +205,7 @@ void main(void) {
       unsigned char pwr = PWRBUTTON;
       pwr = !pwr; // Input is inverted.
 
-      if( pwr && !PowerTrigger ) {
+      if( pwr && !PowerTrigger && PowerButtonTimer == 0 ) {
         PowerTrigger = 1;
       }
       else if( !pwr && PowerTrigger && PowerButtonTimer == 0) {
