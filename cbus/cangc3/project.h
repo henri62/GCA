@@ -118,6 +118,7 @@ extern near unsigned short NN_temp;
 #define LEDCANACT               PORTBbits.RB4   // CBUS activity
 #define LED1    		PORTBbits.RB0	// Internal booster/service track
 #define LED2    		PORTBbits.RB1	// RUN indicator
+#define PWRBUTTON    		PORTBbits.RB7	// Power ON/OFF
 
 #ifdef BC1a
   // BC1a port b was mainly the old handsets, which are not used here

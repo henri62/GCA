@@ -124,9 +124,11 @@ near unsigned char iccq;		            // Quiescent decoder current
 volatile near unsigned char tmr0_reload;
 near unsigned char	Latcount;
 near unsigned char	BeepCount;
+near unsigned char	PowerButtonDelay;
 near unsigned char	can_transmit_timeout;
 near unsigned short NN_temp;
 near unsigned char LEDCanActTimer;
+near unsigned char PowerTrigger;
 
 // dcc packet buffers for service mode programming track
 // and main track
@@ -197,6 +199,24 @@ void main(void) {
 
     // Loop forever
     while (1) {
+
+      unsigned char pwr = PWRBUTTON;
+      pwr = !pwr; // Input is inverted.
+
+      if( pwr && !PowerTrigger ) {
+        PowerTrigger = 1;
+      }
+      else if( !pwr && PowerTrigger ) {
+        PowerTrigger = 0;
+        // Toggle Power.
+        if( op_flags.op_pwr_m == 1 )
+          rx_ptr->d0 == OPC_RTOF;
+        else
+          rx_ptr->d0 == OPC_RTON;
+        power_control();
+      }
+
+
         if (dcc_flags.dcc_overload) {
             // Programming overload
             dcc_flags.dcc_overload = 0;
@@ -266,7 +286,10 @@ void setup(void) {
 
     INTCON = 0;
     EECON1 = 0;
-
+    
+    PowerButtonDelay = 0;
+    PowerTrigger = 0;
+    
     //
     // setup initial values before enabling ports
     // Port A are analogue
@@ -291,6 +314,7 @@ void setup(void) {
     TRISBbits.TRISB4 = 0; /* CAN activity */
     TRISBbits.TRISB1 = 0; /* RUN indicator */
     TRISBbits.TRISB0 = 0; /* Internal booster/PT */
+    TRISBbits.TRISB7 = 1; /* Power button */
 
     DCC_EN = 1;
 

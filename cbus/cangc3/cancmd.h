@@ -101,6 +101,7 @@ volatile extern near unsigned char imax;
 extern near unsigned char ad_state;
 extern near unsigned char iccq;
 extern near unsigned char BeepCount;
+extern near unsigned char PowerButtonDelay;
 extern near unsigned char can_transmit_timeout;
 extern volatile near unsigned char tmr0_reload;
 extern const rom unsigned char params[7];
