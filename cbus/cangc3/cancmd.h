@@ -105,7 +105,8 @@ extern near unsigned char PowerButtonDelay;
 extern near unsigned char can_transmit_timeout;
 extern volatile near unsigned char tmr0_reload;
 extern const rom unsigned char params[7];
-extern near unsigned char LEDCanActTimer;
+extern near unsigned short LEDCanActTimer;
+extern near unsigned short PowerButtonTimer;
 
 
 #endif	// __SPROG_H

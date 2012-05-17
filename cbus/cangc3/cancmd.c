@@ -127,9 +127,10 @@ near unsigned char	BeepCount;
 near unsigned char	PowerButtonDelay;
 near unsigned char	can_transmit_timeout;
 near unsigned short NN_temp;
-near unsigned char LEDCanActTimer;
+near unsigned short LEDCanActTimer;
 near unsigned char PowerTrigger;
 near unsigned char PowerON;
+near unsigned short PowerButtonTimer;
 
 // dcc packet buffers for service mode programming track
 // and main track
@@ -207,15 +208,18 @@ void main(void) {
       if( pwr && !PowerTrigger ) {
         PowerTrigger = 1;
       }
-      else if( !pwr && PowerTrigger ) {
+      else if( !pwr && PowerTrigger && PowerButtonTimer == 0) {
         PowerTrigger = 0;
-        PowerON ^= 1;
+        PowerButtonTimer = 10000;
         // Toggle Power.
-        if( PowerON == 1 )
-          rx_ptr->d0 == OPC_RTON;
-        else
-          rx_ptr->d0 == OPC_RTOF;
-        power_control();
+        if( PowerON == 1 ) {
+          power_control(OPC_RTON);
+          PowerON = 0;
+        }
+        else {
+          power_control(OPC_RTOF);
+          PowerON = 1;
+        }
       }
 
 
@@ -292,6 +296,7 @@ void setup(void) {
     PowerButtonDelay = 0;
     PowerTrigger = 0;
     PowerON = 0;
+    PowerButtonTimer = 0;
     
     //
     // setup initial values before enabling ports

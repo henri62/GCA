@@ -13,8 +13,8 @@
 //
 // Turn track on or off.
 //
-void power_control(void) {
-    if (rx_ptr->d0 == OPC_RTOF) {
+void power_control(unsigned char cmd) {
+    if (cmd == OPC_RTOF) {
         // Turn off main track power
         op_flags.op_pwr_m = 0;
 

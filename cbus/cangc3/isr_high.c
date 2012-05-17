@@ -116,6 +116,10 @@ void isr_high(void) {
         LEDCANACT = 0;
     }
 
+    if( PowerButtonTimer > 0 ) {
+      PowerButtonTimer--;
+    }
+
     if (SWAP_OP == 1) {
         // J7 is out
         // On-board booster is service mode output

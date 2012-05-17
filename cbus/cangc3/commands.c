@@ -73,7 +73,7 @@ void parse_cmd(void) {
         case OPC_RTOF:
         case OPC_RTON:
             // Track power control
-            power_control();
+            power_control(rx_ptr->d0);
             break;
 
         case OPC_RESTP:

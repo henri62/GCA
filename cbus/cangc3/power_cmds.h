@@ -14,7 +14,7 @@
 //
 #define recovery_time() dcc_flags.dcc_ack=0;dcc_flags.dcc_rec_time=1;packet_reset(10)
 
-void power_control(void);
+void power_control(unsigned char cmd);
 //extern void power_on_cycle(void);
 //extern void power_off_cycle(void);
 extern void packet_reset(unsigned char i);
