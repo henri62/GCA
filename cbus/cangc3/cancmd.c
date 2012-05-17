@@ -129,6 +129,7 @@ near unsigned char	can_transmit_timeout;
 near unsigned short NN_temp;
 near unsigned char LEDCanActTimer;
 near unsigned char PowerTrigger;
+near unsigned char PowerON;
 
 // dcc packet buffers for service mode programming track
 // and main track
@@ -208,11 +209,12 @@ void main(void) {
       }
       else if( !pwr && PowerTrigger ) {
         PowerTrigger = 0;
+        PowerON ^= 1;
         // Toggle Power.
-        if( op_flags.op_pwr_m == 1 )
-          rx_ptr->d0 == OPC_RTOF;
-        else
+        if( PowerON == 1 )
           rx_ptr->d0 == OPC_RTON;
+        else
+          rx_ptr->d0 == OPC_RTOF;
         power_control();
       }
 
@@ -289,6 +291,7 @@ void setup(void) {
     
     PowerButtonDelay = 0;
     PowerTrigger = 0;
+    PowerON = 0;
     
     //
     // setup initial values before enabling ports
