@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/cangcln.c</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/rocrail.h</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/io.h</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/io.c</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/commands.c</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/commands.h</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/loconet.c</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/isr.c</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/cbus.c</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/cangcln.h</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/project.h</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/loconet.h</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/cbusdefs.h</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/lnconst.h</file>
+        <file>file:/Users/rob/lp/hardware-dev/cbus/cangcln/utils.h</file>
+    </open-files>
 </project-private>

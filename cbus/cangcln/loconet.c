@@ -250,8 +250,8 @@ void ln2CBusDebug(byte idx) {
 }
 
 void ln2CBus(void) {
-  unsigned int addr;
-  unsigned int value;
+  unsigned int addrL, addrH, addr;
+  unsigned int valL, valH, value;
   byte dir, type;
 
   LED4_LNRX = PORT_ON;
@@ -271,8 +271,9 @@ void ln2CBus(void) {
       break;
 
     case OPC_INPUT_REP:
-      addr = ((unsigned int) LNPacket[1] & 0x007f) |
-             (((unsigned int) LNPacket[2] & 0x000f) << 7);
+      addrL = LNPacket[1] & 0x7f;
+      addrH = LNPacket[2] & 0x0f;
+      addr = addrL + (addrH << 7);
       addr = 1 + addr * 2 + ((((unsigned int) LNPacket[2] & 0x0020) >> 5));
       value = (LNPacket[2] & 0x10) >> 4;
       canmsg.opc = value ? OPC_ASON:OPC_ASOF;
@@ -286,7 +287,10 @@ void ln2CBus(void) {
 
     case OPC_SW_REQ:
     case OPC_SW_STATE:
-      addr = ((LNPacket[2] & 0x0f) << 7 ) + (LNPacket[1] & 0x7f);
+      addrL = LNPacket[1] & 0x7f;
+      addrH = LNPacket[2] & 0x0f;
+      addr = addrL + (addrH << 7);
+      addr *= 2;
       addr += (LNPacket[2] & 0x20) >> 5;
       canmsg.opc = (LNPacket[2] & 0x10) ? OPC_ASON:OPC_ASOF;
       canmsg.d[0] = 0;
@@ -298,8 +302,10 @@ void ln2CBus(void) {
       break;
 
     case OPC_LISSY_REP: // E4
-      addr  = LNPacket[4] & 0x7F;
-      value = ( LNPacket[6] & 0x7F ) + 128 * ( LNPacket[5] & 0x7F ); // Ident.
+      addr = LNPacket[4] & 0x7F;
+      valL = LNPacket[6] & 0x7F;
+      valH = LNPacket[5] & 0x7F;
+      value = valL + (valH << 7); // Ident.
       dir   = ( LNPacket[3] & 0x20 ) ? TRUE:FALSE;
       canmsg.opc  = OPC_ACON3;
       canmsg.d[0] = 0;
@@ -320,7 +326,9 @@ void ln2CBus(void) {
         byte present;
         byte enter;
         unsigned int locoaddr;
-        addr      = ( (LNPacket[1]&0x1F) * 128 ) + LNPacket[2];
+        addrL = LNPacket[2];
+        addrH = LNPacket[1] & 0x1F;
+        addr = addrL + (addrH << 7);
         enter     = (LNPacket[1] & 0x20) != 0 ? TRUE:FALSE;
 
         addr++;
@@ -589,11 +597,14 @@ void send2LocoNet(void) {
       addr += rx_ptr->d4;
       if( addr >= SWStart && addr <= SWEnd ) {
         // Switch
+        byte dir = addr % 2;
+        addr = addr / 2;
         LNBuffer[i].len = 4;
         LNBuffer[i].data[0] = OPC_SW_REQ;
         LNBuffer[i].data[1] = addr & 0x7F;
         LNBuffer[i].data[2] = (addr >> 7)&0x0F;
-        LNBuffer[i].data[2] |= ((rx_ptr->d0 == OPC_ACON) ? 0x10:0x00);
+        LNBuffer[i].data[2] += ((rx_ptr->d0 == OPC_ACON) ? 0x10:0x00);
+        LNBuffer[i].data[2] += (dir ? 0x20:0x00);
         checksumLN(i);
         LNBuffer[i].status = LN_STATUS_USED;
         if( mode == LN_MODE_READ )
@@ -601,11 +612,14 @@ void send2LocoNet(void) {
       }
       else if( (NV1 & CFG_ENABLE_FB2LN) && addr >= FBStart && addr <= FBEnd ) {
         // Sensor
+        byte dir = addr % 2;
+        addr = addr / 2;
         LNBuffer[i].len = 4;
         LNBuffer[i].data[0] = OPC_INPUT_REP;
         LNBuffer[i].data[1] = addr & 0x7F;
         LNBuffer[i].data[2] = (addr >> 7)&0x0F;
-        LNBuffer[i].data[2] |= ((rx_ptr->d0 == OPC_ACON) ? 0x10:0x00);
+        LNBuffer[i].data[2] += ((rx_ptr->d0 == OPC_ACON) ? 0x10:0x00);
+        LNBuffer[i].data[2] += (dir ? 0x20:0x00);
         checksumLN(i);
         LNBuffer[i].status = LN_STATUS_USED;
         if( mode == LN_MODE_READ )
