@@ -31,6 +31,8 @@
 #define MTYP_CANBC1a	 11 // BC1a command station
 
 
+#define OPC_PNN    0xB6    // <NN hi><NN lo><manu id><module id><flags>
+#define OPC_QNN    	0x0d    // Query nodes
 
 //  CBUS opcodes list
 //  Ref: CBUS Specifications rev 7d
@@ -50,7 +52,7 @@
 #define OPC_RESTP   0x0a    // Rest emergency stop all
 #define OPC_RVER    0x0b    // Rest firmware version
 #define OPC_RSTAT   0x0c    // Rest node status
-#define OPC_RQNN    0c0d    // Rest node number
+#define OPC_RQNN    0x0d    // Rest node number
 #define OPC_RQNP    0x10    // Read node parameters
 
 // Packets with 1 data byte

@@ -30,6 +30,16 @@ void parse_cmd(void) {
             queue_update();
             break;
 
+        case OPC_QNN:
+          Tx1[d0]  = OPC_PNN;
+          Tx1[d1]  = (NN_temp / 256) & 0xFF;
+          Tx1[d2]  = (NN_temp % 256) & 0xFF;
+          Tx1[d3]  = params[0];
+          Tx1[d4]  = params[2];
+          Tx1[d5]  = 0;
+          can_tx(6);
+          break;
+
         case OPC_KEEP:
             // Session keep alive message
             keep_alive();
