@@ -30,6 +30,7 @@
 #include "cbusdefs.h"
 #include "cangc8.h"
 #include "io.h"
+#include "display.h"
 
 //#pragma code IO
 
@@ -77,9 +78,8 @@ void setupIO(byte clr) {
   }
 
 
-  for( idx = 0; idx < 8; idx++ ) {
+  for( idx = 0; idx < MAXDISPLAYS; idx++ ) {
     Display[idx].addr = eeReadShort(EE_PORT_ADDR + 2 * idx);
-    Sensor[idx].addr = eeReadShort(EE_PORT_ADDR + 16 + 2 * idx);
 
   }
 
@@ -107,46 +107,6 @@ unsigned char checkFlimSwitch(void) {
 unsigned char sodRFID(unsigned char i) {
   return FALSE;
 }
-
-unsigned char checkInput(unsigned char idx, unsigned char sod) {
-  unsigned char ok = 1;
-  unsigned char val = readInput(idx);
-  if( sod || val != Sensor[idx].status ) {
-    Sensor[idx].status = val;
-    if( !sod && val == 0 ) {
-      Sensor[idx].timer = 40; // 2 seconds
-      Sensor[idx].timedoff = TRUE;
-    }
-    else if( !sod && Sensor[idx].timedoff ) {
-      Sensor[idx].timer = 40; // reload timer
-    }
-    else {
-      // Send an OPC.
-      if( sod ) {
-        canmsg.opc = 0;
-        if ( val ) {
-          canmsg.opc = OPC_ARON;
-        }
-      }
-      else
-        canmsg.opc = val ? OPC_ASON:OPC_ASOF;
-      if( canmsg.opc > 0 ) {
-        canmsg.d[0] = (NN_temp / 256) & 0xFF;
-        canmsg.d[1] = (NN_temp % 256) & 0xFF;
-        canmsg.d[2] = (Sensor[idx].addr / 256) & 0xFF;
-        canmsg.d[3] = (Sensor[idx].addr % 256) & 0xFF;
-        canmsg.len = 4; // data bytes
-        ok = canQueue(&canmsg);
-        if( !ok ) {
-          Sensor[idx].status = !Sensor[idx].status;
-        }
-      }
-    }
-  }
-
-  return ok;
-}
-
 
 
 
@@ -178,52 +138,5 @@ static unsigned char __LED4 = 0;
 void doLED250(void) {
 }
 
-
-void setOutput(ushort nn, ushort addr, byte on) {
-}
-
-
-unsigned char readInput(int idx) {
-  unsigned char val = 0;
-  switch(idx) {
-    case 0:  val = SENS1;  break;
-    case 1:  val = SENS2;  break;
-    case 2:  val = SENS3;  break;
-    case 3:  val = SENS4;  break;
-    case 4:  val = SENS5;  break;
-    case 5:  val = SENS6;  break;
-    case 6:  val = SENS7;  break;
-    case 7:  val = SENS8;  break;
-  }
-  return !val;
-}
-
-void doIOTimers(void) {
-  int i = 0;
-  for( i = 0; i < 8; i++ ) {
-    if( Sensor[i].timedoff ) {
-      if( Sensor[i].timer > 0 ) {
-        Sensor[i].timer--;
-      }
-    }
-  }
-}
-
-
-void doTimedOff(int i) {
-  if( Sensor[i].timedoff ) {
-    if( Sensor[i].timer == 0 ) {
-      Sensor[i].timedoff = 0;
-      // Send an OPC.
-      canmsg.opc = OPC_ASOF;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = (Sensor[i].addr / 256) & 0xFF;
-      canmsg.d[3] = (Sensor[i].addr % 256) & 0xFF;
-      canmsg.len = 4;
-      canQueue(&canmsg);
-    }
-  }
-}
 
 

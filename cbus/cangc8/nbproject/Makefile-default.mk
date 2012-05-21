@@ -9,10 +9,12 @@
 
 # Include project Makefile
 include Makefile
+# Include makefile containing local settings
+ifeq "$(wildcard nbproject/Makefile-local-default.mk)" "nbproject/Makefile-local-default.mk"
+include nbproject/Makefile-local-default.mk
+endif
 
 # Environment
-# Adding MPLAB X bin directory to path
-PATH:=/Applications/microchip/mplabx/mplab_ide.app/Contents/Resources/mplab_ide/mplab_ide/modules/../../bin/:$(PATH)
 MKDIR=mkdir -p
 RM=rm -f 
 MV=mv 
@@ -50,36 +52,21 @@ CFLAGS=
 ASFLAGS=
 LDLIBSOPTIONS=
 
-# Path to java used to run MPLAB X when this makefile was created
-MP_JAVA_PATH="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/bin/"
-OS_CURRENT="$(shell uname -s)"
 ############# Tool locations ##########################################
 # If you copy a project from one host to another, the path where the  #
 # compiler is installed may be different.                             #
 # If you open this project with MPLAB X in the new host, this         #
 # makefile will be regenerated and the paths will be corrected.       #
 #######################################################################
-MP_CC="/Applications/microchip/mplabc18/v3.40/bin/mcc18"
-# MP_BC is not defined
-MP_AS="/Applications/microchip/mplabc18/v3.40/bin/../mpasm/MPASMWIN"
-MP_LD="/Applications/microchip/mplabc18/v3.40/bin/mplink"
-MP_AR="/Applications/microchip/mplabc18/v3.40/bin/mplib"
-DEP_GEN=${MP_JAVA_PATH}java -jar "/Applications/microchip/mplabx/mplab_ide.app/Contents/Resources/mplab_ide/mplab_ide/modules/../../bin/extractobjectdependencies.jar" 
 # fixDeps replaces a bunch of sed/cat/printf statements that slow down the build
 FIXDEPS=fixDeps
-MP_CC_DIR="/Applications/microchip/mplabc18/v3.40/bin"
-# MP_BC_DIR is not defined
-MP_AS_DIR="/Applications/microchip/mplabc18/v3.40/bin/../mpasm"
-MP_LD_DIR="/Applications/microchip/mplabc18/v3.40/bin"
-MP_AR_DIR="/Applications/microchip/mplabc18/v3.40/bin"
-# MP_BC_DIR is not defined
 
 .build-conf:  ${BUILD_SUBPROJECTS}
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/cangc8.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
-MP_PROCESSOR_OPTION=18F2585
-MP_PROCESSOR_OPTION_LD=18f2585
-MP_LINKER_DEBUG_OPTION= -u_DEBUGCODESTART=0xbd30 -u_DEBUGCODELEN=0x2d0 -u_DEBUGDATASTART=0xcf4 -u_DEBUGDATALEN=0xb
+MP_PROCESSOR_OPTION=18F2480
+MP_PROCESSOR_OPTION_LD=18f2480
+MP_LINKER_DEBUG_OPTION= -u_DEBUGCODESTART=0x3dc0 -u_DEBUGCODELEN=0x240 -u_DEBUGDATASTART=0x2f4 -u_DEBUGDATALEN=0xb
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
@@ -192,15 +179,19 @@ endif
 # Subprojects
 .build-subprojects:
 
+
+# Subprojects
+.clean-subprojects:
+
 # Clean Targets
-.clean-conf:
+.clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r build/default
 	${RM} -r dist/default
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
 
-DEPFILES=$(shell "/Applications/microchip/mplabx/mplab_ide.app/Contents/Resources/mplab_ide/mplab_ide/modules/../../bin/"mplabwildcard ${POSSIBLE_DEPFILES})
+DEPFILES=$(shell "${PATH_TO_IDE_BIN}"mplabwildcard ${POSSIBLE_DEPFILES})
 ifneq (${DEPFILES},)
 include ${DEPFILES}
 endif

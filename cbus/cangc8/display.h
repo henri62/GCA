@@ -26,6 +26,21 @@
 #ifndef __DISPLAY__
 #define __DISPLAY__
 
+#define MAXDISPLAYS 2
+
+
+typedef struct {
+  byte config;
+  int  addr;
+  byte line1;
+  byte line2;
+  byte text1[32];
+  byte text2[32];
+} DisplayDef;
+
+
+
+extern far DisplayDef Display[MAXDISPLAYS];
 
 void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, byte char3);
 

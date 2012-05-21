@@ -24,13 +24,12 @@
 #ifndef __PROJECT_H
 #define __PROJECT_H
 
-#include <p18f2585.h>
+#include <p18f2480.h>
 
 #include "cbus.h"
 
     
-#define DEFAULT_NN   116
-#define DEFAULT_SOD  4711
+#define DEFAULT_NN   8
 
 #define TRUE 1
 #define FALSE 0

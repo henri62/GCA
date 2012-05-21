@@ -46,13 +46,7 @@
 
 
 #pragma udata VARS_MAIN_ARRAYS1
-far DisplayDef Display[8];
-#pragma udata VARS_MAIN_ARRAYS1A
-far DisplayLine DisplayLine1[8];
-#pragma udata VARS_MAIN_ARRAYS1B
-far DisplayLine DisplayLine2[8];
-#pragma udata VARS_MAIN_ARRAYS2
-far SENSDef Sensor[8];
+far DisplayDef Display[MAXDISPLAYS];
 
 #pragma udata access VARS_MAIN
 near unsigned char  can_transmit_timeout;
@@ -120,8 +114,6 @@ void main(void) {
 
   led1timer = 0;
   pointtimer = 0;
-  doSOD = 0;
-  ioIdx = 0;
   doEV = 0;
   evIdx = 0;
   Wait4NN = FALSE;
@@ -145,11 +137,6 @@ void main(void) {
 
   delay();
 
-  SOD  = eeRead(EE_SOD) * 256;
-  SOD += eeRead(EE_SOD+1);
-  if( SOD == 0 || SOD == 0xFFFF )
-    SOD = DEFAULT_SOD;
-
   LED3 = PORT_ON; /* signal running system */
 
   // Loop forever (nothing lasts forever...)
@@ -165,23 +152,10 @@ void main(void) {
       txed = parseCmd();
     }
 
-    doTimedOff(ioIdx);
-    
-    if( checkInput(ioIdx, doSOD) ) {
-      if( doSOD ) {
-        sodRFID(ioIdx);
-      }
-      ioIdx++;
-      if( ioIdx >= 8 ) {
-        ioIdx = 0;
-        doSOD = 0;
-      }
-    }
-
     if( l3 ) {
       if( doPortEvent(evIdx) ) {
         evIdx++;
-        if( evIdx >= 16 ) {
+        if( evIdx >= MAXDISPLAYS ) {
           evIdx = 0;
           doEV = 0;
         }

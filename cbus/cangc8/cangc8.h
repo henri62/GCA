@@ -29,16 +29,15 @@
 #define MAJOR_VER 1
 #define MINOR_VER 'a'	// Minor version character
 
-#define EVT_NUM 16
+#define EVT_NUM 2
 #define EVperEVT 0
-#define NV_NUM 27
+#define NV_NUM 2
 
 // EEPROM addresses
 #define EE_CLEAN 0
 #define EE_NV 1          // 1 byte configuration
 #define EE_NN 2          // 2 bytes node number of this unit
-#define EE_SOD EE_NN + 2     // 2 bytes start off day address to report all input states
-#define EE_CANID EE_SOD + 2  // 1 byte CANID
+#define EE_CANID EE_NN + 2  // 1 byte CANID
 #define EE_PORT_ADDR EE_CANID + 1  // 2 short event port 1
 
 // values
@@ -57,8 +56,6 @@ extern near unsigned char  led1timer;
 extern near unsigned char  ioIdx;
 extern near unsigned char  Wait4NN;
 extern near unsigned char  isLearning;
-extern near unsigned short SOD;
-extern near unsigned char  doSOD;
 extern near unsigned char  doEV;
 extern near unsigned char  evIdx;
 extern volatile near unsigned char tmr0_reload;
