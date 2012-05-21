@@ -94,3 +94,103 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
   }
 }
 
+
+void setupDisplay(void) {
+/*
+;set up LCD
+		clrwdt
+		bcf		LCD_PORT,LCD_RS	;control register
+		movlw	B'00110011'		;reset and 4 bit mode
+		call	lcd_wrt
+		movlw	B'00110010'		;reset and 4 bit mode sequence
+		call	lcd_wrt
+		movlw	B'00101000'		;2 lines, 5x7 dots
+		call	lcd_wrt
+		movlw	B'00000110'		;Cursor left to right, don't shift display
+		call	lcd_wrt
+		movlw	B'00001100'		;Display on, cursor off, blink at cursor off
+		call	lcd_wrt
+		movlw	B'00000001'		;clear display, start at DD address 0
+		call	lcd_wrt
+*/
+}
+
+
+
+void writeChar(char c) {
+/*
+;*********************************************************
+;		Write a char to the LCD
+;		The register must be set by calling routine
+;		0 is control reg, 1 is data reg
+;		Char to be sent is in W
+
+lcd_wrt	movwf	Temp		;store char
+
+		movlw	B'00001111' ;clear data lines
+		andwf	LCD_PORT,F
+
+		movlw	B'11110000'	;upper nibble
+		andwf	Temp,W
+		iorwf	LCD_PORT,F	;data to LCD
+
+		bsf		LCD_PORT,LCD_EN		;strobe
+		nop
+		nop
+		bcf		LCD_PORT,LCD_EN
+
+		movlw	B'00001111' ;clear data lines
+		andwf	LCD_PORT,F
+
+		swapf	Temp,F		;lower nibble
+		movlw	B'11110000'
+		andwf	Temp,W
+		iorwf	LCD_PORT,F	;data to LCD
+
+		bsf		LCD_PORT,LCD_EN		;strobe
+		nop
+		nop
+		bcf		LCD_PORT,LCD_EN
+
+		call	dely
+		swapf	Temp,F			;restore W
+		movf	Temp,W
+		return
+ */
+}
+
+
+
+/*
+;**************************************************************************
+
+;		LCD next line (CR,LF)
+;
+;
+lcd_cr	bcf		LCD_PORT,LCD_RS		;control register
+		movlw	0xC0				;CR, LF
+		call	lcd_wrt
+		bsf		LCD_PORT,LCD_RS		;data register
+		return
+
+;***************************************************************************
+;
+;		LCD home
+lcd_home	bcf		LCD_PORT,LCD_RS		;control register
+		movlw	0x02				;home
+		call	lcd_wrt
+		bsf		LCD_PORT,LCD_RS		;data register
+		return
+
+;*****************************************************************************
+;
+;		LCD clear
+;
+lcd_clr	bcf		LCD_PORT,LCD_RS		;control register
+		movlw	0x01				;clear
+		call	lcd_wrt
+		bsf		LCD_PORT,LCD_RS		;data register
+		return
+
+
+ */

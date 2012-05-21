@@ -29,6 +29,10 @@
 #define MAXDISPLAYS 2
 
 
+#define LCD_PORT PORTC
+#define LCD_EN 1
+#define LCD_RS 3
+
 typedef struct {
   byte config;
   int  addr;

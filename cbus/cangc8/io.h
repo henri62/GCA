@@ -25,11 +25,11 @@
 #define __IO_H
 
 
-#define LED1    PORTBbits.RB5   // cbus activity
-#define LED2    PORTBbits.RB6   // learning mode
-#define LED3    PORTBbits.RB7   // running
+#define LED1    PORTAbits.RA1   // cbus activity
+#define LED2    PORTAbits.RA2   // learning mode
+#define LED3    PORTAbits.RA2   // running
 
-#define SW      PORTAbits.RA2	// Flim switch
+#define SW      PORTAbits.RA0	// Flim switch
 
 
 
