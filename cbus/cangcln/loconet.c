@@ -593,6 +593,8 @@ void send2LocoNet(void) {
 
     case OPC_ACON:
     case OPC_ACOF:
+    case OPC_ASON:
+    case OPC_ASOF:
       addr  = rx_ptr->d3 * 256;
       addr += rx_ptr->d4;
       if( addr >= SWStart && addr <= SWEnd ) {
@@ -603,7 +605,7 @@ void send2LocoNet(void) {
         LNBuffer[i].data[0] = OPC_SW_REQ;
         LNBuffer[i].data[1] = addr & 0x7F;
         LNBuffer[i].data[2] = (addr >> 7)&0x0F;
-        LNBuffer[i].data[2] += ((rx_ptr->d0 == OPC_ACON) ? 0x10:0x00);
+        LNBuffer[i].data[2] += ((rx_ptr->d0 & 0x01 ) ? 0x00:0x10);
         LNBuffer[i].data[2] += (dir ? 0x20:0x00);
         checksumLN(i);
         LNBuffer[i].status = LN_STATUS_USED;
@@ -618,7 +620,7 @@ void send2LocoNet(void) {
         LNBuffer[i].data[0] = OPC_INPUT_REP;
         LNBuffer[i].data[1] = addr & 0x7F;
         LNBuffer[i].data[2] = (addr >> 7)&0x0F;
-        LNBuffer[i].data[2] += ((rx_ptr->d0 == OPC_ACON) ? 0x10:0x00);
+        LNBuffer[i].data[2] += ((rx_ptr->d0 & 0x01) ? 0x00:0x10);
         LNBuffer[i].data[2] += (dir ? 0x20:0x00);
         checksumLN(i);
         LNBuffer[i].status = LN_STATUS_USED;
