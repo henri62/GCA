@@ -29,6 +29,8 @@
 #include "utils.h"
 #include "cbusdefs.h"
 
+#include <delays.h>
+
 #pragma udata access VARS_DISPLAY
 
 
@@ -47,8 +49,13 @@ void writeDisplays(void) {
 
 }
 
+void displayDelay(byte cnt) {
+  byte i;
+  for( i = 0; i < cnt; i++ );
+}
 
 void writeChar(char data) {
+  byte i;
 
   LCD_PORT = 0x0F;
   LCD_RS = 0;
@@ -56,15 +63,14 @@ void writeChar(char data) {
 
   LCD_PORT = ((data&0xF0) >> 4); //output data
   LCD_EN=1;
-  delay(); //wait 1us (stabilize outupt)
+  displayDelay(2);
   LCD_EN=0;
-  delay(); //wait 1us (stabilize outupt)
-
+  displayDelay(2);
   LCD_PORT = (data&0x0F); //output data
   LCD_EN=1;
-  delay(); //wait 1us (stabilize outupt)
+  displayDelay(2);
   LCD_EN=0;
-  delay(); //wait 1us (stabilize outupt)
+  displayDelay(10);
 
 }
 
@@ -126,6 +132,7 @@ void initDisplays(void) {
 
   cls();
   home();
+  LCD_RS  = 1;
   writeChar('R');
   writeChar('o');
   writeChar('c');
