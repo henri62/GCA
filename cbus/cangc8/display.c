@@ -33,34 +33,119 @@
 
 
 // TMR0 generates a heartbeat every 32000000/4/2/139 == 28776,98 Hz.
+//                                  16000000/4/2/69  == 28985.51 Hz.
+
 #pragma interrupt writeDisplays
 void writeDisplays(void) {
 
   // Timer0 interrupt handler
   if( INTCONbits.T0IF ) {
-    byte inC;
-
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
-    TMR0L = 256 - 139 + 10;   // Reset counter with a correction of 10 cycles
-
-    //LED2 = PORT_ON;
-
-
-    //LED2 = PORT_OFF;
+    //TMR0L = 256 - 139 + 10;   // Reset counter with a correction of 10 cycles
+    TMR0L = 256 - 69; // 4MHz resonator
   }
 
 }
 
 
+void writeChar(char data) {
+
+  LCD_PORT = 0x0F;
+  LCD_RS = 0;
+  LCD_RW = 0;
+
+  LCD_PORT = ((data&0xF0) >> 4); //output data
+  LCD_EN=1;
+  delay(); //wait 1us (stabilize outupt)
+  LCD_EN=0;
+  delay(); //wait 1us (stabilize outupt)
+
+  LCD_PORT = (data&0x0F); //output data
+  LCD_EN=1;
+  delay(); //wait 1us (stabilize outupt)
+  LCD_EN=0;
+  delay(); //wait 1us (stabilize outupt)
+
+}
+
+void setupDisplay(void) {
+
+  TRISCbits.TRISC0 = 0;  // LCD_RW
+  TRISCbits.TRISC1 = 0;  // LCD_EN
+  TRISCbits.TRISC2 = 0;  // LCD_GND
+  TRISCbits.TRISC3 = 0;  // LCD_RS
+  TRISCbits.TRISC4 = 0;  // LCD_data
+  TRISCbits.TRISC5 = 0;  // LCD_data
+  TRISCbits.TRISC6 = 0;  // LCD_data
+  TRISCbits.TRISC7 = 0;  // LCD_data
+
+  LCD_GND = 0; //GND-Pin to low
+  LCD_RS  = 0; //RS-Pin to low
+  LCD_RW  = 0; //RW-Pin to low
+  LCD_EN  = 0; //EN-Pin to low
+
+
+  writeChar(0x33); //reset and 4 bit mode
+  writeChar(0x32); //reset and 4 bit mode sequence
+  writeChar(0x28); //2 lines, 5x7 dots
+  writeChar(0x06); //Cursor left to right, don't shift display
+  writeChar(0x0C); //Display on, cursor off, blink at cursor off
+  writeChar(0x01); //clear display, start at DD address 0
+
+}
+
+
+void nextLine(void) {
+  LCD_RS  = 0;
+  writeChar(0xC0); //CR LF
+  LCD_RS  = 1;
+}
+
+void home(void) {
+  LCD_RS  = 0;
+  writeChar(0x02); //home
+  LCD_RS  = 1;
+}
+
+void cls(void) {
+  LCD_RS  = 0;
+  writeChar(0x01); //clear
+  LCD_RS  = 1;
+}
+
 void initDisplays(void) {
   byte i, n;
-  
+
   for( i = 0; i < MAXDISPLAYS; i++ ) {
     for( n = 0; n < 20; n++ )
       Display[i].text1[n] = 0;
       Display[i].text2[n] = 0;
   }
 
+  setupDisplay();
+
+  cls();
+  home();
+  writeChar('R');
+  writeChar('o');
+  writeChar('c');
+  writeChar('r');
+  writeChar('a');
+  writeChar('i');
+  writeChar('l');
+}
+
+void writeDisplay(byte idx) {
+  byte i;
+  cls();
+  home();
+  for( i = 0; i < 8; i++ ) {
+    writeChar(Display[idx].text1[i]);
+  }
+  nextLine();
+  for( i = 0; i < 8; i++ ) {
+    writeChar(Display[idx].text2[i]);
+  }
 }
 
 
@@ -76,7 +161,7 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
         Display[i].text2[part*4+3] = char3;
         if( char0 == 0 || char1 == 0 || char2 == 0 || char3 == 0 ) {
           Display[i].line2 = 1; // Send one time.
-          LED2 = PORT_ON;
+          writeDisplay(i);
         }
       }
       else {
@@ -86,7 +171,7 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
         Display[i].text1[part*4+3] = char3;
         if( char0 == 0 || char1 == 0 || char2 == 0 || char3 == 0 ) {
           Display[i].line1 = 1; // Send one time.
-          LED2 = PORT_ON;
+          writeDisplay(i);
         }
       }
       break;
@@ -95,102 +180,3 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
 }
 
 
-void setupDisplay(void) {
-/*
-;set up LCD
-		clrwdt
-		bcf		LCD_PORT,LCD_RS	;control register
-		movlw	B'00110011'		;reset and 4 bit mode
-		call	lcd_wrt
-		movlw	B'00110010'		;reset and 4 bit mode sequence
-		call	lcd_wrt
-		movlw	B'00101000'		;2 lines, 5x7 dots
-		call	lcd_wrt
-		movlw	B'00000110'		;Cursor left to right, don't shift display
-		call	lcd_wrt
-		movlw	B'00001100'		;Display on, cursor off, blink at cursor off
-		call	lcd_wrt
-		movlw	B'00000001'		;clear display, start at DD address 0
-		call	lcd_wrt
-*/
-}
-
-
-
-void writeChar(char c) {
-/*
-;*********************************************************
-;		Write a char to the LCD
-;		The register must be set by calling routine
-;		0 is control reg, 1 is data reg
-;		Char to be sent is in W
-
-lcd_wrt	movwf	Temp		;store char
-
-		movlw	B'00001111' ;clear data lines
-		andwf	LCD_PORT,F
-
-		movlw	B'11110000'	;upper nibble
-		andwf	Temp,W
-		iorwf	LCD_PORT,F	;data to LCD
-
-		bsf		LCD_PORT,LCD_EN		;strobe
-		nop
-		nop
-		bcf		LCD_PORT,LCD_EN
-
-		movlw	B'00001111' ;clear data lines
-		andwf	LCD_PORT,F
-
-		swapf	Temp,F		;lower nibble
-		movlw	B'11110000'
-		andwf	Temp,W
-		iorwf	LCD_PORT,F	;data to LCD
-
-		bsf		LCD_PORT,LCD_EN		;strobe
-		nop
-		nop
-		bcf		LCD_PORT,LCD_EN
-
-		call	dely
-		swapf	Temp,F			;restore W
-		movf	Temp,W
-		return
- */
-}
-
-
-
-/*
-;**************************************************************************
-
-;		LCD next line (CR,LF)
-;
-;
-lcd_cr	bcf		LCD_PORT,LCD_RS		;control register
-		movlw	0xC0				;CR, LF
-		call	lcd_wrt
-		bsf		LCD_PORT,LCD_RS		;data register
-		return
-
-;***************************************************************************
-;
-;		LCD home
-lcd_home	bcf		LCD_PORT,LCD_RS		;control register
-		movlw	0x02				;home
-		call	lcd_wrt
-		bsf		LCD_PORT,LCD_RS		;data register
-		return
-
-;*****************************************************************************
-;
-;		LCD clear
-;
-lcd_clr	bcf		LCD_PORT,LCD_RS		;control register
-		movlw	0x01				;clear
-		call	lcd_wrt
-		bsf		LCD_PORT,LCD_RS		;data register
-		return
-
-
- */

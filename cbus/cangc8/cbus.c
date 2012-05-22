@@ -75,8 +75,8 @@ BRGCON3: 0x03
    */
 
   // prescaler Tq = 16/Fosc
-  BRGCON1 = 0b00000111; // 8MHz resonator
-  //BRGCON1 = 0b00000011; // 4MHz resonator
+  //BRGCON1 = 0b00000111; // 8MHz resonator
+  BRGCON1 = 0b00000011; // 4MHz resonator
   // freely programmable, sample once, phase 1 = 4xTq, prop time = 7xTq
   BRGCON2 = 0b10011110;
   // Wake-up enabled, wake-up filter not used, phase 2 = 4xTq

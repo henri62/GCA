@@ -198,6 +198,7 @@ void initTimers(void) {
 
   // ***** Timer0 *****
   // 32000000/4/2/139 == 28776,98 Hz.
+  // 16000000/4/2/69 == 28985.51 Hz.
   T0CON = 0;
   // pre scaler 2:
   T0CONbits.PSA   = 0;
@@ -207,7 +208,8 @@ void initTimers(void) {
   // 8 bit counter
   T0CONbits.T08BIT = 1;
   TMR0H = 0;
-  TMR0L = 256 - 139;
+  //TMR0L = 256 - 139; // 8MHz resonator
+  TMR0L = 256 - 69; // 4MHz resonator
   // timer on
   T0CONbits.TMR0ON = 1;
   // interrupt
@@ -220,7 +222,8 @@ void initTimers(void) {
   T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
   T2CONbits.T2CKPS1 = 1;
   TMR2 = 0; // 1 mS
-  PR2  = 100;
+  //PR2  = 100; // 8MHz resonator
+  PR2  = 50;  // 4MHz resonator
   PIE1bits.TMR2IE = 1;
   INTCONbits.PEIE = 1;
   IPR1bits.TMR2IP = 0; // high prio

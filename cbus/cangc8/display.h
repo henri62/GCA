@@ -30,8 +30,10 @@
 
 
 #define LCD_PORT PORTC
-#define LCD_EN 1
-#define LCD_RS 3
+#define LCD_RW   PORTCbits.RC0
+#define LCD_EN   PORTCbits.RC1
+#define LCD_GND  PORTCbits.RC2
+#define LCD_RS   PORTCbits.RC3
 
 typedef struct {
   byte config;
