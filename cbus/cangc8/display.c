@@ -55,18 +55,15 @@ void displayDelay(byte cnt) {
 }
 
 void writeChar(char data) {
-  byte i;
-
-  LCD_PORT = 0x0F;
-  LCD_RS = 0;
-  LCD_RW = 0;
-
-  LCD_PORT = ((data&0xF0) >> 4); //output data
+  LCD_PORT &= 0x0F; // clear data lines
+  LCD_PORT |= (data&0xF0); //output high nibble
   LCD_EN=1;
   displayDelay(2);
   LCD_EN=0;
   displayDelay(2);
-  LCD_PORT = (data&0x0F); //output data
+  
+  LCD_PORT &= 0x0F; // clear data lines
+  LCD_PORT |= ((data&0x0F) << 4); //output low nibble
   LCD_EN=1;
   displayDelay(2);
   LCD_EN=0;
@@ -80,10 +77,10 @@ void setupDisplay(void) {
   TRISCbits.TRISC1 = 0;  // LCD_EN
   TRISCbits.TRISC2 = 0;  // LCD_GND
   TRISCbits.TRISC3 = 0;  // LCD_RS
-  TRISCbits.TRISC4 = 0;  // LCD_data
-  TRISCbits.TRISC5 = 0;  // LCD_data
-  TRISCbits.TRISC6 = 0;  // LCD_data
-  TRISCbits.TRISC7 = 0;  // LCD_data
+  TRISCbits.TRISC4 = 0;  // LCD_data4 LSB
+  TRISCbits.TRISC5 = 0;  // LCD_data5
+  TRISCbits.TRISC6 = 0;  // LCD_data6
+  TRISCbits.TRISC7 = 0;  // LCD_data7 MSB
 
   LCD_GND = 0; //GND-Pin to low
   LCD_RS  = 0; //RS-Pin to low
@@ -187,3 +184,47 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
 }
 
 
+
+/*
+
+void initDisplay(void)
+{
+  RS_DD=1; //RS-Pin as Output
+  EN_DD=1; //EN-Pin as Output
+  RW_DD=1; //RW-Pin as Output
+  RS = 0; //RS-Pin to low
+  RW = 0; //RW-Pin to low
+  EN = 0; //EN-Pin to low
+  send_nibble(0x03); //Be sure to
+  send_nibble(0x03); //be in
+  send_nibble(0x03); //8-Bit-Mode
+  send_nibble(0x02); //Switch to 4 Bit
+  Wait(50); //Wait 5us
+  WriteIns(0x28);//4-Bit-Mode
+  WriteIns(0x08);//display off
+  WriteIns(0x06);//entry mode set increment cursor by 1 not shifting display
+  WriteIns(0x17);//Character mode and internel power on
+  WriteIns(0x01);//clear display
+  WriteIns(0x02);//return home
+  WriteIns(0x0C); //display on
+}
+void send_nibble (char data)
+{
+  DATA_PORT = data; //output data
+  EN=1;
+  Wait(10); //wait 1us (stabilize outupt)
+  EN=0;
+  Wait(10); //wait 1us (stabilize outupt)
+  }
+void WriteIns(char instruction)
+{
+  DATA_PORT_DD=0x0F; //Dataport as Output
+  RS = 0;
+  RW = 0;
+  send_nibble((instruction&0xF0)>>4); //Highbyte
+  send_nibble(instruction&0x0F); //Lowbyte
+  CheckBusy();
+}
+
+
+ */

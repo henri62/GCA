@@ -174,13 +174,23 @@ unsigned char parseCmd(void) {
         addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
         idx = rx_ptr->d5;
         var = rx_ptr->d6;
-        if( idx < 2 ) {
+        if( idx < MAXDISPLAYS ) {
           // Display
           Display[idx].addr = addr;
           eeWriteShort(EE_PORT_ADDR + 2*idx, addr);
         }
       }
       break;
+
+
+    case OPC_NERD:
+      if( thisNN() ) {
+        doEV = 1;
+        evIdx = 0;
+      }
+      break;
+
+
 
     default: break;
   }
@@ -217,7 +227,7 @@ int thisNN() {
 
 unsigned char doPortEvent(int i ) {
   if( doEV ) {
-    if( i < 2 ) {
+    if( i < MAXDISPLAYS ) {
       canmsg.opc = OPC_ENRSP;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
       canmsg.d[1] = NN_temp & 0xFF;
