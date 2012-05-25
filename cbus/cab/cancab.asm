@@ -182,12 +182,12 @@
 ; Assembly options
 	LIST	P=18F2480,r=hex,N=75,C=120,T=ON
 
-	include		"p18f2480.inc"
+	include		"P18F2480.INC"
 	
 	;definitions  Change these to suit hardware.
 
-	include	"cbusdefs8a.inc"	
-	include "cabmessages2p.inc"	; Version of messages file only changes if messages are added or message lengths changed
+	include	"cbusdefs.inc"	
+	include "cabmessages.inc"	; Version of messages file only changes if messages are added or message lengths changed
 
 ; Define the node parameters to be stored at node_id
 
