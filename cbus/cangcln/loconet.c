@@ -591,6 +591,29 @@ void send2LocoNet(void) {
       }
       break;
 
+    case OPC_FCLK:
+      LNBuffer[i].len = 14;
+      LNBuffer[i].data[0] = OPC_WR_SL_DATA;
+      LNBuffer[i].data[1] = 0x0E;
+      LNBuffer[i].data[2] = 0x7B;
+      LNBuffer[i].data[3] = rx_ptr->d4;
+
+      LNBuffer[i].data[4] = 0x7F; // fractional minutes L
+      LNBuffer[i].data[5] = 0x7F; // fractional minutes H
+      LNBuffer[i].data[6] = (255-(60-rx_ptr->d1))&0x7F; // 256 - minutes 43
+      LNBuffer[i].data[7] = 0; // track status
+
+      LNBuffer[i].data [8] = (256-(24-rx_ptr->d2))&0x7F; // 256 - hours 14
+      LNBuffer[i].data [9] = 0; // clock rollovers
+      LNBuffer[i].data[10] = 0x70;
+      LNBuffer[i].data[11] = 0x7F;
+      LNBuffer[i].data[12] = 0x70;
+      checksumLN(i);
+      LNBuffer[i].status = LN_STATUS_USED;
+      if( mode == LN_MODE_READ )
+        mode = LN_MODE_WRITE_REQ;
+      break;
+
     case OPC_ACON:
     case OPC_ACOF:
     case OPC_ASON:
