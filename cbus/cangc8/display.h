@@ -29,19 +29,27 @@
 #define MAXDISPLAYS 2
 
 
-#define LCD_PORT PORTC
-#define LCD_RW   PORTCbits.RC0
-#define LCD_EN   PORTCbits.RC1
-#define LCD_GND  PORTCbits.RC2
-#define LCD_RS   PORTCbits.RC3
+#define LCD1_SI   PORTAbits.RA0
+#define LCD1_CLK  PORTAbits.RA1
+#define LCD1_CSB  PORTAbits.RA3
+#define LCD1_RS   PORTAbits.RA4
+
+#define LCD2_SI   PORTCbits.RC0
+#define LCD2_CLK  PORTCbits.RC1
+#define LCD2_CSB  PORTCbits.RC2
+#define LCD2_RS   PORTCbits.RC3
+
+#define MODESIZE 7
+#define BUFFERSIZE 8 * MODESIZE
 
 typedef struct {
   byte config;
   int  addr;
-  byte line1;
-  byte line2;
-  byte text1[32];
-  byte text2[32];
+  byte pending;
+  byte byteidx;
+  byte bitidx;
+  byte mode[MODESIZE]; // low bit = command
+  byte buffer[BUFFERSIZE];
 } DisplayDef;
 
 
@@ -52,6 +60,7 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
 
 extern void writeDisplays(void);
 void initDisplays(void);
+void setupDisplays(void);
 
 
 

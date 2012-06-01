@@ -41,11 +41,11 @@ void setupIO(byte clr) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
 
-  TRISAbits.TRISA2 = 0;  // LED1 cbus activity
-  TRISAbits.TRISA3 = 0;  // LED2 learning mode
-  TRISAbits.TRISA1 = 0;  // LED3 running
+  TRISBbits.TRISB6 = 0;  // LED1 cbus activity
+  TRISBbits.TRISB7 = 0;  // LED2 learning mode
+  TRISBbits.TRISB5 = 0;  // LED3 running
 
-  TRISAbits.TRISA4 = 1; /* SW */
+  TRISAbits.TRISA2 = 1; /* SW */
 
   LED1   = PORT_OFF;
   LED2   = PORT_OFF;

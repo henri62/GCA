@@ -139,6 +139,8 @@ void main(void) {
 
   LED3 = PORT_ON; /* signal running system */
 
+  setupDisplays();
+
   // Loop forever (nothing lasts forever...)
   while (1) {
     unsigned char txed = 0;
@@ -197,19 +199,17 @@ void initTimers(void) {
   led_timer = 4;  // 4ms
 
   // ***** Timer0 *****
-  // 32000000/4/2/139 == 28776,98 Hz.
-  // 16000000/4/2/69 == 28985.51 Hz.
+  // 16000000/4/32/125 == 1ms.
   T0CON = 0;
   // pre scaler 2:
   T0CONbits.PSA   = 0;
   T0CONbits.T0PS0 = 0;
   T0CONbits.T0PS1 = 0;
-  T0CONbits.T0PS2 = 0;
+  T0CONbits.T0PS2 = 1;
   // 8 bit counter
   T0CONbits.T08BIT = 1;
   TMR0H = 0;
-  //TMR0L = 256 - 139; // 8MHz resonator
-  TMR0L = 256 - 69; // 4MHz resonator
+  TMR0L = 256 - 125; // 4MHz resonator
   // timer on
   T0CONbits.TMR0ON = 1;
   // interrupt
