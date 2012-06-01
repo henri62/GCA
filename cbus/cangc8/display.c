@@ -38,14 +38,13 @@
 static byte clk = 0;
 #pragma interrupt writeDisplays
 void writeDisplays(void) {
-
+  
   // Timer0 interrupt handler
   if( INTCONbits.T0IF ) {
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
     TMR0L = 256 - 125; // 4MHz resonator
     LCD1_CLK = clk;
     LCD2_CLK = clk;
-    LED3 = clk;
     clk ^= 1;
 
     if( !clk ) {
@@ -55,19 +54,24 @@ void writeDisplays(void) {
           if( Display[i].bitidx < 8 ) {
             // set bit
             byte b = Display[i].buffer[Display[i].byteidx];
-            if( i == 0 )
-              LCD1_SI = (b >> Display[i].bitidx);
-            else if( i == 1 )
-              LCD2_SI = (b >> Display[i].bitidx);
+            if( i == 0 ) {
+              LCD1_CSB = PORT_OFF;
+              LCD1_SI = (b >> (7-Display[i].bitidx));
+            }
+            else if( i == 1 ) {
+              LCD2_CSB = PORT_OFF;
+              LCD2_SI = (b >> (7-Display[i].bitidx));
+            }
             
             Display[i].bitidx++;
           }
 
           if( Display[i].bitidx == 8 ) {
             Display[i].byteidx++;
+            Display[i].bitidx = 0;
+
             if( Display[i].buffer[Display[i].byteidx] == 0 ) {
               Display[i].byteidx = 0;
-              Display[i].bitidx = 0;
               Display[i].pending = FALSE;
             }
             else {
@@ -75,7 +79,8 @@ void writeDisplays(void) {
               byte m = Display[i].mode[Display[i].byteidx/8];
               if( i == 0 )
                 LCD1_RS = (m >> (Display[i].byteidx%8));
-
+              if( i == 1 )
+                LCD2_RS = (m >> (Display[i].byteidx%8));
             }
           }
         }
@@ -107,11 +112,11 @@ void setupDisplayIO(void) {
   TRISCbits.TRISC3 = 0;  // LCD2_RS
 
   
-  LCD1_CSB = PORT_OFF;
+  LCD1_CSB = PORT_ON;
   LCD1_RS  = PORT_OFF; // RS-Pin to low -> command mode
   LCD1_SI  = PORT_OFF;
 
-  LCD2_CSB = PORT_OFF;
+  LCD2_CSB = PORT_ON;
   LCD2_RS  = PORT_OFF; // RS-Pin to low -> command mode
   LCD2_SI  = PORT_OFF;
 
@@ -121,7 +126,8 @@ void setupDisplayIO(void) {
 void setupDisplays(void) {
   byte i;
   for( i = 0; i < MAXDISPLAYS; i++ ) {
-    Display[i].mode[0] = 0xFF; // All commands.
+    memset(Display[i].buffer, 0, BUFFERSIZE );
+    Display[i].mode[0] = 0x00; // All commands.
     Display[i].buffer[0] = 0x39;
     Display[i].buffer[1] = 0x1D;
     Display[i].buffer[2] = 0x50;
@@ -131,9 +137,8 @@ void setupDisplays(void) {
     Display[i].buffer[6] = 0x0F;
     Display[i].buffer[7] = 0x01;
 
-    Display[i].mode[1] = 0x01;
+    Display[i].mode[1] = 0xFE;
     Display[i].buffer[8] = 0x06;
-
     Display[i].buffer[ 9] = 'R';
     Display[i].buffer[10] = 'o';
     Display[i].buffer[11] = 'c';
