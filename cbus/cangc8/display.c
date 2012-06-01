@@ -45,7 +45,43 @@ void writeDisplays(void) {
     TMR0L = 256 - 125; // 4MHz resonator
     LCD1_CLK = clk;
     LCD2_CLK = clk;
+    LED3 = clk;
     clk ^= 1;
+
+    if( !clk ) {
+      byte i;
+      for( i = 0; i < MAXDISPLAYS; i++ ) {
+        if( Display[i].pending ) {
+          if( Display[i].bitidx < 8 ) {
+            // set bit
+            byte b = Display[i].buffer[Display[i].byteidx];
+            if( i == 0 )
+              LCD1_SI = (b >> Display[i].bitidx);
+            else if( i == 1 )
+              LCD2_SI = (b >> Display[i].bitidx);
+            
+            Display[i].bitidx++;
+          }
+
+          if( Display[i].bitidx == 8 ) {
+            Display[i].byteidx++;
+            if( Display[i].buffer[Display[i].byteidx] == 0 ) {
+              Display[i].byteidx = 0;
+              Display[i].bitidx = 0;
+              Display[i].pending = FALSE;
+            }
+            else {
+              // set mode
+              byte m = Display[i].mode[Display[i].byteidx/8];
+              if( i == 0 )
+                LCD1_RS = (m >> (Display[i].byteidx%8));
+
+            }
+          }
+        }
+      }
+    }
+
   }
 
 }
@@ -94,30 +130,21 @@ void setupDisplays(void) {
     Display[i].buffer[5] = 0x38;
     Display[i].buffer[6] = 0x0F;
     Display[i].buffer[7] = 0x01;
-    Display[i].mode[1] = 0x01; // All commands.
-    Display[i].buffer[8] = 0x06;
-    Display[i].buffer[9] = 0; // Terminating zero.
-    Display[i].byteidx = 0;
-    Display[i].bitidx = 0;
-    Display[i].pending = TRUE;
-/*
-    while( Display[i].pending ) {
-      // Wait for init to finish...
-    }
 
-    Display[i].mode[0] = 0; // All data.
-    Display[i].buffer[0] = 'R';
-    Display[i].buffer[1] = 'o';
-    Display[i].buffer[2] = 'c';
-    Display[i].buffer[3] = 'r';
-    Display[i].buffer[4] = 'a';
-    Display[i].buffer[5] = 'i';
-    Display[i].buffer[6] = 'l';
-    Display[i].buffer[7] = 0; // Terminating zero.
+    Display[i].mode[1] = 0x01;
+    Display[i].buffer[8] = 0x06;
+
+    Display[i].buffer[ 9] = 'R';
+    Display[i].buffer[10] = 'o';
+    Display[i].buffer[11] = 'c';
+    Display[i].buffer[12] = 'r';
+    Display[i].buffer[13] = 'a';
+    Display[i].buffer[14] = 'i';
+    Display[i].buffer[15] = 'l';
+    Display[i].buffer[16] = 0; // Terminating zero.
     Display[i].byteidx = 0;
     Display[i].bitidx = 0;
     Display[i].pending = TRUE; // Send one time.
- */
     
   }
 }
