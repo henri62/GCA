@@ -83,14 +83,15 @@ void writeDisplays(void) {
             {
               Display[i].byteidx = 0;
               Display[i].pending = FALSE;
-
-              if( i == 0 )
-                LCD1_CSB = PORT_ON;
-              if( i == 1 )
-                LCD1_CSB = PORT_ON;
-
             }
           }
+        }
+        else {
+          // Deselect chip:
+          if( i == 0 )
+            LCD1_CSB = PORT_ON;
+          if( i == 1 )
+            LCD1_CSB = PORT_ON;
         }
       }
     }
@@ -146,9 +147,10 @@ void setupDisplays(void) {
     Display[i].buffer[14] = 'a';
     Display[i].buffer[15] = 'i';
 
-    Display[i].mode[2] = 0x01;
+    Display[i].mode[2] = 0x03;
     Display[i].buffer[16] = 'l';
-    Display[i].buffer[17] = 0; // Terminating zero.
+    Display[i].buffer[17] = '.'; // Terminating zero.
+    Display[i].buffer[18] = 0; // Terminating zero.
     
     Display[i].byteidx = 0;
     Display[i].bitidx = 0;
