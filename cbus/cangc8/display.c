@@ -189,22 +189,31 @@ void initDisplays(void) {
 void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, byte char3) {
   byte i = flags & 0x03;
   for( i = 0; i < MAXDISPLAYS; i++ ) {
-    if( Display[i].addr == addr ) {
+    //if( Display[i].addr == addr ) {
+    if( 1 ) {
       byte part = flags >> 4;
 
       // Set mode flags to data:
       byte modeidx = (part*4)/8;
       byte mode = Display[i].mode[modeidx];
-      Display[i].mode[modeidx] = mode | (0x0F << (part%2));
 
-      Display[i].buffer[part*4+0] = char0;
-      Display[i].buffer[part*4+1] = char1;
-      Display[i].buffer[part*4+2] = char2;
-      Display[i].buffer[part*4+3] = char3;
+      if( part == 0 ) {
+        Display[i].buffer[0] = 0x01; // cls
+        Display[i].mode[0] = 0xFE;
+      }
+      else {
+        Display[i].mode[modeidx] = mode | (0x0F << (part%2));
+      }
+
+      Display[i].buffer[part*4+1] = char0;
+      Display[i].buffer[part*4+2] = char1;
+      Display[i].buffer[part*4+3] = char2;
+      Display[i].buffer[part*4+4] = char3;
       if( char0 == 0 || char1 == 0 || char2 == 0 || char3 == 0 ) {
+        Display[i].byteidx = 0;
+        Display[i].bitidx = 0;
         Display[i].pending = TRUE; // Send one time.
       }
-      break;
     }
   }
 }
