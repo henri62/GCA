@@ -54,7 +54,8 @@ typedef struct {
 
 
 
-extern far DisplayDef Display[MAXDISPLAYS];
+extern far DisplayDef DisplayA[MAXDISPLAYS];
+//extern far DisplayDef DisplayB[MAXDISPLAYS];
 
 void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, byte char3);
 

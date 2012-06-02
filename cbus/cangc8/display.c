@@ -52,37 +52,37 @@ void writeDisplays(void) {
     if( !clk ) {
       byte i;
       for( i = 0; i < MAXDISPLAYS; i++ ) {
-        if( Display[i].pending ) {
-          byte m = Display[i].mode[Display[i].byteidx/8];
+        if( DisplayA[i].pending ) {
+          byte m = DisplayA[i].mode[DisplayA[i].byteidx/8];
           if( i == 0 ) {
             LCD1_CSB = PORT_OFF;
-            LCD1_RS = (m >> (Display[i].byteidx%8));
+            LCD1_RS = (m >> (DisplayA[i].byteidx%8));
           }
           else if( i == 1 ) {
             LCD2_CSB = PORT_OFF;
-            LCD2_RS = (m >> (Display[i].byteidx%8));
+            LCD2_RS = (m >> (DisplayA[i].byteidx%8));
           }
-          if( Display[i].bitidx < 8 ) {
+          if( DisplayA[i].bitidx < 8 ) {
             // set bit
-            byte b = Display[i].buffer[Display[i].byteidx];
+            byte b = DisplayA[i].buffer[DisplayA[i].byteidx];
             if( i == 0 ) {
-              LCD1_SI = (b >> (7-Display[i].bitidx));
+              LCD1_SI = (b >> (7-DisplayA[i].bitidx));
             }
             else if( i == 1 ) {
-              LCD2_SI = (b >> (7-Display[i].bitidx));
+              LCD2_SI = (b >> (7-DisplayA[i].bitidx));
             }
             
-            Display[i].bitidx++;
+            DisplayA[i].bitidx++;
           }
 
-          if( Display[i].bitidx == 8 ) {
-            Display[i].byteidx++;
-            Display[i].bitidx = 0;
+          if( DisplayA[i].bitidx == 8 ) {
+            DisplayA[i].byteidx++;
+            DisplayA[i].bitidx = 0;
 
-            if( Display[i].buffer[Display[i].byteidx] == 0 || Display[i].byteidx >= BUFFERSIZE )
+            if( DisplayA[i].buffer[DisplayA[i].byteidx] == 0 || DisplayA[i].byteidx >= BUFFERSIZE )
             {
-              Display[i].byteidx = 0;
-              Display[i].pending = FALSE;
+              DisplayA[i].byteidx = 0;
+              DisplayA[i].pending = FALSE;
             }
           }
         }
@@ -91,7 +91,7 @@ void writeDisplays(void) {
           if( i == 0 )
             LCD1_CSB = PORT_ON;
           if( i == 1 )
-            LCD1_CSB = PORT_ON;
+            LCD2_CSB = PORT_ON;
         }
       }
     }
@@ -127,34 +127,34 @@ void setupDisplayIO(void) {
 void setupDisplays(void) {
   byte i;
   for( i = 0; i < MAXDISPLAYS; i++ ) {
-    Display[i].mode[0] = 0x00; // All commands.
-    Display[i].buffer[0] = 0x39;
-    Display[i].buffer[1] = 0x1D;
-    Display[i].buffer[2] = 0x50;
-    Display[i].buffer[3] = 0x6C;
-    Display[i].buffer[4] = 0x7C;
-    Display[i].buffer[5] = 0x38;
-    Display[i].buffer[6] = 0x0C;
-    Display[i].buffer[7] = 0x01;
+    DisplayA[i].mode[0] = 0x00; // All commands.
+    DisplayA[i].buffer[0] = 0x39;
+    DisplayA[i].buffer[1] = 0x1D;
+    DisplayA[i].buffer[2] = 0x50;
+    DisplayA[i].buffer[3] = 0x6C;
+    DisplayA[i].buffer[4] = 0x7C;
+    DisplayA[i].buffer[5] = 0x38;
+    DisplayA[i].buffer[6] = 0x0C;
+    DisplayA[i].buffer[7] = 0x01;
 
-    Display[i].mode[1] = 0xFC;
-    Display[i].buffer[8] = 0x06;
-    Display[i].buffer[9] = 0x02;
-    Display[i].buffer[10] = 'R';
-    Display[i].buffer[11] = 'o';
-    Display[i].buffer[12] = 'c';
-    Display[i].buffer[13] = 'r';
-    Display[i].buffer[14] = 'a';
-    Display[i].buffer[15] = 'i';
+    DisplayA[i].mode[1] = 0xFC;
+    DisplayA[i].buffer[8] = 0x06;
+    DisplayA[i].buffer[9] = 0x02;
+    DisplayA[i].buffer[10] = 'R';
+    DisplayA[i].buffer[11] = 'o';
+    DisplayA[i].buffer[12] = 'c';
+    DisplayA[i].buffer[13] = 'r';
+    DisplayA[i].buffer[14] = 'a';
+    DisplayA[i].buffer[15] = 'i';
 
-    Display[i].mode[2] = 0x03;
-    Display[i].buffer[16] = 'l';
-    Display[i].buffer[17] = '.'; // Terminating zero.
-    Display[i].buffer[18] = 0; // Terminating zero.
+    DisplayA[i].mode[2] = 0x03;
+    DisplayA[i].buffer[16] = 'l';
+    DisplayA[i].buffer[17] = '.'; // Terminating zero.
+    DisplayA[i].buffer[18] = 0; // Terminating zero.
     
-    Display[i].byteidx = 0;
-    Display[i].bitidx = 0;
-    Display[i].pending = TRUE; // Send one time.
+    DisplayA[i].byteidx = 0;
+    DisplayA[i].bitidx = 0;
+    DisplayA[i].pending = TRUE; // Send one time.
     
   }
 }
@@ -173,13 +173,13 @@ void initDisplays(void) {
   byte i, n;
 
   for( i = 0; i < MAXDISPLAYS; i++ ) {
-    Display[i].pending = FALSE;
-    Display[i].byteidx = 0;
-    Display[i].bitidx = 0;
+    DisplayA[i].pending = FALSE;
+    DisplayA[i].byteidx = 0;
+    DisplayA[i].bitidx = 0;
     for( n = 0; n < MODESIZE; n++ )
-      Display[i].mode[n] = 0;
+      DisplayA[i].mode[n] = 0;
     for( n = 0; n < BUFFERSIZE; n++ )
-      Display[i].buffer[n] = 0;
+      DisplayA[i].buffer[n] = 0;
   }
 
   setupDisplayIO();
@@ -189,30 +189,30 @@ void initDisplays(void) {
 void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, byte char3) {
   byte i = flags & 0x03;
   for( i = 0; i < MAXDISPLAYS; i++ ) {
-    //if( Display[i].addr == addr ) {
-    if( 1 ) {
+    if( DisplayA[i].addr == addr ) {
+    //if( TRUE ) {
       byte part = flags >> 4;
 
       // Set mode flags to data:
       byte modeidx = (part*4)/8;
-      byte mode = Display[i].mode[modeidx];
+      byte mode = DisplayA[i].mode[modeidx];
 
       if( part == 0 ) {
-        Display[i].buffer[0] = 0x01; // cls
-        Display[i].mode[0] = 0xFE;
+        DisplayA[i].buffer[0] = 0x01; // cls
+        DisplayA[i].mode[0] = 0xFE;
       }
       else {
-        Display[i].mode[modeidx] = mode | (0x0F << (part%2));
+        DisplayA[i].mode[modeidx] = mode | (0x0F << (part%2));
       }
 
-      Display[i].buffer[part*4+1] = char0;
-      Display[i].buffer[part*4+2] = char1;
-      Display[i].buffer[part*4+3] = char2;
-      Display[i].buffer[part*4+4] = char3;
+      DisplayA[i].buffer[part*4+1] = char0;
+      DisplayA[i].buffer[part*4+2] = char1;
+      DisplayA[i].buffer[part*4+3] = char2;
+      DisplayA[i].buffer[part*4+4] = char3;
       if( char0 == 0 || char1 == 0 || char2 == 0 || char3 == 0 ) {
-        Display[i].byteidx = 0;
-        Display[i].bitidx = 0;
-        Display[i].pending = TRUE; // Send one time.
+        DisplayA[i].byteidx = 0;
+        DisplayA[i].bitidx = 0;
+        DisplayA[i].pending = TRUE; // Send one time.
       }
     }
   }

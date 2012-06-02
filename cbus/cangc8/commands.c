@@ -176,7 +176,7 @@ unsigned char parseCmd(void) {
         var = rx_ptr->d6;
         if( idx < MAXDISPLAYS ) {
           // Display
-          Display[idx].addr = addr;
+          DisplayA[idx].addr = addr;
           eeWriteShort(EE_PORT_ADDR + 2*idx, addr);
         }
       }
@@ -233,12 +233,12 @@ unsigned char doPortEvent(int i ) {
       canmsg.d[1] = NN_temp & 0xFF;
       canmsg.d[2] = (NN_temp / 256) & 0xFF;
       canmsg.d[3] = NN_temp & 0xFF;
-      canmsg.d[4] = Display[i].addr / 256;
-      canmsg.d[5] = Display[i].addr % 256;
+      canmsg.d[4] = DisplayA[i].addr / 256;
+      canmsg.d[5] = DisplayA[i].addr % 256;
       canmsg.d[6] = i;
       canmsg.len = 7;
       return canQueue(&canmsg);
     }
   }
-  return 1;
+  return FALSE;
 }

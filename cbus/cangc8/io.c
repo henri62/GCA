@@ -60,8 +60,7 @@ void setupIO(byte clr) {
 
 
   for( idx = 0; idx < MAXDISPLAYS; idx++ ) {
-    Display[idx].addr = eeReadShort(EE_PORT_ADDR + 2 * idx);
-
+    DisplayA[idx].addr = eeReadShort(EE_PORT_ADDR + 2 * idx);
   }
 
 

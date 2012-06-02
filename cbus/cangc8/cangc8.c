@@ -46,8 +46,11 @@
 
 
 #pragma udata VARS_MAIN_ARRAYS1
-far DisplayDef Display[MAXDISPLAYS];
-
+far DisplayDef DisplayA[MAXDISPLAYS];
+/*
+#pragma udata VARS_MAIN_ARRAYS2
+far DisplayDef DisplayB[MAXDISPLAYS];
+*/
 #pragma udata access VARS_MAIN
 near unsigned char  can_transmit_timeout;
 near unsigned char  can_transmit_failed;
@@ -114,7 +117,7 @@ void main(void) {
 
   led1timer = 0;
   pointtimer = 0;
-  doEV = 0;
+  doEV = FALSE;
   evIdx = 0;
   Wait4NN = FALSE;
   isLearning = FALSE;
@@ -154,7 +157,7 @@ void main(void) {
       txed = parseCmd();
     }
 
-    if( l3 ) {
+    if( doEV && l3 ) {
       if( doPortEvent(evIdx) ) {
         evIdx++;
         if( evIdx >= MAXDISPLAYS ) {
