@@ -137,9 +137,9 @@ void main(void) {
 
   delay();
 
-  LED3 = PORT_ON; /* signal running system */
-
   setupDisplays();
+
+  LED3 = PORT_ON; /* signal running system */
 
   // Loop forever (nothing lasts forever...)
   while (1) {

@@ -30,6 +30,7 @@
 #include "cbusdefs.h"
 
 #include <delays.h>
+#include <string.h>
 
 #pragma udata access VARS_DISPLAY
 
@@ -43,23 +44,31 @@ void writeDisplays(void) {
   if( INTCONbits.T0IF ) {
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
     TMR0L = 256 - 125; // 4MHz resonator
+    clk ^= 1;
     LCD1_CLK = clk;
     LCD2_CLK = clk;
-    clk ^= 1;
+
 
     if( !clk ) {
       byte i;
       for( i = 0; i < MAXDISPLAYS; i++ ) {
         if( Display[i].pending ) {
+          byte m = Display[i].mode[Display[i].byteidx/8];
+          if( i == 0 ) {
+            LCD1_CSB = PORT_OFF;
+            LCD1_RS = (m >> (Display[i].byteidx%8));
+          }
+          else if( i == 1 ) {
+            LCD2_CSB = PORT_OFF;
+            LCD2_RS = (m >> (Display[i].byteidx%8));
+          }
           if( Display[i].bitidx < 8 ) {
             // set bit
             byte b = Display[i].buffer[Display[i].byteidx];
             if( i == 0 ) {
-              LCD1_CSB = PORT_OFF;
               LCD1_SI = (b >> (7-Display[i].bitidx));
             }
             else if( i == 1 ) {
-              LCD2_CSB = PORT_OFF;
               LCD2_SI = (b >> (7-Display[i].bitidx));
             }
             
@@ -70,17 +79,16 @@ void writeDisplays(void) {
             Display[i].byteidx++;
             Display[i].bitidx = 0;
 
-            if( Display[i].buffer[Display[i].byteidx] == 0 ) {
+            if( Display[i].buffer[Display[i].byteidx] == 0 || Display[i].byteidx >= BUFFERSIZE )
+            {
               Display[i].byteidx = 0;
               Display[i].pending = FALSE;
-            }
-            else {
-              // set mode
-              byte m = Display[i].mode[Display[i].byteidx/8];
+
               if( i == 0 )
-                LCD1_RS = (m >> (Display[i].byteidx%8));
+                LCD1_CSB = PORT_ON;
               if( i == 1 )
-                LCD2_RS = (m >> (Display[i].byteidx%8));
+                LCD1_CSB = PORT_ON;
+
             }
           }
         }
@@ -89,14 +97,6 @@ void writeDisplays(void) {
 
   }
 
-}
-
-void displayDelay(byte cnt) {
-  byte i;
-  for( i = 0; i < cnt; i++ );
-}
-
-void writeChar(char data) {
 }
 
 void setupDisplayIO(void) {
@@ -126,7 +126,6 @@ void setupDisplayIO(void) {
 void setupDisplays(void) {
   byte i;
   for( i = 0; i < MAXDISPLAYS; i++ ) {
-    memset(Display[i].buffer, 0, BUFFERSIZE );
     Display[i].mode[0] = 0x00; // All commands.
     Display[i].buffer[0] = 0x39;
     Display[i].buffer[1] = 0x1D;
@@ -134,19 +133,23 @@ void setupDisplays(void) {
     Display[i].buffer[3] = 0x6C;
     Display[i].buffer[4] = 0x7C;
     Display[i].buffer[5] = 0x38;
-    Display[i].buffer[6] = 0x0F;
+    Display[i].buffer[6] = 0x0C;
     Display[i].buffer[7] = 0x01;
 
-    Display[i].mode[1] = 0xFE;
+    Display[i].mode[1] = 0xFC;
     Display[i].buffer[8] = 0x06;
-    Display[i].buffer[ 9] = 'R';
-    Display[i].buffer[10] = 'o';
-    Display[i].buffer[11] = 'c';
-    Display[i].buffer[12] = 'r';
-    Display[i].buffer[13] = 'a';
-    Display[i].buffer[14] = 'i';
-    Display[i].buffer[15] = 'l';
-    Display[i].buffer[16] = 0; // Terminating zero.
+    Display[i].buffer[9] = 0x02;
+    Display[i].buffer[10] = 'R';
+    Display[i].buffer[11] = 'o';
+    Display[i].buffer[12] = 'c';
+    Display[i].buffer[13] = 'r';
+    Display[i].buffer[14] = 'a';
+    Display[i].buffer[15] = 'i';
+
+    Display[i].mode[2] = 0x01;
+    Display[i].buffer[16] = 'l';
+    Display[i].buffer[17] = 0; // Terminating zero.
+    
     Display[i].byteidx = 0;
     Display[i].bitidx = 0;
     Display[i].pending = TRUE; // Send one time.
@@ -180,18 +183,6 @@ void initDisplays(void) {
   setupDisplayIO();
 
 }
-
-void writeDisplay(byte idx) {
-  byte i;
-  cls();
-  home();
-  for( i = 0; i < 8; i++ ) {
-  }
-  nextLine();
-  for( i = 0; i < 8; i++ ) {
-  }
-}
-
 
 void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, byte char3) {
   byte i = flags & 0x03;
