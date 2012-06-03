@@ -39,8 +39,7 @@
 #define EE_NN 2          // 2 bytes node number of this unit
 #define EE_CANID EE_NN + 2  // 1 byte CANID
 #define EE_PORT_ADDR EE_CANID + 1  // 2 short event port 1
-#define EE_PORT_NODE EE_PORT_ADDR + 4
-#define EE_PORT_CONF EE_PORT_NODE + 4
+#define EE_PORT_CONF EE_PORT_ADDR + 4
 
 
 

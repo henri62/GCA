@@ -132,7 +132,7 @@ void setupDisplays(void) {
     DisplayA[i].buffer[1] = 0x1D; // IS2: 3 lines
     DisplayA[i].buffer[2] = 0x50; // Power control: Booster off
     DisplayA[i].buffer[3] = 0x6C; // Follower control
-    DisplayA[i].buffer[4] = 0x79; // Contrast
+    DisplayA[i].buffer[4] = 0x70 + (DisplayA[i].config & 0x0F); // Contrast
     DisplayA[i].buffer[5] = 0x38; // Goto IS0
     DisplayA[i].buffer[6] = 0x0C; // Cursor
     DisplayA[i].buffer[7] = 0x01; // Clear display
@@ -189,8 +189,9 @@ void initDisplays(void) {
 void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, byte char3) {
   byte i = flags & 0x03;
   for( i = 0; i < MAXDISPLAYS; i++ ) {
+
     if( DisplayA[i].addr == addr ) {
-    //if( TRUE ) {
+    
       byte part = flags >> 4;
 
       // Set mode flags to data:

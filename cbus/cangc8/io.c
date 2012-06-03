@@ -53,17 +53,18 @@ void setupIO(byte clr) {
 
   if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
     eeWrite(EE_CLEAN, 0);
+    NV1 = CFG_SHORT_EVENTS;
+    eeWrite(EE_NV, NV1);
+
     for( idx = 0; idx < MAXDISPLAYS; idx++ ) {
       eeWriteShort(EE_PORT_ADDR + 2 * idx, idx + 1);
-      eeWriteShort(EE_PORT_NODE + 2 * idx, 0);
-      eeWrite(EE_PORT_CONF + idx, 0x09);
+      eeWrite(EE_PORT_CONF + idx, 0x09); // Contrast
     }
   }
 
 
   for( idx = 0; idx < MAXDISPLAYS; idx++ ) {
     DisplayA[idx].config = eeRead(EE_PORT_CONF + idx);
-    DisplayA[idx].node   = eeReadShort(EE_PORT_NODE + 2 * idx);
     DisplayA[idx].addr   = eeReadShort(EE_PORT_ADDR + 2 * idx);
   }
 

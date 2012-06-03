@@ -151,6 +151,14 @@ unsigned char parseCmd(void) {
           CANID = rx_ptr->d4;
           eeWrite(EE_CANID, CANID);
         }
+        else if( nvnr == 3 ) {
+          DisplayA[0].config = rx_ptr->d4;
+          eeWrite(EE_PORT_CONF + 0, DisplayA[0].config);
+        }
+        else if( nvnr == 4 ) {
+          DisplayA[1].config = rx_ptr->d4;
+          eeWrite(EE_PORT_CONF + 1, DisplayA[1].config);
+        }
       }
       break;
 
@@ -231,8 +239,8 @@ unsigned char doPortEvent(int i ) {
       canmsg.opc = OPC_ENRSP;
       canmsg.d[0] = (NN_temp / 256) & 0xFF;
       canmsg.d[1] = NN_temp & 0xFF;
-      canmsg.d[2] = (NN_temp / 256) & 0xFF;
-      canmsg.d[3] = NN_temp & 0xFF;
+      canmsg.d[2] = NN_temp / 256;
+      canmsg.d[3] = NN_temp % 256;
       canmsg.d[4] = DisplayA[i].addr / 256;
       canmsg.d[5] = DisplayA[i].addr % 256;
       canmsg.d[6] = i;

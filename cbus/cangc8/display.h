@@ -44,7 +44,6 @@
 
 typedef struct {
   byte config;
-  int  node;
   int  addr;
   byte pending;
   byte byteidx;
