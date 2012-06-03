@@ -178,6 +178,7 @@ unsigned char parseCmd(void) {
         else if( nvnr == 4 ) {
           DisplayA[1].config = rx_ptr->d4;
           eeWrite(EE_PORT_CONF + 1, DisplayA[1].config);
+          setupDisplays();
         }
       }
       break;
