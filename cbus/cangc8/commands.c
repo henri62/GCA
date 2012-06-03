@@ -136,6 +136,26 @@ unsigned char parseCmd(void) {
           canQueue(&canmsg);
           txed = 1;
         }
+        else if( nvnr == 3 ) {
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = NN_temp & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = DisplayA[0].config;
+          canmsg.len = 4;
+          canQueue(&canmsg);
+          txed = 1;
+        }
+        else if( nvnr == 4 ) {
+          canmsg.opc = OPC_NVANS;
+          canmsg.d[0] = (NN_temp / 256) & 0xFF;
+          canmsg.d[1] = NN_temp & 0xFF;
+          canmsg.d[2] = nvnr;
+          canmsg.d[3] = DisplayA[1].config;
+          canmsg.len = 4;
+          canQueue(&canmsg);
+          txed = 1;
+        }
 
       }
       break;
