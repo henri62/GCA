@@ -249,7 +249,7 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
       }
       
       if( char0 == '|' ) {
-        byte offset = ((part*4+0)/16) + 16;
+        byte offset = ((part*4+0)/16+1) * 16;
         byte modebyte = (part*4+1) / 8;
         byte modebit  = (part*4+1) % 8;
         DisplayA[i].mode[modebyte] &= ~(0x01 << modebit);
@@ -263,7 +263,7 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
       }
 
       if( char1 == '|' ) {
-        byte offset = ((part*4+1)/16) + 16;
+        byte offset = ((part*4+1)/16+1) * 16;
         byte modebyte = (part*4+2) / 8;
         byte modebit  = (part*4+2) % 8;
         DisplayA[i].mode[modebyte] &= ~(0x01 << modebit);
@@ -277,7 +277,7 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
       }
 
       if( char2 == '|' ) {
-        byte offset = ((part*4+2)/16) + 16;
+        byte offset = ((part*4+2)/16+1) * 16;
         byte modebyte = (part*4+3) / 8;
         byte modebit  = (part*4+3) % 8;
         DisplayA[i].mode[modebyte] &= ~(0x01 << modebit);
@@ -291,7 +291,7 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
       }
 
       if( char3 == '|' ) {
-        byte offset = ((part*4+3)/16) + 16;
+        byte offset = ((part*4+3)/16+1) * 16;
         byte modebyte = (part*4+4) / 8;
         byte modebit  = (part*4+4) % 8;
         DisplayA[i].mode[modebyte] &= ~(0x01 << modebit);
