@@ -185,7 +185,17 @@ void setupDisplays(void) {
     DisplayA[i].buffer[47] = 'R';
     DisplayA[i].mode[6] = 0x01;
     DisplayA[i].buffer[48] = 'G';
-    DisplayA[i].buffer[49] = 0;
+    
+    if( DisplayA[i].config & 0x10 ) {
+      // Frst line double high
+      DisplayA[i].buffer[49] = 0x3E;
+      DisplayA[i].buffer[50] = 0x18;
+      DisplayA[i].buffer[51] = 0x3C;
+      DisplayA[i].buffer[52] = 0;
+    }
+    else {
+      DisplayA[i].buffer[49] = 0;
+    }
     
     DisplayA[i].byteidx = 0;
     DisplayA[i].bitidx = 0;
