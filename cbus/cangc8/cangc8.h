@@ -39,12 +39,17 @@
 #define EE_NN 2          // 2 bytes node number of this unit
 #define EE_CANID EE_NN + 2  // 1 byte CANID
 #define EE_PORT_ADDR EE_CANID + 1  // 2 short event port 1
+#define EE_PORT_NODE EE_PORT_ADDR + 4
+#define EE_PORT_CONF EE_PORT_NODE + 4
+
+
 
 // values
 #define MAGIC 93
 
 // node var 1
 #define CFG_ALL  0xFF
+#define CFG_SHORT_EVENTS  0x01
 
 
 

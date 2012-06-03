@@ -128,18 +128,18 @@ void setupDisplays(void) {
   byte i;
   for( i = 0; i < MAXDISPLAYS; i++ ) {
     DisplayA[i].mode[0] = 0x00; // All commands.
-    DisplayA[i].buffer[0] = 0x39;
-    DisplayA[i].buffer[1] = 0x1D;
-    DisplayA[i].buffer[2] = 0x50;
-    DisplayA[i].buffer[3] = 0x6C;
-    DisplayA[i].buffer[4] = 0x7C;
-    DisplayA[i].buffer[5] = 0x38;
-    DisplayA[i].buffer[6] = 0x0C;
-    DisplayA[i].buffer[7] = 0x01;
+    DisplayA[i].buffer[0] = 0x39; // Function set -> IS2
+    DisplayA[i].buffer[1] = 0x1D; // IS2: 3 lines
+    DisplayA[i].buffer[2] = 0x50; // Power control: Booster off
+    DisplayA[i].buffer[3] = 0x6C; // Follower control
+    DisplayA[i].buffer[4] = 0x79; // Contrast
+    DisplayA[i].buffer[5] = 0x38; // Goto IS0
+    DisplayA[i].buffer[6] = 0x0C; // Cursor
+    DisplayA[i].buffer[7] = 0x01; // Clear display
 
     DisplayA[i].mode[1] = 0xFC;
-    DisplayA[i].buffer[8] = 0x06;
-    DisplayA[i].buffer[9] = 0x02;
+    DisplayA[i].buffer[8] = 0x06; // Display ON
+    DisplayA[i].buffer[9] = 0x02; // Return home
     DisplayA[i].buffer[10] = 'R';
     DisplayA[i].buffer[11] = 'o';
     DisplayA[i].buffer[12] = 'c';
@@ -201,14 +201,63 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
         DisplayA[i].buffer[0] = 0x01; // cls
         DisplayA[i].mode[0] = 0xFE;
       }
+      
+      if( char0 == '|' ) {
+        byte offset = ((part*4+0)/16) + 16;
+        byte modebyte = (part*4+1) / 8;
+        byte modebit  = (part*4+1) % 8;
+        DisplayA[i].mode[modebyte] &= ~(0x01 << modebit);
+        DisplayA[i].buffer[part*4+1] = 0x80 + offset;
+      }
       else {
-        DisplayA[i].mode[modeidx] = mode | (0x0F << (part%2));
+        byte modebyte = (part*4+1) / 8;
+        byte modebit  = (part*4+1) % 8;
+        DisplayA[i].mode[modebyte] |= (0x01 << modebit);
+        DisplayA[i].buffer[part*4+1] = char0;
       }
 
-      DisplayA[i].buffer[part*4+1] = char0;
-      DisplayA[i].buffer[part*4+2] = char1;
-      DisplayA[i].buffer[part*4+3] = char2;
-      DisplayA[i].buffer[part*4+4] = char3;
+      if( char1 == '|' ) {
+        byte offset = ((part*4+1)/16) + 16;
+        byte modebyte = (part*4+2) / 8;
+        byte modebit  = (part*4+2) % 8;
+        DisplayA[i].mode[modebyte] &= ~(0x01 << modebit);
+        DisplayA[i].buffer[part*4+2] = 0x80 + offset;
+      }
+      else {
+        byte modebyte = (part*4+2) / 8;
+        byte modebit  = (part*4+2) % 8;
+        DisplayA[i].mode[modebyte] |= (0x01 << modebit);
+        DisplayA[i].buffer[part*4+2] = char1;
+      }
+
+      if( char2 == '|' ) {
+        byte offset = ((part*4+2)/16) + 16;
+        byte modebyte = (part*4+3) / 8;
+        byte modebit  = (part*4+3) % 8;
+        DisplayA[i].mode[modebyte] &= ~(0x01 << modebit);
+        DisplayA[i].buffer[part*4+3] = 0x80 + offset;
+      }
+      else {
+        byte modebyte = (part*4+3) / 8;
+        byte modebit  = (part*4+3) % 8;
+        DisplayA[i].mode[modebyte] |= (0x01 << modebit);
+        DisplayA[i].buffer[part*4+3] = char2;
+      }
+
+      if( char3 == '|' ) {
+        byte offset = ((part*4+3)/16) + 16;
+        byte modebyte = (part*4+4) / 8;
+        byte modebit  = (part*4+4) % 8;
+        DisplayA[i].mode[modebyte] &= ~(0x01 << modebit);
+        DisplayA[i].buffer[part*4+4] = 0x80 + offset;
+      }
+      else {
+        byte modebyte = (part*4+4) / 8;
+        byte modebit  = (part*4+4) % 8;
+        DisplayA[i].mode[modebyte] |= (0x01 << modebit);
+        DisplayA[i].buffer[part*4+4] = char3;
+      }
+
       if( char0 == 0 || char1 == 0 || char2 == 0 || char3 == 0 ) {
         DisplayA[i].byteidx = 0;
         DisplayA[i].bitidx = 0;
