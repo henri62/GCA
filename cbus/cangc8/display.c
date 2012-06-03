@@ -173,14 +173,19 @@ void setupDisplays(void) {
     DisplayA[i].buffer[36] = 'r';
     DisplayA[i].buffer[37] = 'a';
     DisplayA[i].buffer[38] = 'i';
-    DisplayA[i].buffer[39] = 'i';
-    DisplayA[i].mode[5] = 0x1F;
-    DisplayA[i].buffer[40] = 'l';
-    DisplayA[i].buffer[41] = '.';
-    DisplayA[i].buffer[42] = 'n';
-    DisplayA[i].buffer[43] = 'e';
-    DisplayA[i].buffer[44] = 't';
-    DisplayA[i].buffer[45] = 0;
+    DisplayA[i].buffer[39] = 'l';
+    DisplayA[i].mode[5] = 0xFF;
+    DisplayA[i].buffer[40] = '.';
+    DisplayA[i].buffer[41] = 'n';
+    DisplayA[i].buffer[42] = 'e';
+    DisplayA[i].buffer[43] = 't';
+    DisplayA[i].buffer[44] = ',';
+    DisplayA[i].buffer[45] = 'M';
+    DisplayA[i].buffer[46] = 'E';
+    DisplayA[i].buffer[47] = 'R';
+    DisplayA[i].mode[6] = 0x01;
+    DisplayA[i].buffer[48] = 'G';
+    DisplayA[i].buffer[49] = 0;
     
     DisplayA[i].byteidx = 0;
     DisplayA[i].bitidx = 0;
