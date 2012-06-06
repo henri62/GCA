@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>com.microchip.mplab.nbide.embedded.makeproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/make-project/1">
+            <name>cangc9</name>
+            <creation-uuid>79047e7c-35e2-4c05-b6db-34c300ffecb7</creation-uuid>
+            <make-project-type>0</make-project-type>
+            <c-extensions>c</c-extensions>
+            <cpp-extensions/>
+            <header-extensions>h</header-extensions>
+            <sourceEncoding>UTF-8</sourceEncoding>
+            <make-dep-projects/>
+        </data>
+    </configuration>
+</project>
