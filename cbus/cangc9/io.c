@@ -27,7 +27,7 @@ void initIO(void) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
 
-  TRISAbits.TRISA0 = 0;  // Serial out to GC4
+  TRISBbits.TRISB5 = 0;  // Serial out to GC4
 
   TRISAbits.TRISA1 = 0;  // LED1 RUN
   TRISAbits.TRISA2 = 0;  // LED2 Occupancy

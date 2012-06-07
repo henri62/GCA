@@ -44,7 +44,7 @@ RA6/7	 8MHz Resonator
 #define IN_DCC    PORTBbits.RB0
 #define IN_OCC    PORTBbits.RB3
 
-#define OUT_SER   PORTAbits.RA0
+#define OUT_SER   PORTBbits.RB5
 
 #define PORT_ON  1
 #define PORT_OFF 0
