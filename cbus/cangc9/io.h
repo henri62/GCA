@@ -24,7 +24,8 @@
 #define __IO_H
 /*
 RB4/RX	 Read BiDi at 120 or 250kBaud
-RB0	 Current detection, with 1.5s delay, and trigger for reading BiDi
+RB0	 DCC detection
+RB3	 Current detection
 RA0	 Software UART for sending data to the CAN-GC4
 RA1	 LED1 5V
 RA2	 LED2 Current detection
@@ -40,7 +41,8 @@ RA6/7	 8MHz Resonator
 #define LED4_SER  PORTAbits.RA4
 
 #define IN_TYPE   PORTBbits.RB2
-#define IN_OCC    PORTBbits.RB0
+#define IN_DCC    PORTBbits.RB0
+#define IN_OCC    PORTBbits.RB3
 
 #define OUT_SER   PORTAbits.RA0
 

@@ -26,6 +26,8 @@
 #include "defs.h"
 
 extern near byte bidiType;
+extern near byte dcc;
+extern near byte occ;
 extern near byte timer500;
 extern near byte timer200;
 extern near byte timer50;

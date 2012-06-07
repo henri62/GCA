@@ -34,8 +34,9 @@ void initIO(void) {
   TRISAbits.TRISA3 = 0;  // LED3 BiDi scanned
   TRISAbits.TRISA4 = 0;  // LED4 Serial
 
-  TRISBbits.TRISB0 = 1;  // Input occupancy detection
+  TRISBbits.TRISB0 = 1;  // Input DCC detection
   TRISBbits.TRISB2 = 1;  // Input BiDi type
+  TRISBbits.TRISB3 = 1;  // Input occupancy detection
 
   // Set default status:
   OUT_SER   = PORT_ON;

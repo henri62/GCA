@@ -36,7 +36,9 @@
 
 
 #pragma udata access VARS_MAIN_1
-near byte  bidiType;
+near byte bidiType;
+near byte dcc;
+near byte occ;
 near byte timer500;
 near byte timer200;
 near byte timer50;
@@ -59,10 +61,23 @@ void LOW_INT_VECT(void)
 }
 
 
+
+void doDebug(void) {
+  dcc = IN_DCC;
+  occ = IN_OCC;
+
+  LED2_OCC  = occ;
+  LED3_BIDI = dcc;
+}
+
+
 /*
  * 
  */
 void main(void) {
+
+  dcc = FALSE;
+  occ = FALSE;
 
   lDelay();
 
@@ -78,7 +93,7 @@ void main(void) {
   // The main loop.
   while( TRUE ) {
 
-
+    doDebug();
 
   }
 
