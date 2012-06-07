@@ -20,16 +20,15 @@
 
 
 
-#ifndef __CANGC9_H
-#define __CANGC9_H
+#ifndef __DEFS_H
+#define __DEFS_H
 
-#include "defs.h"
+#include <p18f1220.h>
 
-extern near byte bidiType;
-extern near byte timer500;
-extern near byte timer200;
-extern near byte timer50;
-extern near byte timer5;
+#define TRUE  1
+#define FALSE 0
 
+#define byte unsigned char
 
 #endif
+

@@ -22,7 +22,7 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
-void delay(void);
+void sDelay(void);
 void lDelay(void);
 void strToByte( unsigned char* s, unsigned char len, unsigned char* data );
 

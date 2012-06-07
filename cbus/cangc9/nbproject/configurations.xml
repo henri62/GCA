@@ -10,6 +10,7 @@
       <itemPath>serial.h</itemPath>
       <itemPath>isr.h</itemPath>
       <itemPath>utils.h</itemPath>
+      <itemPath>defs.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"

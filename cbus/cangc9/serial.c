@@ -19,6 +19,26 @@
 */
 
 
+#include "defs.h"
 #include "cangc9.h"
 #include "serial.h"
+#include "io.h"
 
+static byte puls = 0;
+// TMR0 generates a heartbeat every 32000000/4/2/208 == 19230.
+#pragma interrupt sendSerial
+void sendSerial(void) {
+
+  // Timer0 interrupt handler
+  if( INTCONbits.T0IF ) {
+    //byte inLN = LNRX;
+
+    INTCONbits.T0IF  = 0;     // Clear interrupt flag
+    TMR0L = 256 - 208;         // Reset counter with a correction of 10 cycles
+
+
+    LED4_SER = puls; // Debug.
+    
+    puls ^= 1;
+  }
+}

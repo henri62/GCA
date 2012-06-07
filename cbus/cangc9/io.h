@@ -46,10 +46,6 @@ RA6/7	 8MHz Resonator
 
 #define PORT_ON  1
 #define PORT_OFF 0
-#define TRUE  1
-#define FALSE 0
-
-#define byte unsigned char
 
 
 void initIO(void);

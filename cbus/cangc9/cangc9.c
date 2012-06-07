@@ -19,10 +19,12 @@
 */
 
 
+#include "defs.h"
 #include "cangc9.h"
 #include "io.h"
 #include "utils.h"
 #include "isr.h"
+#include "serial.h"
 
 #pragma config OSC=HSPLL, IESO=OFF
 #pragma config PWRT=ON, WDT=OFF, WDTPS=256
@@ -35,6 +37,27 @@
 
 #pragma udata access VARS_MAIN_1
 near byte  bidiType;
+near byte timer500;
+near byte timer200;
+near byte timer50;
+near byte timer5;
+
+
+/*
+ * Interrupt vectors
+ */
+#pragma code high_vector=0x08
+void HIGH_INT_VECT(void)
+{
+    _asm GOTO sendSerial _endasm
+}
+
+#pragma code low_vector=0x18
+void LOW_INT_VECT(void)
+{
+    _asm GOTO isr_low _endasm
+}
+
 
 /*
  * 
@@ -44,8 +67,9 @@ void main(void) {
   lDelay();
 
   initIO();
+  initTimers();
 
-  delay();
+  sDelay();
 
   bidiType = IN_TYPE;
 

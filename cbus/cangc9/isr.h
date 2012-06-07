@@ -23,6 +23,10 @@
 #ifndef __ISR_H
 #define __ISR_H
 
+// ISR prototype
+extern void isr_low(void);
+
+void initTimers(void);
 
 
 #endif

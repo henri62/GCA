@@ -21,34 +21,25 @@
 
 #include "utils.h"
 
-//#pragma code APP
-
 /*
  * A delay routine
  */
-void delay(void) {
+void sDelay(void) {
   unsigned char i, j;
-  for (i = 0; i < 10; i++) { // dely     movlw    .10
-    //          movwf    Count1
-    for (j = 0; j <= 245; j++) // dely2    clrf    Count
-      ; // dely1    decfsz    Count,F
-    //          goto    dely1
-    //          decfsz    Count1
-  } //          bra        dely2
-} //          return
+  for (i = 0; i < 10; i++) {
+    for (j = 0; j <= 245; j++);
+  }
+}
 
 /*
  * Long delay
  */
 void lDelay(void) {
   unsigned char i;
-  for (i = 0; i < 100; i++) { //ldely	movlw	.100
-    //		movwf	Count2
-    delay(); //ldely1	call	dely
-    //		decfsz	Count2
-  } //		bra		ldely1
-  //
-} //		return
+  for (i = 0; i < 100; i++) {
+    sDelay();
+  }
+}
 
 
 void strToByte( unsigned char* s, unsigned char len, unsigned char* data ) {
