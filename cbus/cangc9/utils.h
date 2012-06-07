@@ -19,13 +19,12 @@
 */
 
 
+#ifndef __UTILS_H
+#define __UTILS_H
 
-#ifndef __CANGC9_H
-#define __CANGC9_H
-
-#include <p18f1220.h>
-
-extern near unsigned char bidiType;
+void delay(void);
+void lDelay(void);
+void strToByte( unsigned char* s, unsigned char len, unsigned char* data );
 
 
 #endif

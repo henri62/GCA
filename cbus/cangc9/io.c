@@ -21,3 +21,27 @@
 
 #include "cangc9.h"
 #include "io.h"
+
+void initIO(void) {
+  // all digital I/O
+  ADCON0 = 0x00;
+  ADCON1 = 0x0F;
+
+  TRISAbits.TRISA0 = 0;  // Serial out to GC4
+
+  TRISAbits.TRISA1 = 0;  // LED1 RUN
+  TRISAbits.TRISA2 = 0;  // LED2 Occupancy
+  TRISAbits.TRISA3 = 0;  // LED3 BiDi scanned
+  TRISAbits.TRISA4 = 0;  // LED4 Serial
+
+  TRISBbits.TRISB0 = 1;  // Input occupancy detection
+  TRISBbits.TRISB2 = 1;  // Input BiDi type
+
+  // Set default status:
+  OUT_SER   = PORT_ON;
+  LED1_RUN  = PORT_OFF;
+  LED2_OCC  = PORT_OFF;
+  LED3_BIDI = PORT_OFF;
+  LED4_SER  = PORT_OFF;
+
+}

@@ -9,6 +9,7 @@
       <itemPath>bidi.h</itemPath>
       <itemPath>serial.h</itemPath>
       <itemPath>isr.h</itemPath>
+      <itemPath>utils.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -22,6 +23,7 @@
       <itemPath>bidi.c</itemPath>
       <itemPath>serial.c</itemPath>
       <itemPath>isr.c</itemPath>
+      <itemPath>utils.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

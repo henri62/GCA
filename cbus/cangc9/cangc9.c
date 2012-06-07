@@ -21,12 +21,42 @@
 
 #include "cangc9.h"
 #include "io.h"
+#include "utils.h"
 #include "isr.h"
+
+#pragma config OSC=HSPLL, IESO=OFF
+#pragma config PWRT=ON, WDT=OFF, WDTPS=256
+#pragma config MCLRE=OFF, DEBUG=OFF
+#pragma config LVP=OFF
+#pragma config CP0=OFF, CP1=OFF, CPB=OFF, CPD=OFF
+#pragma config WRT0=OFF, WRT1=OFF, WRTB=OFF, WRTC=OFF, WRTD=OFF
+#pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
+
+
+#pragma udata access VARS_MAIN_1
+near byte  bidiType;
 
 /*
  * 
  */
 void main(void) {
+
+  lDelay();
+
+  initIO();
+
+  delay();
+
+  bidiType = IN_TYPE;
+
+  LED1_RUN = PORT_ON;
+
+  // The main loop.
+  while( TRUE ) {
+
+
+
+  }
 
 }
 

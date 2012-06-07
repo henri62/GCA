@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangc9.o ${OBJECTDIR}/io.o ${OBJECTDIR}/bidi.o ${OBJECTDIR}/serial.o ${OBJECTDIR}/isr.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/cangc9.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/bidi.o.d ${OBJECTDIR}/serial.o.d ${OBJECTDIR}/isr.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangc9.o ${OBJECTDIR}/io.o ${OBJECTDIR}/bidi.o ${OBJECTDIR}/serial.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/cangc9.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/bidi.o.d ${OBJECTDIR}/serial.o.d ${OBJECTDIR}/isr.o.d ${OBJECTDIR}/utils.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/cangc9.o ${OBJECTDIR}/io.o ${OBJECTDIR}/bidi.o ${OBJECTDIR}/serial.o ${OBJECTDIR}/isr.o
+OBJECTFILES=${OBJECTDIR}/cangc9.o ${OBJECTDIR}/io.o ${OBJECTDIR}/bidi.o ${OBJECTDIR}/serial.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o
 
 
 CFLAGS=
@@ -106,6 +106,12 @@ ${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/isr.o 
 	
+${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/utils.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
+	
 else
 ${OBJECTDIR}/cangc9.o: cangc9.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -136,6 +142,12 @@ ${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/isr.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/isr.o 
+	
+${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/utils.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
 	
 endif
 
