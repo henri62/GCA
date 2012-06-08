@@ -1,3 +1,6 @@
+Version 467
+ * MGV_AXLE_COUNTER_LOCONET_ID changed from 0x01 to 0x40 to avoid Lissy conflicts
+
 Version 130
  * SV handling updated. Addresses for an axle are transmitted in two SV's. 
    The uneven SV holds the low part of the addres, the even SV holds the high part of an address. 
