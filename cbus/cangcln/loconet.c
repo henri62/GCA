@@ -314,7 +314,7 @@ void ln2CBus(void) {
       canmsg.d[3] = addr % 256;
       canmsg.d[4] = value / 256;
       canmsg.d[5] = value % 256;
-      canmsg.d[6] = 0;
+      canmsg.d[6] = dir;
       canmsg.len = 7;
       canQueue(&canmsg);
       break;
