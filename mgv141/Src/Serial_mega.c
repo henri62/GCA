@@ -1,8 +1,8 @@
 
 /* *INDENT-OFF* */
-#include <avr\io.h>
-#include <avr\pgmspace.h>
-#include <avr\interrupt.h>
+#include <avr/io.h>
+#include <avr/pgmspace.h>
+#include <avr/interrupt.h>
 #include <inttypes.h>
 #include "serial_mega.h"
 

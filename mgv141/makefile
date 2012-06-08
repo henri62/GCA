@@ -7,8 +7,8 @@ REMOVE = rm -f
 OUTPUTDIR=Out
 APPINC = Src
 APPSRC = Src
-LOCONETSRC = Src/LocoNet
-LOCONETINC = Src/LocoNet
+LOCONETSRC = Src/Loconet
+LOCONETINC = Src/Loconet
 
 
 CFLAGS=-g -mmcu=$(MCU) -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \

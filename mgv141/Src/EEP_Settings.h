@@ -20,7 +20,7 @@
  */
 
 #include <inttypes.h>
-#include <avr\eeprom.h>
+#include <avr/eeprom.h>
 
 /*
   ******************************************************************************
