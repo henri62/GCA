@@ -306,7 +306,7 @@ void ln2CBus(void) {
       valL = LNPacket[6] & 0x7F;
       valH = LNPacket[5] & 0x7F;
       value = valL + (valH << 7); // Ident.
-      dir   = ( LNPacket[3] & 0x20 ) ? TRUE:FALSE;
+      dir   = ( LNPacket[3] & 0x20 ) ? 1:0;
       canmsg.opc  = OPC_ACON3;
       canmsg.d[0] = 0;
       canmsg.d[1] = 0;
@@ -314,7 +314,7 @@ void ln2CBus(void) {
       canmsg.d[3] = addr % 256;
       canmsg.d[4] = value / 256;
       canmsg.d[5] = value % 256;
-      canmsg.d[6] = dir;
+      canmsg.d[6] = dir + ((LNPacket[2]&0x40)?0x02:0x00); // Direction and Wheel counter flag
       canmsg.len = 7;
       canQueue(&canmsg);
       break;
