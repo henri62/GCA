@@ -50,7 +50,7 @@
 #define MGV_AXLE_COUNTER_LOCONET_CMD_RST        0xB0   /**< Loconet switch command is used to reset counters */
 #define MGV_AXLE_COUNTER_LOCONET_X_PEER         0xE5   /**< Loconet XPeer command */
 #define MGV_AXLE_COUNTER_X_PEER_MSG_SIZE        0x10           /**< Loconet Xpeer response number of bytes */
-#define MGV_AXLE_COUNTER_LOCONET_ID             0x01   /**< ID of OPC_LISSY_REP */
+#define MGV_AXLE_COUNTER_LOCONET_ID             0x40   /**< ID of OPC_LISSY_REP */
 
 #define MGV_AXLE_COUNTER_X_PEER_COMMAND_WRITE   0x01   /**< Loconet Xpeer write sv */
 #define MGV_AXLE_COUNTER_X_PEER_COMMAND_READ    0x02   /**< Loconet Xpeer read sv */
