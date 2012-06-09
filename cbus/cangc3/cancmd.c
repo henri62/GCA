@@ -261,7 +261,7 @@ void main(void) {
         // Handle slot & service mode timeout and beeps every half second
         if (op_flags.slot_timer) {
             for (i = 0; i < MAX_HANDLES; i++) {
-                if (q_queue[i].status.valid) {
+                if (q_queue[i].status.valid && q_queue[i].speed == 0) {
                     if (--q_queue[i].timeout == 0) {
                         q_queue[i].status.valid = 0;
                     }
