@@ -27,6 +27,11 @@
 #include "io.h"
 #include "main.h"
 #include "spica.h"
+#include "rocrail.h"
+#include "cbusdefs.h"
+#include "loconet.h"
+#include "isr.h"
+#include "cbus.h"
 
 #pragma config OSC=HSPLL, FCMEN=OFF, IESO=OFF
 #pragma config PWRT=ON, BOREN=BOHW, BORV=2, WDT=OFF, WDTPS=256
@@ -36,8 +41,45 @@
 #pragma config WRT0=OFF, WRT1=OFF, WRTB=OFF, WRTC=OFF, WRTD=OFF
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 
-#pragma udata VARS_MAIN_ARRAYS1
-far slot slots[MAX_SLOTS];
+#pragma udata access VARS_MAIN_1
+near unsigned char  can_transmit_timeout;
+near unsigned char  can_transmit_failed;
+near unsigned char  can_bus_off;
+near unsigned short NN_temp;
+near unsigned char  CANID;
+near unsigned char  Latcount;
+near unsigned char  NV1;
+near unsigned char  ledBUStimer;
+near unsigned char  Wait4NN;
+near unsigned char  isLearning;
+volatile near unsigned char tmr0_reload;
+
+
+#pragma romdata parameters
+const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_SPICA, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
+
+
+void initIO(void);
+void initCAN(void);
+void initTimers(void);
+
+
+/*
+ * Interrupt vectors
+ */
+#pragma code high_vector=0x08
+void HIGH_INT_VECT(void)
+{
+    _asm GOTO scanLN _endasm
+}
+
+#pragma code low_vector=0x18
+void LOW_INT_VECT(void)
+{
+    _asm GOTO isr_low _endasm
+}
+
+
 
 /*
  * 
@@ -45,10 +87,45 @@ far slot slots[MAX_SLOTS];
 void main(void) {
   setupIO();
 
+  initIO();
+  initCAN();
+  initTimers();
+
   LED2_RUN = PORT_ON;
 
   while(TRUE) {
 
   }
+}
+
+
+
+
+void initIO(void) {
+
+}
+
+void initCAN(void) {
+  // Setup ID
+  Tx1[con] = 0;
+  Tx1[sidh] = 0b10110000 | (CANID & 0x78) >>3;
+  Tx1[sidl] = (CANID & 0x07) << 5;
+
+  // Setup TXB0 with high priority OPC_HLT
+  TXB0SIDH = 0b01110000 | (CANID & 0x78) >>3;
+  TXB0SIDL = (CANID & 0x07) << 5;
+  TXB0DLC = 1;
+  TXB0D0 = OPC_HLT;
+
+  // enable interrupts
+  INTCONbits.GIEH = 1;
+  INTCONbits.GIEL = 1;
+
+  cbusSetup();
+}
+
+
+void initTimers(void) {
+
 }
 

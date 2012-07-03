@@ -53,3 +53,44 @@ void setupIO(void) {
 
 }
 
+// Called every 3ms.
+void doLEDTimers(void) {
+  if( ledBUStimer > 0 ) {
+    ledBUStimer--;
+    if( ledBUStimer == 0 ) {
+      LED4_BUS = 0;
+    }
+  }
+
+}
+
+/*
+unsigned char checkFlimSwitch(void) {
+  unsigned char val = SW;
+  return !val;
+}
+*/
+
+
+
+static unsigned char __LED6_FLIM = 0;
+void doLEDs(void) {
+  if( Wait4NN || isLearning) {
+    //LED6_FLIM = __LED6_FLIM;
+    __LED6_FLIM ^= 1;
+  }
+  else {
+    //LED6_FLIM = PORT_OFF;
+  }
+
+}
+
+
+static unsigned char __LED4 = 0;
+void doLED250(void) {
+}
+
+
+
+
+

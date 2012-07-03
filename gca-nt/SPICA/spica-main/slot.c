@@ -1,3 +1,4 @@
+
 /*
  Rocrail - Model Railroad Software
 
@@ -21,22 +22,15 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-#ifndef __MAIN_H
-#define __MAIN_H
-
+#include "main.h"
 #include "spica.h"
 
-typedef struct _slot {
-  byte addrl;
-  byte addrh;
-  byte speed;
-  byte fn[4];
-} slot;
 
-#define MAX_SLOTS 32
-extern slot slots[MAX_SLOTS];
+#pragma udata SLOTS1
+slot slots[MAX_SLOTS];
+
+#pragma udata SLOTS2
 
 
 
-#endif
+

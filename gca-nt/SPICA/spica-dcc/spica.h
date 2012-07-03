@@ -31,6 +31,7 @@
 #define FALSE 0
 #define byte unsigned char
 
+extern near unsigned char  ledBUStimer;
 
 
 

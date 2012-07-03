@@ -31,9 +31,9 @@
 #define PORT_OFF 0
 
 // LEDs
-#define LED1_PT      PORTBbits.RB0
+#define LED1_PT      PORTBbits.RB0 // Accept programming commands
 #define LED2_RUN     PORTBbits.RB1
-#define LED3_BOOSTER PORTBbits.RB4
+#define LED3_BOOSTER PORTBbits.RB4 // Rail power ON/OFF
 #define LED4_BUS     PORTBbits.RB5
 
 // Buttons
@@ -57,6 +57,9 @@
 
 
 void setupIO(void);
+void doLEDTimers(void);
+void doLED250(void);
+void doLEDs(void);
 
 
 #endif

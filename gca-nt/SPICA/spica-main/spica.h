@@ -25,10 +25,24 @@
 #ifndef __SPICA_H
 #define __SPICA_H
 
-#include <p18f2480.h>
+#include <p18f2585.h>
 
 #define byte unsigned char
 
+#define FIXED_CAN_ID 0x72
+#define DEFAULT_NN 	0xFFFE
+#define MAJOR_VER 	1
+#define MINOR_VER 	0	// Minor version character
+
+#define NV_NUM		0	// Number of node variables
+#define EVT_NUM		0	// Number of event variables
+#define EVperEVT	0	// Event variables per event
+
+
+extern near unsigned char Latcount;
+extern near unsigned char ledBUStimer;
+extern near unsigned char Wait4NN;
+extern near unsigned char isLearning;
 
 
 

@@ -1,14 +1,13 @@
 /*
+ Copyright (C) MERG CBUS
+
  Rocrail - Model Railroad Software
 
- Copyright (C) 2002-2012 Rob Versluis, Rocrail.net
-
- Without an official permission commercial use is not permitted.
- Forking this project is not permitted.
+ Copyright (C) Rob Versluis <r.j.versluis@rocrail.net>
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
- as published by the Free Software Foundation; either version 2
+ as published by the Free Software Foundation; either version 3
  of the License, or (at your option) any later version.
 
  This program is distributed in the hope that it will be useful,
@@ -22,21 +21,16 @@
 */
 
 
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __UTILS_H
+#define __UTILS_H
 
-#include "spica.h"
-
-typedef struct _slot {
-  byte addrl;
-  byte addrh;
-  byte speed;
-  byte fn[4];
-} slot;
-
-#define MAX_SLOTS 32
-extern slot slots[MAX_SLOTS];
-
+unsigned char eeRead(unsigned char addr);
+void eeWrite(unsigned char addr, unsigned char data);
+unsigned short eeReadShort(unsigned char addr);
+void eeWriteShort(unsigned char addr, unsigned short data);
+void delay(void);
+void lDelay(void);
+void strToByte( unsigned char* s, unsigned char len, unsigned char* data );
 
 
 #endif
