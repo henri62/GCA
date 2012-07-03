@@ -32,13 +32,14 @@
 
 // LEDs
 #define LED1_PT      PORTBbits.RB0 // Accept programming commands
-#define LED2_RUN     PORTBbits.RB1
+#define LED2_RUN     PORTBbits.RB1 // Also used for FLiM
 #define LED3_BOOSTER PORTBbits.RB4 // Rail power ON/OFF
-#define LED4_BUS     PORTBbits.RB5
+#define LED4_BUS     PORTBbits.RB5 // CBUS & LocoNet activity
 
 // Buttons
-#define SW1_PT       PORTCbits.RC4
-#define PB1_POWER    PORTCbits.RC5
+#define PB1_POWER    PORTCbits.RC5 // Track power
+#define PB2_PT       PORTCbits.RC4 // Use of internal booster: Track/PT
+#define PB3_FLIM     PORTCbits.RC3
 
 // LocoNet
 #define LNTX         PORTCbits.RC1

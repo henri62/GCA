@@ -74,7 +74,7 @@ void scanLN(void) {
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
     TMR0L = 256 - 80 + 18;         // Reset counter with a correction of 10 cycles
 
-    //LNSCAN = PORT_ON;
+    BUZZER = PORT_ON;
 
     samplepart++;
     if( samplepart > 2 ) {
@@ -212,7 +212,7 @@ void scanLN(void) {
 
     }
 
-    //LNSCAN = PORT_OFF;
+    BUZZER = PORT_OFF;
   }
 
 }
@@ -238,6 +238,28 @@ byte getLNSize(byte opc) {
     }
   }
   return 0;
+}
+
+
+
+void doLNcmd(void) {
+  unsigned int addrL, addrH, addr;
+  unsigned int valL, valH, value;
+  byte dir, type;
+
+  LED4_BUS = PORT_ON;
+  ledBUStimer = 20;
+  switch( LNPacket[0]) {
+
+    case OPC_GPON:
+      LED3_BOOSTER = PORT_ON;
+      break;
+
+    case OPC_GPOFF:
+      LED3_BOOSTER = PORT_OFF;
+      break;
+
+  }
 }
 
 byte doLocoNet(void) {
@@ -318,8 +340,8 @@ byte doLocoNet(void) {
       if( LNIndex == LNSize ) {
         // Packet complete.
         LNIndex = 0;
-        // Translate to CBUS.
-        //ln2CBus();
+        // Process packet.
+        doLNcmd();
       }
     }
     else {

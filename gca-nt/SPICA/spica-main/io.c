@@ -36,8 +36,9 @@ void setupIO(void) {
   TRISBbits.TRISB5 = 0;  // LED4_BUS
 
   // Buttons
-  TRISCbits.TRISC4 = 1; // SW1_PT
+  TRISCbits.TRISC4 = 1; // PB2_PT
   TRISCbits.TRISC5 = 1; // PB1_POWER
+  TRISCbits.TRISC3 = 1; // PB3_FLIM
 
   // LocoNet
   TRISCbits.TRISC1 = 0; // LNTX
@@ -50,6 +51,8 @@ void setupIO(void) {
   LED2_RUN     = PORT_OFF;
   LED3_BOOSTER = PORT_OFF;
   LED4_BUS     = PORT_OFF;
+  LNTX         = PORT_OFF;
+
 
 }
 
@@ -64,23 +67,23 @@ void doLEDTimers(void) {
 
 }
 
-/*
+
 unsigned char checkFlimSwitch(void) {
-  unsigned char val = SW;
+  unsigned char val = PB3_FLIM;
   return !val;
 }
-*/
+
 
 
 
 static unsigned char __LED6_FLIM = 0;
 void doLEDs(void) {
   if( Wait4NN || isLearning) {
-    //LED6_FLIM = __LED6_FLIM;
+    LED2_RUN = __LED6_FLIM;
     __LED6_FLIM ^= 1;
   }
   else {
-    //LED6_FLIM = PORT_OFF;
+    LED2_RUN = PORT_ON;
   }
 
 }
