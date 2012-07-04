@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/spica-dcc.o ${OBJECTDIR}/io.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/dcc.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/spica-dcc.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/dcc.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/spica-dcc.o ${OBJECTDIR}/io.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/dcc.o ${OBJECTDIR}/isr.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/spica-dcc.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/dcc.o.d ${OBJECTDIR}/isr.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/spica-dcc.o ${OBJECTDIR}/io.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/dcc.o
+OBJECTFILES=${OBJECTDIR}/spica-dcc.o ${OBJECTDIR}/io.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/dcc.o ${OBJECTDIR}/isr.o
 
 
 CFLAGS=
@@ -100,6 +100,12 @@ ${OBJECTDIR}/dcc.o: dcc.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/dcc.o   dcc.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/dcc.o 
 	
+${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/isr.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/isr.o 
+	
 else
 ${OBJECTDIR}/spica-dcc.o: spica-dcc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -124,6 +130,12 @@ ${OBJECTDIR}/dcc.o: dcc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/dcc.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/dcc.o   dcc.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/dcc.o 
+	
+${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/isr.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/isr.o 
 	
 endif
 

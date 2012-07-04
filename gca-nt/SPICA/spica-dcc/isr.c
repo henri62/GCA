@@ -21,35 +21,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-#ifndef __IO_H
-#define __IO_H
-
-#define PORT_ON 1
-#define PORT_OFF 0
-
-// LEDs
-#define LED5_RUN     PORTBbits.RB0
-
-// DCC
-#define DCC_OUTA     PORTBbits.RB2
-#define DCC_OUTB     PORTBbits.RB3
-#define DCC_OUT_POS  PORTBbits.RB2
-#define DCC_OUT_NEG  PORTBbits.RB3
-
-// PT
-#define DCC_PT_ACK    PORTAbits.RA0
-#define DCC_PT_DCCA   PORTBbits.RB5
-#define DCC_PT_DCCB   PORTAbits.RA2
-#define DCC_PT_ENABLE PORTAbits.RA1
-#define DCC_NEG       PORTBbits.RB5
-#define DCC_POS       PORTAbits.RA2
-#define DCC_EN        PORTAbits.RA1
-
-#define DCC_DEBUG PORTBbits.RB7
+#include "io.h"
 
 
-void setupIO(void);
+#pragma interruptlow isr_low
+void isr_low(void) {
+}
 
-
-#endif

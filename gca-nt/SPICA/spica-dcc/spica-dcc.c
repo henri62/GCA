@@ -26,6 +26,7 @@
 
 #include "io.h"
 #include "dcc.h"
+#include "isr.h"
 #include "utils.h"
 
 #pragma config OSC=HSPLL, IESO=OFF
@@ -54,13 +55,13 @@ void HIGH_INT_VECT(void)
     _asm GOTO doDCC _endasm
 }
 
-/*
+
 #pragma code low_vector=0x18
 void LOW_INT_VECT(void)
 {
     _asm GOTO isr_low _endasm
 }
-*/
+
 
 
 
@@ -69,7 +70,6 @@ void LOW_INT_VECT(void)
  */
 void main(void) {
   lDelay();
-
   setupIO();
 
   setupTImers();
@@ -85,12 +85,13 @@ void main(void) {
 void setupTImers(void) {
 
   T0CON = 0x41;
-  TMR0L = 0;
+  TMR0L = TMR0_DCC;
   TMR0H = 0;
   INTCONbits.TMR0IE = 1;
   T0CONbits.TMR0ON = 1;
   INTCON2bits.TMR0IP = 1;
-  
+
+
   // enable interrupts
   INTCONbits.GIEH = 1;
   INTCONbits.GIEL = 0;

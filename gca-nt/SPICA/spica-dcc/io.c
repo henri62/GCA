@@ -26,6 +26,7 @@
 
 void setupIO(void) {
   // Setup A/D - 1 i/ps with internal reference
+  
   ADCON2 = 0b10000110; // result right justified, Fosc/64
   ADCON1 = 0b00001110; // Internal Vref, AN0 analogue input
   ADCON0 = 0b00000001; // Channel 0, On
@@ -43,18 +44,19 @@ void setupIO(void) {
   TRISAbits.TRISA2 = 0;  // DCC_PT_DCCB
   TRISAbits.TRISA1 = 0;  // DCC_PT_ENABLE
 
-  TRISAbits.TRISA4 = 0;  // DCC_DEBUG
+  TRISBbits.TRISB7 = 0;  // DCC_DEBUG
 
 
 
   LED5_RUN = PORT_OFF;
-  
+  /*
   DCC_OUTA = PORT_OFF;
   DCC_OUTB = PORT_OFF;
 
   DCC_PT_DCCA   = PORT_OFF;
   DCC_PT_DCCB   = PORT_OFF;
   DCC_PT_ENABLE = PORT_OFF;
+  */
 }
 
 
