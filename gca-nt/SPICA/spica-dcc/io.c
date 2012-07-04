@@ -33,6 +33,7 @@ void setupIO(void) {
 
   // LEDs
   TRISBbits.TRISB0 = 0;  // LED5_RUN
+  TRISAbits.TRISA4 = 0;  // LED6_PT
 
   // DCC
   TRISBbits.TRISB2 = 0;  // DCC_OUTA
@@ -44,19 +45,20 @@ void setupIO(void) {
   TRISAbits.TRISA2 = 0;  // DCC_PT_DCCB
   TRISAbits.TRISA1 = 0;  // DCC_PT_ENABLE
 
-  TRISBbits.TRISB7 = 0;  // DCC_DEBUG
+  TRISBbits.TRISB7 = 1;  // PB2_PT
 
 
 
   LED5_RUN = PORT_OFF;
-  /*
+  LED6_PT  = PORT_OFF;
+
   DCC_OUTA = PORT_OFF;
   DCC_OUTB = PORT_OFF;
 
   DCC_PT_DCCA   = PORT_OFF;
   DCC_PT_DCCB   = PORT_OFF;
   DCC_PT_ENABLE = PORT_OFF;
-  */
+  
 }
 
 

@@ -43,7 +43,7 @@ near slot slots[MAX_SLOTS];
 
 //#pragma udata access VARS_MAIN_1
 
-void setupTImers(void);
+void setupTimers(void);
 
 
 /*
@@ -72,17 +72,24 @@ void main(void) {
   lDelay();
   setupIO();
 
-  setupTImers();
+  dccSetup();
+  
+  setupTimers();
 
   LED5_RUN = PORT_ON;
 
   while(TRUE) {
-    
+
+    if( PB2_PT == 1 ) {
+      //SWAP_OP ^= 1;
+    }
+    LED6_PT = SWAP_OP;
+
   }
 
 }
 
-void setupTImers(void) {
+void setupTimers(void) {
 
   T0CON = 0x41;
   TMR0L = TMR0_DCC;

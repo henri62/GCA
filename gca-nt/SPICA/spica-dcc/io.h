@@ -30,6 +30,8 @@
 
 // LEDs
 #define LED5_RUN     PORTBbits.RB0
+#define LED6_PT      PORTAbits.RA4
+#define OVERLOAD_PIN PORTAbits.RA4
 
 // DCC
 #define DCC_OUTA     PORTBbits.RB2
@@ -46,7 +48,7 @@
 #define DCC_POS       PORTAbits.RA2
 #define DCC_EN        PORTAbits.RA1
 
-#define DCC_DEBUG PORTBbits.RB7
+#define PB2_PT        PORTBbits.RB7
 
 
 void setupIO(void);

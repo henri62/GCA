@@ -125,7 +125,9 @@ extern near unsigned char ad_state;
 extern volatile near unsigned char ovld_delay;
 volatile extern near unsigned char imax;
 extern near unsigned char iccq;
+extern near unsigned char SWAP_OP;
 
 void doDCC(void);
+void dccSetup(void);
 
 #endif

@@ -37,7 +37,6 @@
 #include "utils.h"
 
 
-#define SWAP_OP 1
 //
 // DCC bit state machine macros
 //
@@ -94,6 +93,7 @@ near unsigned char dcc_idx_m;
 near unsigned short long slot_timer;
 
 near unsigned char awd_count;
+near unsigned char SWAP_OP;
 
 
 //
@@ -192,7 +192,6 @@ near unsigned char iccq;
 void doDCC(void) {
 
   if (INTCONbits.T0IF) {
-    //DCC_DEBUG = PORT_ON;
     LED5_RUN = PORT_ON;
     INTCONbits.T0IF = 0; // Clear interrupt flag
     TMR0L = TMR0_DCC;
@@ -581,7 +580,7 @@ void doDCC(void) {
                   }
                 } else {
                   // Dead short - shutdown immediately
-                  //OVERLOAD_PIN = 1;
+                  OVERLOAD_PIN = 1;
                   if (SWAP_OP == 1) {
                     // programming mode so react immediately
                     op_flags.op_pwr_s = 0;
@@ -601,7 +600,7 @@ void doDCC(void) {
                 // Check again
                 if (ave >= (short) imax) {
                   // still overload so power off
-                  //OVERLOAD_PIN = 1; // Set spare output pin for scope monitoring
+                  OVERLOAD_PIN = 1; // Set spare output pin for scope monitoring
                   if (SWAP_OP == 1) {
                     // programming mode so react immediately
                     op_flags.op_pwr_s = 0;
@@ -621,7 +620,7 @@ void doDCC(void) {
             if (retry_delay == 0) {
               // Request power on again
               dcc_flags.dcc_retry = 1;
-              //OVERLOAD_PIN = 0;
+              OVERLOAD_PIN = 0;
             }
           }
         }
@@ -640,9 +639,36 @@ void doDCC(void) {
     }
 
 
-
-    //DCC_DEBUG = PORT_OFF;
     LED5_RUN = PORT_OFF;
   }
+
+}
+
+
+void dccSetup(void) {
+  op_flags.op_pwr_s = 1;
+  op_flags.op_bit_s = 1;
+  op_flags.op_pwr_m = 1;
+  op_flags.op_bit_m = 1;
+
+  // send an idle packet
+  dcc_buff_m[0] = 0xff;
+  dcc_buff_m[1] = 0;
+  dcc_buff_m[2] = 0xff;
+  dcc_bytes_m = 3;
+  dcc_buff_m[6] = 1;                  // send once
+
+  //idle_next = 0;
+  ovld_delay = 0;
+  bit_flag_s = 6;			    // idle state
+  bit_flag_m = 6;			    // idle state
+  dcc_flags.word = 0;
+  dcc_flags.dcc_rdy_m = 1;
+  dcc_flags.dcc_rdy_s = 1;
+
+  SWAP_OP = 0;
+
+  ad_state = 0;
+  iccq = 0;
 
 }
