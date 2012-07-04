@@ -26,6 +26,7 @@
 
 #include "io.h"
 #include "dcc.h"
+#include "utils.h"
 
 #pragma config OSC=HSPLL, IESO=OFF
 #pragma config PWRT=ON, WDT=OFF, WDTPS=256
@@ -36,16 +37,42 @@
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 
 #pragma udata access VARS_MAIN_ARRAYS1
-//far slot slots[MAX_SLOTS];
+near slot slots[MAX_SLOTS];
 
 
 //#pragma udata access VARS_MAIN_1
+
+void setupTImers(void);
+
+
+/*
+ * Interrupt vectors
+ */
+#pragma code high_vector=0x08
+void HIGH_INT_VECT(void)
+{
+    _asm GOTO doDCC _endasm
+}
+
+/*
+#pragma code low_vector=0x18
+void LOW_INT_VECT(void)
+{
+    _asm GOTO isr_low _endasm
+}
+*/
+
+
 
 /*
  * 
  */
 void main(void) {
+  lDelay();
+
   setupIO();
+
+  setupTImers();
 
   LED5_RUN = PORT_ON;
 
@@ -55,3 +82,17 @@ void main(void) {
 
 }
 
+void setupTImers(void) {
+
+  T0CON = 0x41;
+  TMR0L = 0;
+  TMR0H = 0;
+  INTCONbits.TMR0IE = 1;
+  T0CONbits.TMR0ON = 1;
+  INTCON2bits.TMR0IP = 1;
+  
+  // enable interrupts
+  INTCONbits.GIEH = 1;
+  INTCONbits.GIEL = 0;
+
+}

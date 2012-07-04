@@ -1,3 +1,4 @@
+
 /*
  Rocrail - Model Railroad Software
 
@@ -22,39 +23,20 @@
 */
 
 #include "io.h"
-#include "spica.h"
-
-void setupIO(void) {
-  // Setup A/D - 1 i/ps with internal reference
-  ADCON2 = 0b10000110; // result right justified, Fosc/64
-  ADCON1 = 0b00001110; // Internal Vref, AN0 analogue input
-  ADCON0 = 0b00000001; // Channel 0, On
-
-  // LEDs
-  TRISBbits.TRISB0 = 0;  // LED5_RUN
-
-  // DCC
-  TRISBbits.TRISB2 = 0;  // DCC_OUTA
-  TRISBbits.TRISB3 = 0;  // DCC_OUTB
-
-  // PT
-  TRISAbits.TRISA0 = 1;  // DCC_PT_ACK
-  TRISBbits.TRISB5 = 0;  // DCC_PT_DCCA
-  TRISAbits.TRISA2 = 0;  // DCC_PT_DCCB
-  TRISAbits.TRISA1 = 0;  // DCC_PT_ENABLE
-
-  TRISAbits.TRISA4 = 0;  // DCC_DEBUG
+#include "dcc.h"
+#include "utils.h"
 
 
 
-  LED5_RUN = PORT_OFF;
-  
-  DCC_OUTA = PORT_OFF;
-  DCC_OUTB = PORT_OFF;
+#pragma interrupt doDCC
+void doDCC(void) {
 
-  DCC_PT_DCCA   = PORT_OFF;
-  DCC_PT_DCCB   = PORT_OFF;
-  DCC_PT_ENABLE = PORT_OFF;
+  if( INTCONbits.T0IF ) {
+    DCC_DEBUG = PORT_ON;
+    INTCONbits.T0IF  = 0;  // Clear interrupt flag
+    TMR0L = TMR0_DCC;
+
+    
+    DCC_DEBUG = PORT_OFF;
+  }
 }
-
-

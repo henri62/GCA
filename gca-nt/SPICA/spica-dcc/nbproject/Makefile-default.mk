@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/spica-dcc.o ${OBJECTDIR}/io.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/spica-dcc.o.d ${OBJECTDIR}/io.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/spica-dcc.o ${OBJECTDIR}/io.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/dcc.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/spica-dcc.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/dcc.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/spica-dcc.o ${OBJECTDIR}/io.o
+OBJECTFILES=${OBJECTDIR}/spica-dcc.o ${OBJECTDIR}/io.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/dcc.o
 
 
 CFLAGS=
@@ -88,6 +88,18 @@ ${OBJECTDIR}/io.o: io.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/io.o   io.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/io.o 
 	
+${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/utils.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
+	
+${OBJECTDIR}/dcc.o: dcc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/dcc.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/dcc.o   dcc.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/dcc.o 
+	
 else
 ${OBJECTDIR}/spica-dcc.o: spica-dcc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -100,6 +112,18 @@ ${OBJECTDIR}/io.o: io.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/io.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/io.o   io.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/io.o 
+	
+${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/utils.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
+	
+${OBJECTDIR}/dcc.o: dcc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/dcc.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/dcc.o   dcc.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/dcc.o 
 	
 endif
 

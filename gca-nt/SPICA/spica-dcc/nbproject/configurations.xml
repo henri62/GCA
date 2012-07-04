@@ -7,6 +7,7 @@
       <itemPath>io.h</itemPath>
       <itemPath>dcc.h</itemPath>
       <itemPath>spica.h</itemPath>
+      <itemPath>utils.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -17,6 +18,8 @@
                    projectFiles="true">
       <itemPath>spica-dcc.c</itemPath>
       <itemPath>io.c</itemPath>
+      <itemPath>utils.c</itemPath>
+      <itemPath>dcc.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

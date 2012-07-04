@@ -35,9 +35,24 @@ typedef struct _slot {
   byte fn[4];
 } slot;
 
-#define MAX_SLOTS 32
-//extern far slot slots[MAX_SLOTS];
+#define MAX_SLOTS 2
+extern near slot slots[MAX_SLOTS];
 
 
+// 14 Clear Timer interrupt flag
+// Reload TMR0 for interrupt every 58us
+// Tcyc = 250ns @ 16MHz
+// Interrupt every 58/(.250) = 232 Tcyc
+// Value loaded into TMR0 needs to be adjusted for:
+// - TMR0 interrupt latency (3 Tcyc)
+// - Number of instructions from interrupt to reload
+// - TMR0 inhibit after reload (2 Tcyc with 2:1 prescaler)
+// Prescaler = 2:1
+// So value is 0 - (232 - 3 - 17 - 2)/2 = -105 = 0x97
+// Modified for 32 MHz clock  by Mike B. value was 0x97
+#define TMR0_DCC 0x91
+
+
+void doDCC(void);
 
 #endif

@@ -32,15 +32,16 @@
 #define LED5_RUN     PORTBbits.RB0
 
 // DCC
-#define DCC_OUTA     PORTBbits.RB2;
-#define DCC_OUTB     PORTBbits.RB3;
+#define DCC_OUTA     PORTBbits.RB2
+#define DCC_OUTB     PORTBbits.RB3
 
 // PT
-#define DCC_PT_ACK    PORTAbits.RA0;
-#define DCC_PT_DCCA   PORTBbits.RB5;
-#define DCC_PT_DCCB   PORTAbits.RA2;
-#define DCC_PT_ENABLE PORTAbits.RA1;
+#define DCC_PT_ACK    PORTAbits.RA0
+#define DCC_PT_DCCA   PORTBbits.RB5
+#define DCC_PT_DCCB   PORTAbits.RA2
+#define DCC_PT_ENABLE PORTAbits.RA1
 
+#define DCC_DEBUG PORTAbits.RA4
 
 
 void setupIO(void);
