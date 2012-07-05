@@ -192,7 +192,8 @@ near unsigned char iccq;
 void doDCC(void) {
 
   if (INTCONbits.T0IF) {
-    LED5_RUN = PORT_ON;
+    //LED5_RUN = PORT_ON;
+
     INTCONbits.T0IF = 0; // Clear interrupt flag
     TMR0L = TMR0_DCC;
 
@@ -231,25 +232,29 @@ void doDCC(void) {
         DCC_NEG = 0;
         DCC_POS = 0;
       }
-    } else {
+    }
+
+    else {
       // J7 is in
       // On board booster is main track output
       if (op_flags.op_pwr_m) {
         DCC_EN = 1;
         if (op_flags.op_bit_m) {
-          DCC_NEG = 0;
+          //DCC_NEG = 0;
           DCC_POS = 1;
-        } else {
-          DCC_POS = 0;
-          DCC_NEG = 1;
         }
-      } else {
+        else {
+          //DCC_POS = 0;
+          //DCC_NEG = 1;
+        }
+      }
+      else {
         DCC_EN = 0;
         DCC_POS = 0;
         DCC_NEG = 0;
       }
     }
-
+/*
     // Booster output.
     if (op_flags.op_pwr_m) {
       DCC_OUT_POS = op_flags.op_bit_m;
@@ -278,7 +283,7 @@ void doDCC(void) {
 
     }
 
-
+/*
     // Determine next service mode track DCC output bit
     switch (bit_flag_s) {
       case FIRST_EDGE:
@@ -388,6 +393,7 @@ void doDCC(void) {
         break;
     }
 
+/*
     //
     // Determine next main track DCC output bit
     //
@@ -503,6 +509,8 @@ void doDCC(void) {
         break;
     }
 
+
+/*
     //
     // service_ad
     //
@@ -637,19 +645,15 @@ void doDCC(void) {
       default:
         break;
     }
+*/
 
-
-    LED5_RUN = PORT_OFF;
+    //LED5_RUN = PORT_OFF;
   }
 
 }
 
 
 void dccSetup(void) {
-  op_flags.op_pwr_s = 1;
-  op_flags.op_bit_s = 1;
-  op_flags.op_pwr_m = 1;
-  op_flags.op_bit_m = 1;
 
   // send an idle packet
   dcc_buff_m[0] = 0xff;
@@ -662,9 +666,14 @@ void dccSetup(void) {
   ovld_delay = 0;
   bit_flag_s = 6;			    // idle state
   bit_flag_m = 6;			    // idle state
+
   dcc_flags.word = 0;
   dcc_flags.dcc_rdy_m = 1;
   dcc_flags.dcc_rdy_s = 1;
+  op_flags.op_pwr_s = 1;
+  op_flags.op_bit_s = 1;
+  op_flags.op_pwr_m = 1;
+  op_flags.op_bit_m = 1;
 
   SWAP_OP = 0;
 

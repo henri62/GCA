@@ -30,9 +30,9 @@
 #include "utils.h"
 
 #pragma config OSC=HSPLL, IESO=OFF
-#pragma config PWRT=ON, WDT=OFF, WDTPS=256
+#pragma config BOR=OFF, PWRT=ON, WDT=OFF, WDTPS=256
 #pragma config MCLRE=OFF, DEBUG=OFF
-#pragma config LVP=OFF
+#pragma config LVP=OFF, STVR=OFF
 #pragma config CP0=OFF, CP1=OFF, CPB=OFF, CPD=OFF
 #pragma config WRT0=OFF, WRT1=OFF, WRTB=OFF, WRTC=OFF, WRTD=OFF
 #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
@@ -43,6 +43,7 @@ near slot slots[MAX_SLOTS];
 
 //#pragma udata access VARS_MAIN_1
 
+void setup(void);
 void setupTimers(void);
 
 
@@ -70,6 +71,7 @@ void LOW_INT_VECT(void)
  */
 void main(void) {
   lDelay();
+  setup();
   setupIO();
 
   dccSetup();
@@ -89,8 +91,20 @@ void main(void) {
 
 }
 
-void setupTimers(void) {
 
+void setup(void) {
+  IPR2 = 0;
+  IPR1 = 0;
+  PIE2 = 0;
+  PIE1 = 0;
+  INTCON3 = 0;
+  INTCON2 = 0;                // Port B pullups are enabled
+  INTCON  = 0;
+  PIR2 = 0;
+  PIR1 = 0;
+}
+
+void setupTimers(void) {
   T0CON = 0x41;
   TMR0L = TMR0_DCC;
   TMR0H = 0;
@@ -99,8 +113,10 @@ void setupTimers(void) {
   INTCON2bits.TMR0IP = 1;
 
 
-  // enable interrupts
-  INTCONbits.GIEH = 1;
-  INTCONbits.GIEL = 0;
+  // Set up global interrupts
+  RCONbits.IPEN   = 1;        // Enable priority levels on interrupts
+  INTCONbits.GIE  = 1;        // Interrupting enabled.
+  INTCONbits.GIEL = 1;        // Low priority interrupts allowed
+  INTCONbits.GIEH = 1;        // High priority interrupts allowed
 
 }

@@ -44,6 +44,7 @@
 #define DCC_PT_DCCA   PORTBbits.RB5
 #define DCC_PT_DCCB   PORTAbits.RA2
 #define DCC_PT_ENABLE PORTAbits.RA1
+
 #define DCC_NEG       PORTBbits.RB5
 #define DCC_POS       PORTAbits.RA2
 #define DCC_EN        PORTAbits.RA1
