@@ -26,20 +26,48 @@
 #ifndef __LOCONET__
 #define __LOCONET__
 
-
-extern void scanLN(void);
-void initLN(void);
-byte doLocoNet(void);
-void LocoNetWD(void);
-void send2LocoNet(void);
-
 typedef struct {
   byte   status;
   byte   data[16];
   byte   len;
 } LNPACKET;
 
+
+extern near byte work;
+extern near byte LNstatus;
+extern near byte sampledata;
+extern near byte dataready;
+extern near byte sample;
+extern near byte bitcnt;
+extern near byte mode;
+extern near byte txtry;
+extern near byte samplepart;
+extern near byte idle;
+extern near byte overrun;
+
+extern far byte SampleData[8];
+extern far byte SampleFlag;
+extern far byte readP;
+extern far byte writeP;
+
+extern far byte LNPacket[32];
+extern far byte LNIndex;
+extern far byte LNSize;
+extern far byte LNTimeout;
+extern far byte LNByteIndex;
+extern far byte LNBitIndex;
+extern far byte LNWrittenBit;
+
 #define LN_BUFFER_SIZE 14
+
+extern far LNPACKET LNBuffer[LN_BUFFER_SIZE];
+extern far byte LNBufferIndex;
+
+extern void LNDCC(void);
+void initLN(void);
+byte doLocoNet(void);
+void LocoNetWD(void);
+void send2LocoNet(void);
 
 #define LN_STATUS_FREE 0
 #define LN_STATUS_USED 1

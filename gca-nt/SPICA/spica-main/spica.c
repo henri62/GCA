@@ -30,8 +30,9 @@
 #include "rocrail.h"
 #include "cbusdefs.h"
 #include "loconet.h"
-#include "isr.h"
+#include "isrl.h"
 #include "cbus.h"
+#include "dcc.h"
 #include "utils.h"
 
 #pragma config OSC=HSPLL, FCMEN=OFF, IESO=OFF
@@ -71,7 +72,7 @@ void initTimers(void);
 #pragma code high_vector=0x08
 void HIGH_INT_VECT(void)
 {
-    _asm GOTO scanLN _endasm
+    _asm GOTO LNDCC _endasm
 }
 
 #pragma code low_vector=0x18
@@ -96,7 +97,9 @@ void main(void) {
 
   initIO();
   initLN();
+  initDCC();
   initCAN();
+
   initTimers();
 
   LED2_RUN = PORT_ON;
@@ -169,7 +172,7 @@ void initTimers(void) {
   led_timer = 4;  // 4ms
 
   // ***** Timer0 *****
-  // 32000000/4/2/80 == 50kHz.
+  // 32000000/4/2/80 == 50kHz. 20us
   T0CON = 0;
   // pre scaler 2:
   T0CONbits.PSA   = 0;
@@ -195,7 +198,7 @@ void initTimers(void) {
   PR2  = 100;
   PIE1bits.TMR2IE = 1;
   INTCONbits.PEIE = 1;
-  IPR1bits.TMR2IP = 0; // high prio
+  IPR1bits.TMR2IP = 0; // low prio
 
 }
 

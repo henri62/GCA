@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/spica-main.o ${OBJECTDIR}/io.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/slot.o ${OBJECTDIR}/loconet.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/isr.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/spica-main.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/cbus.o.d ${OBJECTDIR}/slot.o.d ${OBJECTDIR}/loconet.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/isr.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/io.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/dcc.o ${OBJECTDIR}/isrh.o ${OBJECTDIR}/spica.o ${OBJECTDIR}/isrl.o ${OBJECTDIR}/loconet.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/io.o.d ${OBJECTDIR}/cbus.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/dcc.o.d ${OBJECTDIR}/isrh.o.d ${OBJECTDIR}/spica.o.d ${OBJECTDIR}/isrl.o.d ${OBJECTDIR}/loconet.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/spica-main.o ${OBJECTDIR}/io.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/slot.o ${OBJECTDIR}/loconet.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/isr.o
+OBJECTFILES=${OBJECTDIR}/io.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/dcc.o ${OBJECTDIR}/isrh.o ${OBJECTDIR}/spica.o ${OBJECTDIR}/isrl.o ${OBJECTDIR}/loconet.o
 
 
 CFLAGS=
@@ -76,12 +76,6 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/spica-main.o: spica-main.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/spica-main.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/spica-main.o   spica-main.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/spica-main.o 
-	
 ${OBJECTDIR}/io.o: io.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/io.o.d 
@@ -94,11 +88,35 @@ ${OBJECTDIR}/cbus.o: cbus.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cbus.o   cbus.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/cbus.o 
 	
-${OBJECTDIR}/slot.o: slot.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/slot.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/slot.o   slot.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/slot.o 
+	@${RM} ${OBJECTDIR}/utils.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
+	
+${OBJECTDIR}/dcc.o: dcc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/dcc.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/dcc.o   dcc.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/dcc.o 
+	
+${OBJECTDIR}/isrh.o: isrh.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/isrh.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isrh.o   isrh.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/isrh.o 
+	
+${OBJECTDIR}/spica.o: spica.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/spica.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/spica.o   spica.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/spica.o 
+	
+${OBJECTDIR}/isrl.o: isrl.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/isrl.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isrl.o   isrl.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/isrl.o 
 	
 ${OBJECTDIR}/loconet.o: loconet.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -106,25 +124,7 @@ ${OBJECTDIR}/loconet.o: loconet.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/loconet.o   loconet.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/loconet.o 
 	
-${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/utils.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
-	
-${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/isr.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/isr.o 
-	
 else
-${OBJECTDIR}/spica-main.o: spica-main.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/spica-main.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/spica-main.o   spica-main.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/spica-main.o 
-	
 ${OBJECTDIR}/io.o: io.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/io.o.d 
@@ -137,29 +137,41 @@ ${OBJECTDIR}/cbus.o: cbus.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cbus.o   cbus.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/cbus.o 
 	
-${OBJECTDIR}/slot.o: slot.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/slot.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/slot.o   slot.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/slot.o 
-	
-${OBJECTDIR}/loconet.o: loconet.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/loconet.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/loconet.o   loconet.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/loconet.o 
-	
 ${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/utils.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
 	
-${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/dcc.o: dcc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/isr.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/isr.o 
+	@${RM} ${OBJECTDIR}/dcc.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/dcc.o   dcc.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/dcc.o 
+	
+${OBJECTDIR}/isrh.o: isrh.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/isrh.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isrh.o   isrh.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/isrh.o 
+	
+${OBJECTDIR}/spica.o: spica.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/spica.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/spica.o   spica.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/spica.o 
+	
+${OBJECTDIR}/isrl.o: isrl.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/isrl.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isrl.o   isrl.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/isrl.o 
+	
+${OBJECTDIR}/loconet.o: loconet.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/loconet.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION)   -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/loconet.o   loconet.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/loconet.o 
 	
 endif
 

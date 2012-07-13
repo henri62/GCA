@@ -32,8 +32,9 @@ void setupIO(void) {
   // LEDs
   TRISBbits.TRISB0 = 0;  // LED1_PT
   TRISBbits.TRISB1 = 0;  // LED2_RUN
-  TRISBbits.TRISB4 = 0;  // LED3_BOOSTER
-  TRISBbits.TRISB5 = 0;  // LED4_BUS
+  TRISAbits.TRISA5 = 0;  // LED3_BOOSTER
+  TRISBbits.TRISB4 = 0;  // LED4_BUS
+  TRISBbits.TRISB5 = 0;  // LED5_ACK
 
   // Buttons
   TRISCbits.TRISC4 = 1; // PB2_PT
@@ -45,14 +46,37 @@ void setupIO(void) {
   TRISCbits.TRISC2 = 1; // LNRX
 
   // Buzzer
-  TRISAbits.TRISA0 = 0; // BUZZER
+  TRISCbits.TRISC0 = 0; // BUZZER
 
   LED1_PT      = PORT_OFF;
   LED2_RUN     = PORT_OFF;
   LED3_BOOSTER = PORT_OFF;
   LED4_BUS     = PORT_OFF;
+  LED5_ACK     = PORT_OFF;
   LNTX         = PORT_OFF;
 
+  // DCC
+  TRISCbits.TRISC6 = 0;  // DCC_OUT_POS
+  TRISCbits.TRISC7 = 0;  // DCC_OUT_NEG
+
+  // PT
+  TRISAbits.TRISA0 = 1;  // DCC_PT_ACK
+  TRISAbits.TRISA1 = 0;  // DCC_NEG
+  TRISAbits.TRISA2 = 0;  // DCC_POS
+  TRISAbits.TRISA3 = 0;  // DCC_EN
+
+  // Setup A/D - 1 i/ps with internal reference
+  ADCON2 = 0b10000110; // result right justified, Fosc/64
+  ADCON1 = 0b00001110; // Internal Vref, AN0 analogue input
+  ADCON0 = 0b00000001; // Channel 0, On
+
+
+  DCC_OUT_POS = PORT_OFF;
+  DCC_OUT_NEG = PORT_OFF;
+
+  DCC_POS = PORT_OFF;
+  DCC_NEG = PORT_OFF;
+  DCC_EN  = PORT_OFF;
 
 }
 

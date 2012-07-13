@@ -33,8 +33,9 @@
 // LEDs
 #define LED1_PT      PORTBbits.RB0 // Accept programming commands
 #define LED2_RUN     PORTBbits.RB1 // Also used for FLiM
-#define LED3_BOOSTER PORTBbits.RB4 // Rail power ON/OFF
-#define LED4_BUS     PORTBbits.RB5 // CBUS & LocoNet activity
+#define LED3_BOOSTER PORTAbits.RA5 // Rail power ON/OFF
+#define LED4_BUS     PORTBbits.RB4 // CBUS & LocoNet activity
+#define LED5_ACK     PORTBbits.RB5 //
 
 // Buttons
 #define PB1_POWER    PORTCbits.RC5 // Track power
@@ -49,12 +50,20 @@
 #define CTX          PORTBbits.RB2
 #define CRX          PORTBbits.RB3
 
-// UART
-#define RSTX         PORTCbits.RC6
-#define RSRX         PORTCbits.RC7
-
 // Buzzer
-#define BUZZER       PORTAbits.RA0
+#define BUZZER       PORTCbits.RC0
+
+
+// DCC
+#define DCC_OUT_POS  PORTCbits.RC6
+#define DCC_OUT_NEG  PORTCbits.RC7
+
+// PT
+#define DCC_PT_ACK    PORTAbits.RA0
+#define DCC_NEG       PORTAbits.RA1
+#define DCC_POS       PORTAbits.RA2
+#define DCC_EN        PORTAbits.RA3
+
 
 
 void setupIO(void);

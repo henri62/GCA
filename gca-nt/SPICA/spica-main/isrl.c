@@ -22,7 +22,7 @@
 
 
 #include "spica.h"
-#include "isr.h"
+#include "isrl.h"
 #include "io.h"
 #include "loconet.h"
 #include "cbus.h"
@@ -45,12 +45,15 @@ near unsigned short dim_timer;
 //
 // Low priority interrupt. Used for CAN receive.
 //
+static byte ms1 = 0;
 #pragma interruptlow isr_low
 void isr_low(void) {
   // Timer2 interrupt handler
   if( PIR1bits.TMR2IF ) {
     PIR1bits.TMR2IF = 0; // Clear interrupt flag
     TMR2 = 0; // reset counter
+
+    //BUZZER = PORT_ON;
 
     LocoNetWD();
 
@@ -80,6 +83,7 @@ void isr_low(void) {
       doLEDs();
     }
 
+    //BUZZER = PORT_OFF;
   }
   
   if (PIR3bits.ERRIF == 1) {

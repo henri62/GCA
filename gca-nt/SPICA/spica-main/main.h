@@ -27,16 +27,6 @@
 
 #include "spica.h"
 
-typedef struct _slot {
-  byte addrl;
-  byte addrh;
-  byte speed;
-  byte fn[4];
-} slot;
-
-#define MAX_SLOTS 32
-extern slot slots[MAX_SLOTS];
-
 
 
 #endif
