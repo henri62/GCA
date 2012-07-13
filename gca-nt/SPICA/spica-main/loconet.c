@@ -29,6 +29,7 @@
 #include "loconet.h"
 #include "utils.h"
 #include "lnconst.h"
+#include "dcc.h"
 
 
 #pragma udata access VARS_LOCONET1
@@ -99,10 +100,12 @@ void doLNcmd(void) {
 
     case OPC_GPON:
       LED3_BOOSTER = PORT_ON;
+      op_flags.op_pwr_m = 1;
       break;
 
     case OPC_GPOFF:
       LED3_BOOSTER = PORT_OFF;
+      op_flags.op_pwr_m = 0;
       break;
 
   }

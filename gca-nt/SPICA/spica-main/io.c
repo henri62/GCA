@@ -29,6 +29,10 @@ void setupIO(void) {
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
 
+  TRISA = 0;
+  TRISB = 0;
+  TRISC = 0;
+
   // LEDs
   TRISBbits.TRISB0 = 0;  // LED1_PT
   TRISBbits.TRISB1 = 0;  // LED2_RUN

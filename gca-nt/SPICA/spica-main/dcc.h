@@ -161,8 +161,31 @@ extern unsigned char ad_state;
 extern volatile unsigned char ovld_delay;
 volatile extern unsigned char imax;
 extern unsigned char iccq;
-extern unsigned char SWAP_OP;
+
+
+extern unsigned char bit_flag_s;
+extern unsigned char bit_flag_m;
+extern unsigned char next_byte_s;
+extern unsigned char pre_cnt_s;
+extern unsigned char byte_cnt_s;
+extern unsigned char next_byte_m;
+extern unsigned char pre_cnt_m;
+extern unsigned char byte_cnt_m;
+
+extern unsigned char dcc_pre_s;
+extern unsigned char dcc_bits_s;
+extern unsigned char dcc_bits_m;
+extern unsigned char dcc_bytes_s;
+extern unsigned char dcc_bytes_m;
+
+extern unsigned char dcc_idx_s;
+extern unsigned char dcc_idx_m;
+
 extern unsigned short long slot_timer;
+
+extern unsigned char awd_count;
+extern unsigned char SWAP_OP;
+
 
 void doDCC(void);
 void initDCC(void);
