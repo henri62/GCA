@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 1
-#define MINOR_VER 'a'	// Minor version character
+#define MINOR_VER 'b'	// Minor version character
 
 #define EVT_NUM 0
 #define EVperEVT 0
