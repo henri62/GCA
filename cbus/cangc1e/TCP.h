@@ -48,7 +48,7 @@ typedef WORD TCP_PORT;
  * Maximum number of times a connection be retried before
  * closing it down.
  */
-#define MAX_RETRY_COUNTS    (3)
+#define MAX_RETRY_COUNTS    (5)
 
 #define INVALID_SOCKET      (0xfe)
 #define UNKNOWN_SOCKET      (0xff)
