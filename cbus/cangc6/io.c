@@ -147,7 +147,7 @@ unsigned char checkFlimSwitch(void) {
 unsigned char checkInput(unsigned char idx, unsigned char sod) {
   unsigned char ok = 1;
   if( sod ) {
-    canmsg.opc = Servo[idx].position == Servo[idx].right ? OPC_ASON:OPC_ASOF;
+    canmsg.opc = Servo[idx].position == Servo[idx].right ? OPC_ASOF:OPC_ASON;
     canmsg.d[0] = (NN_temp / 256) & 0xFF;
     canmsg.d[1] = (NN_temp % 256) & 0xFF;
     canmsg.d[2] = (Servo[idx].fbaddr / 256) & 0xFF;
