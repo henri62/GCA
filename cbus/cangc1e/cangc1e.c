@@ -69,6 +69,7 @@ near unsigned char  isLearning;
 near unsigned char  maxcanq;
 near unsigned char  maxethq;
 near unsigned char  currentEthQ;
+near unsigned char  cmdticker;
 
 
 volatile near unsigned char tmr0_reload;
@@ -120,6 +121,7 @@ void main(void) {
   isLearning = FALSE;
   maxcanq = 0;
   maxethq = 0;
+  cmdticker = 0;
 
 
   NV1 = eeRead(EE_NV);

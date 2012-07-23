@@ -121,6 +121,7 @@ unsigned char getDataLen( unsigned char OPC, unsigned char eth ) {
   }
   else {
     if( OPC == 1 ) return 4;
+    if( OPC == 2 ) return 3;
   }
   return 0;
 }

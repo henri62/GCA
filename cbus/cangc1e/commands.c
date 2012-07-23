@@ -63,6 +63,21 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
     return FALSE;
   }
 
+  cmdticker++;
+
+  if( NV1 & CFG_COMMAND_ACK ) {
+    CANMsg canmsg;
+    canmsg.b[sidh] = (CANID >> 3);
+    canmsg.b[sidl] = (CANID << 5);
+    canmsg.b[d0]  = 2; // ack
+    canmsg.b[d1]  = 0; // rc
+    canmsg.b[d2]  = p_canmsg->b[d0]; // opc
+    canmsg.b[d3]  = cmdticker;
+    canmsg.b[dlc] = 0x80 + 4;
+    ethQueue(&canmsg);
+  }
+
+
   switch (p_canmsg->b[d0]) {
 
     case OPC_QNN:

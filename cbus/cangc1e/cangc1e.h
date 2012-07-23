@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 1
-#define MINOR_VER 'b'	// Minor version character
+#define MINOR_VER 'c'	// Minor version character
 
 #define EVT_NUM 0
 #define EVperEVT 0
@@ -55,6 +55,7 @@
 #define CFG_ALL  0xFF
 #define CFG_IDLE_TIMEOUT    0x01
 #define CFG_POWEROFF_ATIDLE 0x02
+#define CFG_COMMAND_ACK 0x04
 
 
 
@@ -74,5 +75,6 @@ extern near unsigned char isLearning;
 extern near unsigned char maxcanq;
 extern near unsigned char maxethq;
 extern near unsigned char currentEthQ;
+extern near unsigned char cmdticker;
 
 #endif
