@@ -237,6 +237,7 @@ unsigned char checkInput(unsigned char idx, unsigned char sod) {
       }
       else if( !sod && (Ports[idx].cfg & 0x02) && Ports[idx].timedoff ) {
         Ports[idx].timer = 40; // reload timer
+        Ports[idx].timedoff = FALSE;
       }
       else {
         if( (Ports[idx].cfg & PORTCFG_INV) == PORTCFG_INV ) {
