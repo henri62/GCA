@@ -63,6 +63,9 @@ far byte LNWrittenBit;
 far LNPACKET LNBuffer[LN_BUFFER_SIZE];
 far byte LNBufferIndex;
 
+#pragma udata VARS_LOCONET5
+far LNSLOT slotmap[LN_SLOTS];
+far byte dispatchSlot;
 
 // TMR0 generates a heartbeat every 32000000/4/2/80 == 50kHz.
 #pragma interrupt scanLN
@@ -249,10 +252,41 @@ void ln2CBusDebug(byte idx) {
 
 }
 
+
+void checksumLN(byte idx) {
+  byte chksum = 0xff;
+  int i;
+  for (i = 0; i < LNBuffer[idx].len-1; i++) {
+    chksum ^= LNBuffer[idx].data[i];
+  }
+  LNBuffer[idx].data[i] = chksum;
+}
+
+
+void slotRead(byte i, byte slot) {
+  LNBuffer[i].len = 14;
+  LNBuffer[i].data[ 0] = OPC_SL_RD_DATA;
+  LNBuffer[i].data[ 1] = 0x0E;
+  LNBuffer[i].data[ 2] = slot;
+  LNBuffer[i].data[ 3] = DEC_MODE_128 | LOCO_IN_USE; // status 1
+  LNBuffer[i].data[ 4] = (slotmap[slot].addr & 0x7F);
+  LNBuffer[i].data[ 5] = (slotmap[slot].speed & 0x7F);
+  LNBuffer[i].data[ 6] = (slotmap[slot].speed & 0x80) ? 0:DIRF_DIR; // TODO: functions
+  LNBuffer[i].data[ 7] = GTRK_MLOK1 | GTRK_POWER | GTRK_IDLE; // track status
+  LNBuffer[i].data[ 8] = 0;
+  LNBuffer[i].data[ 9] = ((slotmap[slot].addr/128) & 0x7F);
+  LNBuffer[i].data[10] = 0; // sound
+  LNBuffer[i].data[11] = 0; // IDL
+  LNBuffer[i].data[12] = 0; // IDH
+  checksumLN(i);
+  LNBuffer[i].status = LN_STATUS_USED;
+}
+
+
 void ln2CBus(void) {
   unsigned int addrL, addrH, addr;
   unsigned int valL, valH, value;
-  byte dir, type;
+  byte dir, type, i, slot;
 
   LED4_LNRX = PORT_ON;
   ledLNRXtimer = 20;
@@ -268,6 +302,68 @@ void ln2CBus(void) {
       canmsg.opc = OPC_RTOF;
       canmsg.len = 0;
       canQueue(&canmsg);
+      break;
+
+    case OPC_LOCO_ADR:
+      addrH = LNPacket[1]&0x7F;
+      addrL = LNPacket[2]&0x7F;
+      addr = addrL + (addrH << 7);
+
+      canmsg.opc = OPC_RLOC;
+      canmsg.len = 2;
+      canmsg.d[0]= addr / 256;
+      canmsg.d[1]= addr % 256;
+      if( addr > 127 ) {
+        canmsg.d[0] |= 0xC0;
+      }
+      canQueue(&canmsg);
+      break;
+
+    case OPC_LOCO_SPD:
+      slot = LNPacket[1];
+      if( slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
+        slotmap[slot].speed &= 0x7F; // save direction flag
+        slotmap[slot].speed |= (LNPacket[1] & 0x7F);
+        canmsg.opc = OPC_DSPD;
+        canmsg.d[0] = slotmap[slot].session;
+        canmsg.d[1] = slotmap[slot].speed;
+        canQueue(&canmsg);
+      }
+      break;
+
+    case OPC_MOVE_SLOTS:
+      if( LNPacket[2] == 0 ) {
+        // dispatch put
+        dispatchSlot = LNPacket[1] & 0x7f;
+        if( dispatchSlot < LN_SLOTS && slotmap[dispatchSlot].session != LN_SLOT_UNUSED ) {
+          // ack with a slot read
+          for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+            if( LNBuffer[i].status == LN_STATUS_FREE) {
+              slotRead(i, dispatchSlot);
+              break;
+            }
+          }
+        }
+        else {
+          // long ack
+        }
+      }
+      else if( LNPacket[1] == 0 ) {
+        // dispatch get
+        if( dispatchSlot != LN_SLOT_UNUSED ) {
+          // ack with a slot read
+          for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+            if( LNBuffer[i].status == LN_STATUS_FREE) {
+              slotRead(i, dispatchSlot);
+              break;
+            }
+          }
+          dispatchSlot = LN_SLOT_UNUSED;
+        }
+        else {
+          // long ack
+        }
+      }
       break;
 
     case OPC_INPUT_REP:
@@ -290,9 +386,16 @@ void ln2CBus(void) {
       addrL = LNPacket[1] & 0x7f;
       addrH = LNPacket[2] & 0x0f;
       addr = addrL + (addrH << 7);
-      addr *= 2;
-      addr += (LNPacket[2] & 0x20) >> 5;
-      canmsg.opc = (LNPacket[2] & 0x10) ? OPC_ASON:OPC_ASOF;
+      if( addr == 1017  && (NV1 & CFG_ENABLE_SOD) ) {
+        // SoD
+        addr == SOD;
+        canmsg.opc = OPC_ASRQ;
+      }
+      else {
+        addr *= 2;
+        addr += (LNPacket[2] & 0x20) >> 5;
+        canmsg.opc = (LNPacket[2] & 0x10) ? OPC_ASON:OPC_ASOF;
+      }
       canmsg.d[0] = 0;
       canmsg.d[1] = 0;
       canmsg.d[2] = addr / 256;
@@ -498,6 +601,10 @@ void initLN(void) {
   for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
     LNBuffer[i].status = LN_STATUS_FREE;
   }
+  for( i = 0; i < LN_SLOTS; i++ ) {
+    slotmap[i].session = LN_SLOT_UNUSED;
+  }
+  dispatchSlot = LN_SLOT_UNUSED;
 
   LNstatus = STATUS_WAITSTART;
   sampledata = 0;
@@ -515,17 +622,9 @@ void initLN(void) {
   mode = LN_MODE_READ;
 }
 
-void checksumLN(byte idx) {
-  byte chksum = 0xff;
-  int i;
-  for (i = 0; i < LNBuffer[idx].len-1; i++) {
-    chksum ^= LNBuffer[idx].data[i];
-  }
-  LNBuffer[idx].data[i] = chksum;
-}
-
 void send2LocoNet(void) {
   unsigned int addr;
+  byte slot = 0;
   byte i = 0;
   for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
     if( LNBuffer[i].status == LN_STATUS_FREE) {
@@ -564,6 +663,44 @@ void send2LocoNet(void) {
       if( mode == LN_MODE_READ )
         mode = LN_MODE_WRITE_REQ;
       //ln2CBusDebug(i);
+      break;
+
+    case OPC_PLOC:
+      // read slot
+      addr = rx_ptr->d2 * 256;
+      addr += rx_ptr->d3;
+      addr &= 0x3FFF;
+      slot = LN_SLOT_UNUSED;
+      for( i = 0; i < LN_SLOTS; i++ ) {
+        if( slotmap[i].session == rx_ptr->d1 ) {
+          slot = i;
+          break;
+        }
+      }
+
+      if( slot == LN_SLOT_UNUSED ) {
+        // new session
+        for( i = 0; i < LN_SLOTS; i++ ) {
+          if( slotmap[i].session == LN_SLOT_UNUSED ) {
+            slot = i;
+            slotmap[slot].session = rx_ptr->d1;
+            break;
+          }
+        }
+      }
+
+      if( slot != LN_SLOT_UNUSED ) {
+        // update slot
+        slotmap[slot].addr  = addr;
+        slotmap[slot].speed = rx_ptr->d1; // dir = (speed & 0x80)
+        slotmap[slot].f[0]  = rx_ptr->d5;
+        slotmap[slot].f[1]  = rx_ptr->d6;
+        slotmap[slot].f[2]  = rx_ptr->d7;
+        // report slot read
+        slotRead(i, slot);
+        if( mode == LN_MODE_READ )
+          mode = LN_MODE_WRITE_REQ;
+      }
       break;
 
     case OPC_RESTP:

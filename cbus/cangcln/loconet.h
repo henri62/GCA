@@ -39,11 +39,21 @@ typedef struct {
   byte   len;
 } LNPACKET;
 
+typedef struct {
+  byte   session;
+  unsigned short addr;
+  byte   speed; // dir = 0x80 & speed
+  byte   f[3];
+} LNSLOT;
+
 #define LN_BUFFER_SIZE 14
+#define LN_SLOTS 32
 
 #define LN_STATUS_FREE 0
 #define LN_STATUS_USED 1
 #define LN_STATUS_PENDING 2
+
+#define LN_SLOT_UNUSED 0xFF
 
 
 #define STATUS_WAITSTART 0x00
