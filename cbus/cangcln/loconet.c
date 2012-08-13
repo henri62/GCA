@@ -337,8 +337,26 @@ void ln2CBus(void) {
     case OPC_LOCO_SPD:
       slot = LNPacket[1];
       if( slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
-        slotmap[slot].speed &= 0x7F; // save direction flag
+        slotmap[slot].speed &= 0x80; // save direction flag
         slotmap[slot].speed |= (LNPacket[2] & 0x7F);
+        canmsg.opc = OPC_DSPD;
+        canmsg.len = 2;
+        canmsg.d[0] = slotmap[slot].session;
+        canmsg.d[1] = slotmap[slot].speed;
+        canQueue(&canmsg);
+      }
+      break;
+
+    case OPC_LOCO_DIRF:
+      slot = LNPacket[1];
+      if( slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
+        slotmap[slot].speed &= 0x7F; // save speed
+        slotmap[slot].speed |= (LNPacket[2] & DIRF_DIR) ? 0x00:0x80;
+        slotmap[slot].f[0]   = (LNPacket[2] & DIRF_F0 ) ? 0x01:0x00;
+        slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F1 ) ? 0x02:0x00;
+        slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F2 ) ? 0x04:0x00;
+        slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F3 ) ? 0x08:0x00;
+        slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F4 ) ? 0x10:0x00;
         canmsg.opc = OPC_DSPD;
         canmsg.len = 2;
         canmsg.d[0] = slotmap[slot].session;
@@ -691,7 +709,7 @@ void send2LocoNet(void) {
       addr += rx_ptr->d3;
       addr &= 0x3FFF;
       slot = LN_SLOTS;
-      for( i = 0; i < LN_SLOTS; i++ ) {
+      for( i = 1; i < LN_SLOTS; i++ ) {
         if( slotmap[i].session == rx_ptr->d1 ) {
           slot = i;
           break;
@@ -700,7 +718,7 @@ void send2LocoNet(void) {
 
       if( slot == LN_SLOTS ) {
         // new session
-        for( i = 0; i < LN_SLOTS; i++ ) {
+        for( i = 1; i < LN_SLOTS; i++ ) {
           if( slotmap[i].session == LN_SLOT_UNUSED ) {
             slot = i;
             slotmap[slot].session = rx_ptr->d1;
