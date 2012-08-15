@@ -152,6 +152,7 @@ unsigned char checkInput(unsigned char idx, unsigned char sod) {
     }
     else if( !sod && Sensor[idx].timedoff ) {
       Sensor[idx].timer = 40; // reload timer
+      Sensor[idx].timedoff = FALSE;
     }
     else {
       // Send an OPC.
