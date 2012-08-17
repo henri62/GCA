@@ -76,7 +76,7 @@ void scanLN(void) {
     byte inLN = LNRX;
 
     INTCONbits.T0IF  = 0;     // Clear interrupt flag
-    TMR0L = 256 - 80 + 18;         // Reset counter with a correction of 10 cycles
+    TMR0L = 194;         // Reset counter with a correction of 10 cycles
 
     LNSCAN = PORT_ON;
 
@@ -233,8 +233,8 @@ void ln2CBusErr(void) {
   canmsg.d[6] = LNPacket[6];
   canmsg.len = 7;
   canQueue(&canmsg);
-  Wait4NN = TRUE;
-  LED6_FLIM = PORT_ON;
+  //Wait4NN = TRUE;
+  //LED6_FLIM = PORT_ON;
 
 }
 
@@ -260,6 +260,15 @@ void checksumLN(byte idx) {
     chksum ^= LNBuffer[idx].data[i];
   }
   LNBuffer[idx].data[i] = chksum;
+}
+
+void longAck( byte i, byte opc, byte rc ) {
+  LNBuffer[i].len = 4;
+  LNBuffer[i].data[0] = OPC_LONG_ACK;
+  LNBuffer[i].data[1] = (opc & 0x7F);
+  LNBuffer[i].data[2] = (rc & 0x7F);
+  checksumLN(i);
+  LNBuffer[i].status = LN_STATUS_USED;
 }
 
 
@@ -303,6 +312,35 @@ void ln2CBus(void) {
       canmsg.len = 0;
       canQueue(&canmsg);
       break;
+
+    case OPC_SL_RD_DATA:
+      break;
+      
+    case OPC_WR_SL_DATA:
+      slot = LNPacket[2];
+      if( slot != 0 && slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
+        // ack with a slot read
+        for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+          if( LNBuffer[i].status == LN_STATUS_FREE) {
+            longAck(i, OPC_WR_SL_DATA, -1);
+            if( mode == LN_MODE_READ )
+              mode = LN_MODE_WRITE_REQ;
+            break;
+          }
+        }
+      }
+      else {
+        for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+          if( LNBuffer[i].status == LN_STATUS_FREE) {
+            longAck(i, OPC_WR_SL_DATA, 0);
+            if( mode == LN_MODE_READ )
+              mode = LN_MODE_WRITE_REQ;
+            break;
+          }
+        }
+      }
+      break;
+
 
     case OPC_LOCO_ADR:
       addrH = LNPacket[1]&0x7F;
@@ -366,7 +404,7 @@ void ln2CBus(void) {
       break;
 
     case OPC_MOVE_SLOTS:
-      if( LNPacket[2] == 0 ) {
+      if( LNPacket[1] > 0 && LNPacket[2] == 0 ) {
         // dispatch put
         dispatchSlot = LNPacket[1] & 0x7f;
         if( dispatchSlot < LN_SLOTS && slotmap[dispatchSlot].session != LN_SLOT_UNUSED ) {
@@ -381,10 +419,17 @@ void ln2CBus(void) {
           }
         }
         else {
-          // long ack
+          for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+            if( LNBuffer[i].status == LN_STATUS_FREE) {
+              longAck(i, OPC_MOVE_SLOTS, 0);
+              if( mode == LN_MODE_READ )
+                mode = LN_MODE_WRITE_REQ;
+              break;
+            }
+          }
         }
       }
-      else if( LNPacket[1] == 0 ) {
+      else if( LNPacket[1] == 0 && LNPacket[2] == 0 ) {
         // dispatch get
         if( dispatchSlot != LN_SLOT_UNUSED ) {
           // ack with a slot read
@@ -399,7 +444,12 @@ void ln2CBus(void) {
           dispatchSlot = LN_SLOT_UNUSED;
         }
         else {
-          // long ack
+          if( LNBuffer[i].status == LN_STATUS_FREE) {
+            longAck(i, OPC_MOVE_SLOTS, 0);
+            if( mode == LN_MODE_READ )
+              mode = LN_MODE_WRITE_REQ;
+            break;
+          }
         }
       }
       break;
@@ -583,6 +633,8 @@ byte doLocoNet(void) {
         LNPacket[2] = 0x0A;
         LNPacket[3] = overrun;
         LNPacket[4] = 0xFF;
+        LNPacket[5] = 0x00;
+        LNPacket[6] = 0x00;
         overrun = FALSE;
         ln2CBusErr();
         return 1;
@@ -701,6 +753,12 @@ void send2LocoNet(void) {
       if( mode == LN_MODE_READ )
         mode = LN_MODE_WRITE_REQ;
       //ln2CBusDebug(i);
+      break;
+
+    case OPC_ERR:
+      longAck(i, 0x3F, 0);
+      if( mode == LN_MODE_READ )
+        mode = LN_MODE_WRITE_REQ;
       break;
 
     case OPC_PLOC:
