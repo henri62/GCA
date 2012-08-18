@@ -76,15 +76,15 @@ void scanLN(void) {
   if( INTCONbits.T0IF ) {
     byte inLN = LNRX;
 
-    INTCONbits.T0IF  = 0;     // Clear interrupt flag
-    TMR0L = 194;         // Reset counter with a correction of 10 cycles
+    INTCONbits.T0IF = 0; // Clear interrupt flag
+    TMR0L = 195;         // Reset counter with a correction of 10 cycles
 
-    LNSCAN = PORT_ON;
+    //LNSCAN = PORT_ON;
 
     samplepart++;
     if( samplepart > 2 ) {
       samplepart = 0;
-      //LNSCAN = PORT_ON;
+      LNSCAN = PORT_ON;
     }
     
     if( mode != LN_MODE_WRITE && LNstatus == STATUS_WAITSTART && inLN == 0 ) {
@@ -95,7 +95,7 @@ void scanLN(void) {
       if( LNstatus == STATUS_CONFSTART ) {
         if(inLN == 0) {
           LNstatus = STATUS_IGN1;
-          //TMR0L += 32;
+          TMR0L += 10;
         }
         else
           LNstatus = STATUS_WAITSTART;
@@ -744,6 +744,7 @@ void send2LocoNet(void) {
   unsigned int addr;
   byte slot = 0;
   byte i = 0;
+  byte n = 0;
   for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
     if( LNBuffer[i].status == LN_STATUS_FREE) {
       break;
@@ -789,6 +790,24 @@ void send2LocoNet(void) {
         mode = LN_MODE_WRITE_REQ;
       break;
 
+    case OPC_DSPLOC:
+      for( n = 1; n < LN_SLOTS; n++ ) {
+        if( slotmap[n].session == rx_ptr->d1 ) {
+          dispatchSlot = n;
+          LNBuffer[i].len = 4;
+          LNBuffer[i].data[0] = OPC_MOVE_SLOTS;
+          LNBuffer[i].data[1] = i;
+          LNBuffer[i].data[2] = 0;
+          checksumLN(i);
+          LNBuffer[i].status = LN_STATUS_USED;
+          //ln2CBusDebug(i);
+          if( mode == LN_MODE_READ )
+            mode = LN_MODE_WRITE_REQ;
+          break;
+        }
+      }
+      break;
+      
     case OPC_PLOC:
       // read slot
       addr = rx_ptr->d2 * 256;

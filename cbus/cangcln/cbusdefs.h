@@ -74,7 +74,8 @@
 #define OPC_STAT    0x20    // Command station status report
 #define OPC_KLOC    0x21    // Release engine by handle
 #define OPC_QLOC    0x22    // Query engine by handle
-#define OPC_DKEEP   0x23   	// Keep alive for cab
+#define OPC_DKEEP   0x23    // Keep alive for cab
+#define OPC_DSPLOC  0x24    // Dispatch Loco <session>
 
 #define OPC_DBG1    0x30    // Debug message with 1 status byte
 #define OPC_EXTC    0x3F    // Extended opcode
