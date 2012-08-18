@@ -407,6 +407,32 @@ void ln2CBus(void) {
         canmsg.d[0] = slotmap[slot].session;
         canmsg.d[1] = slotmap[slot].speed;
         canQueue(&canmsg);
+
+        canmsg.opc = OPC_DFUN;
+        canmsg.len = 3;
+        canmsg.d[0] = slotmap[slot].session;
+        canmsg.d[1] = 1;
+        canmsg.d[2] = slotmap[slot].f[0];
+        canQueue(&canmsg);
+
+      }
+      break;
+
+    case OPC_LOCO_SND:
+      slot = LNPacket[1];
+      if( slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
+        slotmap[slot].f[1]   = (LNPacket[2] & SND_F5 ) ? 0x01:0x00;
+        slotmap[slot].f[1]  |= (LNPacket[2] & SND_F6 ) ? 0x02:0x00;
+        slotmap[slot].f[1]  |= (LNPacket[2] & SND_F7 ) ? 0x04:0x00;
+        slotmap[slot].f[1]  |= (LNPacket[2] & SND_F8 ) ? 0x08:0x00;
+
+        canmsg.opc = OPC_DFUN;
+        canmsg.len = 3;
+        canmsg.d[0] = slotmap[slot].session;
+        canmsg.d[1] = 2;
+        canmsg.d[2] = slotmap[slot].f[1];
+        canQueue(&canmsg);
+
       }
       break;
 

@@ -26,7 +26,7 @@
 #define __CANGCLN_H
 
 
-#define MAJOR_VER 1
+#define MAJOR_VER 1     // zero is developer version
 #define MINOR_VER 'b'	// Minor version character
 
 #define EVT_NUM 5
