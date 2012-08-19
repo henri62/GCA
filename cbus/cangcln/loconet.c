@@ -336,7 +336,7 @@ void ln2CBus(void) {
         // ack with a slot read
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
-            longAck(i, OPC_WR_SL_DATA, -1);
+            longAck(i, OPC_WR_SL_DATA, 1);
             if( mode == LN_MODE_READ )
               mode = LN_MODE_WRITE_REQ;
             break;
@@ -380,7 +380,7 @@ void ln2CBus(void) {
         
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
-            longAck(i, OPC_WR_SL_DATA, -1);
+            longAck(i, OPC_WR_SL_DATA, 1);
             if( mode == LN_MODE_READ )
               mode = LN_MODE_WRITE_REQ;
             break;
@@ -972,7 +972,7 @@ void send2LocoNet(void) {
       byte value = rx_ptr->d4;
 
       LNBuffer[i].len = 14;
-      LNBuffer[i].data[0] = OPC_WR_SL_DATA;
+      LNBuffer[i].data[0] = OPC_SL_RD_DATA;
       LNBuffer[i].data[1] = 0x0E;
       LNBuffer[i].data[2] = 0x7C;
       LNBuffer[i].data[3] = (0x03 | 0x20); // command
