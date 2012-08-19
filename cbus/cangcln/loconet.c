@@ -43,6 +43,7 @@ near byte txtry;
 near byte samplepart;
 near byte idle;
 near byte overrun;
+near byte startafterwrite;
 
 
 #pragma udata VARS_LOCONET2
@@ -90,12 +91,17 @@ void scanLN(void) {
     if( mode != LN_MODE_WRITE && LNstatus == STATUS_WAITSTART && inLN == 0 ) {
       idle = 0;
       LNstatus = STATUS_CONFSTART;
+      /*
+      if( startafterwrite ) {
+        startafterwrite = FALSE;
+        TMR0L += 32;
+      }
+      */
     }
     else if(LNstatus != STATUS_WAITSTART) {
       if( LNstatus == STATUS_CONFSTART ) {
         if(inLN == 0) {
           LNstatus = STATUS_IGN1;
-          TMR0L += 10;
         }
         else
           LNstatus = STATUS_WAITSTART;
@@ -209,6 +215,7 @@ void scanLN(void) {
             if( LNBuffer[LNIndex].len == LNByteIndex ) {
               LNBuffer[LNIndex].status = LN_STATUS_FREE;
               mode = LN_MODE_READ;
+              startafterwrite = TRUE;
             }
           }
           else {
@@ -327,6 +334,50 @@ void ln2CBus(void) {
       slot = LNPacket[2];
       if( slot != 0 && slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
         // ack with a slot read
+        for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+          if( LNBuffer[i].status == LN_STATUS_FREE) {
+            longAck(i, OPC_WR_SL_DATA, -1);
+            if( mode == LN_MODE_READ )
+              mode = LN_MODE_WRITE_REQ;
+            break;
+          }
+        }
+      }
+      else if( slot == 0x7C ) {
+        /* Programming slot */
+        unsigned short cvNumber;
+        byte cvData;
+        byte pcmd   = LNPacket[3];  // programmer command
+        byte cvh    = LNPacket[8];  // hi 3 bits of CV# and msb of data7
+        byte cvl    = LNPacket[9];  // lo 7 bits of CV#
+        byte data7  = LNPacket[10]; // 7 bits of data to program, msb is in cvh above
+
+        cvData     =  (((cvh & CVH_D7) << 6) | (data7 & 0x7f));  // was PROG_DATA
+        cvNumber   = (((((cvh & CVH_CV8_CV9) >> 3) | (cvh & CVH_CV7)) * 128)
+                      + (cvl & 0x7f))+1;   // was PROG_CV_NUM(progTask)
+
+        if( pcmd & PCMD_RW ) {
+          // write CV
+          canmsg.opc = OPC_WCVS;
+          canmsg.len = 5;
+          canmsg.d[0]= 0;
+          canmsg.d[1]= cvNumber / 256;
+          canmsg.d[2]= cvNumber % 256;
+          canmsg.d[3]= CVMODE_PAGE;
+          canmsg.d[4]= cvData;
+          canQueue(&canmsg);
+        }
+        else {
+          // read CV
+          canmsg.opc = OPC_QCVS;
+          canmsg.len = 4;
+          canmsg.d[0]= 0;
+          canmsg.d[1]= cvNumber / 256;
+          canmsg.d[2]= cvNumber % 256;
+          canmsg.d[3]= CVMODE_PAGE;
+          canQueue(&canmsg);
+        }
+        
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
             longAck(i, OPC_WR_SL_DATA, -1);
@@ -631,7 +682,7 @@ byte doLocoNet(void) {
       readP = 0;
 
     LNTimeout = 0;
-    
+
     if( LNIndex == 0 ) {
       if( (b & 0x80) == 0 ) {
         // invalid start
@@ -644,6 +695,18 @@ byte doLocoNet(void) {
         LNPacket[6] = 0x00;
         ln2CBusErr();
         return 1;
+      }
+      else {
+        /*
+        LNPacket[0] = b;
+        LNPacket[1] = 0;
+        LNPacket[2] = 0x88;
+        LNPacket[3] = overrun;
+        LNPacket[4] = framingerr;
+        LNPacket[5] = 0x00;
+        LNPacket[6] = 0x00;
+        ln2CBusErr();
+        */
       }
 
       //memset(LNPacket, 0, sizeof(LNPacket));
@@ -688,6 +751,7 @@ byte doLocoNet(void) {
 
     if( LNSize == -1 && LNIndex == 1 ) {
       LNSize = b & 0x7F;
+      /*
       LNPacket[1] = 0xBB;
       LNPacket[2] = LNSize;
       LNPacket[3] = LNIndex;
@@ -695,6 +759,7 @@ byte doLocoNet(void) {
       LNPacket[5] = 0;
       LNPacket[6] = 0;
       ln2CBusErr(); // debug
+      */
     }
 
     if( LNIndex < 32 ) {
@@ -763,6 +828,7 @@ void initLN(void) {
   samplepart = 0;
   overrun = FALSE;
   framingerr = FALSE;
+  startafterwrite = FALSE;
   mode = LN_MODE_READ;
 }
 
@@ -897,6 +963,38 @@ void send2LocoNet(void) {
           mode = LN_MODE_WRITE_REQ;
       }
       break;
+
+    case OPC_PCVS:
+    {
+      byte cvh   = rx_ptr->d2;
+      byte cvl   = rx_ptr->d3;
+      unsigned short cv = cvh * 256 + cvl;
+      byte value = rx_ptr->d4;
+
+      LNBuffer[i].len = 14;
+      LNBuffer[i].data[0] = OPC_WR_SL_DATA;
+      LNBuffer[i].data[1] = 0x0E;
+      LNBuffer[i].data[2] = 0x7C;
+      LNBuffer[i].data[3] = (0x03 | 0x20); // command
+
+      LNBuffer[i].data[4] = 0;
+      LNBuffer[i].data[5] = 0;
+      LNBuffer[i].data[6] = 0;
+      LNBuffer[i].data[7] = 0; // track status
+
+      LNBuffer[i].data[8] = (cv&0x300)/16 + (cv&0x80)/128 + (value&0x80)/128*2;
+      LNBuffer[i].data[9] = cv & 0x7F;
+      /* store low bits of CV value */
+      LNBuffer[i].data[10] = value & 0x7F;
+
+      LNBuffer[i].data[11] = 0; // Throttle ID
+      LNBuffer[i].data[12] = 0;
+      checksumLN(i);
+      LNBuffer[i].status = LN_STATUS_USED;
+      if( mode == LN_MODE_READ )
+        mode = LN_MODE_WRITE_REQ;
+    }
+    break;
 
     case OPC_FCLK:
       LNBuffer[i].len = 14;

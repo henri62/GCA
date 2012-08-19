@@ -245,6 +245,13 @@
 #define	CMDERR_INV_EV_VALUE		11
 #define	CMDERR_INV_NV_VALUE		12
 
+
+#define CVMODE_DIRECTBYTE 0
+#define CVMODE_DIRECTBIT 1
+#define CVMODE_PAGE 2
+#define CVMODE_REGISTER 3
+#define CVMODE_ADDRONLY 4
+
 #endif		// __OPCODES_H
 
 
