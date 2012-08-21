@@ -35,6 +35,7 @@
 #define SW      PORTAbits.RA0	// Flim switch
 #define LNSCAN  PORTAbits.RA1	// Debug output for checking the scan freq.
 
+#define LNWD    PORTCbits.RC1   // LocoNet Watchdog
 #define LNTX    PORTCbits.RC6   // LocoNet TX
 #define LNRX    PORTCbits.RC7   // LocoNet RX
 

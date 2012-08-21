@@ -69,6 +69,8 @@ far byte LNBufferIndex;
 far LNSLOT slotmap[LN_SLOTS];
 far byte dispatchSlot;
 
+#define INVERTLNTX 0x01
+
 // TMR0 generates a heartbeat every 32000000/4/2/80 == 50kHz.
 #pragma interrupt scanLN
 void scanLN(void) {
@@ -149,7 +151,7 @@ void scanLN(void) {
     if( samplepart == 0 ) {
       if( mode == LN_MODE_READ ) {
         // End of stop bit.
-        LNTX = PORT_OFF;
+        LNTX = (PORT_ON ^ INVERTLNTX);
         dataready = FALSE;
       }
 
@@ -223,7 +225,7 @@ void scanLN(void) {
             LNBitIndex++;
           }
         }
-        LNTX = LNWrittenBit ^ 0x01; // Invert?
+        LNTX = (LNWrittenBit ^ INVERTLNTX); // Invert?
 
       }
 

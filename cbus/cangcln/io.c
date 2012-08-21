@@ -53,6 +53,7 @@ void setupIO(byte clr) {
   TRISCbits.TRISC5 = 0; /* LED4 LocoNet activity RX */
   TRISCbits.TRISC6 = 0; /* LocoNet TX */
   TRISCbits.TRISC7 = 1; /* LocoNet RX */
+  TRISCbits.TRISC1 = 1; // LocoNet watchdog
 
   LED1_CBUSTX   = PORT_OFF;
   LED2_CBUSRX   = PORT_OFF;
