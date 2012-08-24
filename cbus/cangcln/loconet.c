@@ -44,6 +44,7 @@ near byte samplepart;
 near byte idle;
 near byte overrun;
 near byte startafterwrite;
+near byte packetpending;
 
 
 #pragma udata VARS_LOCONET2
@@ -131,6 +132,8 @@ void scanLN(void) {
           else {
             // No stop bit; Framing error.
             LNIndex = 0;
+            packetpending = FALSE;
+
             framingerr = TRUE;
             overrun = FALSE;
             dataready = FALSE;
@@ -153,6 +156,7 @@ void scanLN(void) {
         // End of stop bit.
         LNTX = (PORT_ON ^ INVERTLNTX);
         dataready = FALSE;
+        txtry = 0;
       }
 
 
@@ -249,8 +253,6 @@ void ln2CBusErr(void) {
   canmsg.d[6] = LNPacket[6];
   canmsg.len = 7;
   canQueue(&canmsg);
-  //Wait4NN = TRUE;
-  //LED6_FLIM = PORT_ON;
 
 }
 
@@ -287,7 +289,49 @@ void longAck( byte i, byte opc, byte rc ) {
   LNBuffer[i].status = LN_STATUS_USED;
 }
 
+/*
+20120824.075435.390 r0000B lnudprea lbudp    *trace dump( 0x0EEBADA6: length=4 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+    00000000: BF 00 5B 1B                                     |..[.            |
+20120824.075435.391 r0000B lnudprea lbudp    *trace dump( 0x0EEBADA6: length=2 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+    00000000: 81 7E                                           |.~              |
+20120824.075435.392 r0000B lnudprea lbudp    *trace dump( 0x0EEBADA6: length=14 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+    00000000: E7 0E 17 03 5B 00 00 04 00 00 00 00 00 5D       |....[........]  |
+20120824.075435.393 r0000B lnudprea lbudp    *trace dump( 0x0EEBADA6: length=4 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+    00000000: BA 17 17 45                                     |...E            |
+20120824.075435.394 r0000B lnudprea lbudp    *trace dump( 0x0EEBADA6: length=14 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+    00000000: E7 0E 17 33 5B 00 00 04 00 00 00 00 00 6D       |...3[........m  |
+20120824.075435.395 r0000B lnudprea lbudp    *trace dump( 0x0EEBADA6: length=14 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+    00000000: EF 0E 17 33 5B 00 00 04 00 00 00 66 75 76       |...3[......fuv  |
+20120824.075435.397 r9999c lnreader lnmon    0288 Request slot for loco address 91
+20120824.075435.397 r0000B lnudprea lbudp    *trace dump( 0x0EEBADA6: length=4 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+20120824.075435.397 r9999B lnreader OLocoNet 1001 *** read dump:
+    00000000: B4 6F 7F 5B                                     |.o.[            |
+20120824.075435.397 r0000B lnreader OLocoNet *trace dump( 0x0EEFDE28: length=4 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+    00000000: BF 00 5B 1B                                     |..[.            |
 
+ */
+
+// offset 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D
+// data   E7 0E 17 33 5B 00 00 04 00 00 00 00 00 6D DCS100
+//        E7 0E 17 23 5B 00 08 06 00 00 00 66 75 64
+//        E7 0E 01 33 5B 01 20 05 00 00 00 00 00 5B GCLN
+//        E7 0E 01 33 5B 01 20 05 00 00 00 00 00 5B
 void slotRead(byte i, byte slot) {
   LNBuffer[i].len = 14;
   LNBuffer[i].data[ 0] = OPC_SL_RD_DATA;
@@ -296,11 +340,20 @@ void slotRead(byte i, byte slot) {
   LNBuffer[i].data[ 3] = DEC_MODE_128 | LOCO_IN_USE; // status 1
   LNBuffer[i].data[ 4] = (slotmap[slot].addr & 0x7F);
   LNBuffer[i].data[ 5] = (slotmap[slot].speed & 0x7F);
-  LNBuffer[i].data[ 6] = (slotmap[slot].speed & 0x80) ? 0:DIRF_DIR; // TODO: functions
-  LNBuffer[i].data[ 7] = GTRK_MLOK1 | GTRK_POWER | GTRK_IDLE; // track status
+  LNBuffer[i].data[ 6] = (slotmap[slot].speed & 0x80) ? 0:DIRF_DIR;
+  LNBuffer[i].data[ 6] |= (slotmap[slot].f[0] & 0x01) ? DIRF_F0:0;
+  LNBuffer[i].data[ 6] |= (slotmap[slot].f[0] & 0x02) ? DIRF_F1:0;
+  LNBuffer[i].data[ 6] |= (slotmap[slot].f[0] & 0x04) ? DIRF_F2:0;
+  LNBuffer[i].data[ 6] |= (slotmap[slot].f[0] & 0x08) ? DIRF_F3:0;
+  LNBuffer[i].data[ 6] |= (slotmap[slot].f[0] & 0x10) ? DIRF_F4:0;
+  LNBuffer[i].data[ 7] = GTRK_MLOK1 | GTRK_POWER; // track status
   LNBuffer[i].data[ 8] = 0;
   LNBuffer[i].data[ 9] = ((slotmap[slot].addr/128) & 0x7F);
   LNBuffer[i].data[10] = 0; // sound
+  LNBuffer[i].data[10] |= (slotmap[slot].f[1] & 0x01) ? SND_F5:0;
+  LNBuffer[i].data[10] |= (slotmap[slot].f[1] & 0x02) ? SND_F6:0;
+  LNBuffer[i].data[10] |= (slotmap[slot].f[1] & 0x04) ? SND_F7:0;
+  LNBuffer[i].data[10] |= (slotmap[slot].f[1] & 0x08) ? SND_F8:0;
   LNBuffer[i].data[11] = 0; // IDL
   LNBuffer[i].data[12] = 0; // IDH
   checksumLN(i);
@@ -339,8 +392,6 @@ void ln2CBus(void) {
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
             longAck(i, OPC_WR_SL_DATA, 1);
-            if( mode == LN_MODE_READ )
-              mode = LN_MODE_WRITE_REQ;
             break;
           }
         }
@@ -383,8 +434,6 @@ void ln2CBus(void) {
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
             longAck(i, OPC_WR_SL_DATA, 1);
-            if( mode == LN_MODE_READ )
-              mode = LN_MODE_WRITE_REQ;
             break;
           }
         }
@@ -393,8 +442,6 @@ void ln2CBus(void) {
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
             longAck(i, OPC_WR_SL_DATA, 0);
-            if( mode == LN_MODE_READ )
-              mode = LN_MODE_WRITE_REQ;
             break;
           }
         }
@@ -403,19 +450,29 @@ void ln2CBus(void) {
 
 
     case OPC_LOCO_ADR:
+    {
+      byte n;
       addrH = LNPacket[1]&0x7F;
       addrL = LNPacket[2]&0x7F;
       addr = addrL + (addrH << 7);
 
       slot = LN_SLOTS;
-      for( i = 0; i < LN_SLOTS; i++ ) {
-        if( slotmap[i].session != LN_SLOT_UNUSED && slotmap[i].addr == addr ) {
-          slot = i;
+      for( n = 0; n < LN_SLOTS; n++ ) {
+        if( slotmap[n].session != LN_SLOT_UNUSED && slotmap[n].addr == addr ) {
+          slot = n;
           break;
         }
       }
 
       if( slot == LN_SLOTS ) {
+        for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+          if( LNBuffer[i].status == LN_STATUS_FREE) {
+            LNBuffer[i].len = 2;
+            LNBuffer[i].data[0] = OPC_GPBUSY;
+            LNBuffer[i].status = LN_STATUS_USED;
+            checksumLN(i);
+          }
+        }
         canmsg.opc = OPC_RLOC;
         canmsg.len = 2;
         canmsg.d[0]= addr / 256;
@@ -426,11 +483,15 @@ void ln2CBus(void) {
         canQueue(&canmsg);
       }
       else {
-        slotRead(i, slot);
-        if( mode == LN_MODE_READ )
-          mode = LN_MODE_WRITE_REQ;
+        for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+          if( LNBuffer[i].status == LN_STATUS_FREE) {
+            slotRead(i, slot);
+            break;
+          }
+        }
       }
-      break;
+    }
+    break;
 
     case OPC_LOCO_SPD:
       slot = LNPacket[1];
@@ -498,8 +559,6 @@ void ln2CBus(void) {
           for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
             if( LNBuffer[i].status == LN_STATUS_FREE) {
               slotRead(i, dispatchSlot);
-              if( mode == LN_MODE_READ )
-                mode = LN_MODE_WRITE_REQ;
               break;
             }
           }
@@ -508,8 +567,6 @@ void ln2CBus(void) {
           for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
             if( LNBuffer[i].status == LN_STATUS_FREE) {
               longAck(i, OPC_MOVE_SLOTS, 0);
-              if( mode == LN_MODE_READ )
-                mode = LN_MODE_WRITE_REQ;
               break;
             }
           }
@@ -522,8 +579,6 @@ void ln2CBus(void) {
           for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
             if( LNBuffer[i].status == LN_STATUS_FREE) {
               slotRead(i, dispatchSlot);
-              if( mode == LN_MODE_READ )
-                mode = LN_MODE_WRITE_REQ;
               break;
             }
           }
@@ -533,8 +588,6 @@ void ln2CBus(void) {
           for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
             if( LNBuffer[i].status == LN_STATUS_FREE) {
               longAck(i, OPC_MOVE_SLOTS, 0);
-              if( mode == LN_MODE_READ )
-                mode = LN_MODE_WRITE_REQ;
               break;
             }
           }
@@ -749,19 +802,12 @@ byte doLocoNet(void) {
         return 1;
       }
 
+      packetpending = TRUE;
+
     }
 
     if( LNSize == -1 && LNIndex == 1 ) {
       LNSize = b & 0x7F;
-      /*
-      LNPacket[1] = 0xBB;
-      LNPacket[2] = LNSize;
-      LNPacket[3] = LNIndex;
-      LNPacket[4] = 0;
-      LNPacket[5] = 0;
-      LNPacket[6] = 0;
-      ln2CBusErr(); // debug
-      */
     }
 
     if( LNIndex < 32 ) {
@@ -770,6 +816,7 @@ byte doLocoNet(void) {
       if( LNIndex == LNSize ) {
         // Packet complete.
         LNIndex = 0;
+        packetpending = FALSE;
         // Translate to CBUS.
         ln2CBus();
       }
@@ -784,10 +831,24 @@ byte doLocoNet(void) {
       ln2CBusErr(); // debug
       // reset
       LNIndex = 0;
+      packetpending = FALSE;
+
     }
 
     return 1;
   }
+
+
+  if( packetpending == FALSE && mode == LN_MODE_READ && LNstatus == STATUS_WAITSTART ) {
+    byte i;
+    for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+      if( LNBuffer[i].status == LN_STATUS_USED ) {
+        mode = LN_MODE_WRITE_REQ;
+        break;
+      }
+    }
+  }
+
 
 
   return 0;
@@ -831,6 +892,7 @@ void initLN(void) {
   overrun = FALSE;
   framingerr = FALSE;
   startafterwrite = FALSE;
+  packetpending = FALSE;
   mode = LN_MODE_READ;
 }
 
@@ -847,7 +909,6 @@ void send2LocoNet(void) {
 
   if( i >= LN_BUFFER_SIZE ) {
     // Buffer overflow...
-    Wait4NN = TRUE;
     LED6_FLIM = PORT_ON;
     return;
   }
@@ -863,8 +924,6 @@ void send2LocoNet(void) {
       LNBuffer[i].data[0] = OPC_GPON;
       checksumLN(i);
       LNBuffer[i].status = LN_STATUS_USED;
-      if( mode == LN_MODE_READ )
-        mode = LN_MODE_WRITE_REQ;
       //ln2CBusDebug(i);
       break;
 
@@ -873,15 +932,11 @@ void send2LocoNet(void) {
       LNBuffer[i].data[0] = OPC_GPOFF;
       checksumLN(i);
       LNBuffer[i].status = LN_STATUS_USED;
-      if( mode == LN_MODE_READ )
-        mode = LN_MODE_WRITE_REQ;
       //ln2CBusDebug(i);
       break;
 
     case OPC_ERR:
       longAck(i, 0x3F, 0);
-      if( mode == LN_MODE_READ )
-        mode = LN_MODE_WRITE_REQ;
       break;
 
     case OPC_DSPLOC:
@@ -895,8 +950,6 @@ void send2LocoNet(void) {
           checksumLN(i);
           LNBuffer[i].status = LN_STATUS_USED;
           //ln2CBusDebug(i);
-          if( mode == LN_MODE_READ )
-            mode = LN_MODE_WRITE_REQ;
           break;
         }
       }
@@ -935,8 +988,6 @@ void send2LocoNet(void) {
         slotmap[slot].f[2]  = rx_ptr->d7;
         // report slot read
         slotRead(i, slot);
-        if( mode == LN_MODE_READ )
-          mode = LN_MODE_WRITE_REQ;
         //ln2CBusDebug(i);
       }
       break;
@@ -946,8 +997,6 @@ void send2LocoNet(void) {
       LNBuffer[i].data[0] = OPC_IDLE;
       checksumLN(i);
       LNBuffer[i].status = LN_STATUS_USED;
-      if( mode == LN_MODE_READ )
-        mode = LN_MODE_WRITE_REQ;
       break;
 
     case OPC_ASRQ:
@@ -961,8 +1010,6 @@ void send2LocoNet(void) {
         LNBuffer[i].data[2] = (1017/128)&0x0F;
         checksumLN(i);
         LNBuffer[i].status = LN_STATUS_USED;
-        if( mode == LN_MODE_READ )
-          mode = LN_MODE_WRITE_REQ;
       }
       break;
 
@@ -993,8 +1040,6 @@ void send2LocoNet(void) {
       LNBuffer[i].data[12] = 0;
       checksumLN(i);
       LNBuffer[i].status = LN_STATUS_USED;
-      if( mode == LN_MODE_READ )
-        mode = LN_MODE_WRITE_REQ;
     }
     break;
 
@@ -1017,8 +1062,6 @@ void send2LocoNet(void) {
       LNBuffer[i].data[12] = 0x70;
       checksumLN(i);
       LNBuffer[i].status = LN_STATUS_USED;
-      if( mode == LN_MODE_READ )
-        mode = LN_MODE_WRITE_REQ;
       break;
 
     case OPC_ACON:
@@ -1039,8 +1082,6 @@ void send2LocoNet(void) {
         LNBuffer[i].data[2] += (dir ? 0x20:0x00);
         checksumLN(i);
         LNBuffer[i].status = LN_STATUS_USED;
-        if( mode == LN_MODE_READ )
-          mode = LN_MODE_WRITE_REQ;
       }
       else if( (NV1 & CFG_ENABLE_FB2LN) && addr >= FBStart && addr <= FBEnd ) {
         // Sensor
@@ -1054,8 +1095,6 @@ void send2LocoNet(void) {
         LNBuffer[i].data[2] += (dir ? 0x20:0x00);
         checksumLN(i);
         LNBuffer[i].status = LN_STATUS_USED;
-        if( mode == LN_MODE_READ )
-          mode = LN_MODE_WRITE_REQ;
       }
       break;
 
