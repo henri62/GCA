@@ -43,8 +43,8 @@ near byte txtry;
 near byte samplepart;
 near byte idle;
 near byte overrun;
-near byte startafterwrite;
 near byte packetpending;
+near byte CDBackoff;
 
 
 #pragma udata VARS_LOCONET2
@@ -89,17 +89,20 @@ void scanLN(void) {
     if( samplepart > 2 ) {
       samplepart = 0;
       LNSCAN = PORT_ON;
+
+      if( CDBackoff > 0 ) {
+        CDBackoff--;
+        LNTX = (PORT_OFF ^ INVERTLNTX);
+      }
+    }
+
+    if( CDBackoff > 0 ) {
+      return;
     }
     
     if( mode != LN_MODE_WRITE && LNstatus == STATUS_WAITSTART && inLN == 0 ) {
       idle = 0;
       LNstatus = STATUS_CONFSTART;
-      /*
-      if( startafterwrite ) {
-        startafterwrite = FALSE;
-        TMR0L += 32;
-      }
-      */
     }
     else if(LNstatus != STATUS_WAITSTART) {
       if( LNstatus == STATUS_CONFSTART ) {
@@ -201,6 +204,9 @@ void scanLN(void) {
         // Check if the inLN equals the last send bit for collision detection.
         if( LNWrittenBit != inLN ) {
           // Collision!
+          CDBackoff = 20;
+          LNWrittenBit = PORT_ON;
+
           LNByteIndex = 0;
           LNBitIndex = 0;
           mode = LN_MODE_WRITE_REQ;
@@ -221,7 +227,6 @@ void scanLN(void) {
             if( LNBuffer[LNIndex].len == LNByteIndex ) {
               LNBuffer[LNIndex].status = LN_STATUS_FREE;
               mode = LN_MODE_READ;
-              startafterwrite = TRUE;
             }
           }
           else {
@@ -891,9 +896,9 @@ void initLN(void) {
   samplepart = 0;
   overrun = FALSE;
   framingerr = FALSE;
-  startafterwrite = FALSE;
   packetpending = FALSE;
   mode = LN_MODE_READ;
+  CDBackoff = 0;
 }
 
 void send2LocoNet(void) {
