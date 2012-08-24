@@ -52,6 +52,8 @@ far byte SampleData[8];
 far byte SampleFlag;
 far byte readP;
 far byte writeP;
+far unsigned short throttleid[32];
+
 
 #pragma udata VARS_LOCONET3
 far byte LNPacket[32];
@@ -333,16 +335,22 @@ void longAck( byte i, byte opc, byte rc ) {
  */
 
 // offset 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D
+//              ## S1 A1 SP DF TK S2 A2 SD ID ID CK
 // data   E7 0E 17 33 5B 00 00 04 00 00 00 00 00 6D DCS100
 //        E7 0E 17 23 5B 00 08 06 00 00 00 66 75 64
+
 //        E7 0E 01 33 5B 01 20 05 00 00 00 00 00 5B GCLN
 //        E7 0E 01 33 5B 01 20 05 00 00 00 00 00 5B
-void slotRead(byte i, byte slot) {
+//        E7 0E 01 33 13 01 20 05 00 07 00 00 00 14
+
+void slotRead(byte i, byte slot, byte inuse) {
   LNBuffer[i].len = 14;
   LNBuffer[i].data[ 0] = OPC_SL_RD_DATA;
   LNBuffer[i].data[ 1] = 0x0E;
   LNBuffer[i].data[ 2] = slot;
-  LNBuffer[i].data[ 3] = DEC_MODE_128 | LOCO_IN_USE; // status 1
+  LNBuffer[i].data[ 3] = DEC_MODE_128; // status 1
+  if( inuse || throttleid[slot] > 0 )
+    LNBuffer[i].data[ 3] = DEC_MODE_128 | LOCO_IN_USE; // status 1
   LNBuffer[i].data[ 4] = (slotmap[slot].addr & 0x7F);
   LNBuffer[i].data[ 5] = (slotmap[slot].speed & 0x7F);
   LNBuffer[i].data[ 6] = (slotmap[slot].speed & 0x80) ? 0:DIRF_DIR;
@@ -359,8 +367,8 @@ void slotRead(byte i, byte slot) {
   LNBuffer[i].data[10] |= (slotmap[slot].f[1] & 0x02) ? SND_F6:0;
   LNBuffer[i].data[10] |= (slotmap[slot].f[1] & 0x04) ? SND_F7:0;
   LNBuffer[i].data[10] |= (slotmap[slot].f[1] & 0x08) ? SND_F8:0;
-  LNBuffer[i].data[11] = 0; // IDL
-  LNBuffer[i].data[12] = 0; // IDH
+  LNBuffer[i].data[11] = (throttleid[slot] & 0x7F); // IDL
+  LNBuffer[i].data[12] = (throttleid[slot] >> 7); // IDH
   checksumLN(i);
   LNBuffer[i].status = LN_STATUS_USED;
 }
@@ -394,9 +402,12 @@ void ln2CBus(void) {
       slot = LNPacket[2];
       if( slot != 0 && slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
         // ack with a slot read
+        throttleid[slot] = LNPacket[12];
+        throttleid[slot] <<= 7;
+        throttleid[slot] += LNPacket[11];
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
-            longAck(i, OPC_WR_SL_DATA, 1);
+            longAck(i, OPC_WR_SL_DATA, 0x7F); // weird return code
             break;
           }
         }
@@ -470,6 +481,7 @@ void ln2CBus(void) {
       }
 
       if( slot == LN_SLOTS ) {
+        /*
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
             LNBuffer[i].len = 2;
@@ -478,6 +490,7 @@ void ln2CBus(void) {
             checksumLN(i);
           }
         }
+        */
         canmsg.opc = OPC_RLOC;
         canmsg.len = 2;
         canmsg.d[0]= addr / 256;
@@ -490,7 +503,7 @@ void ln2CBus(void) {
       else {
         for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
           if( LNBuffer[i].status == LN_STATUS_FREE) {
-            slotRead(i, slot);
+            slotRead(i, slot, FALSE);
             break;
           }
         }
@@ -516,7 +529,7 @@ void ln2CBus(void) {
       if( slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
         slotmap[slot].speed &= 0x7F; // save speed
         slotmap[slot].speed |= (LNPacket[2] & DIRF_DIR) ? 0x00:0x80;
-        slotmap[slot].f[0]   = (LNPacket[2] & DIRF_F0 ) ? 0x01:0x00;
+        slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F0 ) ? 0x01:0x00;
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F1 ) ? 0x02:0x00;
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F2 ) ? 0x04:0x00;
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F3 ) ? 0x08:0x00;
@@ -556,14 +569,29 @@ void ln2CBus(void) {
       break;
 
     case OPC_MOVE_SLOTS:
-      if( LNPacket[1] > 0 && LNPacket[2] == 0 ) {
+      if( LNPacket[1] > 0 && LNPacket[2] > 0 && LNPacket[1] == LNPacket[2] ) {
+        // Set slot in use.
+        slot = LNPacket[1] & 0x7f;
+        if( slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
+          throttleid[slot] = 1; // temp id
+          // ack with a slot read
+          for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+            if( LNBuffer[i].status == LN_STATUS_FREE) {
+              slotRead(i, slot, TRUE);
+              break;
+            }
+          }
+        }
+      }
+      else if( LNPacket[1] > 0 && LNPacket[2] == 0 ) {
         // dispatch put
         dispatchSlot = LNPacket[1] & 0x7f;
         if( dispatchSlot < LN_SLOTS && slotmap[dispatchSlot].session != LN_SLOT_UNUSED ) {
           // ack with a slot read
+          throttleid[slot] = 0; // temp id
           for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
             if( LNBuffer[i].status == LN_STATUS_FREE) {
-              slotRead(i, dispatchSlot);
+              slotRead(i, dispatchSlot, FALSE);
               break;
             }
           }
@@ -583,7 +611,7 @@ void ln2CBus(void) {
           // ack with a slot read
           for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
             if( LNBuffer[i].status == LN_STATUS_FREE) {
-              slotRead(i, dispatchSlot);
+              slotRead(i, dispatchSlot, FALSE);
               break;
             }
           }
@@ -879,6 +907,7 @@ void initLN(void) {
   }
   for( i = 0; i < LN_SLOTS; i++ ) {
     slotmap[i].session = LN_SLOT_UNUSED;
+    throttleid[i] = 0;
   }
   dispatchSlot = LN_SLOT_UNUSED;
 
@@ -992,7 +1021,7 @@ void send2LocoNet(void) {
         slotmap[slot].f[1]  = rx_ptr->d6;
         slotmap[slot].f[2]  = rx_ptr->d7;
         // report slot read
-        slotRead(i, slot);
+        slotRead(i, slot, FALSE);
         //ln2CBusDebug(i);
       }
       break;
