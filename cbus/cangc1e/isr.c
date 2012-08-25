@@ -94,6 +94,11 @@ void isr_high(void) {
 void isr_low(void) {
   //LED2 = 1;
 
+  if (PIR3bits.FIFOWMIF == 1) {
+      TXB0CONbits.TXREQ = 1;
+      PIE3bits.FIFOWMIE = 0;
+  }
+  
   if (PIR3bits.ERRIF == 1) {
 
     if (TXB1CONbits.TXLARB) { // lost arbitration
