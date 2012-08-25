@@ -417,9 +417,13 @@ void ln2CBus(void) {
         unsigned short cvNumber;
         byte cvData;
         byte pcmd   = LNPacket[3];  // programmer command
+        byte hopsa  = LNPacket[5];  // Ops mode - 7 high address bits of loco to program
+        byte lopsa  = LNPacket[6];  // Ops mode - 7 low  address bits of loco to program
         byte cvh    = LNPacket[8];  // hi 3 bits of CV# and msb of data7
         byte cvl    = LNPacket[9];  // lo 7 bits of CV#
         byte data7  = LNPacket[10]; // 7 bits of data to program, msb is in cvh above
+        unsigned short addr = (((lopsa & 0x7f) * 128) + (hopsa & 0x7f));
+        byte n;
 
         cvData     =  (((cvh & CVH_D7) << 6) | (data7 & 0x7f));  // was PROG_DATA
         cvNumber   = (((((cvh & CVH_CV8_CV9) >> 3) | (cvh & CVH_CV7)) * 128)
@@ -427,14 +431,41 @@ void ln2CBus(void) {
 
         if( pcmd & PCMD_RW ) {
           // write CV
-          canmsg.opc = OPC_WCVS;
-          canmsg.len = 5;
-          canmsg.d[0]= 0;
-          canmsg.d[1]= cvNumber / 256;
-          canmsg.d[2]= cvNumber % 256;
-          canmsg.d[3]= CVMODE_PAGE;
-          canmsg.d[4]= cvData;
-          canQueue(&canmsg);
+          if( pcmd & PCMD_OPS_MODE ) {
+            slot = LN_SLOTS;
+            for( n = 0; n < LN_SLOTS; n++ ) {
+              if( slotmap[n].session != LN_SLOT_UNUSED && slotmap[n].addr == addr ) {
+                slot = n;
+                canmsg.opc = OPC_WCVO;
+                canmsg.len = 4;
+                canmsg.d[0]= slotmap[n].session;
+                canmsg.d[1]= cvNumber / 256;
+                canmsg.d[2]= cvNumber % 256;
+                canmsg.d[3]= cvData;
+                canQueue(&canmsg);
+                break;
+              }
+            }
+            if( slot == LN_SLOTS ) {
+              // no session
+              for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
+                if( LNBuffer[i].status == LN_STATUS_FREE) {
+                  longAck(i, OPC_WR_SL_DATA, 0);
+                  break;
+                }
+              }
+            }
+          }
+          else {
+            canmsg.opc = OPC_WCVS;
+            canmsg.len = 5;
+            canmsg.d[0]= 0;
+            canmsg.d[1]= cvNumber / 256;
+            canmsg.d[2]= cvNumber % 256;
+            canmsg.d[3]= CVMODE_PAGE;
+            canmsg.d[4]= cvData;
+            canQueue(&canmsg);
+          }
         }
         else {
           // read CV
