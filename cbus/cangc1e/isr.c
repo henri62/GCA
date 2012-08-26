@@ -70,9 +70,6 @@ void isr_high(void) {
       io_timer = 200;
       doIOTimers();
 
-      if (can_transmit_timeout != 0) {
-        --can_transmit_timeout;
-      }
     }
 
     //
@@ -88,7 +85,7 @@ void isr_high(void) {
 
 
 //
-// Low priority interrupt. Used for CAN receive.
+// Low priority interrupt. Used for CAN error. receive and send are polled
 //
 #pragma interruptlow isr_low
 void isr_low(void) {
@@ -101,23 +98,14 @@ void isr_low(void) {
   
   if (PIR3bits.ERRIF == 1) {
 
-    if (TXB1CONbits.TXLARB) { // lost arbitration
-      if (Latcount == 0) { // already tried higher priority
-        can_transmit_failed = 1;
-        TXB1CONbits.TXREQ = 0;
-      } else if (--Latcount == 0) { // Allow tries at lower level priority first
-        TXB1CONbits.TXREQ = 0;
-        Tx1[sidh] &= 0b00111111; // change priority
-        TXB1CONbits.TXREQ = 1; // try again
-      }
+    if (TXB0CONbits.TXERR) { // bus error
+      TXB0CONbits.TXREQ = 0;
     }
 
     if (TXB1CONbits.TXERR) { // bus error
-      can_transmit_failed = 1;
       TXB1CONbits.TXREQ = 0;
     }
 
   }
-
   PIR3 = 0; // clear interrupts
 }

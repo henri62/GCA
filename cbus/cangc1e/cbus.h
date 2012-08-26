@@ -29,9 +29,6 @@
  */
 
 #include "project.h"
-extern near unsigned char can_transmit_timeout;
-extern near unsigned char can_transmit_failed;
-extern near unsigned char can_bus_off;
 
 extern rom unsigned char defaultID;
 extern rom unsigned char status;
@@ -39,8 +36,6 @@ extern rom unsigned short nodeID;
 extern rom unsigned char bootflag;
 
 void cbusSetup(void);
-
-extern near unsigned char Tx1[14];
 
 enum bufbytes {
 	con=0,

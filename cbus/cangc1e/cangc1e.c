@@ -51,9 +51,6 @@
 
 #pragma udata access VARS
 
-near unsigned char  can_transmit_timeout;
-near unsigned char  can_transmit_failed;
-near unsigned char  can_bus_off;
 near unsigned short NN_temp;
 near unsigned char  led1timer;
 near unsigned char  led2timer;
@@ -133,8 +130,6 @@ void main(void) {
 
   initIO();
 
-  delay();
-
   initEth();
 
   NN_temp  = eeRead(EE_NN) * 256;
@@ -149,8 +144,6 @@ void main(void) {
 
   LED3 = LED_ON; /* signal running system */
 
-  delay();
-
   // Loop forever (nothing lasts forever...)
   while (1) {
 
@@ -163,6 +156,10 @@ void main(void) {
       if(currentEthQ >= CANMSG_QSIZE ) {
         // must do a broadcast to avoid a queue overflow
         CBusEthBroadcastAll();
+      }
+      if(currentEthQ > 6 ) {
+        // avoid overflow on startup
+        doEth();
       }
     }
 
@@ -224,10 +221,6 @@ void initIO(void) {
   T0CONbits.TMR0ON = 1;
   INTCON2bits.TMR0IP = 1;
 
-  // clear the fifo receive buffers
-  while (fifoEmpty() == 0) {
-    rx_ptr->con = 0;
-  }
 
 
   tmr0_reload = TMR0_NORMAL;
@@ -249,22 +242,17 @@ void initIO(void) {
 
 
 void initCAN(void) {
-  // Setup ID
-  Tx1[con] = 0;
-  Tx1[sidh] = 0b10110000 | (CANID & 0x78) >>3;
-  Tx1[sidl] = (CANID & 0x07) << 5;
-
-  // Setup TXB0 with high priority OPC_HLT
-  TXB0SIDH = 0b01110000 | (CANID & 0x78) >>3;
-  TXB0SIDL = (CANID & 0x07) << 5;
-  TXB0DLC = 1;
-  TXB0D0 = OPC_HLT;
 
   // enable interrupts
   INTCONbits.GIEH = 1;
   INTCONbits.GIEL = 1;
   
   cbusSetup();
+
+  // clear the fifo receive buffers
+  while (fifoEmpty() == 0) {
+    rx_ptr->con = 0;
+  }
 }
 
 

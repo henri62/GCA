@@ -365,11 +365,6 @@ byte ethQueueRaw(void) {
   int i = 0;
 
   rx_ptr->con = 0;
-  if (can_bus_off) {
-    // At least one buffer is now free
-    can_bus_off = 0;
-    PIE3bits.FIFOWMIE = 1;
-  }
 
   for( i = 0; i < CANMSG_QSIZE; i++ ) {
     if( ETHMsgs[i].status == CANMSG_FREE ) {

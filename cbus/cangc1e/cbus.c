@@ -144,8 +144,6 @@ BRGCON3: 0x03
 }
 
 #pragma udata access VARS
-// Transmit buffers
-near unsigned char Tx1[14];
 
 
 #pragma udata
@@ -210,7 +208,7 @@ void canTxQ(CANMsg* msg) {
 	unsigned char *ptr_fsr1;
 	unsigned char i;
 
-  msg->b[con]  = rx_ptr->con;
+  msg->b[con]  = 0b00000000;
   msg->b[sidh] = 0b10110000 | (CANID & 0x78) >>3;
 	msg->b[sidl] &= 0b00011111;	// clear old canid
   msg->b[sidl] |= (CANID & 0x07) << 5;
@@ -222,17 +220,26 @@ void canTxQ(CANMsg* msg) {
   led1timer = 20;
 
   tx_idx = 0;
-  ptr_fsr1 = &TXB1CON;
-  for( i = 0; i < 14; i++ ) {
-    *(ptr_fsr1++) = msg->b[tx_idx++];
+  if( TXB0CONbits.TXREQ == 0 ) {
+    ptr_fsr1 = &TXB0CON;
+    for( i = 0; i < 14; i++ ) {
+      *(ptr_fsr1++) = msg->b[tx_idx++];
+    }
+    TXB0CONbits.TXREQ = 1;
+  }
+  else if( TXB1CONbits.TXREQ == 0 ) {
+    ptr_fsr1 = &TXB1CON;
+    for( i = 0; i < 14; i++ ) {
+      *(ptr_fsr1++) = msg->b[tx_idx++];
+    }
+  TXB1CONbits.TXREQ = 1;
   }
 
-  TXB1CONbits.TXREQ = 1;
 }
 
 
 void canSendQ(void) {
-  if( TXB1CONbits.TXREQ == 0 ) {
+  if( TXB0CONbits.TXREQ == 0 || TXB1CONbits.TXREQ == 0) {
     byte i;
     char idx = -1;
     
