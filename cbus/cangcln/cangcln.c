@@ -205,6 +205,8 @@ void main(void) {
       }
     }
 
+    doSlotPing();
+
     if( checkFlimSwitch() && !swTrig ) {
       swTrig = 1;
     }

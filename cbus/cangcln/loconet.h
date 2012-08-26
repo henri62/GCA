@@ -32,6 +32,8 @@ void initLN(void);
 byte doLocoNet(void);
 void LocoNetWD(void);
 void send2LocoNet(void);
+void doSlotTimers(void);
+void doSlotPing(void);
 
 typedef struct {
   byte   status;

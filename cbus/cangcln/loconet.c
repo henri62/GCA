@@ -53,6 +53,7 @@ far byte SampleFlag;
 far byte readP;
 far byte writeP;
 far unsigned short throttleid[32];
+far byte slottimer[LN_SLOTS];
 
 
 #pragma udata VARS_LOCONET3
@@ -547,6 +548,7 @@ void ln2CBus(void) {
       if( slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
         slotmap[slot].speed &= 0x80; // save direction flag
         slotmap[slot].speed |= (LNPacket[2] & 0x7F);
+        slottimer[slot] = 0;
         canmsg.opc = OPC_DSPD;
         canmsg.len = 2;
         canmsg.d[0] = slotmap[slot].session;
@@ -565,6 +567,8 @@ void ln2CBus(void) {
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F3 ) ? 0x04:0x00;
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F4 ) ? 0x08:0x00;
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F0 ) ? 0x10:0x00;
+        slottimer[slot] = 0;
+        
         canmsg.opc = OPC_DSPD;
         canmsg.len = 2;
         canmsg.d[0] = slotmap[slot].session;
@@ -588,6 +592,7 @@ void ln2CBus(void) {
         slotmap[slot].f[1]  |= (LNPacket[2] & SND_F6 ) ? 0x02:0x00;
         slotmap[slot].f[1]  |= (LNPacket[2] & SND_F7 ) ? 0x04:0x00;
         slotmap[slot].f[1]  |= (LNPacket[2] & SND_F8 ) ? 0x08:0x00;
+        slottimer[slot] = 0;
 
         canmsg.opc = OPC_DFUN;
         canmsg.len = 3;
@@ -640,6 +645,7 @@ void ln2CBus(void) {
         // dispatch get
         if( dispatchSlot != LN_SLOT_UNUSED ) {
           // ack with a slot read
+          throttleid[dispatchSlot] = 1; // temp id
           for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
             if( LNBuffer[i].status == LN_STATUS_FREE) {
               slotRead(i, dispatchSlot, FALSE);
@@ -939,6 +945,7 @@ void initLN(void) {
   for( i = 0; i < LN_SLOTS; i++ ) {
     slotmap[i].session = LN_SLOT_UNUSED;
     throttleid[i] = 0;
+    slottimer[i] = 0;
   }
   dispatchSlot = LN_SLOT_UNUSED;
 
@@ -1039,6 +1046,7 @@ void send2LocoNet(void) {
           if( slotmap[i].session == LN_SLOT_UNUSED ) {
             slot = i;
             slotmap[slot].session = rx_ptr->d1;
+            slottimer[slot] = 0;
             break;
           }
         }
@@ -1165,4 +1173,29 @@ void send2LocoNet(void) {
 
   }
 
+}
+
+
+void doSlotTimers(void) {
+  byte i;
+  for( i = 0; i < LN_SLOTS; i++ ) {
+    if( slotmap[i].session == LN_SLOT_UNUSED )
+      slottimer[i] = 0;
+    else
+      slottimer[i]++;
+  }
+}
+
+
+void doSlotPing(void) {
+  byte i;
+  for( i = 0; i < LN_SLOTS; i++ ) {
+    if( slotmap[i].session != LN_SLOT_UNUSED && slottimer[i] > 20 ) {
+      slottimer[i] = 0;
+      canmsg.opc  = OPC_DKEEP;
+      canmsg.d[0] = slotmap[i].session;
+      canmsg.len = 1;
+      canQueue(&canmsg);
+    }
+  }
 }
