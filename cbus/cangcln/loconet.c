@@ -560,7 +560,7 @@ void ln2CBus(void) {
       if( slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED ) {
         slotmap[slot].speed &= 0x7F; // save speed
         slotmap[slot].speed |= (LNPacket[2] & DIRF_DIR) ? 0x00:0x80;
-        slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F1 ) ? 0x01:0x00;
+        slotmap[slot].f[0]   = (LNPacket[2] & DIRF_F1 ) ? 0x01:0x00;
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F2 ) ? 0x02:0x00;
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F3 ) ? 0x04:0x00;
         slotmap[slot].f[0]  |= (LNPacket[2] & DIRF_F4 ) ? 0x08:0x00;
