@@ -24,9 +24,9 @@
 #ifndef __COMMANDS_H
 #define __COMMANDS_H
 
-unsigned char parseCmd(void);
+unsigned char parseCmd(CANMsg* cmsg);
 void doRqnpn(unsigned int);
-int thisNN(void);
+int thisNN(CANMsg* cmsg);
 unsigned char doPortEvent(int i );
 
 

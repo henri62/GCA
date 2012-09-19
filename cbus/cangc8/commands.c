@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 #include "project.h"
@@ -49,225 +49,235 @@ near byte nnL;
 // Decode the OPC and call the function to handle it.
 //
 
-unsigned char parseCmd(void) {
-  unsigned char txed = 0;
-  //mode_word.s_full = 0;
+unsigned char parseCmd(CANMsg *cmsg) {
+    unsigned char txed = 0;
+    CANMsg canmsg;
 
-  switch (rx_ptr->d0) {
+    //mode_word.s_full = 0;
 
-    case OPC_QNN:
-      canmsg.opc  = OPC_PNN;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = NN_temp & 0xFF;
-      canmsg.d[2] = params[0];
-      canmsg.d[3] = params[2];
-      canmsg.d[4] = NV1;
-      canmsg.len = 5;
-      canQueue(&canmsg);
-      //LED2 = 1;
-      txed = 1;
-      break;
+    switch (cmsg->b[d0]) {
 
-    case OPC_RQNPN:
-      // Request to read a parameter
-      if (thisNN() == 1) {
-        doRqnpn((unsigned int) rx_ptr->d3);
-      }
-      break;
-
-    case OPC_SNN:
-    {
-      if( Wait4NN ) {
-        nnH = rx_ptr->d1;
-        nnL = rx_ptr->d2;
-        NN_temp = nnH * 256 + nnL;
-        eeWrite(EE_NN, nnH);
-        eeWrite(EE_NN+1, nnL);
-        Wait4NN = 0;
-      }
-      break;
-    }
+        case OPC_FCLK:
+            // fast clock:
+            FastClock.mins = cmsg->b[d1];
+            FastClock.hours = cmsg->b[d2];
+            FastClock.wday = cmsg->b[d3] & 0x0F;
+            FastClock.mon = (cmsg->b[d3] & 0xF0) >> 4;
+            FastClock.div = cmsg->b[d4];
+            FastClock.mday = cmsg->b[d5];
+            FastClock.temp = cmsg->b[d6];
+            FastClock.issync = TRUE;
+            FastClock.synctime = 0;
+            FastClock.timer = 0;
+            FastClock.gotfirstsync = TRUE;
+            displayFastClock();
+            break;
 
 
-    case OPC_RQNP:
-      if( Wait4NN ) {
-        canmsg.opc = OPC_PARAMS;
-        canmsg.d[0] = params[0];
-        canmsg.d[1] = params[1];
-        canmsg.d[2] = params[2];
-        canmsg.d[3] = params[3];
-        canmsg.d[4] = params[4];
-        canmsg.d[5] = params[5];
-        canmsg.d[6] = params[6];
-        canmsg.len = 7;
-        canQueue(&canmsg);
-        txed = 1;
-      }
-      break;
+        case OPC_QNN:
+            canmsg.b[d0] = OPC_PNN;
+            canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+            canmsg.b[d2] = NN_temp & 0xFF;
+            canmsg.b[d3] = params[0];
+            canmsg.b[d4] = params[2];
+            canmsg.b[d5] = NV1;
+            canmsg.b[dlc] = 6;
+            canbusSend(&canmsg);
+            //LED2 = 1;
+            txed = 1;
+            break;
 
-    case OPC_ACDAT:
-      {
-        // Display data.
-        int addr = rx_ptr->d1 * 256 + rx_ptr->d2;
-        setDisplayData(addr, rx_ptr->d3, rx_ptr->d4, rx_ptr->d5, rx_ptr->d6, rx_ptr->d7);
-      }
-      break;
+        case OPC_RQNPN:
+            // Request to read a parameter
+            if (thisNN(cmsg) == 1) {
+                doRqnpn((unsigned int) cmsg->b[d3]);
+            }
+            break;
 
-    case OPC_NVRD:
-      if( thisNN() ) {
-        byte nvnr = rx_ptr->d3;
-        if( nvnr == 1 ) {
-          canmsg.opc = OPC_NVANS;
-          canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = NN_temp & 0xFF;
-          canmsg.d[2] = nvnr;
-          canmsg.d[3] = NV1;
-          canmsg.len = 4;
-          canQueue(&canmsg);
-          txed = 1;
-        }
-        else if( nvnr == 2 ) {
-          canmsg.opc = OPC_NVANS;
-          canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = NN_temp & 0xFF;
-          canmsg.d[2] = nvnr;
-          canmsg.d[3] = CANID;
-          canmsg.len = 4;
-          canQueue(&canmsg);
-          txed = 1;
-        }
-        else if( nvnr == 3 ) {
-          canmsg.opc = OPC_NVANS;
-          canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = NN_temp & 0xFF;
-          canmsg.d[2] = nvnr;
-          canmsg.d[3] = DisplayA[0].config;
-          canmsg.len = 4;
-          canQueue(&canmsg);
-          txed = 1;
-        }
-        else if( nvnr == 4 ) {
-          canmsg.opc = OPC_NVANS;
-          canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = NN_temp & 0xFF;
-          canmsg.d[2] = nvnr;
-          canmsg.d[3] = DisplayA[1].config;
-          canmsg.len = 4;
-          canQueue(&canmsg);
-          txed = 1;
+        case OPC_SNN:
+        {
+            if (Wait4NN) {
+                nnH = cmsg->b[d1];
+                nnL = cmsg->b[d2];
+                NN_temp = nnH * 256 + nnL;
+                eeWrite(EE_NN, nnH);
+                eeWrite(EE_NN + 1, nnL);
+                Wait4NN = 0;
+            }
+            break;
         }
 
-      }
-      break;
 
-    case OPC_NVSET:
-      if( thisNN() ) {
-        byte nvnr = rx_ptr->d3;
-        if( nvnr == 1 ) {
-          NV1 = rx_ptr->d4;
-          eeWrite(EE_NV, NV1);
+        case OPC_RQNP:
+            if (Wait4NN) {
+                canmsg.b[d0] = OPC_PARAMS;
+                canmsg.b[d1] = params[0];
+                canmsg.b[d2] = params[1];
+                canmsg.b[d3] = params[2];
+                canmsg.b[d4] = params[3];
+                canmsg.b[d5] = params[4];
+                canmsg.b[d6] = params[5];
+                canmsg.b[d7] = params[6];
+                canmsg.b[dlc] = 8;
+                canbusSend(&canmsg);
+                txed = 1;
+            }
+            break;
+
+        case OPC_ACDAT:
+        {
+            // Display data.
+            int addr = cmsg->b[d1] * 256 + cmsg->b[d2];
+            setDisplayData(addr, cmsg->b[d3] & 0xF0, cmsg->b[d4], cmsg->b[d5], cmsg->b[d6], cmsg->b[d7]);
         }
-        else if( nvnr == 2 ) {
-          CANID = rx_ptr->d4;
-          eeWrite(EE_CANID, CANID);
-        }
-        else if( nvnr == 3 ) {
-          DisplayA[0].config = rx_ptr->d4;
-          eeWrite(EE_PORT_CONF + 0, DisplayA[0].config);
-        }
-        else if( nvnr == 4 ) {
-          DisplayA[1].config = rx_ptr->d4;
-          eeWrite(EE_PORT_CONF + 1, DisplayA[1].config);
-          setupDisplays();
-        }
-      }
-      break;
+            break;
+
+        case OPC_NVRD:
+            if (thisNN(cmsg)) {
+                BYTE nvnr = cmsg->b[d3];
+                if (nvnr == 1) {
+                    canmsg.b[d0] = OPC_NVANS;
+                    canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+                    canmsg.b[d2] = NN_temp & 0xFF;
+                    canmsg.b[d3] = nvnr;
+                    canmsg.b[d4] = NV1;
+                    canmsg.b[dlc] = 5;
+                    canbusSend(&canmsg);
+                    txed = 1;
+                } else if (nvnr == 2) {
+                    canmsg.b[d0] = OPC_NVANS;
+                    canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+                    canmsg.b[d2] = NN_temp & 0xFF;
+                    canmsg.b[d3] = nvnr;
+                    canmsg.b[d4] = CANID;
+                    canmsg.b[dlc] = 5;
+                    canbusSend(&canmsg);
+                    txed = 1;
+                } else if (nvnr == 3) {
+                    canmsg.b[d0] = OPC_NVANS;
+                    canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+                    canmsg.b[d2] = NN_temp & 0xFF;
+                    canmsg.b[d3] = nvnr;
+                    canmsg.b[d4] = DisplayA[0].config;
+                    canmsg.b[dlc] = 5;
+                    canbusSend(&canmsg);
+                    txed = 1;
+                } else if (nvnr == 4) {
+                    canmsg.b[d0] = OPC_NVANS;
+                    canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+                    canmsg.b[d2] = NN_temp & 0xFF;
+                    canmsg.b[d3] = nvnr;
+                    canmsg.b[d4] = DisplayA[1].config;
+                    canmsg.b[dlc] = 5;
+                    canbusSend(&canmsg);
+                    txed = 1;
+                }
+
+            }
+            break;
+
+        case OPC_NVSET:
+            if (thisNN(cmsg)) {
+                byte nvnr = cmsg->b[d3];
+                if (nvnr == 1) {
+                    NV1 = cmsg->b[d4];
+                    eeWrite(EE_NV, NV1);
+                } else if (nvnr == 2) {
+                    CANID = cmsg->b[d4];
+                    eeWrite(EE_CANID, CANID);
+                } else if (nvnr == 3) {
+                    DisplayA[0].config = cmsg->b[d4];
+                    eeWrite(EE_PORT_CONF + 0, DisplayA[0].config);
+                    fclktimer = 200;
+                } else if (nvnr == 4) {
+                    DisplayA[1].config = cmsg->b[d4];
+                    eeWrite(EE_PORT_CONF + 1, DisplayA[1].config);
+                    setupDisplays();
+                    fclktimer = 200;
+                }
+            }
+            break;
 
 
-    case OPC_NNLRN:
-      if( thisNN() ) {
-        isLearning = TRUE;
-      }
-      break;
+        case OPC_NNLRN:
+            if (thisNN(cmsg)) {
+                isLearning = TRUE;
+            }
+            break;
 
-    case OPC_NNULN:
-      if( thisNN() ) {
-        isLearning = FALSE;
-        LED2 = PORT_OFF;
-      }
-      break;
+        case OPC_NNULN:
+            if (thisNN(cmsg)) {
+                isLearning = FALSE;
+                LED2 = PORT_OFF;
+            }
+            break;
 
-    case OPC_EVLRN:
-      if( isLearning ) {
-        nn = rx_ptr->d1 * 256 + rx_ptr->d2;
-        addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
-        idx = rx_ptr->d5;
-        var = rx_ptr->d6;
-        if( idx < MAXDISPLAYS ) {
-          // Display
-          DisplayA[idx].addr = addr;
-          eeWriteShort(EE_PORT_ADDR + 2*idx, addr);
-        }
-      }
-      break;
-
-
-    case OPC_NERD:
-      if( thisNN() ) {
-        doEV = 1;
-        evIdx = 0;
-      }
-      break;
+        case OPC_EVLRN:
+            if (isLearning) {
+                nn = cmsg->b[d1] * 256 + cmsg->b[d2];
+                addr = cmsg->b[d3] * 256 + cmsg->b[d4];
+                idx = cmsg->b[d5];
+                var = cmsg->b[d6];
+                if (idx < MAXDISPLAYS) {
+                    // Display
+                    DisplayA[idx].addr = addr;
+                    eeWriteShort(EE_PORT_ADDR + 2 * idx, addr);
+                }
+            }
+            break;
 
 
+        case OPC_NERD:
+            if (thisNN(cmsg)) {
+                doEV = 1;
+                evIdx = 0;
+            }
+            break;
 
-    default: break;
-  }
 
-    rx_ptr->con = 0;
-    if (can_bus_off) {
-      // At least one buffer is now free
-      can_bus_off = 0;
-      PIE3bits.FIFOWMIE = 1;
+
+        default: break;
     }
 
     return txed;
 }
 
 void doRqnpn(unsigned int idx) {
-  if (idx < 8) {
-    canmsg.opc = OPC_PARAN;
-    canmsg.d[0] = (NN_temp / 256) & 0xFF;
-    canmsg.d[1] = NN_temp & 0xFF;
-    canmsg.d[2] = idx;
-    canmsg.d[3] = params[idx - 1];
-    canmsg.len = 4;
-    canQueue(&canmsg);
-  }
-}
-
-int thisNN() {
-  if ((((unsigned short) (rx_ptr->d1) << 8) + rx_ptr->d2) == NN_temp)
-    return 1;
-  else
-    return 0;
-
-}
-
-unsigned char doPortEvent(int i ) {
-  if( doEV ) {
-    if( i < MAXDISPLAYS ) {
-      canmsg.opc = OPC_ENRSP;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = NN_temp & 0xFF;
-      canmsg.d[2] = NN_temp / 256;
-      canmsg.d[3] = NN_temp % 256;
-      canmsg.d[4] = DisplayA[i].addr / 256;
-      canmsg.d[5] = DisplayA[i].addr % 256;
-      canmsg.d[6] = i;
-      canmsg.len = 7;
-      return canQueue(&canmsg);
+    CANMsg canmsg;
+    if (idx < 8) {
+        canmsg.b[d0] = OPC_PARAN;
+        canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+        canmsg.b[d2] = NN_temp & 0xFF;
+        canmsg.b[d3] = idx;
+        canmsg.b[d4] = params[idx - 1];
+        canmsg.b[dlc] = 5;
+        canbusSend(&canmsg);
     }
-  }
-  return FALSE;
+}
+
+int thisNN(CANMsg* cmsg) {
+    if ((((unsigned short) (cmsg->b[d1]) << 8) + cmsg->b[d2]) == NN_temp)
+        return 1;
+    else
+        return 0;
+
+}
+
+unsigned char doPortEvent(int i) {
+    CANMsg canmsg;
+    if (doEV) {
+        if (i < MAXDISPLAYS) {
+            canmsg.b[d0] = OPC_ENRSP;
+            canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+            canmsg.b[d2] = NN_temp & 0xFF;
+            canmsg.b[d3] = NN_temp / 256;
+            canmsg.b[d4] = NN_temp % 256;
+            canmsg.b[d5] = DisplayA[i].addr / 256;
+            canmsg.b[d6] = DisplayA[i].addr % 256;
+            canmsg.b[d7] = i;
+            canmsg.b[dlc] = 8;
+            return canbusSend(&canmsg);
+        }
+    }
+    return FALSE;
 }

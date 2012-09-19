@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 #ifndef __IO_H
@@ -44,5 +44,31 @@ void doLEDs(void);
 unsigned char checkFlimSwitch(void);
 void doIOTimers(void);
 
+typedef struct {
+    byte mins;
+    byte hours;
+    byte wday;
+    byte div;
+    byte mday;
+    byte mon;
+    byte issync;
+    int synctime;
+    byte gotfirstsync;
+    char temp;
+    ushort timer;
+} Clock;
+
+extern ram Clock FastClock;
+extern near unsigned char date_enabled;
+extern near unsigned char temp_enabled;
+extern near unsigned char showdate;
+extern volatile unsigned char __LED2;
+
+extern volatile byte altDisplay;
+extern volatile int showdate_timer;
+
+
+#define DISPLAY_DATE 1
+#define DISPLAY_TEMP 2
 
 #endif	// __IO_H

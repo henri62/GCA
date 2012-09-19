@@ -45,6 +45,7 @@
 typedef struct {
   byte config;
   int  addr;
+  byte busy;
   byte pending;
   byte byteidx;
   byte bitidx;
@@ -56,8 +57,11 @@ typedef struct {
 
 extern far DisplayDef DisplayA[MAXDISPLAYS];
 //extern far DisplayDef DisplayB[MAXDISPLAYS];
+extern BOOL displayData;
 
 void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, byte char3);
+void displayFastClock(void);
+void displayDot(void);
 
 extern void writeDisplays(void);
 void initDisplays(void);

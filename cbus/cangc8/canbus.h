@@ -18,34 +18,58 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
-#ifndef __PROJECT_H
-#define __PROJECT_H
-
-#include <p18f2480.h>
-
-#include <GenericTypeDefs.h>
-
-#include "canbus.h"
-
-    
-#define DEFAULT_NN   8
-
-#define TRUE 1
-#define FALSE 0
-#define PORT_ON 1
-#define PORT_OFF 0
-
-typedef unsigned short ushort;
-typedef unsigned char byte;
+#ifndef __CANBUS_H
+#define __CANBUS_H
 
 
-extern near unsigned char Latcount;
-extern near unsigned short NN_temp;
-extern const rom unsigned char params[32];
+typedef struct {
+  unsigned char status;
+  unsigned char b[14];
+} CANMsg;
 
-#define TMR0_NORMAL	6
+void cbusSetup(void);
 
-#endif	// __PROJECT_H
+typedef union _Byte_Val
+{
+    struct
+    {
+        unsigned int b0:1;
+        unsigned int b1:1;
+        unsigned int b2:1;
+        unsigned int b3:1;
+        unsigned int b4:1;
+        unsigned int b5:1;
+        unsigned int b6:1;
+        unsigned int b7:1;
+    } bits;
+    BYTE val;
+} Byte_Val;
+
+enum bufbytes {
+        con=0,
+        sidh,
+        sidl,
+        eidh,
+        eidl,
+        dlc,
+        d0,
+        d1,
+        d2,
+        d3,
+        d4,
+        d5,
+        d6,
+        d7
+};
+
+#define ECAN_MSG_STD    0
+#define ECAN_MSG_XTD    1
+
+BOOL canbusRecv(CANMsg *msg);
+BOOL canbusSend( CANMsg *msg );
+
+#endif
+

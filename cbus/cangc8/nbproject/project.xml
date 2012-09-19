@@ -4,12 +4,12 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>cangc8</name>
-            <creation-uuid>14efe0ed-dbb3-4b5d-a09f-760b68491392</creation-uuid>
+            <creation-uuid>afcbe831-5fdb-4753-86d7-426f3b21eb55</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
             <cpp-extensions/>
             <header-extensions>h</header-extensions>
-            <sourceEncoding>UTF-8</sourceEncoding>
+            <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
         </data>
     </configuration>

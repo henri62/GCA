@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 1
-#define MINOR_VER 'a'	// Minor version character
+#define MINOR_VER 'b'	// Minor version character
 
 #define EVT_NUM 2
 #define EVperEVT 0
@@ -39,9 +39,7 @@
 #define EE_NN 2          // 2 bytes node number of this unit
 #define EE_CANID EE_NN + 2  // 1 byte CANID
 #define EE_PORT_ADDR EE_CANID + 1  // 2 short event port 1
-#define EE_PORT_CONF EE_PORT_ADDR + 4
-
-
+#define EE_PORT_CONF EE_PORT_ADDR + 4 // 2 bytes display configuration
 
 // values
 #define MAGIC 93
@@ -50,13 +48,14 @@
 #define CFG_ALL  0xFF
 #define CFG_SHORT_EVENTS  0x01
 
-
-
+// EE_FC_CONF
+#define CFG_SHOWTIME 0x20
 
 extern near unsigned short NN_temp;
 extern near unsigned char  NV1;
 extern near unsigned char  CANID;
 extern near unsigned char  led1timer;
+extern near unsigned short  fclktimer;
 extern near unsigned char  ioIdx;
 extern near unsigned char  Wait4NN;
 extern near unsigned char  isLearning;
