@@ -26,8 +26,8 @@
 #define __CANGC1E_H
 
 
-#define MAJOR_VER 1
-#define MINOR_VER 'e'	// Minor version character
+#define MAJOR_VER 2
+#define MINOR_VER 'a'	// Minor version character
 
 #define EVT_NUM 0
 #define EVperEVT 0
@@ -60,21 +60,19 @@
 
 
 
-extern near unsigned short NN_temp;
-extern near unsigned char NV1;
-extern near unsigned char CANID;
-extern near unsigned char IdleTime;
-extern near unsigned char led1timer;
-extern near unsigned char led2timer;
-extern near unsigned char led3timer;
-extern near unsigned char ticktimer;
-extern near unsigned char ioIdx;
-extern volatile near unsigned char tmr0_reload;
-extern near unsigned char Wait4NN;
-extern near unsigned char isLearning;
-extern near unsigned char maxcanq;
-extern near unsigned char maxethq;
-extern near unsigned char currentEthQ;
-extern near unsigned char cmdticker;
+extern unsigned short NN_temp;
+extern unsigned char NV1;
+extern unsigned char CANID;
+extern unsigned char IdleTime;
+extern unsigned char led1timer;
+extern unsigned char led2timer;
+extern unsigned char led3timer;
+extern unsigned char Wait4NN;
+extern unsigned char isLearning;
+extern unsigned char maxcanq;
+extern unsigned char maxethq;
+extern unsigned char cmdticker;
+
+extern volatile unsigned short tmr1_reload;
 
 #endif

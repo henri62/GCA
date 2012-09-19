@@ -30,14 +30,18 @@
 extern void isr_high(void);
 extern void isr_low(void);
 
-extern unsigned short an0;
-extern unsigned short retry_delay;
-extern unsigned short sum;
-extern unsigned short ave;
+// extern unsigned short an0;
+// extern unsigned short retry_delay;
+// extern unsigned short sum;
+// extern unsigned short ave;
 
-extern unsigned near short led500ms_timer;
-extern unsigned near short io_timer;
-extern unsigned near short led_timer;
+extern unsigned short led500ms_timer;
+extern unsigned short io_timer;
+extern unsigned short led_timer;
+
+extern volatile BOOL doEthTick;
+extern volatile BOOL canFifoWarn;
+
 
 #define __ISR_H
 #endif

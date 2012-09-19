@@ -23,8 +23,9 @@
 #include "eth.h"
 #include "project.h"
 #include "io.h"
-#include "cbuseth.h"
+#include "gcaeth.h"
 #include "utils.h"
+
 
 void InitAppConfig(void);
 
@@ -35,23 +36,18 @@ void InitAppConfig(void);
  */
 APP_CONFIG AppConfig;
 
-MPFS MPFS_Start;
-
-
 void initEth(void) {
     /*
    * Initialize all stack related components.
    * Following steps must be performed for all applications using
    * PICmicro TCP/IP Stack.
    */
-  //TickInit(); // The tick is initialized in cangc1e
+  TickInit(); // The tick is initialized in cangc1e
 
   /*
    * Following steps must be performed for all applications using
    * PICmicro TCP/IP Stack.
    */
-  MPFSInit();
-
   /*
    * Initialize Stack and application related NV variables.
    */
@@ -128,7 +124,6 @@ void doEth(void) {
    * appropriate stack entity to process it.
    */
   StackTask();
+//  StackApplications();    // no Applications defined
   CBusEthServer();
 }
-
-

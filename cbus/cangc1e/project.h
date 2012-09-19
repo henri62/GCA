@@ -27,9 +27,7 @@
 #define CANGC1E
 
 #include <p18f2585.h>
-
-#include "cbus.h"
-
+#include <GenericTypeDefs.h>
     
 #define FIXED_CAN_ID 0x7F // use only for enummeration
 #define DEFAULT_NN   11
@@ -44,11 +42,8 @@
 typedef unsigned short ushort;
 typedef unsigned char byte;
 
-
-extern near unsigned char Latcount;
-extern near unsigned short NN_temp;
 extern const rom unsigned char params[32];
 
-#define TMR0_NORMAL	6
+#define TMR1_NORMAL	15535
 
 #endif	// __PROJECT_H

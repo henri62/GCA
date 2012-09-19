@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 #include "project.h"
@@ -26,61 +26,44 @@
 #include "cangc1e.h"
 #include "io.h"
 #include "eth.h"
-#include "cbuseth.h"
+#include "gcaeth.h"
 
-#pragma udata access VARS
-near unsigned short led500ms_timer;
-near unsigned short io_timer;
-near unsigned short led_timer;
-near unsigned short dim_timer;
+unsigned short led500ms_timer;
+unsigned short io_timer;
+unsigned short led_timer;
+
+volatile BOOL doEthTick;
+volatile BOOL canFifoWarn;
+
 
 #pragma code APP
 
 //
 // Interrupt Service Routine
 //
-// TMR0 generates a heartbeat every 250uS.
+// TMR1 generates a heartbeat every 50ms.
 //
 #pragma interrupt isr_high
+
 void isr_high(void) {
-    INTCONbits.T0IF = 0;
-    TMR0L = tmr0_reload;
-
-    //
-    // 10ms
-    //
-    if (--ticktimer == 0) {
-      ticktimer = 40;
-      TickUpdate();
+    if (PIR1bits.TMR1IF) {
+        PIR1bits.TMR1IF = 0;
+        TMR1H = tmr1_reload / 256;
+        TMR1L = tmr1_reload % 256;
     }
-
-
     //
-    // I/O timeout - 3ms
+    // LED timer  - 50ms
     //
-    if (--led_timer == 0) {
-      led_timer = 12;
-      doLEDTimers();
-    }
-
-    //
-    // I/O timeout - 50ms
-    //
-    if (--io_timer == 0) {
-      io_timer = 200;
-      doIOTimers();
-
-    }
-
+    doLEDTimers();
     //
     // Timer 500ms
     //
     if (--led500ms_timer == 0) {
-        led500ms_timer = 2000;
+        led500ms_timer = 10;
         doLEDs();
-        CBusEthTick();
+        // CBusEthTick();
+        doEthTick = TRUE;
     }
-
 }
 
 
@@ -88,24 +71,19 @@ void isr_high(void) {
 // Low priority interrupt. Used for CAN error. receive and send are polled
 //
 #pragma interruptlow isr_low
+
 void isr_low(void) {
-  //LED2 = 1;
+    //LED2 = 1;
 
-  if (PIR3bits.FIFOWMIF == 1) {
-      TXB0CONbits.TXREQ = 1;
-      PIE3bits.FIFOWMIE = 0;
-  }
-  
-  if (PIR3bits.ERRIF == 1) {
-
-    if (TXB0CONbits.TXERR) { // bus error
-      TXB0CONbits.TXREQ = 0;
+    if (INTCONbits.TMR0IF) {
+        INTCONbits.TMR0IF = 0;
+        TickUpdate();
     }
 
-    if (TXB1CONbits.TXERR) { // bus error
-      TXB1CONbits.TXREQ = 0;
+    if (PIR3bits.FIFOWMIF == 1) {
+        PIE3bits.FIFOWMIE = 0;
+        canFifoWarn = TRUE;
     }
 
-  }
-  PIR3 = 0; // clear interrupts
+    PIR3 = 0; // clear interrupts
 }

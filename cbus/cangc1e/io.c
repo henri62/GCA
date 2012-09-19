@@ -25,7 +25,8 @@
 #include <p18cxxx.h>
 #include <stdio.h>
 
-#include "cbus.h"
+#include "project.h"
+#include "canbus.h"
 #include "utils.h"
 #include "cbusdefs.h"
 #include "cangc1e.h"
@@ -92,8 +93,6 @@ void doLEDTimers(void) {
   if( Wait4NN ) {
     return;
   }
-
-
 }
 
 void doIOTimers(void) {
@@ -129,16 +128,13 @@ void saveOutputStates(void) {
 
 
 static unsigned char __LED3 = 0;
+
 void doLEDs(void) {
-  if( Wait4NN || isLearning) {
+  if( Wait4NN || isLearning ) {
     LED3 = __LED3;
     __LED3 ^= 1;
+    led3timer = 20;
   }
-  else if(__LED3 == 0) {
-    __LED3 = 1;
-    LED3 = LED_ON;
-  }
-
 }
 
 

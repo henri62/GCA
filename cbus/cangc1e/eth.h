@@ -26,13 +26,7 @@
 /*
  * These headers must be included for required defs.
  */
-#include "StackTsk.h"
-#include "Tick.h"
-#include "MAC.h"
-#include "Helpers.h"
-#include "TCP.h"
-#include "MPFS.h"
-//#include "XEEPROM.h"
+#include <TCPIP Stack/TCPIP.h>
 
 
 void initEth(void);

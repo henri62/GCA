@@ -4,66 +4,126 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="TCPIP Stack" displayName="TCPIP Stack" projectFiles="true">
+        <itemPath>include/TCPIP Stack/WFMgmtMsg.h</itemPath>
+        <itemPath>include/TCPIP Stack/AES_OFB.h</itemPath>
+        <itemPath>include/TCPIP Stack/ZeroconfMulticastDNS.h</itemPath>
+        <itemPath>include/TCPIP Stack/AES_ECB.h</itemPath>
+        <itemPath>include/TCPIP Stack/ETHPIC32ExtPhyRegs.h</itemPath>
+        <itemPath>include/TCPIP Stack/MPFS2.h</itemPath>
+        <itemPath>include/TCPIP Stack/SNMP.h</itemPath>
+        <itemPath>include/TCPIP Stack/ARP.h</itemPath>
+        <itemPath>include/TCPIP Stack/ETHPIC32ExtPhyDP83640.h</itemPath>
+        <itemPath>include/TCPIP Stack/SSLClientSize.h</itemPath>
+        <itemPath>include/TCPIP Stack/RSA.h</itemPath>
+        <itemPath>include/TCPIP Stack/NBNS.h</itemPath>
+        <itemPath>include/TCPIP Stack/regdef.h</itemPath>
+        <itemPath>include/TCPIP Stack/ENC28J60.h</itemPath>
+        <itemPath>include/TCPIP Stack/AES.h</itemPath>
+        <itemPath>include/TCPIP Stack/IP.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFEasyConfig.h</itemPath>
+        <itemPath>include/TCPIP Stack/TCPPerformanceTest.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFConsoleIwconfig.h</itemPath>
+        <itemPath>include/TCPIP Stack/ETH97J60.h</itemPath>
+        <itemPath>include/TCPIP Stack/SPIFlash.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFRaw.h</itemPath>
+        <itemPath>include/TCPIP Stack/AES_CTR.h</itemPath>
+        <itemPath>include/TCPIP Stack/SNTP.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFConsole.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFDebugStrings.h</itemPath>
+        <itemPath>include/TCPIP Stack/SPIRAM.h</itemPath>
+        <itemPath>include/TCPIP Stack/UART.h</itemPath>
+        <itemPath>include/TCPIP Stack/TCP.h</itemPath>
+        <itemPath>include/TCPIP Stack/SNMPv3.h</itemPath>
+        <itemPath>include/TCPIP Stack/FTP.h</itemPath>
+        <itemPath>include/TCPIP Stack/AutoIP.h</itemPath>
+        <itemPath>include/TCPIP Stack/StackTsk.h</itemPath>
+        <itemPath>include/TCPIP Stack/AES_CBC.h</itemPath>
+        <itemPath>include/TCPIP Stack/ENCX24J600.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFConsoleMsgs.h</itemPath>
+        <itemPath>include/TCPIP Stack/Telnet.h</itemPath>
+        <itemPath>include/TCPIP Stack/aes_pic24f.h</itemPath>
+        <itemPath>include/TCPIP Stack/UART2TCPBridge.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFConsoleIwpriv.h</itemPath>
+        <itemPath>include/TCPIP Stack/FileSystem.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFRaw_24G.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFConsoleIfconfig.h</itemPath>
+        <itemPath>include/TCPIP Stack/ETHPIC32ExtPhySMSC8720.h</itemPath>
+        <itemPath>include/TCPIP Stack/SSL.h</itemPath>
+        <itemPath>include/TCPIP Stack/XEEPROM.h</itemPath>
+        <itemPath>include/TCPIP Stack/HTTP2.h</itemPath>
+        <itemPath>include/TCPIP Stack/Reboot.h</itemPath>
+        <itemPath>include/TCPIP Stack/BigInt.h</itemPath>
+        <itemPath>include/TCPIP Stack/AES_ECB_PIC32.h</itemPath>
+        <itemPath>include/TCPIP Stack/AES_CFB.h</itemPath>
+        <itemPath>include/TCPIP Stack/Delay.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFDriverPrv.h</itemPath>
+        <itemPath>include/TCPIP Stack/MAC.h</itemPath>
+        <itemPath>include/TCPIP Stack/TFTPc.h</itemPath>
+        <itemPath>include/TCPIP Stack/ETHPIC32ExtPhySMSC8700.h</itemPath>
+        <itemPath>include/TCPIP Stack/DNS.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFApi.h</itemPath>
+        <itemPath>include/TCPIP Stack/ARCFOUR.h</itemPath>
+        <itemPath>include/TCPIP Stack/LCDBlocking.h</itemPath>
+        <itemPath>include/TCPIP Stack/TCPIP.h</itemPath>
+        <itemPath>include/TCPIP Stack/SMTP.h</itemPath>
+        <itemPath>include/TCPIP Stack/ETHPIC32ExtPhy.h</itemPath>
+        <itemPath>include/TCPIP Stack/Helpers.h</itemPath>
+        <itemPath>include/TCPIP Stack/Announce.h</itemPath>
+        <itemPath>include/TCPIP Stack/BerkeleyAPI.h</itemPath>
+        <itemPath>include/TCPIP Stack/ZeroconfHelper.h</itemPath>
+        <itemPath>include/TCPIP Stack/Hashes.h</itemPath>
+        <itemPath>include/TCPIP Stack/ZeroconfLinkLocal.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFConsoleMsgHandler.h</itemPath>
+        <itemPath>include/TCPIP Stack/UDPPerformanceTest.h</itemPath>
+        <itemPath>include/TCPIP Stack/ETHPIC32ExtPhyDP83848.h</itemPath>
+        <itemPath>include/TCPIP Stack/Tick.h</itemPath>
+        <itemPath>include/TCPIP Stack/ICMP.h</itemPath>
+        <itemPath>include/TCPIP Stack/DynDNS.h</itemPath>
+        <itemPath>include/TCPIP Stack/DHCP.h</itemPath>
+        <itemPath>include/TCPIP Stack/Random.h</itemPath>
+        <itemPath>include/TCPIP Stack/_HTTP2.h</itemPath>
+        <itemPath>include/TCPIP Stack/UDP.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFMac.h</itemPath>
+        <itemPath>include/TCPIP Stack/WFDriverPrv_24G.h</itemPath>
+      </logicalFolder>
       <itemPath>cangc1e.h</itemPath>
-      <itemPath>cbus.h</itemPath>
       <itemPath>cbusdefs.h</itemPath>
       <itemPath>commands.h</itemPath>
-      <itemPath>eth.h</itemPath>
+      <itemPath>HardwareProfile.h</itemPath>
       <itemPath>io.h</itemPath>
       <itemPath>isr.h</itemPath>
       <itemPath>project.h</itemPath>
       <itemPath>rocrail.h</itemPath>
+      <itemPath>TCPIPConfig.h</itemPath>
       <itemPath>utils.h</itemPath>
-      <itemPath>Helpers.h</itemPath>
-      <itemPath>MAC.h</itemPath>
-      <itemPath>StackTsk.h</itemPath>
-      <itemPath>Tick.h</itemPath>
-      <itemPath>Compiler.h</itemPath>
-      <itemPath>ENC28J60.h</itemPath>
-      <itemPath>MPFS.h</itemPath>
-      <itemPath>XEEPROM.h</itemPath>
-      <itemPath>Delay.h</itemPath>
-      <itemPath>TCP.h</itemPath>
-      <itemPath>IP.h</itemPath>
-      <itemPath>ARP.h</itemPath>
-      <itemPath>ARPTsk.h</itemPath>
-      <itemPath>ICMP.h</itemPath>
-      <itemPath>cbuseth.h</itemPath>
-    </logicalFolder>
-    <logicalFolder name="LibraryFiles"
-                   displayName="Library Files"
-                   projectFiles="true">
+      <itemPath>canbus.h</itemPath>
+      <itemPath>eth.h</itemPath>
+      <itemPath>gcaeth.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
-                   projectFiles="true">
-    </logicalFolder>
-    <logicalFolder name="ObjectFiles"
-                   displayName="Object Files"
                    projectFiles="true">
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>cangc1e.c</itemPath>
-      <itemPath>cbus.c</itemPath>
       <itemPath>commands.c</itemPath>
-      <itemPath>eth.c</itemPath>
       <itemPath>io.c</itemPath>
       <itemPath>isr.c</itemPath>
       <itemPath>utils.c</itemPath>
-      <itemPath>Tick.c</itemPath>
-      <itemPath>ENC28J60.c</itemPath>
-      <itemPath>Delay.c</itemPath>
-      <itemPath>TCP.c</itemPath>
-      <itemPath>IP.c</itemPath>
-      <itemPath>Helpers.c</itemPath>
-      <itemPath>MPFS.c</itemPath>
-      <itemPath>StackTsk.c</itemPath>
-      <itemPath>ARP.c</itemPath>
-      <itemPath>ARPTsk.c</itemPath>
-      <itemPath>ICMP.c</itemPath>
-      <itemPath>cbuseth.c</itemPath>
+      <itemPath>TCPIP Stack/ARP.c</itemPath>
+      <itemPath>TCPIP Stack/ENC28J60.c</itemPath>
+      <itemPath>TCPIP Stack/ICMP.c</itemPath>
+      <itemPath>TCPIP Stack/TCP.c</itemPath>
+      <itemPath>TCPIP Stack/Tick.c</itemPath>
+      <itemPath>TCPIP Stack/StackTsk.c</itemPath>
+      <itemPath>TCPIP Stack/Helpers.c</itemPath>
+      <itemPath>TCPIP Stack/IP.c</itemPath>
+      <itemPath>canbus.c</itemPath>
+      <itemPath>eth.c</itemPath>
+      <itemPath>gcaeth.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -71,6 +131,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>include/TCPIP Stack</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
@@ -81,7 +144,7 @@
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C18</languageToolchain>
         <languageToolchainVersion>3.40</languageToolchainVersion>
-        <platform>4</platform>
+        <platform>2</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
@@ -103,10 +166,44 @@
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C18>
+        <property key="code-model" value="mS"/>
+        <property key="data-model" value="Oa-"/>
+        <property key="default-char-unsigned" value="false"/>
+        <property key="enable-all-optimizations" value="true"/>
+        <property key="enable-int-promotion" value="false"/>
+        <property key="enable-multi-bank-stack-model" value="false"/>
+        <property key="enable-ob" value="false"/>
+        <property key="enable-od" value="false"/>
+        <property key="enable-om" value="true"/>
+        <property key="enable-on" value="true"/>
+        <property key="enable-op" value="false"/>
+        <property key="enable-opa" value="false"/>
+        <property key="enable-or" value="false"/>
+        <property key="enable-os" value="true"/>
+        <property key="enable-ot" value="false"/>
+        <property key="enable-ou" value="false"/>
+        <property key="enable-ow" value="true"/>
+        <property key="extra-include-directories" value="./;./include"/>
+        <property key="optimization-master" value="Enable all"/>
+        <property key="preprocessor-macros" value=""/>
+        <property key="procedural-abstraction-passes" value="0"/>
+        <property key="storage-class" value="sca"/>
+        <property key="verbose" value="false"/>
+        <property key="warning-level" value="2"/>
       </C18>
       <C18-AS>
+        <property key="cross.reference.file" value=""/>
+        <property key="default.radix" value="HEX"/>
+        <property key="enable.case.sensitivity" value="true"/>
+        <property key="hex.output.format" value="INHX32"/>
+        <property key="preprocessor.macros" value=""/>
+        <property key="warning.level" value="0"/>
       </C18-AS>
       <C18-LD>
+        <property key="cod-file" value="false"/>
+        <property key="extra-lib-directories" value=""/>
+        <property key="hex-output-format" value="INHX32"/>
+        <property key="map-file" value=""/>
       </C18-LD>
       <C18LanguageToolchain>
         <property key="extended-mode" value="false"/>
@@ -116,7 +213,6 @@
         <property key="stack-analysis" value="false"/>
         <property key="stack-analysis-mcc18" value="false"/>
         <property key="stack-analysis-mplink" value="false"/>
-        <appendMe value="-DMPFS_USE_EEPROM"/>
       </C18LanguageToolchain>
       <PICkit3PlatformTool>
         <property key="AutoSelectMemRanges" value="auto"/>
@@ -126,7 +222,9 @@
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
+        <property key="memories.aux" value="false"/>
         <property key="memories.eeprom" value="false"/>
+        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0xbfff"/>
@@ -134,11 +232,14 @@
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.eraseb4program" value="true"/>
-        <property key="programoptions.preserveeeprom" value="true"/>
+        <property key="programoptions.pgmspeed" value="2"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0x3f"/>
         <property key="programoptions.preserveprogramrange.start" value="0x0"/>
+        <property key="programoptions.preserveuserid" value="false"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="5.0"/>
       </PICkit3PlatformTool>
     </conf>
