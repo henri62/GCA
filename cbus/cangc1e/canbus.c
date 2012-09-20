@@ -28,6 +28,20 @@
 #include "canbus.h"
 #include "gcaeth.h"
 
+#define SW_FIFO 18
+
+typedef struct {
+    BYTE msg[14];
+} CAN_PACKET;
+
+#pragma udata VARS_FIFO
+
+far CAN_PACKET Fifo[SW_FIFO];
+far BYTE FifoIdxW = 0;
+far BYTE FifoIdxR = 0;
+
+#pragma udata
+
 static BYTE* _PointBuffer(BYTE b);
 
 void cbusSetup(void) {
@@ -108,6 +122,7 @@ void cbusSetup(void) {
     BIE0 = 0; // No Rx buffer interrupts
     TXBIE = 0; // No Tx buffer interrupts
     CANCON = 0;
+    PIE3bits.FIFOWMIE = 1; // Fifo 4 left int
 }
 
 #define buffers 3
@@ -131,7 +146,7 @@ BOOL canSend(CANMsg *msg) {
          */
         if (!(*ptr & 0x08)) {
             msg->b[con] = 0;
-            memcpy( ptr, (void *) msg->b, 14 );
+            memcpy(ptr, (void *) msg->b, 14);
             if (!(*tempPtr & 0x04)) {
                 *tempPtr |= 0x08;
             }
@@ -147,7 +162,6 @@ BOOL canbusSend(CANMsg *msg) {
     CANMsg canmsg;
 
     while (!canSend(msg)) {
-        maxcanq++;
         led3timer = 5;
         LED3 = LED_OFF;
     };
@@ -158,12 +172,24 @@ BOOL canbusRecv(CANMsg *msg) {
 
     BYTE *ptr;
 
-    if (COMSTAT & 0x80) {
+    if (FifoIdxR != FifoIdxW) {
+        memcpy(msg->b, &Fifo[FifoIdxR++].msg, 14);
+        if (FifoIdxR >= SW_FIFO) {
+            FifoIdxR = 0;
+        }
+        return TRUE;
+    }
+
+    PIE3bits.FIFOWMIE = 0;
+
+    if (COMSTATbits.FIFOEMPTY) {
 
         ptr = (BYTE*) _PointBuffer(CANCON & 0x07);
         PIR3bits.RXBnIF = 0;
         if (COMSTATbits.RXBnOVFL) {
-            maxcanq++;
+            maxcanq++; // Buffer Overflow
+            led3timer = 5;
+            LED3 = LED_OFF;
             COMSTATbits.RXBnOVFL = 0;
         }
         memcpy(msg->b, (void*) ptr, 14);
@@ -176,9 +202,54 @@ BOOL canbusRecv(CANMsg *msg) {
 
         led1timer = 2;
         LED1 = LED_ON;
+        PIE3bits.FIFOWMIE = 1;
         return TRUE;
     }
+    PIE3bits.FIFOWMIE = 1;
     return FALSE;
+}
+
+void canbusFifo(void) {
+    BYTE *ptr;
+
+    while (COMSTATbits.FIFOEMPTY) {
+
+        ptr = (BYTE*) _PointBuffer(CANCON & 0x07);
+        PIR3bits.RXBnIF = 0;
+        if (COMSTATbits.RXBnOVFL) {
+            maxcanq++; // Buffer Overflow
+            led3timer = 5;
+            LED3 = LED_OFF;
+            COMSTATbits.RXBnOVFL = 0;
+        }
+        memcpy((void*) &Fifo[FifoIdxW].msg, (void*) ptr, 14);
+        // Record and Clear any previous invalid message bit flag.
+        if (PIR3bits.IRXIF) {
+            PIR3bits.IRXIF = 0;
+        }
+        // Mark that this buffer is read and empty.
+        *ptr &= 0x7f;
+
+        maxethq++;
+        FifoIdxW++;
+        if (FifoIdxW >= SW_FIFO) {
+            FifoIdxW = 0;
+        }
+        if (FifoIdxW == FifoIdxR) {
+            maxcanq++; // Buffer Overflow
+            led3timer = 5;
+            LED3 = LED_OFF;
+            FifoIdxW--;
+            if (FifoIdxW < 0) {
+                FifoIdxW = SW_FIFO - 1;
+            }
+            PIE3bits.FIFOWMIE = 1;
+            break;
+        }
+        led1timer = 2;
+        LED1 = LED_ON;
+    }
+    PIE3bits.FIFOWMIE = 1;
 }
 
 static BYTE* _PointBuffer(BYTE b) {

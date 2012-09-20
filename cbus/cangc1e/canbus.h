@@ -70,6 +70,7 @@ enum bufbytes {
 
 BOOL canbusRecv(CANMsg *msg);
 BOOL canbusSend( CANMsg *msg );
+void canbusFifo(void);
 
 #endif
 

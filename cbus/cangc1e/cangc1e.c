@@ -142,10 +142,15 @@ void main(void) {
     // Loop forever (nothing lasts forever...)
     while (1) {
         CANMsg cmsg;
+        BYTE rsend;
 
-        // Check for Rx packet and setup pointer to it
+        rsend = FALSE;
+        // Check for Rx
         while (canbusRecv(&cmsg)) {
-            CBusEthBroadcast(&cmsg);
+            if (CBusEthBroadcast(&cmsg)) {
+                rsend = TRUE;
+                break;
+            }
         }
 
         if (doEthTick) {
@@ -154,6 +159,13 @@ void main(void) {
         }
 
         doEth();
+
+        if (rsend) {
+           if ( !CBusEthBroadcast(&cmsg)) {
+               LED3 = LED_ON;
+           }
+        }
+
 
         if (checkFlimSwitch() && !swTrig) {
             swTrig = 1;

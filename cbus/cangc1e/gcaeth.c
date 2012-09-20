@@ -32,7 +32,7 @@
 #include "cbusdefs.h"
 
 
-#define TCP_SOCKET_COUNT	(4)
+#define TCP_SOCKET_COUNT	(2)
 
 /*
  * CBUSETH Connection Info - one for each connection.
@@ -198,6 +198,8 @@ void CBusEthServer(void) {
         canmsg.b[d4] = maxethq;
         canmsg.b[dlc] = 0x80 + 5;
         CBusEthBroadcast(&canmsg);
+        maxethq = 0;
+        maxcanq = 0;
         nrClients = nrconn;
     }
 }
@@ -268,8 +270,8 @@ BYTE CBusEthBroadcast(CANMsg *msg) {
         if (TCPIsConnected(ph->socket)) {
             if (TCPIsPutReady(ph->socket) > len) {
                 TCPPutArray(ph->socket, (byte*) s, len);
-                //led2timer = 2;
-                //LED2 = LED_ON;
+                led2timer = 2;
+                LED2 = LED_ON;
             } else {
                 LED3 = LED_OFF;
                 led3timer = 100;

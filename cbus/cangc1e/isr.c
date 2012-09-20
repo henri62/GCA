@@ -24,6 +24,7 @@
 #include "project.h"
 #include "isr.h"
 #include "cangc1e.h"
+#include "canbus.h"
 #include "io.h"
 #include "eth.h"
 #include "gcaeth.h"
@@ -33,8 +34,6 @@ unsigned short io_timer;
 unsigned short led_timer;
 
 volatile BOOL doEthTick;
-volatile BOOL canFifoWarn;
-
 
 #pragma code APP
 
@@ -75,14 +74,12 @@ void isr_high(void) {
 void isr_low(void) {
     //LED2 = 1;
 
-    if (INTCONbits.TMR0IF) {
-        INTCONbits.TMR0IF = 0;
-        TickUpdate();
-    }
+    TickUpdate();
 
     if (PIR3bits.FIFOWMIF == 1) {
         PIE3bits.FIFOWMIE = 0;
-        canFifoWarn = TRUE;
+        PIR3bits.FIFOWMIF = 0;
+        canbusFifo();
     }
 
     PIR3 = 0; // clear interrupts
