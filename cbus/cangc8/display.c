@@ -34,7 +34,6 @@
 
 #pragma udata access VARS_DISPLAY
 
-
 // TMR0 generates a heartbeat every 16000000/4/32/125  == 1ms.
 static byte clk = 0;
 static byte dot = 0;

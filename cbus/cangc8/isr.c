@@ -48,6 +48,13 @@ near unsigned short dim_timer;
 #pragma interruptlow isr_low
 
 void isr_low(void) {
+
+    if (PIR3bits.FIFOWMIF == 1) {
+        PIE3bits.FIFOWMIE = 0;
+        PIR3bits.FIFOWMIF = 0;
+        canbusFifo();
+    }
+
     // Timer2 interrupt handler
     if (PIR1bits.TMR2IF) {
         PIR1bits.TMR2IF = 0; // Clear interrupt flag
@@ -75,6 +82,7 @@ void isr_low(void) {
             doLEDs();
         }
     }
+
 
     PIR3 = 0;
 }
