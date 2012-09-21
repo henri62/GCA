@@ -80,6 +80,7 @@ void isr_low(void) {
         PIE3bits.FIFOWMIE = 0;
         PIR3bits.FIFOWMIF = 0;
         canbusFifo();
+        PIE3bits.FIFOWMIE = 1;
     }
 
     PIR3 = 0; // clear interrupts

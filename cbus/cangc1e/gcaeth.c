@@ -32,7 +32,7 @@
 #include "cbusdefs.h"
 
 
-#define TCP_SOCKET_COUNT	(2)
+#define TCP_SOCKET_COUNT	(4)
 
 /*
  * CBUSETH Connection Info - one for each connection.
@@ -191,6 +191,8 @@ void CBusEthServer(void) {
 
     if (nrconn != nrClients) {
         CANMsg canmsg;
+        canmsg.b[sidh] = (CANID >> 3);
+        canmsg.b[sidl] = (CANID << 5);
         canmsg.b[d0] = 1;
         canmsg.b[d1] = 0;
         canmsg.b[d2] = nrconn;
@@ -289,7 +291,7 @@ void CBusEthTick(void) {
     if (NV1 & CFG_IDLE_TIMEOUT) {
         for (conn = 0; conn < TCP_SOCKET_COUNT; conn++) {
             CBUSETH_INFO* ph = &HCB[conn];
-            ph->idle++;  // count always
+            ph->idle++; // count always
         }
     }
 }

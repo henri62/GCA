@@ -164,7 +164,7 @@ BOOL canbusSend(CANMsg *msg) {
     CANMsg canmsg;
 
     while (!canSend(msg)) {
-                        // TODO some errorcheck
+        // TODO some errorcheck
     };
     return TRUE;
 }
@@ -230,17 +230,16 @@ void canbusFifo(void) {
             FifoIdxW = 0;
         }
         if (FifoIdxW == FifoIdxR) {
-            FifoIdxW--;
-            if (FifoIdxW < 0) {
+            if (FifoIdxW == 0) {
                 FifoIdxW = SW_FIFO - 1;
+            } else {
+                FifoIdxW--;
             }
-            PIE3bits.FIFOWMIE = 1;
             break;
         }
         led1timer = 20;
         LED1 = 1;
     }
-    PIE3bits.FIFOWMIE = 1;
 }
 
 static BYTE* _PointBuffer(BYTE b) {

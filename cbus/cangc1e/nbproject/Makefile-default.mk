@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangc1e.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o "${OBJECTDIR}/TCPIP Stack/ARP.o" "${OBJECTDIR}/TCPIP Stack/ENC28J60.o" "${OBJECTDIR}/TCPIP Stack/ICMP.o" "${OBJECTDIR}/TCPIP Stack/TCP.o" "${OBJECTDIR}/TCPIP Stack/Tick.o" "${OBJECTDIR}/TCPIP Stack/StackTsk.o" "${OBJECTDIR}/TCPIP Stack/Helpers.o" "${OBJECTDIR}/TCPIP Stack/IP.o" ${OBJECTDIR}/canbus.o ${OBJECTDIR}/eth.o ${OBJECTDIR}/gcaeth.o "${OBJECTDIR}/TCPIP Stack/UDP.o"
-POSSIBLE_DEPFILES=${OBJECTDIR}/cangc1e.o.d ${OBJECTDIR}/commands.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/isr.o.d ${OBJECTDIR}/utils.o.d "${OBJECTDIR}/TCPIP Stack/ARP.o.d" "${OBJECTDIR}/TCPIP Stack/ENC28J60.o.d" "${OBJECTDIR}/TCPIP Stack/ICMP.o.d" "${OBJECTDIR}/TCPIP Stack/TCP.o.d" "${OBJECTDIR}/TCPIP Stack/Tick.o.d" "${OBJECTDIR}/TCPIP Stack/StackTsk.o.d" "${OBJECTDIR}/TCPIP Stack/Helpers.o.d" "${OBJECTDIR}/TCPIP Stack/IP.o.d" ${OBJECTDIR}/canbus.o.d ${OBJECTDIR}/eth.o.d ${OBJECTDIR}/gcaeth.o.d "${OBJECTDIR}/TCPIP Stack/UDP.o.d"
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangc1e.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o "${OBJECTDIR}/TCPIP Stack/ARP.o" "${OBJECTDIR}/TCPIP Stack/ENC28J60.o" "${OBJECTDIR}/TCPIP Stack/ICMP.o" "${OBJECTDIR}/TCPIP Stack/TCP.o" "${OBJECTDIR}/TCPIP Stack/Tick.o" "${OBJECTDIR}/TCPIP Stack/StackTsk.o" "${OBJECTDIR}/TCPIP Stack/Helpers.o" "${OBJECTDIR}/TCPIP Stack/IP.o" ${OBJECTDIR}/canbus.o ${OBJECTDIR}/gcaeth.o "${OBJECTDIR}/TCPIP Stack/UDP.o" ${OBJECTDIR}/eth.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/cangc1e.o.d ${OBJECTDIR}/commands.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/isr.o.d ${OBJECTDIR}/utils.o.d "${OBJECTDIR}/TCPIP Stack/ARP.o.d" "${OBJECTDIR}/TCPIP Stack/ENC28J60.o.d" "${OBJECTDIR}/TCPIP Stack/ICMP.o.d" "${OBJECTDIR}/TCPIP Stack/TCP.o.d" "${OBJECTDIR}/TCPIP Stack/Tick.o.d" "${OBJECTDIR}/TCPIP Stack/StackTsk.o.d" "${OBJECTDIR}/TCPIP Stack/Helpers.o.d" "${OBJECTDIR}/TCPIP Stack/IP.o.d" ${OBJECTDIR}/canbus.o.d ${OBJECTDIR}/gcaeth.o.d "${OBJECTDIR}/TCPIP Stack/UDP.o.d" ${OBJECTDIR}/eth.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/cangc1e.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/TCPIP\ Stack/ARP.o ${OBJECTDIR}/TCPIP\ Stack/ENC28J60.o ${OBJECTDIR}/TCPIP\ Stack/ICMP.o ${OBJECTDIR}/TCPIP\ Stack/TCP.o ${OBJECTDIR}/TCPIP\ Stack/Tick.o ${OBJECTDIR}/TCPIP\ Stack/StackTsk.o ${OBJECTDIR}/TCPIP\ Stack/Helpers.o ${OBJECTDIR}/TCPIP\ Stack/IP.o ${OBJECTDIR}/canbus.o ${OBJECTDIR}/eth.o ${OBJECTDIR}/gcaeth.o ${OBJECTDIR}/TCPIP\ Stack/UDP.o
+OBJECTFILES=${OBJECTDIR}/cangc1e.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/TCPIP\ Stack/ARP.o ${OBJECTDIR}/TCPIP\ Stack/ENC28J60.o ${OBJECTDIR}/TCPIP\ Stack/ICMP.o ${OBJECTDIR}/TCPIP\ Stack/TCP.o ${OBJECTDIR}/TCPIP\ Stack/Tick.o ${OBJECTDIR}/TCPIP\ Stack/StackTsk.o ${OBJECTDIR}/TCPIP\ Stack/Helpers.o ${OBJECTDIR}/TCPIP\ Stack/IP.o ${OBJECTDIR}/canbus.o ${OBJECTDIR}/gcaeth.o ${OBJECTDIR}/TCPIP\ Stack/UDP.o ${OBJECTDIR}/eth.o
 
 
 CFLAGS=
@@ -160,12 +160,6 @@ ${OBJECTDIR}/canbus.o: canbus.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/canbus.o   canbus.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/canbus.o 
 	
-${OBJECTDIR}/eth.o: eth.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/eth.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eth.o   eth.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/eth.o 
-	
 ${OBJECTDIR}/gcaeth.o: gcaeth.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/gcaeth.o.d 
@@ -177,6 +171,12 @@ ${OBJECTDIR}/TCPIP\ Stack/UDP.o: TCPIP\ Stack/UDP.c  nbproject/Makefile-${CND_CO
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/UDP.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/UDP.o"   "TCPIP Stack/UDP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/UDP.o" 
+	
+${OBJECTDIR}/eth.o: eth.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/eth.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eth.o   eth.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/eth.o 
 	
 else
 ${OBJECTDIR}/cangc1e.o: cangc1e.c  nbproject/Makefile-${CND_CONF}.mk
@@ -263,12 +263,6 @@ ${OBJECTDIR}/canbus.o: canbus.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/canbus.o   canbus.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/canbus.o 
 	
-${OBJECTDIR}/eth.o: eth.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/eth.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eth.o   eth.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/eth.o 
-	
 ${OBJECTDIR}/gcaeth.o: gcaeth.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/gcaeth.o.d 
@@ -280,6 +274,12 @@ ${OBJECTDIR}/TCPIP\ Stack/UDP.o: TCPIP\ Stack/UDP.c  nbproject/Makefile-${CND_CO
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/UDP.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/UDP.o"   "TCPIP Stack/UDP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/UDP.o" 
+	
+${OBJECTDIR}/eth.o: eth.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/eth.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eth.o   eth.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/eth.o 
 	
 endif
 

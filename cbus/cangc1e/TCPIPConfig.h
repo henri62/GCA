@@ -201,10 +201,10 @@
 #define EMAC_RX_DESCRIPTORS		8		// number of the RX descriptors and RX buffers to be created
 
 #define	EMAC_RX_BUFF_SIZE		1536	// size of a RX buffer. should be multiple of 16
-										// this is the size of all receive buffers processed by the ETHC
-										// The size should be enough to accomodate any network received packet
-										// If the packets are larger, they will have to take multiple RX buffers
-										// The current implementation does not handle this situation right now and the packet is discarded.
+						// this is the size of all receive buffers processed by the ETHC
+						// The size should be enough to accomodate any network received packet
+						// If the packets are larger, they will have to take multiple RX buffers
+	        				// The current implementation does not handle this situation right now and the packet is discarded.
 
 
 // =======================================================================
@@ -277,6 +277,8 @@
 		} TCPSocketInitializer[] = 
 		{
 			//{TCP_PURPOSE_GENERIC_TCP_CLIENT, TCP_ETH_RAM, 125, 100},
+			{TCP_PURPOSE_GENERIC_TCP_SERVER, TCP_ETH_RAM, 1024, 128},
+			{TCP_PURPOSE_GENERIC_TCP_SERVER, TCP_ETH_RAM, 1024, 128},
 			{TCP_PURPOSE_GENERIC_TCP_SERVER, TCP_ETH_RAM, 1024, 128},
 			{TCP_PURPOSE_GENERIC_TCP_SERVER, TCP_ETH_RAM, 1024, 128},
 			//{TCP_PURPOSE_GENERIC_TCP_SERVER, TCP_ETH_RAM, 20, 20},

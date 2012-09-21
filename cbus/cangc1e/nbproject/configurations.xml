@@ -98,8 +98,8 @@
       <itemPath>TCPIPConfig.h</itemPath>
       <itemPath>utils.h</itemPath>
       <itemPath>canbus.h</itemPath>
-      <itemPath>eth.h</itemPath>
       <itemPath>gcaeth.h</itemPath>
+      <itemPath>eth.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -122,9 +122,9 @@
       <itemPath>TCPIP Stack/Helpers.c</itemPath>
       <itemPath>TCPIP Stack/IP.c</itemPath>
       <itemPath>canbus.c</itemPath>
-      <itemPath>eth.c</itemPath>
       <itemPath>gcaeth.c</itemPath>
       <itemPath>TCPIP Stack/UDP.c</itemPath>
+      <itemPath>eth.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

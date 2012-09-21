@@ -26,8 +26,8 @@
 
 
 typedef struct {
-  unsigned char status;
   unsigned char b[14];
+  unsigned char status;
 } CANMsg;
 
 void cbusSetup(void);

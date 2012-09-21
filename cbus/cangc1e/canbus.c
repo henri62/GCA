@@ -239,17 +239,16 @@ void canbusFifo(void) {
             maxcanq++; // Buffer Overflow
             led3timer = 5;
             LED3 = LED_OFF;
-            FifoIdxW--;
-            if (FifoIdxW < 0) {
+            if (FifoIdxW == 0) {
                 FifoIdxW = SW_FIFO - 1;
+            } else {
+                FifoIdxW--;
             }
-            PIE3bits.FIFOWMIE = 1;
             break;
         }
         led1timer = 2;
         LED1 = LED_ON;
     }
-    PIE3bits.FIFOWMIE = 1;
 }
 
 static BYTE* _PointBuffer(BYTE b) {

@@ -50,7 +50,6 @@ near unsigned short dim_timer;
 void isr_low(void) {
 
     if (PIR3bits.FIFOWMIF == 1) {
-        PIE3bits.FIFOWMIE = 0;
         PIR3bits.FIFOWMIF = 0;
         canbusFifo();
     }
