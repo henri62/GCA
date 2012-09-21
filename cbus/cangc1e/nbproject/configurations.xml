@@ -125,6 +125,7 @@
       <itemPath>gcaeth.c</itemPath>
       <itemPath>TCPIP Stack/UDP.c</itemPath>
       <itemPath>eth.c</itemPath>
+      <itemPath>TCPIP Stack/DHCP.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

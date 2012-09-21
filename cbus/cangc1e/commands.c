@@ -175,6 +175,13 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
                 if (nvnr == 1) {
                     NV1 = p_canmsg->b[d4];
                     eeWrite(EE_NV, NV1);
+                    if (NV1 & CFG_DHCP_CLIENT) {
+                        AppConfig.Flags.bIsDHCPEnabled = TRUE;
+                        DHCPInit(0);
+                    } else {
+                        AppConfig.Flags.bIsDHCPEnabled = FALSE;
+                        DHCPDisable(0);
+                    }
                 } else if (nvnr == 2) {
                     CANID = p_canmsg->b[d4];
                     eeWrite(EE_CANID, CANID);

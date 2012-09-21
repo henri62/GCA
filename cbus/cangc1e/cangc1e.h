@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 2
-#define MINOR_VER 'b'	// Minor version character
+#define MINOR_VER 'c'	// Minor version character
 
 #define EVT_NUM 0
 #define EVperEVT 0
@@ -56,6 +56,7 @@
 #define CFG_IDLE_TIMEOUT    0x01
 #define CFG_POWEROFF_ATIDLE 0x02
 #define CFG_COMMAND_ACK 0x04
+#define CFG_DHCP_CLIENT  0x08
 
 
 
