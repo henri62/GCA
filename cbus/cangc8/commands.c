@@ -53,6 +53,7 @@ unsigned char parseCmd(CANMsg *cmsg) {
     unsigned char txed = 0;
     CANMsg canmsg;
 
+
     //mode_word.s_full = 0;
 
     switch (cmsg->b[d0]) {
@@ -121,6 +122,14 @@ unsigned char parseCmd(CANMsg *cmsg) {
                 canmsg.b[dlc] = 8;
                 canbusSend(&canmsg);
                 txed = 1;
+            }
+            break;
+
+        case OPC_BOOT:
+            // Enter bootloader mode if NN matches
+            if (thisNN(cmsg) == 1) {
+                eeWrite((unsigned char) (&bootflag), 0xFF);
+                Reset();
             }
             break;
 

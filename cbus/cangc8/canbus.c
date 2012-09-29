@@ -87,8 +87,13 @@ void cbusSetup(void) {
     BSEL0 = 0; // All buffers for receive
     // FIFO is 8 deep
 
-    RXM0SIDL = 0; // set all mask register 0 to
-    RXM0SIDH = 0; // receive all valid messages
+
+    RXF0SIDL = 0b00000000; // set filter 0 to std_frame
+    RXM0SIDL = 0b00001000; // enable std_frame in mask
+
+                          // set all remaining mask register 0 to
+                          // receive all valid messages
+    RXM0SIDH = 0;
     RXM1SIDL = 0;
     RXM1SIDH = 0;
 
@@ -97,17 +102,17 @@ void cbusSetup(void) {
     RXM1EIDL = 0;
     RXM1EIDH = 0;
 
-    //    RXFCON0 = 0;
-    //    RXFCON1 = 0;
+    RXFCON0 = 1;    // Filter 0 enabled
+    RXFCON1 = 0;
 
-    //    RXFBCON0 = 0;
-    //    RXFBCON1 = 0;
-    //    RXFBCON2 = 0;
-    //    RXFBCON3 = 0;
-    //    RXFBCON4 = 0;
-    //    RXFBCON5 = 0;
-    //    RXFBCON6 = 0;
-    //    RXFBCON7 = 0;
+    RXFBCON0 = 0;   //
+    RXFBCON1 = 0;
+    RXFBCON2 = 0;
+    RXFBCON3 = 0;
+    RXFBCON4 = 0;
+    RXFBCON5 = 0;
+    RXFBCON6 = 0;
+    RXFBCON7 = 0;
 
     RXB0CON = 0b00000000; // receive valid messages
     RXB1CON = 0b00000000; // receive valid messages
@@ -173,14 +178,6 @@ BOOL canbusRecv(CANMsg *msg) {
 
     BYTE *ptr;
 
-    if (FifoIdxR != FifoIdxW) {
-        memcpy(msg->b, &Fifo[FifoIdxR++].msg, 14);
-        if (FifoIdxR >= SW_FIFO) {
-            FifoIdxR = 0;
-        }
-        return TRUE;
-    }
-
     PIE3bits.FIFOWMIE = 0;
 
     if (COMSTATbits.FIFOEMPTY) {
@@ -203,6 +200,16 @@ BOOL canbusRecv(CANMsg *msg) {
         PIE3bits.FIFOWMIE = 1;
         return TRUE;
     }
+
+    if (FifoIdxR != FifoIdxW) {
+        memcpy(msg->b, &Fifo[FifoIdxR++].msg, 14);
+        if (FifoIdxR >= SW_FIFO) {
+            FifoIdxR = 0;
+        }
+        PIE3bits.FIFOWMIE = 1;
+        return TRUE;
+    }
+
     PIE3bits.FIFOWMIE = 1;
     return FALSE;
 }

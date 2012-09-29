@@ -91,6 +91,9 @@ volatile near unsigned char tmr0_reload;
 #pragma romdata parameters
 const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGC8, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
 
+#pragma romdata BOOTFLAG
+const rom unsigned char bootflag = 0;
+
 
 void initIO(void);
 void initCAN(void);
@@ -99,13 +102,13 @@ void initTimers(void);
 /*
  * Interrupt vectors
  */
-#pragma code high_vector=0x08
+#pragma code high_vector=0x208
 
 void HIGH_INT_VECT(void) {
     _asm GOTO writeDisplays _endasm
 }
 
-#pragma code low_vector=0x18
+#pragma code low_vector=0x218
 
 void LOW_INT_VECT(void) {
     _asm GOTO isr_low _endasm

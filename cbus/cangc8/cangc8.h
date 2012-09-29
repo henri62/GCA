@@ -26,8 +26,8 @@
 #define __CANGC8_H
 
 
-#define MAJOR_VER 1
-#define MINOR_VER 'b'	// Minor version character
+#define MAJOR_VER 2
+#define MINOR_VER 'a'	// Minor version character
 
 #define EVT_NUM 2
 #define EVperEVT 0
@@ -63,5 +63,6 @@ extern near unsigned char  doEV;
 extern near unsigned char  evIdx;
 extern volatile near unsigned char tmr0_reload;
 
+extern const rom unsigned char bootflag;
 
 #endif
