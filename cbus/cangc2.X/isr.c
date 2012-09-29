@@ -18,9 +18,10 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
+#include <GenericTypeDefs.h>
 #include "project.h"
 #include "isr.h"
 #include "cangc2.h"
@@ -39,6 +40,7 @@ near unsigned short led_timer;
 // TMR0 generates a heartbeat every 250uS.
 //
 #pragma interrupt isr_high
+
 void isr_high(void) {
     INTCONbits.T0IF = 0;
     TMR0L = tmr0_reload;
@@ -47,20 +49,16 @@ void isr_high(void) {
     // I/O timeout - 5ms
     //
     if (--led_timer == 0) {
-      led_timer = 20;
-      doLEDTimers();
+        led_timer = 20;
+        doLEDTimers();
     }
 
     //
     // I/O timeout - 50ms
     //
     if (--io_timer == 0) {
-      io_timer = 200;
-      doIOTimers();
-
-      if (can_transmit_timeout != 0) {
-        --can_transmit_timeout;
-      }
+        io_timer = 200;
+        doIOTimers();
     }
 
     //
@@ -79,28 +77,13 @@ void isr_high(void) {
 // Low priority interrupt. Used for CAN receive.
 //
 #pragma interruptlow isr_low
+
 void isr_low(void) {
-  LED2 = 1;
 
-  if (PIR3bits.ERRIF == 1) {
-
-    if (TXB1CONbits.TXLARB) { // lost arbitration
-      if (Latcount == 0) { // already tried higher priority
-        can_transmit_failed = 1;
-        TXB1CONbits.TXREQ = 0;
-      } else if (--Latcount == 0) { // Allow tries at lower level priority first
-        TXB1CONbits.TXREQ = 0;
-        Tx1[sidh] &= 0b00111111; // change priority
-        TXB1CONbits.TXREQ = 1; // try again
-      }
+    if (PIR3bits.FIFOWMIF == 1) {
+        PIR3bits.FIFOWMIF = 0;
+        canbusFifo();
     }
 
-    if (TXB1CONbits.TXERR) { // bus error
-      can_transmit_failed = 1;
-      TXB1CONbits.TXREQ = 0;
-    }
-
-  }
-
-  PIR3 = 0; // clear interrupts
+    PIR3 = 0; // clear interrupts
 }

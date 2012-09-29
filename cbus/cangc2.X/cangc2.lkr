@@ -7,11 +7,9 @@ LIBPATH .
 FILES clib.lib
 FILES p18F2480.lib
 
-CODEPAGE   NAME=bootloader START=0x0               END=0x7FF
-CODEPAGE   NAME=vectors    START=0x800             END=0x81F
-CODEPAGE   NAME=parameters START=0x820             END=0x827
-CODEPAGE   NAME=module_vars START=0x82A            END=0x83F
-CODEPAGE   NAME=page       START=0x840             END=0x3FFF
+CODEPAGE   NAME=bootloader START=0x0               END=0x1FF          PROTECTED
+CODEPAGE   NAME=vectors    START=0x200             END=0x229          PROTECTED
+CODEPAGE   NAME=page       START=0x22A             END=0x3FFF
 CODEPAGE   NAME=idlocs     START=0x200000          END=0x200007       PROTECTED
 CODEPAGE   NAME=config     START=0x300000          END=0x30000D       PROTECTED
 CODEPAGE   NAME=devid      START=0x3FFFFE          END=0x3FFFFF       PROTECTED
@@ -31,11 +29,6 @@ SECTION    NAME=BOOT       ROM=bootloader
 SECTION    NAME=APP        ROM=page
 SECTION    NAME=CONFIG     ROM=config
 
-SECTION	   NAME=ISR_VARS   RAM=gpr0
-SECTION    NAME=Q_QUEUE    RAM=gpr1			// main packet queue
-SECTION    NAME=S_QUEUE    RAM=gpr2			// main packet queue
-
-SECTION    NAME=MODULE_DATA ROM=module_vars
 SECTION    NAME=EEPROM      ROM=eedata
 SECTION    NAME=BOOTFLAG    ROM=eeboot
 

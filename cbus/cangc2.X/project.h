@@ -28,7 +28,7 @@
 
 #include <p18f2480.h>
 
-#include "cbus.h"
+#include "canbus.h"
 
     
 #define FIXED_CAN_ID 0x7F // use only for enummeration

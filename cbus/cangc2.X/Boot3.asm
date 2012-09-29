@@ -56,9 +56,9 @@
 ;
 ;	The user program must have the folowing vectors
 
-;	User code reset vector  0x0800
-;	User code HPINT vector	0x0808
-;	user code LPINT vector	0x0818
+;	User code reset vector  0x0200
+;	User code HPINT vector	0x0208
+;	user code LPINT vector	0x0218
 
 ;	Checksum is 16 bit addition of all programmable bytes.
 ;	User sends 2s complement of addition at end of program in command 0x03 (16 bits only)
@@ -72,14 +72,12 @@
 
 #define	MODE_SELF_VERIFY	;Enable self verification of written data (undefine if not wanted)
 
-;#define	HIGH_INT_VECT	0x0808	;HP interrupt vector redirect. Change if target is different
-;#define	LOW_INT_VECT	0x0818	;LP interrupt vector redirect. Change if target is different.
-;#define	RESET_VECT	0x0800	;start of target
- extern	HIGH_INT_VECT
- extern	LOW_INT_VECT
- extern	RESET_VECT
-#define	CAN_CD_BIT	RXB0EIDL,0	;Received control / data select bit
-#define	CAN_PG_BIT	RXB0EIDL,1	;Received PUT / GET bit
+#define	HIGH_INT_VECT	0x0208	;HP interrupt vector redirect. Change if target is different
+#define	LOW_INT_VECT	0x0218	;LP interrupt vector redirect. Change if target is different.
+#define	RESET_VECT      0x0200	;start of target
+
+#define	CAN_CD_BIT      RXB0EIDL,0	;Received control / data select bit
+#define	CAN_PG_BIT      RXB0EIDL,1	;Received PUT / GET bit
 #define	CANTX_CD_BIT	TXB0EIDL,0	;Transmit control/data select bit
 #define	CAN_TXB0SIDH	B'10000000'	;Transmitted ID for target node
 #define	CAN_TXB0SIDL	B'00001000'
@@ -248,7 +246,6 @@ _CANInit:
 
 	goto	RESET_VECT
 
-
 	clrf	_bootSpcCmd 	; Reset the special command register
 	movlw 	0x1C		; Reset the boot control bits
 	movwf 	_bootCtlBits 
@@ -287,10 +284,11 @@ _CANInit:
 	movwf	CIOCON	
 	
 	clrf	CANCON	; Enter Normal mode
-	bcf		TRISB,7
+	bcf		TRISB,5
 	bcf		TRISB,6
+	bcf		TRISB,7
+	bsf		PORTB,5		;yellow LED on
 	bsf		PORTB,7		;green LED on
-	bsf		PORTB,6		;yellow LED on
 
 
 ; ************************************************************ ** * * * * * * * * * * * * * * * 
@@ -300,7 +298,7 @@ _CANInit:
 ; upon whether the request was a 'put' or a 'get'.
 ; ************************************************************ ** * * * * * * * * * * * * * * * 
 _CANMain
-	clrwdt
+        bcf     PORTB,6
 	bcf	RXB0CON, RXFUL	; Clear the receive flag
 	btfss 	RXB0CON, RXFUL	; Wait for a message	
 	bra	$ - 2
@@ -308,6 +306,7 @@ _CANMain
 
 
 _CANMainJp1
+        bsf     PORTB,6
 	lfsr	0, RXB0D0
 	movf	RXB0DLC, W 
 	andlw 	0x0F
@@ -370,7 +369,7 @@ _ControlRegLp1
 	clrf	EEDATA		; and clear the data (FF for now)
 	movlw 	b'00000100'	; Setup for EEData
 	rcall 	_StartWrite
-	bcf		PORTB,6		;yellow LED off
+	bcf	PORTB,6		;red LED off
 	reset
 ; *********************************************************
 ; This is the Selfcheck reset command. This routine 
@@ -469,8 +468,6 @@ _DecodeJp2
 	xorlw 0xF0
 	bnz	_CANMain
 	bra	_EEWrite
-
-f	
 
 ; Program memory < 0x300000
 ; Config memory = 0x300000

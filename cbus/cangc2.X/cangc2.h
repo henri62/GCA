@@ -26,8 +26,8 @@
 #define __CANGC2_H
 
 
-#define MAJOR_VER 1
-#define MINOR_VER 'h'	// Minor version character
+#define MAJOR_VER 2
+#define MINOR_VER 'a'	// Minor version character
 
 #define EVT_NUM 17
 #define EVperEVT 0
