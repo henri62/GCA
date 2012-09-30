@@ -724,9 +724,4 @@ _CANSendBoot
 ; Start the transmission
 
 
-;*	Ensure PIC is in boot mode after programming the boot sector
-; AC removed so application controls mode
-;	ORG	0xF000FE
-;	de	0x00, 0xFF
-
 	END
