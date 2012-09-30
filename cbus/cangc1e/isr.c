@@ -21,13 +21,15 @@
  */
 
 
+#include <TCPIP Stack/TCPIP.h>
+#include <GenericTypeDefs.h>
 #include "project.h"
 #include "isr.h"
 #include "cangc1e.h"
-#include "canbus.h"
 #include "io.h"
-#include "eth.h"
-#include "gcaeth.h"
+#include "canbus.h"
+
+
 
 unsigned short led500ms_timer;
 unsigned short io_timer;
@@ -35,44 +37,45 @@ unsigned short led_timer;
 
 volatile BOOL doEthTick;
 
-#pragma code APP
-
 //
 // Interrupt Service Routine
 //
 // TMR1 generates a heartbeat every 50ms.
 //
+
 #pragma interrupt isr_high
 
 void isr_high(void) {
+
     if (PIR1bits.TMR1IF) {
         PIR1bits.TMR1IF = 0;
         TMR1H = tmr1_reload / 256;
         TMR1L = tmr1_reload % 256;
     }
+
     //
     // LED timer  - 50ms
     //
     doLEDTimers();
+
     //
     // Timer 500ms
     //
     if (--led500ms_timer == 0) {
         led500ms_timer = 10;
         doLEDs();
-        // CBusEthTick();
         doEthTick = TRUE;
     }
 }
 
 
 //
-// Low priority interrupt. Used for CAN error. receive and send are polled
+// Low priority interrupt. Used for TCPIP TickUpdate and ECAN FIFO
 //
+
 #pragma interruptlow isr_low
 
 void isr_low(void) {
-    //LED2 = 1;
 
     TickUpdate();
 
@@ -85,3 +88,5 @@ void isr_low(void) {
 
     PIR3 = 0; // clear interrupts
 }
+
+

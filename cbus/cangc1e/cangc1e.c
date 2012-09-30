@@ -84,18 +84,18 @@ void initIO(void);
 /*
  * Interrupt vectors
  */
-#pragma code high_vector=0x08
+
+#pragma code high_vector=0x008
 
 void HIGH_INT_VECT(void) {
     _asm GOTO isr_high _endasm
 }
 
-#pragma code low_vector=0x18
+#pragma code low_vector=0x018
 
 void LOW_INT_VECT(void) {
     _asm GOTO isr_low _endasm
 }
-
 
 #pragma code APP
 

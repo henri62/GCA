@@ -143,6 +143,7 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC18F2585</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C18</languageToolchain>
         <languageToolchainVersion>3.40</languageToolchainVersion>
@@ -168,8 +169,8 @@
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C18>
-        <property key="code-model" value="mS"/>
-        <property key="data-model" value="Oa-"/>
+        <property key="code-model" value="ms"/>
+        <property key="data-model" value="oa-"/>
         <property key="default-char-unsigned" value="false"/>
         <property key="enable-all-optimizations" value="true"/>
         <property key="enable-int-promotion" value="false"/>
@@ -186,7 +187,7 @@
         <property key="enable-ou" value="true"/>
         <property key="enable-ow" value="true"/>
         <property key="extra-include-directories" value="./;./include"/>
-        <property key="optimization-master" value="Custom"/>
+        <property key="optimization-master" value="Enable all"/>
         <property key="preprocessor-macros" value=""/>
         <property key="procedural-abstraction-passes" value="9"/>
         <property key="storage-class" value="sca"/>
@@ -205,7 +206,7 @@
         <property key="cod-file" value="false"/>
         <property key="extra-lib-directories" value=""/>
         <property key="hex-output-format" value="INHX32"/>
-        <property key="map-file" value=""/>
+        <property key="map-file" value="cangc1e.map"/>
       </C18-LD>
       <C18LanguageToolchain>
         <property key="extended-mode" value="false"/>
@@ -225,6 +226,8 @@
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
+        <property key="memories.bootflash" value="false"/>
+        <property key="memories.configurationmemory" value="false"/>
         <property key="memories.eeprom" value="false"/>
         <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="false"/>
@@ -237,7 +240,7 @@
         <property key="programoptions.pgmspeed" value="2"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
-        <property key="programoptions.preserveprogramrange.end" value="0x3f"/>
+        <property key="programoptions.preserveprogramrange.end" value="0xbfff"/>
         <property key="programoptions.preserveprogramrange.start" value="0x0"/>
         <property key="programoptions.preserveuserid" value="false"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>

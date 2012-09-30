@@ -40,7 +40,6 @@ extern unsigned short io_timer;
 extern unsigned short led_timer;
 
 extern volatile BOOL doEthTick;
-extern volatile BOOL canFifoWarn;
 
 
 #define __ISR_H

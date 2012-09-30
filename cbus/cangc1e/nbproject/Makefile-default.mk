@@ -79,219 +79,255 @@ ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 ${OBJECTDIR}/cangc1e.o: cangc1e.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/cangc1e.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cangc1e.o   cangc1e.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cangc1e.o   cangc1e.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/cangc1e.o 
+	@${FIXDEPS} "${OBJECTDIR}/cangc1e.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/commands.o: commands.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/commands.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/commands.o   commands.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/commands.o   commands.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/commands.o 
+	@${FIXDEPS} "${OBJECTDIR}/commands.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/io.o: io.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/io.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/io.o   io.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/io.o   io.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/io.o 
+	@${FIXDEPS} "${OBJECTDIR}/io.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/isr.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/isr.o 
+	@${FIXDEPS} "${OBJECTDIR}/isr.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/utils.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
+	@${FIXDEPS} "${OBJECTDIR}/utils.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/ARP.o: TCPIP\ Stack/ARP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/ARP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ARP.o"   "TCPIP Stack/ARP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ARP.o"   "TCPIP Stack/ARP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/ARP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/ARP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/ENC28J60.o: TCPIP\ Stack/ENC28J60.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/ENC28J60.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ENC28J60.o"   "TCPIP Stack/ENC28J60.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ENC28J60.o"   "TCPIP Stack/ENC28J60.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/ENC28J60.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/ENC28J60.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/ICMP.o: TCPIP\ Stack/ICMP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/ICMP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ICMP.o"   "TCPIP Stack/ICMP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ICMP.o"   "TCPIP Stack/ICMP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/ICMP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/ICMP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/TCP.o: TCPIP\ Stack/TCP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/TCP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/TCP.o"   "TCPIP Stack/TCP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/TCP.o"   "TCPIP Stack/TCP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/TCP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/TCP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/Tick.o: TCPIP\ Stack/Tick.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/Tick.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/Tick.o"   "TCPIP Stack/Tick.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/Tick.o"   "TCPIP Stack/Tick.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/Tick.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/Tick.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/StackTsk.o: TCPIP\ Stack/StackTsk.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/StackTsk.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/StackTsk.o"   "TCPIP Stack/StackTsk.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/StackTsk.o"   "TCPIP Stack/StackTsk.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/StackTsk.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/StackTsk.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/Helpers.o: TCPIP\ Stack/Helpers.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/Helpers.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/Helpers.o"   "TCPIP Stack/Helpers.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/Helpers.o"   "TCPIP Stack/Helpers.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/Helpers.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/Helpers.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/IP.o: TCPIP\ Stack/IP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/IP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/IP.o"   "TCPIP Stack/IP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/IP.o"   "TCPIP Stack/IP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/IP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/IP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/canbus.o: canbus.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/canbus.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/canbus.o   canbus.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/canbus.o   canbus.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/canbus.o 
+	@${FIXDEPS} "${OBJECTDIR}/canbus.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/gcaeth.o: gcaeth.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/gcaeth.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/gcaeth.o   gcaeth.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/gcaeth.o   gcaeth.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/gcaeth.o 
+	@${FIXDEPS} "${OBJECTDIR}/gcaeth.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/UDP.o: TCPIP\ Stack/UDP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/UDP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/UDP.o"   "TCPIP Stack/UDP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/UDP.o"   "TCPIP Stack/UDP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/UDP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/UDP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/eth.o: eth.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/eth.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eth.o   eth.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eth.o   eth.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/eth.o 
+	@${FIXDEPS} "${OBJECTDIR}/eth.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/DHCP.o: TCPIP\ Stack/DHCP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/DHCP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/DHCP.o"   "TCPIP Stack/DHCP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/DHCP.o"   "TCPIP Stack/DHCP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/DHCP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/DHCP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 else
 ${OBJECTDIR}/cangc1e.o: cangc1e.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/cangc1e.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cangc1e.o   cangc1e.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cangc1e.o   cangc1e.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/cangc1e.o 
+	@${FIXDEPS} "${OBJECTDIR}/cangc1e.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/commands.o: commands.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/commands.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/commands.o   commands.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/commands.o   commands.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/commands.o 
+	@${FIXDEPS} "${OBJECTDIR}/commands.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/io.o: io.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/io.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/io.o   io.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/io.o   io.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/io.o 
+	@${FIXDEPS} "${OBJECTDIR}/io.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/isr.o: isr.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/isr.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/isr.o   isr.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/isr.o 
+	@${FIXDEPS} "${OBJECTDIR}/isr.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/utils.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/utils.o   utils.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
+	@${FIXDEPS} "${OBJECTDIR}/utils.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/ARP.o: TCPIP\ Stack/ARP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/ARP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ARP.o"   "TCPIP Stack/ARP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ARP.o"   "TCPIP Stack/ARP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/ARP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/ARP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/ENC28J60.o: TCPIP\ Stack/ENC28J60.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/ENC28J60.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ENC28J60.o"   "TCPIP Stack/ENC28J60.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ENC28J60.o"   "TCPIP Stack/ENC28J60.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/ENC28J60.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/ENC28J60.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/ICMP.o: TCPIP\ Stack/ICMP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/ICMP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ICMP.o"   "TCPIP Stack/ICMP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/ICMP.o"   "TCPIP Stack/ICMP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/ICMP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/ICMP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/TCP.o: TCPIP\ Stack/TCP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/TCP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/TCP.o"   "TCPIP Stack/TCP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/TCP.o"   "TCPIP Stack/TCP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/TCP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/TCP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/Tick.o: TCPIP\ Stack/Tick.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/Tick.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/Tick.o"   "TCPIP Stack/Tick.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/Tick.o"   "TCPIP Stack/Tick.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/Tick.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/Tick.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/StackTsk.o: TCPIP\ Stack/StackTsk.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/StackTsk.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/StackTsk.o"   "TCPIP Stack/StackTsk.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/StackTsk.o"   "TCPIP Stack/StackTsk.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/StackTsk.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/StackTsk.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/Helpers.o: TCPIP\ Stack/Helpers.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/Helpers.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/Helpers.o"   "TCPIP Stack/Helpers.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/Helpers.o"   "TCPIP Stack/Helpers.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/Helpers.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/Helpers.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/IP.o: TCPIP\ Stack/IP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/IP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/IP.o"   "TCPIP Stack/IP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/IP.o"   "TCPIP Stack/IP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/IP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/IP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/canbus.o: canbus.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/canbus.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/canbus.o   canbus.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/canbus.o   canbus.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/canbus.o 
+	@${FIXDEPS} "${OBJECTDIR}/canbus.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/gcaeth.o: gcaeth.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/gcaeth.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/gcaeth.o   gcaeth.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/gcaeth.o   gcaeth.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/gcaeth.o 
+	@${FIXDEPS} "${OBJECTDIR}/gcaeth.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/UDP.o: TCPIP\ Stack/UDP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/UDP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/UDP.o"   "TCPIP Stack/UDP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/UDP.o"   "TCPIP Stack/UDP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/UDP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/UDP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/eth.o: eth.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/eth.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eth.o   eth.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eth.o   eth.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/eth.o 
+	@${FIXDEPS} "${OBJECTDIR}/eth.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/TCPIP\ Stack/DHCP.o: TCPIP\ Stack/DHCP.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/TCPIP\ Stack 
 	@${RM} ${OBJECTDIR}/TCPIP\ Stack/DHCP.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -pa=9  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/DHCP.o"   "TCPIP Stack/DHCP.c" 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -I"./" -I"./include" -ms -oa-  -I ${MP_CC_DIR}/../h  -fo "${OBJECTDIR}/TCPIP Stack/DHCP.o"   "TCPIP Stack/DHCP.c" 
 	@${DEP_GEN} -d "${OBJECTDIR}/TCPIP Stack/DHCP.o" 
+	@${FIXDEPS} "${OBJECTDIR}/TCPIP Stack/DHCP.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 endif
 
@@ -300,11 +336,11 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/cangc1e.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION_LD)  -w -x -u_DEBUG   -z__MPLAB_BUILD=1  -u_CRUNTIME -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PK3=1 $(MP_LINKER_DEBUG_OPTION) -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/cangc1e.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
+	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION_LD)  -w -x -u_DEBUG -m"cangc1e.map"  -z__MPLAB_BUILD=1  -u_CRUNTIME -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PK3=1 $(MP_LINKER_DEBUG_OPTION) -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/cangc1e.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/cangc1e.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION_LD)  -w    -z__MPLAB_BUILD=1  -u_CRUNTIME -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/cangc1e.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
+	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION_LD)  -w  -m"cangc1e.map"  -z__MPLAB_BUILD=1  -u_CRUNTIME -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/cangc1e.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
 endif
 
 

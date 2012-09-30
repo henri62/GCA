@@ -26,6 +26,7 @@
 
 #define CANGC1E
 
+#include <p18cxxx.h>
 #include <p18f2585.h>
 #include <GenericTypeDefs.h>
     
