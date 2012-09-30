@@ -52,6 +52,7 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC18F2585</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>C18</languageToolchain>
         <languageToolchainVersion>3.40</languageToolchainVersion>
