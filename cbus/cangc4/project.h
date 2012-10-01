@@ -25,8 +25,9 @@
 #define __PROJECT_H
 
 #include <p18f2585.h>
+#include <GenericTypeDefs.h>
 
-#include "cbus.h"
+#include "canbus.h"
 
     
 #define DEFAULT_NN   115

@@ -109,7 +109,7 @@
 #include "cangc4.h"
 #include "io.h"
 #include "rfid.h"
-#include "cbus.h"
+#include "canbus.h"
 #include "utils.h"
 #include "cbusdefs.h"
 
@@ -249,27 +249,28 @@ void doRFID(void) {
         }
         
         if( checkok ) {
-          if( NV1 & CFG_ACCRFID ) {
-            canmsg.opc  = OPC_ASON;
-            canmsg.d[0] = (NN_temp / 256) & 0xFF;
-            canmsg.d[1] = (NN_temp % 256) & 0xFF;
-            canmsg.d[2] = (RFID[i].addr / 256) & 0xFF;
-            canmsg.d[3] = (RFID[i].addr) & 0xFF;
-            canmsg.len = 4; // data bytes
+            CANMsg canmsg;
+            if( NV1 & CFG_ACCRFID ) {
+            canmsg.b[d0]  = OPC_ASON;
+            canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+            canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+            canmsg.b[d3] = (RFID[i].addr / 256) & 0xFF;
+            canmsg.b[d4] = (RFID[i].addr) & 0xFF;
+            canmsg.b[dlc] = 5; // data bytes
           }
           else {
-            canmsg.opc = OPC_DDES;
-            canmsg.d[0] = (RFID[i].addr / 256) & 0xFF;
-            canmsg.d[1] = (RFID[i].addr) & 0xFF;
-            canmsg.d[2] = RFID[i].data[0];
-            canmsg.d[3] = RFID[i].data[1];
-            canmsg.d[4] = RFID[i].data[2];
-            canmsg.d[5] = RFID[i].data[3];
-            canmsg.d[6] = RFID[i].data[4];
-            canmsg.len = 7; // data bytes
+            canmsg.b[d0] = OPC_DDES;
+            canmsg.b[d1] = (RFID[i].addr / 256) & 0xFF;
+            canmsg.b[d2] = (RFID[i].addr) & 0xFF;
+            canmsg.b[d3] = RFID[i].data[0];
+            canmsg.b[d4] = RFID[i].data[1];
+            canmsg.b[d5] = RFID[i].data[2];
+            canmsg.b[d6] = RFID[i].data[3];
+            canmsg.b[d7] = RFID[i].data[4];
+            canmsg.b[dlc] = 8; // data bytes
           }
 
-          ok = canQueue(&canmsg);
+          ok = canbusSend(&canmsg);
 
           RFID[i].timer = 40; // 2 seconds
           RFID[i].timedoff = TRUE;
@@ -334,17 +335,18 @@ void initRFID(void) {
 }
 
 void doRFIDTimedOff(int i) {
-  if( RFID[i].timedoff ) {
+    CANMsg canmsg;
+    if( RFID[i].timedoff ) {
     if( RFID[i].timer == 0 ) {
       RFID[i].timedoff = 0;
       // Send an OPC.
-      canmsg.opc  = OPC_ASOF;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = (RFID[i].addr / 256) & 0xFF;
-      canmsg.d[3] = (RFID[i].addr) & 0xFF;
-      canmsg.len = 4; // data bytes
-      canQueue(&canmsg);
+      canmsg.b[d0]  = OPC_ASOF;
+      canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+      canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+      canmsg.b[d3] = (RFID[i].addr / 256) & 0xFF;
+      canmsg.b[d4] = (RFID[i].addr) & 0xFF;
+      canmsg.b[dlc] = 5; // data bytes
+      canbusSend(&canmsg);
     }
   }
 }

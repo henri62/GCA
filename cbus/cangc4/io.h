@@ -26,8 +26,8 @@
 
 
 #define LED1    PORTBbits.RB5   // cbus activity
-#define LED2    PORTBbits.RB6   // learning mode
-#define LED3    PORTBbits.RB7   // running
+#define LED3    PORTBbits.RB6   // learning mode
+#define LED2    PORTBbits.RB7   // running
 
 #define SW      PORTAbits.RA2	// Flim switch
 
