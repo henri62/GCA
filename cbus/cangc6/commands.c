@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 #include "project.h"
@@ -30,9 +30,14 @@
 #include "io.h"
 #include "relay.h"
 
-ram unsigned char pnnCount = 0;
+
+#pragma romdata BOOTFLAG
+
+rom unsigned char bootflag = 0;
 
 #pragma udata access VARS
+
+ram unsigned char pnnCount = 0;
 
 #pragma code APP
 
@@ -42,327 +47,325 @@ ram unsigned char pnnCount = 0;
 // Decode the OPC and call the function to handle it.
 //
 
-unsigned char parseCmd(void) {
-  unsigned char txed = 0;
-  //mode_word.s_full = 0;
+unsigned char parseCmd(CANMsg *cmsg) {
+    unsigned char txed = 0;
 
-  switch (rx_ptr->d0) {
+    switch (cmsg->b[d0]) {
 
-    case OPC_ASRQ:
-    {
-      int addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      if( SOD == addr && doSOD == 0) {
-        ioIdx = 0;
-        doSOD = 1;
-      }
-      break;
+        case OPC_ASRQ:
+        {
+            int addr = cmsg->b[d3] * 256 + cmsg->b[d4];
+            if (SOD == addr && doSOD == 0) {
+                ioIdx = 0;
+                doSOD = 1;
+            }
+            break;
+        }
+
+        case OPC_ACON:
+        case OPC_ASON:
+        {
+            ushort nn = cmsg->b[d1] * 256 + cmsg->b[d2];
+            ushort addr = cmsg->b[d3] * 256 + cmsg->b[d4];
+            setOutput(nn, addr, 1);
+            break;
+        }
+
+        case OPC_ACOF:
+        case OPC_ASOF:
+        {
+            ushort nn = cmsg->b[d1] * 256 + cmsg->b[d2];
+            ushort addr = cmsg->b[d3] * 256 + cmsg->b[d4];
+            setOutput(nn, addr, 0);
+            break;
+        }
+
+        case OPC_QNN:
+        {
+            CANMsg canmsg;
+
+            canmsg.b[d0] = OPC_PNN;
+            canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+            canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+            canmsg.b[d3] = params[0];
+            canmsg.b[d4] = params[2];
+            canmsg.b[d5] = NV1;
+            canmsg.b[dlc] = 6;
+            canbusSend(&canmsg);
+            txed = 1;
+            break;
+        }
+
+        case OPC_BOOT:
+            // Enter bootloader mode if NN matches
+            if (thisNN(cmsg) == 1) {
+                eeWrite((unsigned char) (&bootflag), 0xFF);
+                Reset();
+            }
+            break;
+
+
+        case OPC_RQNPN:
+            // Request to read a parameter
+            if (thisNN(cmsg) == 1) {
+                doRqnpn((unsigned int) cmsg->b[d3]);
+            }
+            break;
+
+        case OPC_SNN:
+        {
+            if (Wait4NN) {
+                unsigned char nnH = cmsg->b[d1];
+                unsigned char nnL = cmsg->b[d2];
+                NN_temp = nnH * 256 + nnL;
+                eeWrite(EE_NN, nnH);
+                eeWrite(EE_NN + 1, nnL);
+                Wait4NN = 0;
+            }
+            break;
+        }
+
+
+        case OPC_RQNP:
+            if (Wait4NN) {
+                CANMsg canmsg;
+                canmsg.b[d0] = OPC_PARAMS;
+                canmsg.b[d1] = params[0];
+                canmsg.b[d2] = params[1];
+                canmsg.b[d3] = params[2];
+                canmsg.b[d4] = params[3];
+                canmsg.b[d5] = params[4];
+                canmsg.b[d6] = params[5];
+                canmsg.b[d7] = params[6];
+                canmsg.b[dlc] = 8;
+                canbusSend(&canmsg);
+                txed = 1;
+            }
+            break;
+
+        case OPC_RTOF:
+            if (NV1 & CFG_SAVEOUTPUT) {
+                byte i = 0;
+                for (i = 0; i < 4; i++) {
+                    eeWrite(EE_SERVO_POSITION + i, Servo[i].position);
+                }
+            }
+            break;
+
+        case OPC_NVRD:
+            if (thisNN(cmsg)) {
+                CANMsg canmsg;
+                byte nvnr = cmsg->b[d3];
+                if (nvnr == 1) {
+                    canmsg.b[d0] = OPC_NVANS;
+                    canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+                    canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+                    canmsg.b[d3] = nvnr;
+                    canmsg.b[d4] = NV1;
+                    canmsg.b[dlc] = 5;
+                    canbusSend(&canmsg);
+                    txed = 1;
+                } else if (nvnr == 2) {
+                    canmsg.b[d0] = OPC_NVANS;
+                    canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+                    canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+                    canmsg.b[d3] = nvnr;
+                    canmsg.b[d4] = CANID;
+                    canmsg.b[dlc] = 5;
+                    canbusSend(&canmsg);
+                    txed = 1;
+                } else if (nvnr > 2 && nvnr < 23) {
+                    // Servo
+                    byte servoIdx = (nvnr - 3) / 5;
+                    byte servoVar = (nvnr - 3) % 5;
+                    canmsg.b[d0] = OPC_NVANS;
+                    canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+                    canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+                    canmsg.b[d3] = nvnr;
+                    if (servoVar == 0)
+                        canmsg.b[d4] = Servo[servoIdx].config;
+                    else if (servoVar == 1)
+                        canmsg.b[d4] = Servo[servoIdx].left;
+                    else if (servoVar == 2)
+                        canmsg.b[d4] = Servo[servoIdx].right;
+                    else if (servoVar == 3)
+                        canmsg.b[d4] = Servo[servoIdx].speedL;
+                    else if (servoVar == 4)
+                        canmsg.b[d4] = Servo[servoIdx].speedR;
+
+                    canmsg.b[dlc] = 5;
+                    canbusSend(&canmsg);
+                    txed = 1;
+                }
+
+            }
+            break;
+
+        case OPC_NVSET:
+            if (thisNN(cmsg)) {
+                byte nvnr = cmsg->b[d3];
+                if (nvnr == 1) {
+                    NV1 = cmsg->b[d4];
+                    eeWrite(EE_NV, NV1);
+                } else if (nvnr == 2) {
+                    CANID = cmsg->b[d4];
+                    eeWrite(EE_CANID, CANID);
+                } else if (nvnr > 2 && nvnr < 23) {
+                    // Servo
+                    byte servoIdx = ((nvnr - 3) / 5);
+                    byte servoVar = (nvnr - 3) % 5;
+                    if (servoVar == 0) {
+                        Servo[servoIdx].config = cmsg->b[d4];
+                        eeWrite(EE_SERVO_CONFIG + servoIdx, cmsg->b[d4]);
+                        if (Servo[servoIdx].position == Servo[servoIdx].right)
+                            RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 2 : 1);
+                        else
+                            RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 1 : 2);
+                    } else if (servoVar == 1 && cmsg->b[d4] >= 50 && cmsg->b[d4] <= 250) {
+                        Servo[servoIdx].left = cmsg->b[d4];
+                        eeWrite(EE_SERVO_LEFT + servoIdx, cmsg->b[d4]);
+                        Servo[servoIdx].wantedpos = Servo[servoIdx].left;
+                        //Servo[servoIdx].position = Servo[servoIdx].left;
+                    } else if (servoVar == 2 && cmsg->b[d4] >= 50 && cmsg->b[d4] <= 250) {
+                        Servo[servoIdx].right = cmsg->b[d4];
+                        eeWrite(EE_SERVO_RIGHT + servoIdx, cmsg->b[d4]);
+                        Servo[servoIdx].wantedpos = Servo[servoIdx].right;
+                        //Servo[servoIdx].position = Servo[servoIdx].right;
+                    } else if (servoVar == 3 && cmsg->b[d4] <= 20) {
+                        Servo[servoIdx].speedL = cmsg->b[d4];
+                        eeWrite(EE_SERVO_SPEEDL + servoIdx, cmsg->b[d4]);
+                    } else if (servoVar == 4 && cmsg->b[d4] <= 20) {
+                        Servo[servoIdx].speedR = cmsg->b[d4];
+                        eeWrite(EE_SERVO_SPEEDR + servoIdx, cmsg->b[d4]);
+                    }
+
+                }
+            }
+            break;
+
+
+        case OPC_NNLRN:
+            if (thisNN(cmsg)) {
+                isLearning = TRUE;
+            }
+            break;
+
+        case OPC_NNULN:
+            if (thisNN(cmsg)) {
+                isLearning = FALSE;
+                LED2 = PORT_OFF;
+            }
+            break;
+
+        case OPC_EVLRN:
+            if (isLearning) {
+                ushort evtnn = cmsg->b[d1] * 256 + cmsg->b[d2];
+                ushort addr = cmsg->b[d3] * 256 + cmsg->b[d4];
+                byte idx = cmsg->b[d5];
+                byte val = cmsg->b[d6];
+                if (idx < 4) {
+                    Servo[idx].swnn = evtnn;
+                    Servo[idx].swaddr = addr;
+                    eeWriteShort(EE_SERVO_SWNN + (2 * idx), evtnn);
+                    eeWriteShort(EE_SERVO_SWADDR + (2 * idx), addr);
+                } else if (idx > 3 && idx < 8) {
+                    Servo[idx - 4].fbaddr = addr;
+                    eeWriteShort(EE_SERVO_FBADDR + 2 * (idx - 4), addr);
+                } else if (idx == 8) {
+                    SOD = addr;
+                    eeWrite(EE_SOD, addr / 256);
+                    eeWrite(EE_SOD + 1, addr % 256);
+                }
+            }
+            break;
+
+        case OPC_NERD:
+            if (thisNN(cmsg)) {
+                CANMsg canmsg;
+                doEV = 1;
+                evIdx = 0;
+                // start of day event
+                canmsg.b[d0] = OPC_ENRSP;
+                canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+                canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+                canmsg.b[d3] = 0;
+                canmsg.b[d4] = 0;
+                canmsg.b[d5] = SOD / 256;
+                canmsg.b[d6] = SOD % 256;
+                canmsg.b[d7] = 16;
+                canmsg.b[dlc] = 8;
+                canbusSend(&canmsg);
+                txed = 1;
+            }
+            break;
+
+
+
+        default: break;
     }
-
-    case OPC_ACON:
-    case OPC_ASON:
-    {
-      ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
-      ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      setOutput(nn, addr, 1);
-      break;
-    }
-
-    case OPC_ACOF:
-    case OPC_ASOF:
-    {
-      ushort nn   = rx_ptr->d1 * 256 + rx_ptr->d2;
-      ushort addr = rx_ptr->d3 * 256 + rx_ptr->d4;
-      setOutput(nn, addr, 0);
-      break;
-    }
-
-    case OPC_QNN:
-      canmsg.opc  = OPC_PNN;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = params[0];
-      canmsg.d[3] = params[2];
-      canmsg.d[4] = NV1;
-      canmsg.len = 5;
-      canQueue(&canmsg);
-      //LED2 = 1;
-      txed = 1;
-      break;
-
-    case OPC_RQNPN:
-      // Request to read a parameter
-      if (thisNN() == 1) {
-        doRqnpn((unsigned int) rx_ptr->d3);
-      }
-      break;
-
-    case OPC_SNN:
-    {
-      if( Wait4NN ) {
-        unsigned char nnH = rx_ptr->d1;
-        unsigned char nnL = rx_ptr->d2;
-        NN_temp = nnH * 256 + nnL;
-        eeWrite(EE_NN, nnH);
-        eeWrite(EE_NN+1, nnL);
-        Wait4NN = 0;
-      }
-      break;
-    }
-
-
-    case OPC_RQNP:
-      if( Wait4NN ) {
-        canmsg.opc = OPC_PARAMS;
-        canmsg.d[0] = params[0];
-        canmsg.d[1] = params[1];
-        canmsg.d[2] = params[2];
-        canmsg.d[3] = params[3];
-        canmsg.d[4] = params[4];
-        canmsg.d[5] = params[5];
-        canmsg.d[6] = params[6];
-        canmsg.len = 7;
-        canQueue(&canmsg);
-        txed = 1;
-      }
-      break;
-
-    case OPC_RTOF:
-      if( NV1 & CFG_SAVEOUTPUT ) {
-        byte i = 0;
-        for( i = 0; i < 4; i++ ) {
-          eeWrite(EE_SERVO_POSITION + i, Servo[i].position );
-        }
-      }
-      break;
-
-    case OPC_NVRD:
-      if( thisNN() ) {
-        byte nvnr = rx_ptr->d3;
-        if( nvnr == 1 ) {
-          canmsg.opc = OPC_NVANS;
-          canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = (NN_temp % 256) & 0xFF;
-          canmsg.d[2] = nvnr;
-          canmsg.d[3] = NV1;
-          canmsg.len = 4;
-          canQueue(&canmsg);
-          txed = 1;
-        }
-        else if( nvnr == 2 ) {
-          canmsg.opc = OPC_NVANS;
-          canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = (NN_temp % 256) & 0xFF;
-          canmsg.d[2] = nvnr;
-          canmsg.d[3] = CANID;
-          canmsg.len = 4;
-          canQueue(&canmsg);
-          txed = 1;
-        }
-        else if( nvnr > 2 && nvnr < 23 ) {
-          // Servo
-          byte servoIdx = (nvnr-3) / 5;
-          byte servoVar = (nvnr-3) % 5;
-          canmsg.opc = OPC_NVANS;
-          canmsg.d[0] = (NN_temp / 256) & 0xFF;
-          canmsg.d[1] = (NN_temp % 256) & 0xFF;
-          canmsg.d[2] = nvnr;
-          if( servoVar == 0 )
-            canmsg.d[3] = Servo[servoIdx].config;
-          else if( servoVar == 1 )
-            canmsg.d[3] = Servo[servoIdx].left;
-          else if( servoVar == 2 )
-            canmsg.d[3] = Servo[servoIdx].right;
-          else if( servoVar == 3 )
-            canmsg.d[3] = Servo[servoIdx].speedL;
-          else if( servoVar == 4 )
-            canmsg.d[3] = Servo[servoIdx].speedR;
-
-          canmsg.len = 4;
-          canQueue(&canmsg);
-          txed = 1;
-        }
-
-      }
-      break;
-
-    case OPC_NVSET:
-      if( thisNN() ) {
-        byte nvnr = rx_ptr->d3;
-        if( nvnr == 1 ) {
-          NV1 = rx_ptr->d4;
-          eeWrite(EE_NV, NV1);
-        }
-        else if( nvnr == 2 ) {
-          CANID = rx_ptr->d4;
-          eeWrite(EE_CANID, CANID);
-        }
-        else if( nvnr > 2 && nvnr < 23 ) {
-          // Servo
-          byte servoIdx = ((nvnr-3) / 5);
-          byte servoVar = (nvnr-3) % 5;
-          if( servoVar == 0 ) {
-            Servo[servoIdx].config = rx_ptr->d4;
-            eeWrite(EE_SERVO_CONFIG + servoIdx, rx_ptr->d4);
-            if( Servo[servoIdx].position == Servo[servoIdx].right )
-              RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 2:1 );
-            else
-              RelayEnd(servoIdx, Servo[servoIdx].config & SERVOCONF_POLAR ? 1:2 );
-          }
-          else if( servoVar == 1 && rx_ptr->d4 >= 50 && rx_ptr->d4 <= 250 ) {
-            Servo[servoIdx].left = rx_ptr->d4;
-            eeWrite(EE_SERVO_LEFT + servoIdx, rx_ptr->d4);
-            Servo[servoIdx].wantedpos = Servo[servoIdx].left;
-            //Servo[servoIdx].position = Servo[servoIdx].left;
-          }
-          else if( servoVar == 2 && rx_ptr->d4 >= 50 && rx_ptr->d4 <= 250  ) {
-            Servo[servoIdx].right = rx_ptr->d4;
-            eeWrite(EE_SERVO_RIGHT + servoIdx, rx_ptr->d4);
-            Servo[servoIdx].wantedpos = Servo[servoIdx].right;
-            //Servo[servoIdx].position = Servo[servoIdx].right;
-          }
-          else if( servoVar == 3 && rx_ptr->d4 <= 20 ) {
-            Servo[servoIdx].speedL = rx_ptr->d4;
-            eeWrite(EE_SERVO_SPEEDL + servoIdx, rx_ptr->d4);
-          }
-          else if( servoVar == 4 && rx_ptr->d4 <= 20 ) {
-            Servo[servoIdx].speedR = rx_ptr->d4;
-            eeWrite(EE_SERVO_SPEEDR + servoIdx, rx_ptr->d4);
-          }
-
-        }
-      }
-      break;
-
-
-    case OPC_NNLRN:
-      if( thisNN() ) {
-        isLearning = TRUE;
-      }
-      break;
-
-    case OPC_NNULN:
-      if( thisNN() ) {
-        isLearning = FALSE;
-        LED2 = PORT_OFF;
-      }
-      break;
-
-    case OPC_EVLRN:
-      if( isLearning ) {
-        ushort evtnn = rx_ptr->d1 * 256 + rx_ptr->d2;
-        ushort addr  = rx_ptr->d3 * 256 + rx_ptr->d4;
-        byte idx = rx_ptr->d5;
-        byte val = rx_ptr->d6;
-        if( idx < 4 ) {
-          Servo[idx].swnn = evtnn;
-          Servo[idx].swaddr = addr;
-          eeWriteShort(EE_SERVO_SWNN + (2*idx), evtnn);
-          eeWriteShort(EE_SERVO_SWADDR + (2*idx), addr);
-        }
-        else if( idx > 3 && idx < 8 ) {
-          Servo[idx-4].fbaddr = addr;
-          eeWriteShort(EE_SERVO_FBADDR + 2*(idx-4), addr);
-        }
-        else if( idx == 8 ) {
-          SOD = addr;
-          eeWrite(EE_SOD  , addr/256);
-          eeWrite(EE_SOD+1, addr%256);
-        }
-      }
-      break;
-
-    case OPC_NERD:
-      if( thisNN() ) {
-        doEV = 1;
-        evIdx = 0;
-        // start of day event
-        canmsg.opc = OPC_ENRSP;
-        canmsg.d[0] = (NN_temp / 256) & 0xFF;
-        canmsg.d[1] = (NN_temp % 256) & 0xFF;
-        canmsg.d[2] = 0;
-        canmsg.d[3] = 0;
-        canmsg.d[4] = SOD / 256;
-        canmsg.d[5] = SOD % 256;
-        canmsg.d[6] = 16;
-        canmsg.len = 7;
-        canQueue(&canmsg);
-        txed = 1;
-      }
-      break;
-
-
-
-    default: break;
-  }
-
-    rx_ptr->con = 0;
-    if (can_bus_off) {
-      // At least one buffer is now free
-      can_bus_off = 0;
-      PIE3bits.FIFOWMIE = 1;
-    }
-
     return txed;
 }
 
 void doRqnpn(unsigned int idx) {
-  if (idx < 8) {
-    canmsg.opc = OPC_PARAN;
-    canmsg.d[0] = (NN_temp / 256) & 0xFF;
-    canmsg.d[1] = (NN_temp % 256) & 0xFF;
-    canmsg.d[2] = idx;
-    canmsg.d[3] = params[idx - 1];
-    canmsg.len = 4;
-    canQueue(&canmsg);
-  }
+    CANMsg canmsg;
+    if (idx < 8) {
+        canmsg.b[d0] = OPC_PARAN;
+        canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+        canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+        canmsg.b[d3] = idx;
+        canmsg.b[d4] = params[idx - 1];
+        canmsg.b[dlc] = 5;
+        canbusSend(&canmsg);
+    }
 }
 
-int thisNN() {
-  if ((((unsigned short) (rx_ptr->d1) << 8) + rx_ptr->d2) == NN_temp)
+int thisNN(CANMsg *cmsg) {
+    if ((((unsigned short) (cmsg->b[d1]) << 8) + cmsg->b[d2]) == NN_temp)
+        return 1;
+    else
+        return 0;
+
+}
+
+unsigned char doPortEvent(int i) {
+    CANMsg canmsg;
+    if (doEV) {
+        if (i < 4) {
+            canmsg.b[d0] = OPC_ENRSP;
+            canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+            canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+            canmsg.b[d3] = Servo[i].swnn / 256;
+            canmsg.b[d4] = Servo[i].swnn % 256;
+            canmsg.b[d5] = Servo[i].swaddr / 256;
+            canmsg.b[d6] = Servo[i].swaddr % 256;
+            canmsg.b[d7] = i;
+            canmsg.b[dlc] = 8;
+            return canbusSend(&canmsg);
+        }
+        if (i > 3 && i < 8) {
+            canmsg.b[d0] = OPC_ENRSP;
+            canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+            canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+            canmsg.b[d3] = NN_temp / 256;
+            canmsg.b[d4] = NN_temp % 256;
+            canmsg.b[d5] = Servo[i - 4].fbaddr / 256;
+            canmsg.b[d6] = Servo[i - 4].fbaddr % 256;
+            canmsg.b[d7] = i;
+            canmsg.b[dlc] = 8;
+            return canbusSend(&canmsg);
+        }
+        if (i == 8) {
+            canmsg.b[d0] = OPC_ENRSP;
+            canmsg.b[d1] = (NN_temp / 256) & 0xFF;
+            canmsg.b[d2] = (NN_temp % 256) & 0xFF;
+            canmsg.b[d3] = 0;
+            canmsg.b[d4] = 0;
+            canmsg.b[d5] = SOD / 256;
+            canmsg.b[d6] = SOD % 256;
+            canmsg.b[d7] = i;
+            canmsg.b[dlc] = 8;
+            return canbusSend(&canmsg);
+        }
+    }
     return 1;
-  else
-    return 0;
-
-}
-
-unsigned char doPortEvent(int i ) {
-  if( doEV ) {
-    if( i < 4 ) {
-      canmsg.opc = OPC_ENRSP;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = Servo[i].swnn / 256;
-      canmsg.d[3] = Servo[i].swnn % 256;
-      canmsg.d[4] = Servo[i].swaddr / 256;
-      canmsg.d[5] = Servo[i].swaddr % 256;
-      canmsg.d[6] = i;
-      canmsg.len = 7;
-      return canQueue(&canmsg);
-    }
-    if( i > 3 && i < 8 ) {
-      canmsg.opc = OPC_ENRSP;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = NN_temp / 256;
-      canmsg.d[3] = NN_temp % 256;
-      canmsg.d[4] = Servo[i-4].fbaddr / 256;
-      canmsg.d[5] = Servo[i-4].fbaddr % 256;
-      canmsg.d[6] = i;
-      canmsg.len = 7;
-      return canQueue(&canmsg);
-    }
-    if( i == 8 ) {
-      canmsg.opc = OPC_ENRSP;
-      canmsg.d[0] = (NN_temp / 256) & 0xFF;
-      canmsg.d[1] = (NN_temp % 256) & 0xFF;
-      canmsg.d[2] = 0;
-      canmsg.d[3] = 0;
-      canmsg.d[4] = SOD / 256;
-      canmsg.d[5] = SOD % 256;
-      canmsg.d[6] = i;
-      canmsg.len = 7;
-      return canQueue(&canmsg);
-    }
-  }
-  return 1;
 }

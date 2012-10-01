@@ -88,5 +88,3 @@ void isr_low(void) {
 
     PIR3 = 0; // clear interrupts
 }
-
-

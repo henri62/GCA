@@ -33,6 +33,9 @@
 #include "io.h"
 #include "gcaeth.h"
 
+#pragma romdata BOOTFLAG
+rom unsigned char bootflag = 0;
+
 #pragma code APP
 //
 // parse_cmd()
@@ -72,7 +75,6 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
         canmsg.b[dlc] = 0x80 + 4;
         CBusEthBroadcast(&canmsg);
     }
-
 
     switch (p_canmsg->b[d0]) {
 
@@ -129,6 +131,15 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
                 broadcast = FALSE;
             }
             break;
+
+        case OPC_BOOT:
+            // Enter bootloader mode if NN matches
+            if (thisNN(p_canmsg) == 1) {
+                eeWrite((unsigned char) (&bootflag), 0xFF);
+                Reset();
+            }
+            break;
+
 
         case OPC_NVRD:
             if (thisNN(p_canmsg)) {

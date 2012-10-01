@@ -91,7 +91,8 @@
 #define	CAN_RXM0SIDL	B'11101011'
 #define	CAN_RXM0EIDH	B'11111111'
 #define	CAN_RXM0EIDL	B'11111000'
-#define	CAN_BRGCON1		B'00000011'	;CAN bit rate controls. For 4 MHz
+#define	CAN_BRGCON1		B'00000111'	;CAN bit rate controls. For 8 MHz
+;#define	CAN_BRGCON1		B'00000011'	;CAN bit rate controls. For 4 MHz
 #define	CAN_BRGCON2		B'10011110'
 #define	CAN_BRGCON3		B'00000011'
 #define	CAN_CIOCON		B'00100000'	;CAN I/O control	
@@ -241,8 +242,8 @@ _CANInit:
 	clrf	EECON1
 	setf	EEADR	; Point to last location of EEDATA
 	setf	EEADRH
-	bsf	EECON1, RD	; Read the control code
-	incfsz EEDATA, W
+	bsf	    EECON1, RD	; Read the control code
+	incfsz  EEDATA, W
 
 	goto	RESET_VECT
 
@@ -282,13 +283,15 @@ _CANInit:
 	movwf	BRGCON3	
 	movlw	CAN_CIOCON	;	Set IO
 	movwf	CIOCON	
-	
 	clrf	CANCON	; Enter Normal mode
-	bcf		TRISB,5
-	bcf		TRISB,6
-	bcf		TRISB,7
-	bsf		PORTB,5		;yellow LED on
-	bsf		PORTB,7		;green LED on
+	
+	movlw	0x0f	;	Set IO
+	movwf	ADCON1
+	bcf		TRISA,3         ;LED1
+	bcf		TRISA,4         ;LED2
+	bcf		TRISA,5         ;LED3
+	bsf		PORTA,4         ;green LED on
+	bsf		PORTA,5         ;yellow LED on
 
 
 ; ************************************************************ ** * * * * * * * * * * * * * * * 
@@ -298,15 +301,15 @@ _CANInit:
 ; upon whether the request was a 'put' or a 'get'.
 ; ************************************************************ ** * * * * * * * * * * * * * * * 
 _CANMain
-        bcf     PORTB,6
-	bcf	RXB0CON, RXFUL	; Clear the receive flag
+    bcf     PORTA,3                 ;red LED off
+	bcf	    RXB0CON, RXFUL	; Clear the receive flag
 	btfss 	RXB0CON, RXFUL	; Wait for a message	
 	bra	$ - 2
 
 
 
 _CANMainJp1
-        bsf     PORTB,6
+    bsf     PORTA,3                 ;red LED on
 	lfsr	0, RXB0D0
 	movf	RXB0DLC, W 
 	andlw 	0x0F
@@ -495,8 +498,9 @@ _DecodeJp2
 
 
 _PMEraseWrite:
-	btfss 	MODE_AUTO_ERASE
-	bra	_PMWrite
+
+	btfss   MODE_AUTO_ERASE
+	bra     _PMWrite
 _PMErase:
 	movf	TBLPTRL, W
 	andlw	b'00111111'
@@ -505,10 +509,6 @@ _PMEraseJp1
 	movlw	b'10010100' 
 	rcall 	_StartWrite 
 _PMWrite:
-	btfsc 	MODE_ERASE_ONLY
-
-
-	bra	_CANMain 
 
 	movf	TBLPTRL, W
 	andlw	b'00000111'

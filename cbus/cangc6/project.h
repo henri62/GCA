@@ -25,8 +25,8 @@
 #define __PROJECT_H
 
 #include <p18f2480.h>
-
-#include "cbus.h"
+#include <GenericTypeDefs.h>
+#include "canbus.h"
 
     
 #define DEFAULT_NN   112
