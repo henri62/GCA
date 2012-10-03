@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 2
-#define MINOR_VER 'c'	// Minor version character
+#define MINOR_VER 'd'	// Minor version character
 
 #define EVT_NUM 0
 #define EVperEVT 0
@@ -55,8 +55,8 @@
 #define CFG_ALL  0xFF
 #define CFG_IDLE_TIMEOUT    0x01
 #define CFG_POWEROFF_ATIDLE 0x02
-#define CFG_COMMAND_ACK 0x04
-#define CFG_DHCP_CLIENT  0x08
+#define CFG_COMMAND_ACK     0x04
+#define CFG_DHCP_CLIENT     0x08
 
 
 
@@ -72,6 +72,8 @@ extern unsigned char Wait4NN;
 extern unsigned char isLearning;
 extern unsigned char maxcanq;
 extern unsigned char maxethq;
+extern unsigned char maxtxerr;
+extern unsigned char maxrxerr;
 extern unsigned char cmdticker;
 
 extern volatile unsigned short tmr1_reload;

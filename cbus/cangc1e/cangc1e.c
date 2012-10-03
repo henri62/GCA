@@ -60,6 +60,8 @@ unsigned char cmdticker;
 unsigned char isLearning;
 unsigned char maxcanq;
 unsigned char maxethq;
+unsigned char maxtxerr;
+unsigned char maxrxerr;
 
 volatile unsigned short tmr1_reload;
 
@@ -166,6 +168,12 @@ void main(void) {
            }
         }
 
+        if (TXERRCNT > maxtxerr) {
+            maxtxerr = TXERRCNT;
+        }
+        if (RXERRCNT > maxtxerr) {
+            maxtxerr = TXERRCNT;
+        }
 
         if (checkFlimSwitch() && !swTrig) {
             swTrig = 1;

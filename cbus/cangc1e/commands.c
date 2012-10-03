@@ -59,6 +59,24 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
         switch (p_canmsg->b[d0]) {
             case 0:
                 break;
+            case 3:
+            {
+                canmsg.b[sidh] = (CANID >> 3);
+                canmsg.b[sidl] = (CANID << 5);
+                canmsg.b[d0] = 3; // CAN Status
+                canmsg.b[d1] = 0;
+                canmsg.b[d2] = maxethq;
+                canmsg.b[d3] = maxcanq;
+                canmsg.b[d4] = maxtxerr;
+                canmsg.b[d5] = maxrxerr;
+                canmsg.b[dlc] = 0x80 + 6;
+                CBusEthBroadcast(&canmsg);
+                maxethq = 0;
+                maxcanq = 0;
+                maxtxerr = 0;
+                maxrxerr = 0;
+                break;
+            }
         }
         return FALSE;
     }
@@ -132,6 +150,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
             }
             break;
 
+/* bootloader is CAN only you must have a second cangc1e to use this
         case OPC_BOOT:
             // Enter bootloader mode if NN matches
             if (thisNN(p_canmsg) == 1) {
@@ -139,7 +158,7 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
                 Reset();
             }
             break;
-
+*/
 
         case OPC_NVRD:
             if (thisNN(p_canmsg)) {

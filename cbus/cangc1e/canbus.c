@@ -168,9 +168,14 @@ BOOL canbusSend(CANMsg *msg) {
     CANMsg canmsg;
 
     while (!canSend(msg)) {
-        led3timer = 20;
+        led3timer = 1;
         LED3 = LED_OFF;
-    };
+        if (COMSTATbits.TXWARN) {
+            led3timer = 20;
+            LED3 = LED_OFF;
+            return FALSE;
+        }
+    }
     return TRUE;
 }
 
