@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 #include "project.h"
@@ -31,21 +31,21 @@ extern void scanLN(void);
 void initLN(void);
 byte doLocoNet(void);
 void LocoNetWD(void);
-void send2LocoNet(void);
+void send2LocoNet(CANMsg *cmsg);
 void doSlotTimers(void);
 void doSlotPing(void);
 
 typedef struct {
-  byte   status;
-  byte   data[16];
-  byte   len;
+    byte status;
+    byte data[16];
+    byte len;
 } LNPACKET;
 
 typedef struct {
-  byte   session;
-  unsigned short addr;
-  byte   speed; // dir = 0x80 & speed
-  byte   f[3];
+    byte session;
+    unsigned short addr;
+    byte speed; // dir = 0x80 & speed
+    byte f[3];
 } LNSLOT;
 
 #define LN_BUFFER_SIZE 14

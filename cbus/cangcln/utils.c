@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 #include <p18f2480.h>
@@ -52,7 +52,7 @@ void eeWrite(unsigned char addr, unsigned char data) {
   EECON2 = 0xaa; // Write initiate sequence
   EECON1bits.WR = 1; // Start writing
   while (!PIR2bits.EEIF)
-  ; // Wait for write to finish
+    ; // Wait for write to finish
   PIR2bits.EEIF = 0; // Clear EEIF bit
 
   INTCONbits.GIE = 1; // Enable interupts
@@ -108,13 +108,12 @@ void lDelay(void) {
   //
 } //		return
 
-
-void strToByte( unsigned char* s, unsigned char len, unsigned char* data ) {
+void strToByte(unsigned char* s, unsigned char len, unsigned char* data) {
   unsigned char i;
-  for( i = 0; i < len; i+=2 ) {
-    unsigned char v1 = (s[i  ] & 0x40) ? s[i  ]-0x37:s[i  ]-0x30;
-    unsigned char v2 = (s[i+1] & 0x40) ? s[i+1]-0x37:s[i+1]-0x30;
-    data[i/2] = (v1<<4) + v2;
+  for (i = 0; i < len; i += 2) {
+    unsigned char v1 = (s[i ] & 0x40) ? s[i ] - 0x37 : s[i ] - 0x30;
+    unsigned char v2 = (s[i + 1] & 0x40) ? s[i + 1] - 0x37 : s[i + 1] - 0x30;
+    data[i / 2] = (v1 << 4) + v2;
   }
 }
 

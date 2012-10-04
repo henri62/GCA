@@ -18,17 +18,18 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 #ifndef __PROJECT_H
 #define __PROJECT_H
 
 #include <p18f2585.h>
+#include <GenericTypeDefs.h>
 
-#include "cbus.h"
+#include "canbus.h"
 
-    
+
 #define DEFAULT_NN   56
 #define DEFAULT_SOD  4711
 

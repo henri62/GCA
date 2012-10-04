@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangcln.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/loconet.o ${OBJECTDIR}/utils.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/cangcln.o.d ${OBJECTDIR}/cbus.o.d ${OBJECTDIR}/commands.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/isr.o.d ${OBJECTDIR}/loconet.o.d ${OBJECTDIR}/utils.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/cangcln.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/loconet.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/canbus.o ${OBJECTDIR}/Boot4.o ${OBJECTDIR}/c018i.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/cangcln.o.d ${OBJECTDIR}/commands.o.d ${OBJECTDIR}/io.o.d ${OBJECTDIR}/isr.o.d ${OBJECTDIR}/loconet.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/canbus.o.d ${OBJECTDIR}/Boot4.o.d ${OBJECTDIR}/c018i.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/cangcln.o ${OBJECTDIR}/cbus.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/loconet.o ${OBJECTDIR}/utils.o
+OBJECTFILES=${OBJECTDIR}/cangcln.o ${OBJECTDIR}/commands.o ${OBJECTDIR}/io.o ${OBJECTDIR}/isr.o ${OBJECTDIR}/loconet.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/canbus.o ${OBJECTDIR}/Boot4.o ${OBJECTDIR}/c018i.o
 
 
 CFLAGS=
@@ -70,7 +70,21 @@ MP_LINKER_DEBUG_OPTION= -u_DEBUGCODESTART=0xbd30 -u_DEBUGCODELEN=0x2d0 -u_DEBUGD
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+${OBJECTDIR}/Boot4.o: Boot4.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/Boot4.o.d 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/Boot4.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PK3=1 -q -p$(MP_PROCESSOR_OPTION) -u  -l\"${OBJECTDIR}/Boot4.lst\" -e\"${OBJECTDIR}/Boot4.err\" $(ASM_OPTIONS)  -o\"${OBJECTDIR}/Boot4.o\" Boot4.asm 
+	@${DEP_GEN} -d ${OBJECTDIR}/Boot4.o 
+	@${FIXDEPS} "${OBJECTDIR}/Boot4.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
 else
+${OBJECTDIR}/Boot4.o: Boot4.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/Boot4.o.d 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/Boot4.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  -l\"${OBJECTDIR}/Boot4.lst\" -e\"${OBJECTDIR}/Boot4.err\" $(ASM_OPTIONS)  -o\"${OBJECTDIR}/Boot4.o\" Boot4.asm 
+	@${DEP_GEN} -d ${OBJECTDIR}/Boot4.o 
+	@${FIXDEPS} "${OBJECTDIR}/Boot4.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
 endif
 
 # ------------------------------------------------------------------------------------
@@ -82,13 +96,6 @@ ${OBJECTDIR}/cangcln.o: cangcln.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cangcln.o   cangcln.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/cangcln.o 
 	@${FIXDEPS} "${OBJECTDIR}/cangcln.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
-	
-${OBJECTDIR}/cbus.o: cbus.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/cbus.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cbus.o   cbus.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/cbus.o 
-	@${FIXDEPS} "${OBJECTDIR}/cbus.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/commands.o: commands.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -125,6 +132,20 @@ ${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
 	@${FIXDEPS} "${OBJECTDIR}/utils.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
+${OBJECTDIR}/canbus.o: canbus.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/canbus.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/canbus.o   canbus.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/canbus.o 
+	@${FIXDEPS} "${OBJECTDIR}/canbus.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/c018i.o: c018i.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/c018i.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -p$(MP_PROCESSOR_OPTION) -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/c018i.o   c018i.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/c018i.o 
+	@${FIXDEPS} "${OBJECTDIR}/c018i.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
 else
 ${OBJECTDIR}/cangcln.o: cangcln.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -132,13 +153,6 @@ ${OBJECTDIR}/cangcln.o: cangcln.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cangcln.o   cangcln.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/cangcln.o 
 	@${FIXDEPS} "${OBJECTDIR}/cangcln.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
-	
-${OBJECTDIR}/cbus.o: cbus.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/cbus.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/cbus.o   cbus.c 
-	@${DEP_GEN} -d ${OBJECTDIR}/cbus.o 
-	@${FIXDEPS} "${OBJECTDIR}/cbus.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 ${OBJECTDIR}/commands.o: commands.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -175,6 +189,20 @@ ${OBJECTDIR}/utils.o: utils.c  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d ${OBJECTDIR}/utils.o 
 	@${FIXDEPS} "${OBJECTDIR}/utils.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
+${OBJECTDIR}/canbus.o: canbus.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/canbus.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/canbus.o   canbus.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/canbus.o 
+	@${FIXDEPS} "${OBJECTDIR}/canbus.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/c018i.o: c018i.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/c018i.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ms -oa-  -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/c018i.o   c018i.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/c018i.o 
+	@${FIXDEPS} "${OBJECTDIR}/c018i.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
 endif
 
 # ------------------------------------------------------------------------------------
@@ -182,11 +210,11 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/cangcln.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION_LD)  -w -x -u_DEBUG   -z__MPLAB_BUILD=1  -u_CRUNTIME -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PK3=1 $(MP_LINKER_DEBUG_OPTION) -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/cangcln.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
+	${MP_LD} $(MP_EXTRA_LD_PRE) "18f2585.lkr"  -p$(MP_PROCESSOR_OPTION_LD)  -w -x -u_DEBUG   -z__MPLAB_BUILD=1  -u_CRUNTIME -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PK3=1 $(MP_LINKER_DEBUG_OPTION) -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/cangcln.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/cangcln.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION_LD)  -w    -z__MPLAB_BUILD=1  -u_CRUNTIME -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/cangcln.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
+	${MP_LD} $(MP_EXTRA_LD_PRE) "18f2585.lkr"  -p$(MP_PROCESSOR_OPTION_LD)  -w    -z__MPLAB_BUILD=1  -u_CRUNTIME -l ${MP_CC_DIR}/../lib  -o dist/${CND_CONF}/${IMAGE_TYPE}/cangcln.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   
 endif
 
 

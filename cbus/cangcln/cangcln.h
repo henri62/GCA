@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 
@@ -26,8 +26,8 @@
 #define __CANGCLN_H
 
 
-#define MAJOR_VER 1     // zero is developer version
-#define MINOR_VER 'h'	// Minor version character
+#define MAJOR_VER 2     // zero is developer version
+#define MINOR_VER 'a'	// Minor version character
 
 #define EVT_NUM 5
 #define EVperEVT 0
@@ -57,19 +57,19 @@
 
 
 extern near unsigned short NN_temp;
-extern near unsigned char  NV1;
-extern near unsigned char  CANID;
-extern near unsigned char  ledCBUSRXtimer;
-extern near unsigned char  ledCBUSTXtimer;
-extern near unsigned char  ledLNRXtimer;
-extern near unsigned char  ledLNTXtimer;
-extern near unsigned char  ioIdx;
-extern near unsigned char  Wait4NN;
-extern near unsigned char  isLearning;
+extern near unsigned char NV1;
+extern near unsigned char CANID;
+extern near unsigned char ledCBUSRXtimer;
+extern near unsigned char ledCBUSTXtimer;
+extern near unsigned char ledLNRXtimer;
+extern near unsigned char ledLNTXtimer;
+extern near unsigned char ioIdx;
+extern near unsigned char Wait4NN;
+extern near unsigned char isLearning;
 extern near unsigned short SOD;
-extern near unsigned char  doSOD;
-extern near unsigned char  doEV;
-extern near unsigned char  evIdx;
+extern near unsigned char doSOD;
+extern near unsigned char doEV;
+extern near unsigned char evIdx;
 extern far unsigned short SWStart;
 extern far unsigned short SWEnd;
 extern far unsigned short FBStart;

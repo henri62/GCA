@@ -61,40 +61,40 @@
 
 /* Slot Status byte definitions and macros */
 /***********************************************************************************
-*   D7-SL_SPURGE     1=SLOT purge en,                                             *
-*                    ALSO adrSEL (INTERNAL use only) (not seen on NET!)           *
-*                                                                                  *
-*   D6-SL_CONUP      CONDN/CONUP: bit encoding-Control double linked Consist List *
-*                       11=LOGICAL MID CONSIST , Linked up AND down               *
-*                       10=LOGICAL CONSIST TOP, Only linked downwards             *
-*                       01=LOGICAL CONSIST SUB-MEMBER, Only linked upwards        *
-*                       00=FREE locomotive, no CONSIST indirection/linking        *
-*                    ALLOWS "CONSISTS of CONSISTS". Uplinked means that           *
-*                    Slot SPD number is now SLOT adr of SPD/DIR and STATUS        *
-*                    of consist. i.e. is an Indirect pointer. This Slot          *
-*                    has same BUSY/ACTIVE bits as TOP of Consist. TOP is          *
-*                    loco with SPD/DIR for whole consist. (top of list).          *
-*                    BUSY/ACTIVE: bit encoding for SLOT activity                  *
-*                                                                                  *
-*   D5-SL_BUSY       11=IN_USE loco adr in SLOT -REFRESHED                        *
-*                                                                                  *
-*   D4-SL_ACTIVE     10=IDLE loco adr in SLOT -NOT refreshed                      *
-*                    01=COMMON loco adr IN SLOT -refreshed                        *
-*                    00=FREE SLOT, no valid DATA -not refreshed                   *
-*                                                                                  *
-*   D3-SL_CONDN      shows other SLOT Consist linked INTO this slot, see SL_CONUP *
-*                                                                                  *
-*   D2-SL_SPDEX      3 BITS for Decoder TYPE encoding for this SLOT               *
-*                                                                                  *
-*   D1-SL_SPD14      011=send 128 speed mode packets                              *
-*                                                                                  *
-*   D0-SL_SPD28      010=14 step MODE                                             *
-*                    001=28 step. Generate Trinary packets for this               *
-*                                 Mobile ADR                                      *
-*                    000=28 step. 3 BYTE PKT regular mode                         *
-*                    111=128 Step decoder, Allow Advanced DCC consisting          *
-*                    100=28 Step decoder ,Allow Advanced DCC consisting           *
-***********************************************************************************/
+ *   D7-SL_SPURGE     1=SLOT purge en,                                             *
+ *                    ALSO adrSEL (INTERNAL use only) (not seen on NET!)           *
+ *                                                                                  *
+ *   D6-SL_CONUP      CONDN/CONUP: bit encoding-Control double linked Consist List *
+ *                       11=LOGICAL MID CONSIST , Linked up AND down               *
+ *                       10=LOGICAL CONSIST TOP, Only linked downwards             *
+ *                       01=LOGICAL CONSIST SUB-MEMBER, Only linked upwards        *
+ *                       00=FREE locomotive, no CONSIST indirection/linking        *
+ *                    ALLOWS "CONSISTS of CONSISTS". Uplinked means that           *
+ *                    Slot SPD number is now SLOT adr of SPD/DIR and STATUS        *
+ *                    of consist. i.e. is an Indirect pointer. This Slot          *
+ *                    has same BUSY/ACTIVE bits as TOP of Consist. TOP is          *
+ *                    loco with SPD/DIR for whole consist. (top of list).          *
+ *                    BUSY/ACTIVE: bit encoding for SLOT activity                  *
+ *                                                                                  *
+ *   D5-SL_BUSY       11=IN_USE loco adr in SLOT -REFRESHED                        *
+ *                                                                                  *
+ *   D4-SL_ACTIVE     10=IDLE loco adr in SLOT -NOT refreshed                      *
+ *                    01=COMMON loco adr IN SLOT -refreshed                        *
+ *                    00=FREE SLOT, no valid DATA -not refreshed                   *
+ *                                                                                  *
+ *   D3-SL_CONDN      shows other SLOT Consist linked INTO this slot, see SL_CONUP *
+ *                                                                                  *
+ *   D2-SL_SPDEX      3 BITS for Decoder TYPE encoding for this SLOT               *
+ *                                                                                  *
+ *   D1-SL_SPD14      011=send 128 speed mode packets                              *
+ *                                                                                  *
+ *   D0-SL_SPD28      010=14 step MODE                                             *
+ *                    001=28 step. Generate Trinary packets for this               *
+ *                                 Mobile ADR                                      *
+ *                    000=28 step. 3 BYTE PKT regular mode                         *
+ *                    111=128 Step decoder, Allow Advanced DCC consisting          *
+ *                    100=28 Step decoder ,Allow Advanced DCC consisting           *
+ ***********************************************************************************/
 
 #define STAT1_SL_SPURGE   0x80  /* internal use only, not seen on net */
 #define STAT1_SL_CONUP    0x40  /* consist status                     */

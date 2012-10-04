@@ -18,14 +18,15 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 
 #include <p18cxxx.h>
 #include <stdio.h>
 
-#include "cbus.h"
+#include "project.h"
+#include "canbus.h"
 #include "utils.h"
 #include "cbusdefs.h"
 #include "cangcln.h"
@@ -41,10 +42,10 @@ void setupIO(byte clr) {
   ADCON1 = 0x0F;
 
 
-  TRISBbits.TRISB4 = 0;  // LED1 CBUS activity TX
-  TRISBbits.TRISB5 = 0;  // LED2 CBUS activity RX
-  TRISCbits.TRISC3 = 0;  // LED6 Learning mode
-  TRISCbits.TRISC2 = 0;  // LED5 Running
+  TRISBbits.TRISB4 = 0; // LED1 CBUS activity TX
+  TRISBbits.TRISB5 = 0; // LED2 CBUS activity RX
+  TRISCbits.TRISC3 = 0; // LED6 Learning mode
+  TRISCbits.TRISC2 = 0; // LED5 Running
 
   TRISAbits.TRISA0 = 1; /* SW */
   TRISAbits.TRISA1 = 0; /* LNSCAN */
@@ -55,16 +56,16 @@ void setupIO(byte clr) {
   TRISCbits.TRISC7 = 1; /* LocoNet RX */
   TRISCbits.TRISC1 = 1; // LocoNet watchdog
 
-  LED1_CBUSTX   = PORT_OFF;
-  LED2_CBUSRX   = PORT_OFF;
-  LED3_LNTX     = PORT_OFF;
-  LED4_LNRX     = PORT_OFF;
-  LED5_RUN      = PORT_OFF;
-  LED6_FLIM     = PORT_OFF;
-  LNTX          = PORT_OFF;
-  LNSCAN        = PORT_OFF;
+  LED1_CBUSTX = PORT_OFF;
+  LED2_CBUSRX = PORT_OFF;
+  LED3_LNTX = PORT_OFF;
+  LED4_LNRX = PORT_OFF;
+  LED5_RUN = PORT_OFF;
+  LED6_FLIM = PORT_OFF;
+  LNTX = PORT_OFF;
+  LNSCAN = PORT_OFF;
 
-  if( checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF ) {
+  if (checkFlimSwitch() || eeRead(EE_CLEAN) == 0xFF) {
     eeWrite(EE_CLEAN, 0);
     eeWrite(EE_NV, 0);
     eeWriteShort(EE_SOD, 4711);
@@ -79,28 +80,29 @@ void setupIO(byte clr) {
 
 
 // Called every 3ms.
+
 void doLEDTimers(void) {
-  if( ledCBUSRXtimer > 0 ) {
+  if (ledCBUSRXtimer > 0) {
     ledCBUSRXtimer--;
-    if( ledCBUSRXtimer == 0 ) {
+    if (ledCBUSRXtimer == 0) {
       LED2_CBUSRX = 0;
     }
   }
-  if( ledCBUSTXtimer > 0 ) {
+  if (ledCBUSTXtimer > 0) {
     ledCBUSTXtimer--;
-    if( ledCBUSTXtimer == 0 ) {
+    if (ledCBUSTXtimer == 0) {
       LED1_CBUSTX = 0;
     }
   }
-  if( ledLNTXtimer > 0 ) {
+  if (ledLNTXtimer > 0) {
     ledLNTXtimer--;
-    if( ledLNTXtimer == 0 ) {
+    if (ledLNTXtimer == 0) {
       LED3_LNTX = 0;
     }
   }
-  if( ledLNRXtimer > 0 ) {
+  if (ledLNRXtimer > 0) {
     ledLNRXtimer--;
-    if( ledLNRXtimer == 0 ) {
+    if (ledLNRXtimer == 0) {
       LED4_LNRX = 0;
     }
   }
@@ -116,12 +118,12 @@ unsigned char checkFlimSwitch(void) {
 
 
 static unsigned char __LED6_FLIM = 0;
+
 void doLEDs(void) {
-  if( Wait4NN || isLearning) {
+  if (Wait4NN || isLearning) {
     LED6_FLIM = __LED6_FLIM;
     __LED6_FLIM ^= 1;
-  }
-  else {
+  } else {
     LED6_FLIM = PORT_OFF;
   }
 
@@ -129,6 +131,7 @@ void doLEDs(void) {
 
 
 static unsigned char __LED4 = 0;
+
 void doLED250(void) {
 }
 
