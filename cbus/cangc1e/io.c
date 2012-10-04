@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 
@@ -38,7 +38,7 @@ void setupIO(byte clr) {
   // all digital I/O
   ADCON0 = 0x00;
   ADCON1 = 0x0F;
-  
+
   TRISCbits.TRISC0 = 0; /* LED1 */
   TRISCbits.TRISC1 = 0; /* LED2 */
   TRISCbits.TRISC2 = 0; /* LED3 */
@@ -58,7 +58,6 @@ void setupIO(byte clr) {
 
 }
 
-
 void writeOutput(int idx, unsigned char val) {
 }
 
@@ -68,29 +67,30 @@ unsigned char readInput(int idx) {
 }
 
 // Called every 3ms.
+
 void doLEDTimers(void) {
-  if( led1timer > 0 ) {
+  if (led1timer > 0) {
     led1timer--;
-    if( led1timer == 0 ) {
+    if (led1timer == 0) {
       LED1 = LED_OFF;
     }
   }
 
-  if( led2timer > 0 ) {
+  if (led2timer > 0) {
     led2timer--;
-    if( led2timer == 0 ) {
+    if (led2timer == 0) {
       LED2 = LED_OFF;
     }
   }
 
-  if( led3timer > 0 ) {
+  if (led3timer > 0) {
     led3timer--;
-    if( led3timer == 0 ) {
+    if (led3timer == 0) {
       LED3 = LED_ON;
     }
   }
 
-  if( Wait4NN ) {
+  if (Wait4NN) {
     return;
   }
 }
@@ -102,7 +102,6 @@ void doIOTimers(void) {
 void doTimedOff(int i) {
 }
 
-
 unsigned char checkFlimSwitch(void) {
   unsigned char val = SW;
   return !val;
@@ -113,15 +112,13 @@ unsigned char checkInput(unsigned char idx) {
   return ok;
 }
 
-
-
 void saveOutputStates(void) {
   int idx = 0;
   byte o1 = 0;
   byte o2 = 0;
 
   //eeWrite(EE_PORTSTAT + 1, o2);
-  
+
 
 }
 
@@ -130,13 +127,12 @@ void saveOutputStates(void) {
 static unsigned char __LED3 = 0;
 
 void doLEDs(void) {
-  if( Wait4NN || isLearning ) {
+  if (Wait4NN || isLearning) {
     LED3 = __LED3;
     __LED3 ^= 1;
     led3timer = 20;
   }
 }
-
 
 void setOutput(ushort nn, ushort addr, byte on) {
 }

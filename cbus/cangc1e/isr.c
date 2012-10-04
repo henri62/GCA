@@ -47,25 +47,25 @@ volatile BOOL doEthTick;
 
 void isr_high(void) {
 
-    if (PIR1bits.TMR1IF) {
-        PIR1bits.TMR1IF = 0;
-        TMR1H = tmr1_reload / 256;
-        TMR1L = tmr1_reload % 256;
-    }
+  if (PIR1bits.TMR1IF) {
+    PIR1bits.TMR1IF = 0;
+    TMR1H = tmr1_reload / 256;
+    TMR1L = tmr1_reload % 256;
+  }
 
-    //
-    // LED timer  - 50ms
-    //
-    doLEDTimers();
+  //
+  // LED timer  - 50ms
+  //
+  doLEDTimers();
 
-    //
-    // Timer 500ms
-    //
-    if (--led500ms_timer == 0) {
-        led500ms_timer = 10;
-        doLEDs();
-        doEthTick = TRUE;
-    }
+  //
+  // Timer 500ms
+  //
+  if (--led500ms_timer == 0) {
+    led500ms_timer = 10;
+    doLEDs();
+    doEthTick = TRUE;
+  }
 }
 
 
@@ -77,14 +77,14 @@ void isr_high(void) {
 
 void isr_low(void) {
 
-    TickUpdate();
+  TickUpdate();
 
-    if (PIR3bits.FIFOWMIF == 1) {
-        PIE3bits.FIFOWMIE = 0;
-        PIR3bits.FIFOWMIF = 0;
-        canbusFifo();
-        PIE3bits.FIFOWMIE = 1;
-    }
+  if (PIR3bits.FIFOWMIF == 1) {
+    PIE3bits.FIFOWMIE = 0;
+    PIR3bits.FIFOWMIF = 0;
+    canbusFifo();
+    PIE3bits.FIFOWMIE = 1;
+  }
 
-    PIR3 = 0; // clear interrupts
+  PIR3 = 0; // clear interrupts
 }

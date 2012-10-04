@@ -185,6 +185,7 @@
 #define OPC_RDCC6  	0xE0    // 6 byte DCC packets
 #define OPC_PLOC	0xE1    // Loco session report
 #define OPC_NAME	0xE2	// Module name response
+#define OPC_LNCB	0xEA    // Loconet to Cbus
 #define OPC_PARAMS	0xEF    // Node parameters response
 
 #define OPC_ACON3   0xF0    // On event with 3 data bytes

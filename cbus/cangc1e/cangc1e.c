@@ -90,147 +90,147 @@ void initIO(void);
 #pragma code high_vector=0x208
 
 void HIGH_INT_VECT(void) {
-    _asm GOTO isr_high _endasm
+  _asm GOTO isr_high _endasm
 }
 
 #pragma code low_vector=0x218
 
 void LOW_INT_VECT(void) {
-    _asm GOTO isr_low _endasm
+  _asm GOTO isr_low _endasm
 }
 
 #pragma code APP
 
 void main(void) {
-    unsigned char swTrig = 0;
+  unsigned char swTrig = 0;
 
-    Wait4NN = FALSE;
-    isLearning = FALSE;
-    maxcanq = 0;
-    maxethq = 0;
-    cmdticker = 0;
-    IdleTime = 120;
-    doEthTick = FALSE;
+  Wait4NN = FALSE;
+  isLearning = FALSE;
+  maxcanq = 0;
+  maxethq = 0;
+  cmdticker = 0;
+  IdleTime = 120;
+  doEthTick = FALSE;
 
-    lDelay();
+  lDelay();
 
-    NV1 = eeRead(EE_NV);
-    if (NV1 == 0xFF) {
-        eeWrite(EE_NV, 0);
-        NV1 = 0;
-        IdleTime = 120; // 120 * 500ms = 60 sec.
-        eeWrite(EE_IDLETIME, IdleTime);
+  NV1 = eeRead(EE_NV);
+  if (NV1 == 0xFF) {
+    eeWrite(EE_NV, 0);
+    NV1 = 0;
+    IdleTime = 120; // 120 * 500ms = 60 sec.
+    eeWrite(EE_IDLETIME, IdleTime);
+  }
+
+  initIO();
+
+  setupIO(FALSE);
+
+  initEth();
+
+  NN_temp = eeRead(EE_NN) * 256;
+  NN_temp += eeRead(EE_NN + 1);
+  if (NN_temp == 0 || NN_temp == 0xFFFF)
+    NN_temp = DEFAULT_NN;
+
+  CANID = eeRead(EE_CANID);
+  if (CANID == 0 || CANID == 0xFF)
+    CANID = NN_temp & 0xFF;
+
+  cbusSetup();
+
+  LED3 = LED_ON; /* signal running system */
+
+  // Loop forever (nothing lasts forever...)
+  while (1) {
+    CANMsg cmsg;
+    BYTE rsend;
+
+    rsend = FALSE;
+    // Check for Rx
+    while (canbusRecv(&cmsg)) {
+      if (CBusEthBroadcast(&cmsg)) {
+        rsend = TRUE;
+        break;
+      }
     }
 
-    initIO();
-
-    setupIO(FALSE);
-
-    initEth();
-
-    NN_temp = eeRead(EE_NN) * 256;
-    NN_temp += eeRead(EE_NN + 1);
-    if (NN_temp == 0 || NN_temp == 0xFFFF)
-        NN_temp = DEFAULT_NN;
-
-    CANID = eeRead(EE_CANID);
-    if (CANID == 0 || CANID == 0xFF)
-        CANID = NN_temp & 0xFF;
-
-    cbusSetup();
-
-    LED3 = LED_ON; /* signal running system */
-
-    // Loop forever (nothing lasts forever...)
-    while (1) {
-        CANMsg cmsg;
-        BYTE rsend;
-
-        rsend = FALSE;
-        // Check for Rx
-        while (canbusRecv(&cmsg)) {
-            if (CBusEthBroadcast(&cmsg)) {
-                rsend = TRUE;
-                break;
-            }
-        }
-
-        if (doEthTick) {
-            doEthTick = FALSE;
-            CBusEthTick();
-        }
-
-        doEth();
-
-        if (rsend) {
-           if ( !CBusEthBroadcast(&cmsg)) {
-               LED3 = LED_ON;
-           }
-        }
-
-        if (TXERRCNT > maxtxerr) {
-            maxtxerr = TXERRCNT;
-        }
-        if (RXERRCNT > maxtxerr) {
-            maxtxerr = TXERRCNT;
-        }
-
-        if (checkFlimSwitch() && !swTrig) {
-            swTrig = 1;
-        } else if (!checkFlimSwitch() && swTrig) {
-            swTrig = 0;
-            if (Wait4NN) {
-                Wait4NN = 0;
-            } else {
-                CANMsg canmsg;
-                canmsg.b[sidh] = (CANID >> 3);
-                canmsg.b[sidl] = (CANID << 5);
-                canmsg.b[d0] = OPC_NNACK;
-                canmsg.b[d1] = NN_temp / 256;
-                canmsg.b[d2] = NN_temp % 256;
-                canmsg.b[dlc] = 3;
-                CBusEthBroadcast(&canmsg);
-                Wait4NN = 1;
-            }
-        }
+    if (doEthTick) {
+      doEthTick = FALSE;
+      CBusEthTick();
     }
+
+    doEth();
+
+    if (rsend) {
+      if (!CBusEthBroadcast(&cmsg)) {
+        LED3 = LED_ON;
+      }
+    }
+
+    if (TXERRCNT > maxtxerr) {
+      maxtxerr = TXERRCNT;
+    }
+    if (RXERRCNT > maxtxerr) {
+      maxtxerr = TXERRCNT;
+    }
+
+    if (checkFlimSwitch() && !swTrig) {
+      swTrig = 1;
+    } else if (!checkFlimSwitch() && swTrig) {
+      swTrig = 0;
+      if (Wait4NN) {
+        Wait4NN = 0;
+      } else {
+        CANMsg canmsg;
+        canmsg.b[sidh] = (CANID >> 3);
+        canmsg.b[sidl] = (CANID << 5);
+        canmsg.b[d0] = OPC_NNACK;
+        canmsg.b[d1] = NN_temp / 256;
+        canmsg.b[d2] = NN_temp % 256;
+        canmsg.b[dlc] = 3;
+        CBusEthBroadcast(&canmsg);
+        Wait4NN = 1;
+      }
+    }
+  }
 }
 
 void initIO(void) {
-    int idx = 0;
+  int idx = 0;
 
 
-    INTCON = 0;
-    EECON1 = 0;
+  INTCON = 0;
+  EECON1 = 0;
 
-    IPR3 = 0; // All IRQs low priority for now
-    IPR2 = 0;
-    IPR1 = 0;
-    PIE3 = 0;
-    PIE2 = 0;
-    PIE1 = 0;
-    INTCON3 = 0;
-    INTCON2 = 0; // Port B pullups are enabled
-    PIR3 = 0;
-    PIR2 = 0;
-    PIR1 = 0;
-    RCONbits.IPEN = 1; // enable interrupt priority levels
+  IPR3 = 0; // All IRQs low priority for now
+  IPR2 = 0;
+  IPR1 = 0;
+  PIE3 = 0;
+  PIE2 = 0;
+  PIE1 = 0;
+  INTCON3 = 0;
+  INTCON2 = 0; // Port B pullups are enabled
+  PIR3 = 0;
+  PIR2 = 0;
+  PIR1 = 0;
+  RCONbits.IPEN = 1; // enable interrupt priority levels
 
-    T1CON = 0b00110000;
-    IPR1bits.TMR1IP = 1; // high_priority
-    PIE1bits.TMR1IE = 1; // enable int
+  T1CON = 0b00110000;
+  IPR1bits.TMR1IP = 1; // high_priority
+  PIE1bits.TMR1IE = 1; // enable int
 
-    tmr1_reload = TMR1_NORMAL;
-    TMR1H = tmr1_reload / 256;
-    TMR1L = tmr1_reload % 256;
+  tmr1_reload = TMR1_NORMAL;
+  TMR1H = tmr1_reload / 256;
+  TMR1L = tmr1_reload % 256;
 
-    T1CONbits.TMR1ON = 1; // start timer
+  T1CONbits.TMR1ON = 1; // start timer
 
-    // Start slot timeout timer
-    led500ms_timer = 2; // 500ms
+  // Start slot timeout timer
+  led500ms_timer = 2; // 500ms
 
-    // Set up global interrupts
-    RCONbits.IPEN = 1; // Enable priority levels on interrupts
-    INTCONbits.GIEL = 1; // Low priority interrupts allowed
-    INTCONbits.GIEH = 1; // Interrupting enabled.
+  // Set up global interrupts
+  RCONbits.IPEN = 1; // Enable priority levels on interrupts
+  INTCONbits.GIEL = 1; // Low priority interrupts allowed
+  INTCONbits.GIEH = 1; // Interrupting enabled.
 }
