@@ -140,9 +140,9 @@ BOOL canSend(CANMsg *msg) {
   BYTE* tempPtr;
   BYTE * pb[buffers];
 
-  pb[0] = (BYTE*) & TXB0CON;
+  pb[0] = (BYTE*) & TXB2CON;
   pb[1] = (BYTE*) & TXB1CON;
-  pb[2] = (BYTE*) & TXB2CON;
+  pb[2] = (BYTE*) & TXB0CON;
 
   for (i = 0; i < buffers; i++) {
     ptr = pb[i];

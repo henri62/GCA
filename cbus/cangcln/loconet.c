@@ -362,13 +362,39 @@ void slotRead(byte i, byte slot, byte inuse) {
   LNBuffer[i].status = LN_STATUS_USED;
 }
 
+void ln2CBusAll(void) {
+  CANMsg canmsg;
+
+  canmsg.b[d0] = 0xEB;
+  canmsg.b[d1] = LNPacket[0];
+  canmsg.b[d2] = LNPacket[1];
+  canmsg.b[d3] = LNPacket[2];
+  canmsg.b[d4] = LNPacket[3];
+  canmsg.b[d5] = LNPacket[4];
+  canmsg.b[d6] = LNPacket[5];
+  canmsg.b[d7] = LNPacket[6];
+  canmsg.b[dlc] = 8;
+  canbusSend(&canmsg);
+
+  canmsg.b[d0] = 0xEC;
+  canmsg.b[d1] = LNPacket[7];
+  canmsg.b[d2] = LNPacket[8];
+  canmsg.b[d3] = LNPacket[9];
+  canmsg.b[d4] = LNPacket[10];
+  canmsg.b[d5] = LNPacket[11];
+  canmsg.b[d6] = LNPacket[12];
+  canmsg.b[d7] = LNPacket[13];
+  canmsg.b[dlc] = 8;
+  canbusSend(&canmsg);
+}
+
 void ln2CBus(void) {
   unsigned int addrL, addrH, addr;
   unsigned int valL, valH, value;
   byte dir, type, i, slot;
   CANMsg canmsg;
 
-  // ln2CBusErr();
+  ln2CBusAll();
 
   LED4_LNRX = PORT_ON;
   ledLNRXtimer = 20;

@@ -134,23 +134,20 @@ void cbusSetup(void) {
   PIE3bits.FIFOWMIE = 1; // Fifo 4 left int
 }
 
-#define buffers 3
+#define cTXbuf 3
 
 BOOL canSend(CANMsg *msg) {
 
   BYTE i;
   BYTE* ptr;
   BYTE* tempPtr;
-  BYTE * pb[buffers];
+  BYTE * pb[cTXbuf];
 
-  pb[0] = (BYTE*) & TXB0CON;
+  pb[0] = (BYTE*) & TXB2CON;
   pb[1] = (BYTE*) & TXB1CON;
-  pb[2] = (BYTE*) & TXB2CON;
+  pb[2] = (BYTE*) & TXB0CON;
 
-  msg->b[sidh] = (CANID >> 3);
-  msg->b[sidl] = (CANID << 5);
-
-  for (i = 0; i < buffers; i++) {
+  for (i = 0; i < cTXbuf; i++) {
     ptr = pb[i];
     tempPtr = ptr;
     /*
@@ -172,6 +169,9 @@ BOOL canSend(CANMsg *msg) {
 
 BOOL canbusSend(CANMsg *msg) {
   CANMsg canmsg;
+
+  msg->b[sidh] = (CANID >> 3);
+  msg->b[sidl] = (CANID << 5);
 
   while (!canSend(msg)) {
     if (COMSTATbits.TXWARN) {
