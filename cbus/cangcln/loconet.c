@@ -28,6 +28,7 @@
 #include "canbus.h"
 #include "utils.h"
 #include "cbusdefs.h"
+#include "commands.h"
 #include "lnconst.h"
 
 #pragma udata access VARS_LOCONET1
@@ -158,8 +159,6 @@ void scanLN(void) {
         txtry = 0;
       }
 
-
-
       if (inLN == 1 && mode == LN_MODE_WRITE_REQ) {
         idle++;
         if (mode == LN_MODE_WRITE && txtry > 20) {
@@ -226,15 +225,10 @@ void scanLN(void) {
           }
         }
         LNTX = LNWrittenBit;
-
       }
-
-
     }
-
     LNSCAN = PORT_OFF;
   }
-
 }
 
 void ln2CBusErr(void) {
@@ -362,42 +356,15 @@ void slotRead(byte i, byte slot, byte inuse) {
   LNBuffer[i].status = LN_STATUS_USED;
 }
 
-void ln2CBusAll(void) {
-  CANMsg canmsg;
-
-  canmsg.b[d0] = 0xEB;
-  canmsg.b[d1] = LNPacket[0];
-  canmsg.b[d2] = LNPacket[1];
-  canmsg.b[d3] = LNPacket[2];
-  canmsg.b[d4] = LNPacket[3];
-  canmsg.b[d5] = LNPacket[4];
-  canmsg.b[d6] = LNPacket[5];
-  canmsg.b[d7] = LNPacket[6];
-  canmsg.b[dlc] = 8;
-  canbusSend(&canmsg);
-
-  canmsg.b[d0] = 0xEC;
-  canmsg.b[d1] = LNPacket[7];
-  canmsg.b[d2] = LNPacket[8];
-  canmsg.b[d3] = LNPacket[9];
-  canmsg.b[d4] = LNPacket[10];
-  canmsg.b[d5] = LNPacket[11];
-  canmsg.b[d6] = LNPacket[12];
-  canmsg.b[d7] = LNPacket[13];
-  canmsg.b[dlc] = 8;
-  canbusSend(&canmsg);
-}
-
 void ln2CBus(void) {
   unsigned int addrL, addrH, addr;
   unsigned int valL, valH, value;
   byte dir, type, i, slot;
   CANMsg canmsg;
 
-  ln2CBusAll();
-
   LED4_LNRX = PORT_ON;
   ledLNRXtimer = 20;
+
   switch (LNPacket[0]) {
 
     case OPC_GPON:
@@ -1113,6 +1080,53 @@ void send2LocoNet(CANMsg *cmsg) {
 
       LNBuffer[i].data[11] = 0; // Throttle ID
       LNBuffer[i].data[12] = 0;
+      checksumLN(i);
+      LNBuffer[i].status = LN_STATUS_USED;
+    }
+      break;
+
+    case OPC_WLNCV:
+    case OPC_QLNCV:
+    {
+      byte PXCT1 = 0;
+      int j;
+
+      LNBuffer[i].len = 15;
+      LNBuffer[i].data[0] = OPC_IMM_PACKET;
+      LNBuffer[i].data[1] = 0x0F;
+      LNBuffer[i].data[2] = 0x01;
+      LNBuffer[i].data[3] = 0x05;
+      LNBuffer[i].data[4] = 0x00;
+
+      if (cmsg->b[d0] == OPC_WLNCV) {
+        LNBuffer[i].data[5] = 0x20; // UB_LNCVSET
+      } else {
+        LNBuffer[i].data[5] = 0x21; // UB_LNCVGET
+        LNBuffer[i].data[7 + 6] = 0x00;
+        if (cmsg->b[d4] == 1) {
+          LNBuffer[i].data[7 + 6] = 0x80; // UB_LNCVSTART
+        } else if (cmsg->b[d4] == 2) {
+          LNBuffer[i].data[0] = OPC_PEER_XFER;
+          LNBuffer[i].data[7 + 6] = 0x40; // UB_LNCVEND
+        }
+      }
+
+      LNBuffer[i].data[7 + 0] = (LNModule.id & 0x00FF);
+      LNBuffer[i].data[7 + 1] = (LNModule.id & 0xFF00) >> 8;
+
+      LNBuffer[i].data[7 + 2] = cmsg->b[d2];
+      LNBuffer[i].data[7 + 3] = cmsg->b[d1];
+      LNBuffer[i].data[7 + 4] = cmsg->b[d4];
+      LNBuffer[i].data[7 + 5] = cmsg->b[d3];
+
+
+      for (j = 0; j < 7; j++) {
+        if (LNBuffer[i].data[7 + j] & 0x80) {
+          PXCT1 |= (1 << j);
+          LNBuffer[i].data[7 + j] = LNBuffer[i].data[7 + j] & 0x7F;
+        }
+      }
+      LNBuffer[i].data[6] = PXCT1;
       checksumLN(i);
       LNBuffer[i].status = LN_STATUS_USED;
     }

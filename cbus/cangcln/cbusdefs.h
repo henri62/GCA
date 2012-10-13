@@ -129,6 +129,12 @@
 #define OPC_QCVS    0x84    // Read CV
 #define OPC_PCVS    0x85    // Report CV
 #define OPC_QCVO    0x86    // Read CV byte Ops mode by handle
+#define OPC_WLNID   0x87    // Set LocoNet Module ID
+#define OPC_QLNID   0x88    // Query LocoNet Module ID
+#define OPC_PLNID   0x89    // Report LocoNet Module ID
+#define OPC_WLNCV   0x8A    // Write LNCV
+#define OPC_QLNCV   0x8B    // Read LNCV
+#define OPC_PLNCV   0x8C    // Report LNCV
 
 #define OPC_ACON	0x90	// on event
 #define OPC_ACOF	0x91	// off event

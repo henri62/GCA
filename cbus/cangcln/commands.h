@@ -29,5 +29,9 @@ void doRqnpn(unsigned int);
 int thisNN(CANMsg *cmsg);
 unsigned char doEvent(int i);
 
+near extern struct {
+    ushort id;
+    ushort addr;
+} LNModule;
 
 #endif

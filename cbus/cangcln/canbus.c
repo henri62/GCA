@@ -186,9 +186,10 @@ BOOL canbusRecv(CANMsg *msg) {
   CANMsg *ptr;
 
 
-  PIE3bits.FIFOWMIE = 0;
-
   if (COMSTATbits.FIFOEMPTY) {
+
+    LED2_CBUSRX = PORT_ON;
+    ledCBUSRXtimer = 20;
 
     ptr = (CANMsg*) _PointBuffer(CANCON & 0x07);
     PIR3bits.RXBnIF = 0;
@@ -203,10 +204,6 @@ BOOL canbusRecv(CANMsg *msg) {
     // Mark that this buffer is read and empty.
     *ptr->b &= 0x7f;
 
-    LED2_CBUSRX = PORT_ON;
-    ledCBUSRXtimer = 20;
-
-    PIE3bits.FIFOWMIE = 1;
     return TRUE;
   }
 
@@ -215,7 +212,6 @@ BOOL canbusRecv(CANMsg *msg) {
     if (Fifo1IdxR >= SW_FIFO) {
       Fifo1IdxR = 0;
     }
-    PIE3bits.FIFOWMIE = 1;
     return TRUE;
   }
 
@@ -224,11 +220,9 @@ BOOL canbusRecv(CANMsg *msg) {
     if (Fifo0IdxR >= SW_FIFO) {
       Fifo0IdxR = 0;
     }
-    PIE3bits.FIFOWMIE = 1;
     return TRUE;
   }
 
-  PIE3bits.FIFOWMIE = 1;
   return FALSE;
 }
 
@@ -236,6 +230,9 @@ void canbusFifo(void) {
   CANMsg *ptr;
 
   while (COMSTATbits.FIFOEMPTY) {
+
+    LED2_CBUSRX = PORT_ON;
+    ledCBUSRXtimer = 20;
 
     ptr = (CANMsg*) _PointBuffer(CANCON & 0x07);
     PIR3bits.RXBnIF = 0;
@@ -274,8 +271,6 @@ void canbusFifo(void) {
         break;
       }
     }
-    LED2_CBUSRX = PORT_ON;
-    ledCBUSRXtimer = 20;
   }
 }
 

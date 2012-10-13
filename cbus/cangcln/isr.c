@@ -28,13 +28,13 @@
 #include "loconet.h"
 
 #pragma udata access VARS_ISR
-near unsigned short led500ms_timer;
-near unsigned short led250ms_timer;
-near unsigned short io_timer;
-near unsigned short led_timer;
-near unsigned short dim_timer;
+near volatile unsigned short led500ms_timer;
+near volatile unsigned short led250ms_timer;
+near volatile unsigned short io_timer;
+near volatile unsigned short led_timer;
+near volatile unsigned short dim_timer;
 
-//#pragma code ISR
+#pragma code ISR
 
 //
 // Interrupt Service Routine
@@ -48,6 +48,7 @@ near unsigned short dim_timer;
 #pragma interruptlow isr_low
 
 void isr_low(void) {
+
   // Timer2 interrupt handler
   if (PIR1bits.TMR2IF) {
     PIR1bits.TMR2IF = 0; // Clear interrupt flag
@@ -83,12 +84,10 @@ void isr_low(void) {
 
   if (PIR3bits.FIFOWMIF == 1) {
     PIR3bits.FIFOWMIF = 0;
-
-    PIE3bits.FIFOWMIE = 0;
     canbusFifo();
-    PIE3bits.FIFOWMIE = 1;
   }
 
   PIR3 = 0; // clear interrupts
 
 }
+

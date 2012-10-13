@@ -40,6 +40,10 @@ near ushort nn;
 near ushort addr;
 near byte nnH;
 near byte nnL;
+near struct {
+  ushort id;
+  ushort addr;
+} LNModule;
 
 #pragma romdata BOOTFLAG
 rom unsigned char bootflag = 0;
@@ -73,6 +77,21 @@ unsigned char parseCmd(CANMsg *cmsg) {
       break;
     }
 
+    case OPC_WLNID:
+      LNModule.id = cmsg->b[d1] * 256 + cmsg->b[d2];
+      LNModule.addr = cmsg->b[d3] * 256 + cmsg->b[d4];
+      break;
+
+    case OPC_QLNID:
+      canmsg.b[d0] = OPC_PLNID;
+      canmsg.b[d1] = (LNModule.id / 256) & 0xFF;
+      canmsg.b[d2] = LNModule.id & 0xFF;
+      canmsg.b[d3] = (LNModule.addr / 256) & 0xFF;
+      canmsg.b[d4] = LNModule.addr & 0xFF;
+      canmsg.b[dlc] = 5;
+      canbusSend(&canmsg);
+      break;
+
     case OPC_QNN:
       canmsg.b[d0] = OPC_PNN;
       canmsg.b[d1] = (NN_temp / 256) & 0xFF;
@@ -82,7 +101,6 @@ unsigned char parseCmd(CANMsg *cmsg) {
       canmsg.b[d5] = NV1;
       canmsg.b[dlc] = 6;
       canbusSend(&canmsg);
-      //LED2 = 1;
       txed = 1;
       break;
 
