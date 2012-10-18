@@ -84,12 +84,12 @@ unsigned char parseCmd(CANMsg *cmsg) {
 
     case OPC_QLNID:
       canmsg.b[d0] = OPC_PLNID;
-      canmsg.b[d1] = (LNModule.id / 256) & 0xFF;
-      canmsg.b[d2] = LNModule.id & 0xFF;
-      canmsg.b[d3] = (LNModule.addr / 256) & 0xFF;
-      canmsg.b[d4] = LNModule.addr & 0xFF;
+      canmsg.b[d1] = LNModule.id / 256;
+      canmsg.b[d2] = LNModule.id % 256;
+      canmsg.b[d3] = LNModule.addr / 256;
+      canmsg.b[d4] = LNModule.addr % 256;
       canmsg.b[dlc] = 5;
-      canbusSend(&canmsg);
+      canbusSendExt(&canmsg);
       break;
 
     case OPC_QNN:

@@ -99,15 +99,20 @@ void cbusSetup(void) {
   // set all remaining mask register 0 to
   // receive all valid messages
   RXM0SIDH = 0;
-  RXM1SIDL = 0;
-  RXM1SIDH = 0;
-
   RXM0EIDL = 0;
   RXM0EIDH = 0;
-  RXM1EIDL = 0;
-  RXM1EIDH = 0;
 
-  RXFCON0 = 1; // Filter 0 enabled
+  RXF1SIDL = 0b00001000; // set filter 1 to ext_frame
+  RXF1SIDH = 0b00000000; // ext identifier 0
+  RXF1EIDL = 11;         // canid 11
+  RXF1EIDH = 2;          // prio normal
+
+  RXM1SIDL = 0b11101011;
+  RXM1SIDH = 0b11111111;
+  RXM1EIDL = 0b11111111;
+  RXM1EIDH = 0b11111111;
+
+  RXFCON0 = 3; // Filter 0 and 1 enabled
   RXFCON1 = 0;
 
   RXFBCON0 = 0; //
@@ -172,6 +177,22 @@ BOOL canbusSend(CANMsg *msg) {
 
   msg->b[sidh] = (CANID >> 3);
   msg->b[sidl] = (CANID << 5);
+
+  while (!canSend(msg)) {
+    if (COMSTATbits.TXWARN) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+BOOL canbusSendExt(CANMsg *msg) {
+  CANMsg canmsg;
+
+  msg->b[sidh] = 0;
+  msg->b[sidl] = 0x08;
+  msg->b[eidh] = 0;
+  msg->b[eidl] = CANID;
 
   while (!canSend(msg)) {
     if (COMSTATbits.TXWARN) {

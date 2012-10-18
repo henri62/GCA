@@ -60,6 +60,7 @@ far byte slottimer[LN_SLOTS];
 #pragma udata VARS_LOCONET3
 far byte LNPacket[32];
 far byte LNIndex;
+far byte LNBuIndex;
 far byte LNSize;
 far byte LNTimeout;
 far byte LNByteIndex;
@@ -95,8 +96,9 @@ void scanLN(void) {
       LNSCAN = PORT_ON;
 
       if (CDBackoff > 0) {
-        CDBackoff--;
-        LNTX = PORT_OFF;
+        if (CDBackoff--) LNTX = PORT_OFF;
+        else LNTX = PORT_ON;
+
       }
     }
 
@@ -154,14 +156,13 @@ void scanLN(void) {
     if (samplepart == 0) {
       if (mode == LN_MODE_READ) {
         // End of stop bit.
-        LNTX = PORT_ON;
         dataready = FALSE;
         txtry = 0;
       }
 
       if (inLN == 1 && mode == LN_MODE_WRITE_REQ) {
         idle++;
-        if (mode == LN_MODE_WRITE && txtry > 20) {
+        if (mode == LN_MODE_WRITE_REQ && txtry > 20) {
           // Give up...
           mode = LN_MODE_READ;
           Wait4NN = TRUE;
@@ -171,7 +172,7 @@ void scanLN(void) {
           for (i = 0; i < LN_BUFFER_SIZE; i++) {
             if (LNBuffer[i].status == LN_STATUS_USED) {
               LNBuffer[i].status = LN_STATUS_PENDING;
-              LNIndex = i;
+              LNBuIndex = i;
               break;
             }
           }
@@ -198,10 +199,12 @@ void scanLN(void) {
         if (LNWrittenBit != inLN) {
           // Collision!
           CDBackoff = 20;
-          LNWrittenBit = PORT_ON;
+          LNWrittenBit = PORT_OFF;
 
           LNByteIndex = 0;
           LNBitIndex = 0;
+
+
           mode = LN_MODE_WRITE_REQ;
           Wait4NN = TRUE;
           LED6_FLIM = PORT_ON;
@@ -215,12 +218,12 @@ void scanLN(void) {
             LNWrittenBit = PORT_ON;
             LNBitIndex = 0;
             LNByteIndex++;
-            if (LNBuffer[LNIndex].len == LNByteIndex) {
-              LNBuffer[LNIndex].status = LN_STATUS_FREE;
+            if (LNBuffer[LNBuIndex].len == LNByteIndex) {
+              LNBuffer[LNBuIndex].status = LN_STATUS_FREE;
               mode = LN_MODE_READ;
             }
           } else {
-            LNWrittenBit = (LNBuffer[LNIndex].data[LNByteIndex] >> (LNBitIndex - 1)) & 0x01;
+            LNWrittenBit = (LNBuffer[LNBuIndex].data[LNByteIndex] >> (LNBitIndex - 1)) & 0x01;
             LNBitIndex++;
           }
         }
@@ -735,9 +738,52 @@ void ln2CBus(void) {
 
       }
       break;
+    case OPC_PEER_XFER:
+    {
+      byte src, dst_l, dst_h, cmd, pxct1;
+      byte cv_l, cv_h, val_l, val_h, e_flg;
+      byte j;
 
+      src = LNPacket[2];
+      dst_l = LNPacket[3];
+      dst_h = LNPacket[4];
+      cmd = LNPacket[5]; // Get/Set
+
+      if (src == 5 && cmd == 0x1F) {
+        pxct1 = LNPacket[6];
+        for (j = 0; j < 7; j++) {
+          if (pxct1 & (1 << j))
+            LNPacket[7 + j] |= 0x80;
+        }
+        addrL = LNPacket[7 + 0];
+        addrH = LNPacket[7 + 1];
+        cv_l = LNPacket[7 + 2];
+        cv_h = LNPacket[7 + 3];
+        val_l = LNPacket[7 + 4];
+        val_h = LNPacket[7 + 5];
+        e_flg = LNPacket[7 + 6];
+
+        if (cv_l == 0 && cv_h == 0) {
+          canmsg.b[d0] = OPC_PLNID;
+          canmsg.b[d1] = addrH;
+          canmsg.b[d2] = addrL;
+          canmsg.b[d3] = val_h;
+          canmsg.b[d4] = val_l;
+          canmsg.b[dlc] = 5;
+          canbusSendExt(&canmsg);
+        }
+
+        canmsg.b[d0] = OPC_PLNCV;
+        canmsg.b[d1] = cv_h;
+        canmsg.b[d2] = cv_l;
+        canmsg.b[d3] = val_h;
+        canmsg.b[d4] = val_l;
+        canmsg.b[dlc] = 5;
+        canbusSendExt(&canmsg);
+      }
+      break;
+    }
   }
-
 }
 
 byte getLNSize(byte opc) {
@@ -841,9 +887,7 @@ byte doLocoNet(void) {
         ln2CBusErr();
         return 1;
       }
-
       packetpending = TRUE;
-
     }
 
     if (LNSize == -1 && LNIndex == 1) {
@@ -873,7 +917,6 @@ byte doLocoNet(void) {
       packetpending = FALSE;
 
     }
-
     return 1;
   }
 
@@ -887,9 +930,6 @@ byte doLocoNet(void) {
       }
     }
   }
-
-
-
   return 0;
 }
 
@@ -902,6 +942,7 @@ void LocoNetWD(void) {
     if (LNTimeout > 100) {
       // Reset
       LNIndex = 0;
+      packetpending = FALSE;
     }
   }
 }
@@ -928,6 +969,7 @@ void initLN(void) {
   sample = 0;
   bitcnt = 0;
   LNIndex = 0;
+  LNBuIndex = 0;
   LNTimeout = 0;
   samplepart = 0;
   overrun = FALSE;
@@ -942,6 +984,7 @@ void send2LocoNet(CANMsg *cmsg) {
   byte slot = 0;
   byte i = 0;
   byte n = 0;
+
   for (i = 0; i < LN_BUFFER_SIZE; i++) {
     if (LNBuffer[i].status == LN_STATUS_FREE) {
       break;
@@ -1105,6 +1148,8 @@ void send2LocoNet(CANMsg *cmsg) {
         LNBuffer[i].data[7 + 6] = 0x00;
         if (cmsg->b[d4] == 1) {
           LNBuffer[i].data[7 + 6] = 0x80; // UB_LNCVSTART
+          cmsg->b[d3] = LNModule.addr / 256;
+          cmsg->b[d4] = LNModule.addr % 256;
         } else if (cmsg->b[d4] == 2) {
           LNBuffer[i].data[0] = OPC_PEER_XFER;
           LNBuffer[i].data[7 + 6] = 0x40; // UB_LNCVEND
@@ -1129,8 +1174,8 @@ void send2LocoNet(CANMsg *cmsg) {
       LNBuffer[i].data[6] = PXCT1;
       checksumLN(i);
       LNBuffer[i].status = LN_STATUS_USED;
-    }
       break;
+    }
 
     case OPC_FCLK:
       LNBuffer[i].len = 14;
@@ -1185,7 +1230,6 @@ void send2LocoNet(CANMsg *cmsg) {
         LNBuffer[i].status = LN_STATUS_USED;
       }
       break;
-
   }
 
 }
