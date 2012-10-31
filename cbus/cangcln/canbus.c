@@ -115,6 +115,9 @@ void cbusSetup(void) {
   RXFCON0 = 3; // Filter 0 and 1 enabled
   RXFCON1 = 0;
 
+  MSEL0 = 0b00000100;
+  MSEL1 = 0;
+  
   RXFBCON0 = 0; //
   RXFBCON1 = 0;
   RXFBCON2 = 0;
