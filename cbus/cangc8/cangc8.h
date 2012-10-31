@@ -26,6 +26,9 @@
 #define __CANGC8_H
 
 
+#define RESCLK   4   // 4MHZ or 8MHZ Resonator, Change also BRGCON1 in Boot3.asm
+
+
 #define MAJOR_VER 2
 #define MINOR_VER 'a'	// Minor version character
 
@@ -61,7 +64,6 @@ extern near unsigned char  Wait4NN;
 extern near unsigned char  isLearning;
 extern near unsigned char  doEV;
 extern near unsigned char  evIdx;
-extern volatile near unsigned char tmr0_reload;
 
 extern const rom unsigned char bootflag;
 

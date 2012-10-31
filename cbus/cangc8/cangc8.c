@@ -209,7 +209,6 @@ void main(void) {
 }
 
 void initTimers(void) {
-    tmr0_reload = TMR0_NORMAL;
     // Start slot timeout timer
     led500ms_timer = 500; // 500ms
     io_timer = 50; // 50ms
@@ -226,7 +225,13 @@ void initTimers(void) {
     // 8 bit counter
     T0CONbits.T08BIT = 1;
     TMR0H = 0;
+#if (RESCLK == 4)
     TMR0L = 256 - 125; // 4MHz resonator
+#elif (RESCLK == 8)
+    TMR0L = 256 - 250; // 4MHz resonator
+#else
+#error "Wrong Clock Value"
+#endif
     // timer on
     T0CONbits.TMR0ON = 1;
     // interrupt
@@ -239,8 +244,13 @@ void initTimers(void) {
     T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
     T2CONbits.T2CKPS1 = 1;
     TMR2 = 0; // 1 mS
-    //PR2  = 100; // 8MHz resonator
+#if (RESCLK == 4)
     PR2 = 50; // 4MHz resonator
+#elif (RESCLK == 8)
+    PR2  = 100; // 8MHz resonator
+#else
+#error "Wrong Clock Value"
+#endif
     PIE1bits.TMR2IE = 1;
     INTCONbits.PEIE = 1;
     IPR1bits.TMR2IP = 0; // high prio

@@ -45,7 +45,7 @@ void writeDisplays(void) {
     // Timer0 interrupt handler
     if (INTCONbits.T0IF) {
         INTCONbits.T0IF = 0; // Clear interrupt flag
-        TMR0L = 256 - 125; // 4MHz resonator
+        TMR0L = 256 - 50;
         clk ^= 1;
         LCD1_CLK = clk;
         LCD2_CLK = clk;

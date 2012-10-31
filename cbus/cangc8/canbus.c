@@ -72,8 +72,13 @@ void cbusSetup(void) {
    */
 
   // prescaler Tq = 16/Fosc
-  //BRGCON1 = 0b00000111; // 8MHz resonator
+#if (RESCLK == 4)
   BRGCON1 = 0b00000011; // 4MHz resonator
+#elif (RESCLK == 8)
+  BRGCON1 = 0b00000111; // 8MHz resonator
+#else
+#error "Wrong Clock Value"
+#endif
   // freely programmable, sample once, phase 1 = 4xTq, prop time = 7xTq
   BRGCON2 = 0b10011110;
   // Wake-up enabled, wake-up filter not used, phase 2 = 4xTq
