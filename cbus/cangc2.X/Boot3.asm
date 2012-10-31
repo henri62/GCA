@@ -92,6 +92,7 @@
 #define	CAN_RXM0EIDH	B'11111111'
 #define	CAN_RXM0EIDL	B'11111000'
 #define	CAN_BRGCON1		B'00000011'	;CAN bit rate controls. For 4 MHz
+;#define	CAN_BRGCON1		B'00000111'	;CAN bit rate controls. For 8 MHz
 #define	CAN_BRGCON2		B'10011110'
 #define	CAN_BRGCON3		B'00000011'
 #define	CAN_CIOCON		B'00100000'	;CAN I/O control	
