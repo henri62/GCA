@@ -1,0 +1,14 @@
+changes.txt for cangc1e
+
+
+Version 2.d
+        change CAN send buffer order
+        bug fix extended frames
+
+
+Version 2.a
+        Microchip TCPSTACK 5.42 
+        Improved TCPIP performance
+        ECAN receive with swFIFO
+        DHCP config added
+
