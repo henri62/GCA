@@ -310,7 +310,6 @@ void setDisplayData(int addr, byte flags, byte char0, byte char1, byte char2, by
                 DisplayA[i].byteidx = 0;
                 DisplayA[i].bitidx = 0;
                 DisplayA[i].pending = TRUE; // Send one time.
-                fclktimer = 200;
             }
         }
     }

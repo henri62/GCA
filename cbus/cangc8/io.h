@@ -43,12 +43,13 @@ void doLED250(void);
 void doLEDs(void);
 unsigned char checkFlimSwitch(void);
 void doIOTimers(void);
+void doFastClock(void);
 
 typedef struct {
     byte mins;
     byte hours;
     byte wday;
-    byte div;
+    byte rate;
     byte mday;
     byte mon;
     byte issync;

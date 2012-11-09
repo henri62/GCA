@@ -63,7 +63,6 @@ near unsigned char CANID;
 near unsigned char Latcount;
 near unsigned char NV1;
 near unsigned char led1timer;
-near unsigned short fclktimer;
 near unsigned char ioIdx;
 near unsigned char Wait4NN;
 near unsigned char isLearning;
@@ -125,7 +124,6 @@ void main(void) {
     lDelay();
 
     led1timer = 0;
-    fclktimer = 600;
     doEV = FALSE;
     evIdx = 0;
 
@@ -136,7 +134,7 @@ void main(void) {
     FastClock.mon = 1;
     FastClock.issync = FALSE;
     FastClock.synctime = 0;
-    FastClock.div = 1;
+    FastClock.rate = 0;
     FastClock.timer = 0;
     FastClock.gotfirstsync = FALSE;
 
@@ -240,20 +238,20 @@ void initTimers(void) {
 
     // ***** Timer2 *****
     T2CON = 4 << 3; // 5 post scaler
-    T2CONbits.TMR2ON = 1; // Timer2 on
     T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
     T2CONbits.T2CKPS1 = 1;
     TMR2 = 0; // 1 mS
 #if (RESCLK == 4)
-    PR2 = 50; // 4MHz resonator
+    PR2 = 48; // 50 4MHz resonator
 #elif (RESCLK == 8)
-    PR2  = 100; // 8MHz resonator
+    PR2  = 96; // 100 8MHz resonator
 #else
 #error "Wrong Clock Value"
 #endif
+    T2CONbits.TMR2ON = 1; // Timer2 on
     PIE1bits.TMR2IE = 1;
     INTCONbits.PEIE = 1;
-    IPR1bits.TMR2IP = 0; // high prio
+    IPR1bits.TMR2IP = 0; // low prio
 
 
 }

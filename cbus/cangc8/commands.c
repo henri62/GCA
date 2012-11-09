@@ -64,7 +64,7 @@ unsigned char parseCmd(CANMsg *cmsg) {
             FastClock.hours = cmsg->b[d2];
             FastClock.wday = cmsg->b[d3] & 0x0F;
             FastClock.mon = (cmsg->b[d3] & 0xF0) >> 4;
-            FastClock.div = cmsg->b[d4];
+            FastClock.rate = cmsg->b[d4];
             FastClock.mday = cmsg->b[d5];
             FastClock.temp = cmsg->b[d6];
             FastClock.issync = TRUE;
@@ -197,12 +197,10 @@ unsigned char parseCmd(CANMsg *cmsg) {
                 } else if (nvnr == 3) {
                     DisplayA[0].config = cmsg->b[d4];
                     eeWrite(EE_PORT_CONF + 0, DisplayA[0].config);
-                    fclktimer = 200;
                 } else if (nvnr == 4) {
                     DisplayA[1].config = cmsg->b[d4];
                     eeWrite(EE_PORT_CONF + 1, DisplayA[1].config);
                     setupDisplays();
-                    fclktimer = 200;
                 }
             }
             break;
