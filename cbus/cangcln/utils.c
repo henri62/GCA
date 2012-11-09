@@ -21,7 +21,7 @@
  */
 
 
-#include <p18f2480.h>
+#include <p18cxxx.h>
 #include "utils.h"
 
 //#pragma code APP
@@ -29,8 +29,9 @@
 /*
  * ee_read - read from data EEPROM
  */
-unsigned char eeRead(unsigned char addr) {
-  EEADR = addr; /* Data Memory Address to read */
+unsigned char eeRead(unsigned short addr) {
+  EEADR = addr % 256; /* Data Memory Address to read */
+  EEADRH = addr / 256;
   EECON1bits.EEPGD = 0; /* Point to DATA memory */
   EECON1bits.CFGS = 0; /* Access program FLASH or Data EEPROM memory */
   EECON1bits.RD = 1; /* EEPROM Read */
@@ -40,13 +41,14 @@ unsigned char eeRead(unsigned char addr) {
 /*
  * ee_write - write to data EEPROM
  */
-void eeWrite(unsigned char addr, unsigned char data) {
+void eeWrite(unsigned short addr, unsigned char data) {
   INTCONbits.GIE = 0; // Disable interupts
 
   EECON1bits.EEPGD = 0; // Select the EEPROM memory
   EECON1bits.CFGS = 0; // Access the EEPROM memory
   EECON1bits.WREN = 1; // Enable writing
-  EEADR = addr; // Set the address
+  EEADR = addr % 256; /* Data Memory Address to read */
+  EEADRH = addr / 256;
   EEDATA = data; // Set the data
   EECON2 = 0x55; // Write initiate sequence
   EECON2 = 0xaa; // Write initiate sequence
@@ -63,8 +65,8 @@ void eeWrite(unsigned char addr, unsigned char data) {
  *
  * Data is stored in little endian format
  */
-unsigned short eeReadShort(unsigned char addr) {
-  unsigned char byte_addr = addr;
+unsigned short eeReadShort(unsigned short addr) {
+  unsigned short byte_addr = addr;
   unsigned short ret = eeRead(byte_addr++);
   ret = ret | ((unsigned short) eeRead(byte_addr) << 8);
   return ret;
@@ -75,8 +77,8 @@ unsigned short eeReadShort(unsigned char addr) {
  *
  * Data is stored in little endian format
  */
-void eeWriteShort(unsigned char addr, unsigned short data) {
-  unsigned char byte_addr = addr;
+void eeWriteShort(unsigned short addr, unsigned short data) {
+  unsigned short byte_addr = addr;
   eeWrite(byte_addr++, (unsigned char) data);
   eeWrite(byte_addr, (unsigned char) (data >> 8));
 }

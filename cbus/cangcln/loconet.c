@@ -34,7 +34,6 @@
 #pragma udata access VARS_LOCONET1
 near byte work;
 near byte LNstatus;
-near byte sampledata;
 near byte dataready;
 near byte framingerr;
 near byte sample;
@@ -45,6 +44,8 @@ near byte samplepart;
 near byte idle;
 near byte overrun;
 near byte packetpending;
+near byte LBreak;
+near byte RBreak;
 near byte CDBackoff;
 
 
@@ -60,12 +61,14 @@ far byte slottimer[LN_SLOTS];
 #pragma udata VARS_LOCONET3
 far byte LNPacket[32];
 far byte LNIndex;
-far byte LNBuIndex;
 far byte LNSize;
 far byte LNTimeout;
 far byte LNByteIndex;
 far byte LNBitIndex;
 far byte LNWrittenBit;
+far byte LNBuf_WP;
+far byte LNBuf_RP;
+far LNFCLK LNFClk;
 
 #pragma udata VARS_LOCONET4
 far LNPACKET LNBuffer[LN_BUFFER_SIZE];
@@ -75,7 +78,7 @@ far byte LNBufferIndex;
 far LNSLOT slotmap[LN_SLOTS];
 far byte dispatchSlot;
 
-// TMR0 generates a heartbeat every 32000000/4/2/80 == 50kHz.
+// TMR0 generates a heartbeat every 32000000/4/2/60 == 66kHz.
 #pragma interrupt scanLN
 
 void scanLN(void) {
@@ -85,33 +88,41 @@ void scanLN(void) {
     byte inLN = LNRX;
 
     INTCONbits.T0IF = 0; // Clear interrupt flag
-    //        TMR0L = 195; // Reset counter with a correction of 10 cycles
-    TMR0L = 197; // Reset counter with a correction of 12 cycles
+    TMR0L = 196; // Reset counter
 
     //LNSCAN = PORT_ON;
 
     samplepart++;
     if (samplepart > 2) {
       samplepart = 0;
-      LNSCAN = PORT_ON;
 
-      if (CDBackoff > 0) {
-        if (CDBackoff--) LNTX = PORT_OFF;
+      if (LBreak > 0) {
+        if (LBreak--) LNTX = PORT_OFF;
         else LNTX = PORT_ON;
-
       }
+      if (CDBackoff > 0)
+        CDBackoff--;
     }
 
-    if (CDBackoff > 0) {
+    if (LBreak > 0) {
       return;
     }
 
-    if (mode != LN_MODE_WRITE && LNstatus == STATUS_WAITSTART && inLN == 0) {
-      idle = 0;
+    if (inLN == PORT_OFF) {
+      CDBackoff = 20;
+      if (RBreak) {
+        LNTX = PORT_ON;
+        return;
+      }
+    } else {
+      RBreak = FALSE;
+    }
+
+    if (mode != LN_MODE_WRITE && LNstatus == STATUS_WAITSTART && inLN == PORT_OFF) {
       LNstatus = STATUS_CONFSTART;
     } else if (LNstatus != STATUS_WAITSTART) {
       if (LNstatus == STATUS_CONFSTART) {
-        if (inLN == 0) {
+        if (inLN == PORT_OFF) {
           LNstatus = STATUS_IGN1;
         } else
           LNstatus = STATUS_WAITSTART;
@@ -121,8 +132,7 @@ void scanLN(void) {
         LNstatus = STATUS_SAMPLE;
       } else if (LNstatus == STATUS_SAMPLE) {
         if (bitcnt == 8) {
-          if (inLN == 1) {
-            sampledata = sample;
+          if (inLN == PORT_ON) {
             if (dataready)
               overrun = TRUE;
             dataready = TRUE;
@@ -140,6 +150,8 @@ void scanLN(void) {
             framingerr = TRUE;
             overrun = FALSE;
             dataready = FALSE;
+            RBreak = TRUE;
+            LNTX = PORT_ON; // set transmit line to idle
           }
           sample = 0;
           bitcnt = 0;
@@ -157,32 +169,28 @@ void scanLN(void) {
       if (mode == LN_MODE_READ) {
         // End of stop bit.
         dataready = FALSE;
-        txtry = 0;
       }
 
-      if (inLN == 1 && mode == LN_MODE_WRITE_REQ) {
+      if (inLN == PORT_ON && mode == LN_MODE_WRITE_REQ) {
         idle++;
         if (mode == LN_MODE_WRITE_REQ && txtry > 20) {
           // Give up...
+          txtry = 0;
+          idle = 0;
           mode = LN_MODE_READ;
           Wait4NN = TRUE;
           LED6_FLIM = PORT_ON;
         } else if (idle > (6 + (20 - txtry))) {
-          byte i;
-          for (i = 0; i < LN_BUFFER_SIZE; i++) {
-            if (LNBuffer[i].status == LN_STATUS_USED) {
-              LNBuffer[i].status = LN_STATUS_PENDING;
-              LNBuIndex = i;
-              break;
-            }
-          }
-          if (i < LN_BUFFER_SIZE) {
+          if (LNBuf_WP != LNBuf_RP) {
             // Try to send...
             txtry++;
             mode = LN_MODE_WRITE;
+            // LNBuf_RP = i;
             LNByteIndex = 0;
             LNBitIndex = 0;
-            LNWrittenBit = 1;
+            LNWrittenBit = PORT_ON;
+
+            LNTX = PORT_OFF; // start bit for first byte start here
 
             LED3_LNTX = PORT_ON;
             ledLNTXtimer = 20;
@@ -198,15 +206,14 @@ void scanLN(void) {
         // Check if the inLN equals the last send bit for collision detection.
         if (LNWrittenBit != inLN) {
           // Collision!
-          CDBackoff = 20;
+          LBreak = 15; // break for 15 bit times
           LNWrittenBit = PORT_OFF;
 
           LNByteIndex = 0;
           LNBitIndex = 0;
-
+          idle = 6;
 
           mode = LN_MODE_WRITE_REQ;
-          Wait4NN = TRUE;
           LED6_FLIM = PORT_ON;
         } else {
           if (LNBitIndex == 0) {
@@ -218,19 +225,25 @@ void scanLN(void) {
             LNWrittenBit = PORT_ON;
             LNBitIndex = 0;
             LNByteIndex++;
-            if (LNBuffer[LNBuIndex].len == LNByteIndex) {
-              LNBuffer[LNBuIndex].status = LN_STATUS_FREE;
+            if (LNBuffer[LNBuf_RP].len == LNByteIndex) {
+              // LNBuffer[LNBuf_RP].status = LN_STATUS_FREE;
+              LNBuf_RP++;
+              if (LNBuf_RP >= LN_BUFFER_SIZE) {
+                LNBuf_RP = 0;
+              }
               mode = LN_MODE_READ;
+              txtry = 0;
+              idle = 0;
             }
           } else {
-            LNWrittenBit = (LNBuffer[LNBuIndex].data[LNByteIndex] >> (LNBitIndex - 1)) & 0x01;
+            LNWrittenBit = (LNBuffer[LNBuf_RP].data[LNByteIndex] >> (LNBitIndex - 1)) & 0x01;
             LNBitIndex++;
           }
         }
         LNTX = LNWrittenBit;
       }
     }
-    LNSCAN = PORT_OFF;
+//    LNSCAN = PORT_OFF;
   }
 }
 
@@ -264,6 +277,25 @@ void ln2CBusDebug(byte idx) {
 
 }
 
+void incLNBuf_WP(void) {
+
+  LNBuf_WP++;
+  if (LNBuf_WP >= LN_BUFFER_SIZE) {
+    LNBuf_WP = 0;
+  }
+  if (LNBuf_WP == LNBuf_RP) {
+    // LNBuffer overflow
+    Wait4NN = TRUE;
+    LED6_FLIM = PORT_ON;
+
+    if (LNBuf_WP == 0) {
+      LNBuf_WP = LN_BUFFER_SIZE - 1;
+    } else {
+      LNBuf_WP--;
+    }
+  }
+}
+
 void checksumLN(byte idx) {
   byte chksum = 0xff;
   int i;
@@ -271,6 +303,7 @@ void checksumLN(byte idx) {
     chksum ^= LNBuffer[idx].data[i];
   }
   LNBuffer[idx].data[i] = chksum;
+  incLNBuf_WP();
 }
 
 void longAck(byte i, byte opc, byte rc) {
@@ -279,7 +312,15 @@ void longAck(byte i, byte opc, byte rc) {
   LNBuffer[i].data[1] = (opc & 0x7F);
   LNBuffer[i].data[2] = (rc & 0x7F);
   checksumLN(i);
-  LNBuffer[i].status = LN_STATUS_USED;
+
+  CDBackoff = 0;
+  idle = 30;
+
+  if (!CDBackoff && packetpending == FALSE && mode == LN_MODE_READ && LNstatus == STATUS_WAITSTART) {
+
+    samplepart = 2;
+    mode = LN_MODE_WRITE_REQ;
+  }
 }
 
 /*
@@ -356,13 +397,12 @@ void slotRead(byte i, byte slot, byte inuse) {
   LNBuffer[i].data[11] = (throttleid[slot] & 0x7F); // IDL
   LNBuffer[i].data[12] = (throttleid[slot] >> 7); // IDH
   checksumLN(i);
-  LNBuffer[i].status = LN_STATUS_USED;
 }
 
 void ln2CBus(void) {
   unsigned int addrL, addrH, addr;
   unsigned int valL, valH, value;
-  byte dir, type, i, slot;
+  byte dir, type, slot;
   CANMsg canmsg;
 
   LED4_LNRX = PORT_ON;
@@ -374,15 +414,43 @@ void ln2CBus(void) {
       canmsg.b[d0] = OPC_RTON;
       canmsg.b[dlc] = 1;
       canbusSend(&canmsg);
+      LNFClk.trks = 3;
       break;
 
     case OPC_GPOFF:
       canmsg.b[d0] = OPC_RTOF;
       canmsg.b[dlc] = 1;
       canbusSend(&canmsg);
+      LNFClk.trks = 0;
       break;
 
     case OPC_SL_RD_DATA:
+      break;
+
+    case OPC_RQ_SL_DATA:
+      slot = LNPacket[1];
+      if (slot == 0x7B) {
+        if (LNFClk.issync) {
+          LNBuffer[LNBuf_WP].len = 14;
+          LNBuffer[LNBuf_WP].data[0] = OPC_SL_RD_DATA;
+          LNBuffer[LNBuf_WP].data[1] = 0x0E;
+          LNBuffer[LNBuf_WP].data[2] = 0x7B;
+          LNBuffer[LNBuf_WP].data[3] = LNFClk.rate;
+
+          LNBuffer[LNBuf_WP].data[4] = 0x7F; // fractional minutes L
+          LNBuffer[LNBuf_WP].data[5] = 0x7F; // fractional minutes H
+          LNBuffer[LNBuf_WP].data[6] = (255 - (60 - LNFClk.mins))&0x7F; // 256 - minutes 43
+          LNBuffer[LNBuf_WP].data[7] = LNFClk.trks; // track status
+
+          LNBuffer[LNBuf_WP].data [8] = (256 - (24 - LNFClk.hours))&0x7F; // 256 - hours 14
+          LNBuffer[LNBuf_WP].data [9] = LNFClk.rlovr; // clock rollovers
+          LNBuffer[LNBuf_WP].data[10] = 0x7F; // clock is valid
+          LNBuffer[LNBuf_WP].data[11] = 0x7F;
+          LNBuffer[LNBuf_WP].data[12] = 0x70;
+
+          checksumLN(LNBuf_WP);
+        }
+      }
       break;
 
     case OPC_WR_SL_DATA:
@@ -392,12 +460,9 @@ void ln2CBus(void) {
         throttleid[slot] = LNPacket[12];
         throttleid[slot] <<= 7;
         throttleid[slot] += LNPacket[11];
-        for (i = 0; i < LN_BUFFER_SIZE; i++) {
-          if (LNBuffer[i].status == LN_STATUS_FREE) {
-            longAck(i, OPC_WR_SL_DATA, 0x7F); // weird return code
-            break;
-          }
-        }
+        longAck(LNBuf_WP, OPC_WR_SL_DATA, 0x7F); // weird return code
+      } else if (slot == 0x7B) {
+        /* Fast Clock Slot */
       } else if (slot == 0x7C) {
         /* Programming slot */
         unsigned short cvNumber;
@@ -434,12 +499,7 @@ void ln2CBus(void) {
             }
             if (slot == LN_SLOTS) {
               // no session
-              for (i = 0; i < LN_BUFFER_SIZE; i++) {
-                if (LNBuffer[i].status == LN_STATUS_FREE) {
-                  longAck(i, OPC_WR_SL_DATA, 0);
-                  break;
-                }
-              }
+              longAck(LNBuf_WP, OPC_WR_SL_DATA, 0);
             }
           } else {
             canmsg.b[d0] = OPC_WCVS;
@@ -462,19 +522,9 @@ void ln2CBus(void) {
           canbusSend(&canmsg);
         }
 
-        for (i = 0; i < LN_BUFFER_SIZE; i++) {
-          if (LNBuffer[i].status == LN_STATUS_FREE) {
-            longAck(i, OPC_WR_SL_DATA, 1);
-            break;
-          }
-        }
+        longAck(LNBuf_WP, OPC_WR_SL_DATA, 1);
       } else {
-        for (i = 0; i < LN_BUFFER_SIZE; i++) {
-          if (LNBuffer[i].status == LN_STATUS_FREE) {
-            longAck(i, OPC_WR_SL_DATA, 0);
-            break;
-          }
-        }
+        longAck(LNBuf_WP, OPC_WR_SL_DATA, 0);
       }
       break;
 
@@ -496,14 +546,10 @@ void ln2CBus(void) {
 
       if (slot == LN_SLOTS) {
         /*
-        for( i = 0; i < LN_BUFFER_SIZE; i++ ) {
-          if( LNBuffer[i].status == LN_STATUS_FREE) {
-            LNBuffer[i].len = 2;
-            LNBuffer[i].data[0] = OPC_GPBUSY;
-            LNBuffer[i].status = LN_STATUS_USED;
-            checksumLN(i);
-          }
-        }
+            LNBuffer[LNBuf_WP].len = 2;
+            LNBuffer[LNBuf_WP].data[0] = OPC_GPBUSY;
+            LNBuffer[LNBuf_WP].status = LN_STATUS_USED;
+            checksumLN(LNBuf_WP);
          */
         canmsg.b[d0] = OPC_RLOC;
         canmsg.b[dlc] = 3;
@@ -514,12 +560,7 @@ void ln2CBus(void) {
         }
         canbusSend(&canmsg);
       } else {
-        for (i = 0; i < LN_BUFFER_SIZE; i++) {
-          if (LNBuffer[i].status == LN_STATUS_FREE) {
-            slotRead(i, slot, FALSE);
-            break;
-          }
-        }
+        slotRead(LNBuf_WP, slot, FALSE);
       }
     }
       break;
@@ -592,12 +633,7 @@ void ln2CBus(void) {
         if (slot < LN_SLOTS && slotmap[slot].session != LN_SLOT_UNUSED) {
           throttleid[slot] = 1; // temp id
           // ack with a slot read
-          for (i = 0; i < LN_BUFFER_SIZE; i++) {
-            if (LNBuffer[i].status == LN_STATUS_FREE) {
-              slotRead(i, slot, TRUE);
-              break;
-            }
-          }
+          slotRead(LNBuf_WP, slot, TRUE);
         }
       } else if (LNPacket[1] > 0 && LNPacket[2] == 0) {
         // dispatch put
@@ -605,39 +641,19 @@ void ln2CBus(void) {
         if (dispatchSlot < LN_SLOTS && slotmap[dispatchSlot].session != LN_SLOT_UNUSED) {
           // ack with a slot read
           throttleid[slot] = 0; // temp id
-          for (i = 0; i < LN_BUFFER_SIZE; i++) {
-            if (LNBuffer[i].status == LN_STATUS_FREE) {
-              slotRead(i, dispatchSlot, FALSE);
-              break;
-            }
-          }
+          slotRead(LNBuf_WP, dispatchSlot, FALSE);
         } else {
-          for (i = 0; i < LN_BUFFER_SIZE; i++) {
-            if (LNBuffer[i].status == LN_STATUS_FREE) {
-              longAck(i, OPC_MOVE_SLOTS, 0);
-              break;
-            }
-          }
+          longAck(LNBuf_WP, OPC_MOVE_SLOTS, 0);
         }
       } else if (LNPacket[1] == 0 && LNPacket[2] == 0) {
         // dispatch get
         if (dispatchSlot != LN_SLOT_UNUSED) {
           // ack with a slot read
           throttleid[dispatchSlot] = 1; // temp id
-          for (i = 0; i < LN_BUFFER_SIZE; i++) {
-            if (LNBuffer[i].status == LN_STATUS_FREE) {
-              slotRead(i, dispatchSlot, FALSE);
-              break;
-            }
-          }
+          slotRead(LNBuf_WP, dispatchSlot, FALSE);
           dispatchSlot = LN_SLOT_UNUSED;
         } else {
-          for (i = 0; i < LN_BUFFER_SIZE; i++) {
-            if (LNBuffer[i].status == LN_STATUS_FREE) {
-              longAck(i, OPC_MOVE_SLOTS, 0);
-              break;
-            }
-          }
+          longAck(LNBuf_WP, OPC_MOVE_SLOTS, 0);
         }
       }
       break;
@@ -657,11 +673,47 @@ void ln2CBus(void) {
       canbusSend(&canmsg);
       break;
 
-    case OPC_SW_REQ:
     case OPC_SW_STATE:
       addrL = LNPacket[1] & 0x7f;
       addrH = LNPacket[2] & 0x0f;
       addr = addrL + (addrH << 7);
+
+      if (NV1 & CFG_ENABLE_SSW) {
+        if (addr < 2048) {
+          longAck(LNBuf_WP, OPC_SW_STATE, ((swState[addr / 8] >> (addr % 8)) & 0x01) ? 0x30 : 0x50); // return code for track control
+        }
+      }
+
+      if (addr == 1017 && (NV1 & CFG_ENABLE_SOD)) {
+        // SoD
+        addr == SOD;
+        canmsg.b[d0] = OPC_ASRQ;
+      } else {
+        addr *= 2;
+        addr += (LNPacket[2] & 0x20) >> 5;
+        canmsg.b[d0] = OPC_ASRQ;
+      }
+      canmsg.b[d1] = 0;
+      canmsg.b[d2] = 0;
+      canmsg.b[d3] = addr / 256;
+      canmsg.b[d4] = addr % 256;
+      canmsg.b[dlc] = 5;
+      canbusSend(&canmsg);
+      break;
+
+    case OPC_SW_REQ:
+      addrL = LNPacket[1] & 0x7f;
+      addrH = LNPacket[2] & 0x0f;
+      addr = addrL + (addrH << 7);
+      if (addr < 2048) {
+        if (LNPacket[2] & 0x10) {
+          if (LNPacket[2] & 0x20) {
+            swState[addr / 8] |= (1 << (addr % 8));
+          } else {
+            swState[addr / 8] &= ~(1 << (addr % 8));
+          }
+        }
+      }
       if (addr == 1017 && (NV1 & CFG_ENABLE_SOD)) {
         // SoD
         addr == SOD;
@@ -921,14 +973,11 @@ byte doLocoNet(void) {
   }
 
 
-  if (packetpending == FALSE && mode == LN_MODE_READ && LNstatus == STATUS_WAITSTART) {
-    byte i;
-    for (i = 0; i < LN_BUFFER_SIZE; i++) {
-      if (LNBuffer[i].status == LN_STATUS_USED) {
-        mode = LN_MODE_WRITE_REQ;
-        break;
-      }
-    }
+  if (!CDBackoff && packetpending == FALSE && mode == LN_MODE_READ && LNstatus == STATUS_WAITSTART) {
+
+    if (LNBuf_WP != LNBuf_RP)
+      mode = LN_MODE_WRITE_REQ;
+
   }
   return 0;
 }
@@ -949,9 +998,7 @@ void LocoNetWD(void) {
 
 void initLN(void) {
   byte i;
-  for (i = 0; i < LN_BUFFER_SIZE; i++) {
-    LNBuffer[i].status = LN_STATUS_FREE;
-  }
+
   for (i = 0; i < LN_SLOTS; i++) {
     slotmap[i].session = LN_SLOT_UNUSED;
     throttleid[i] = 0;
@@ -960,7 +1007,6 @@ void initLN(void) {
   dispatchSlot = LN_SLOT_UNUSED;
 
   LNstatus = STATUS_WAITSTART;
-  sampledata = 0;
   dataready = FALSE;
   SampleFlag = 0;
   readP = 0;
@@ -969,14 +1015,43 @@ void initLN(void) {
   sample = 0;
   bitcnt = 0;
   LNIndex = 0;
-  LNBuIndex = 0;
   LNTimeout = 0;
   samplepart = 0;
   overrun = FALSE;
   framingerr = FALSE;
   packetpending = FALSE;
   mode = LN_MODE_READ;
-  CDBackoff = 0;
+  LBreak = 0;
+  RBreak = 0;
+  CDBackoff = 20;
+  txtry = 0;
+  idle = 0;
+
+  LNFClk.hours = 0;
+  LNFClk.mins = 0;
+  LNFClk.rate = 0;
+  LNFClk.rlovr = 0;
+  LNFClk.wday = 255;
+  LNFClk.trks = 3;
+  LNFClk.issync = FALSE;
+  LNFClk.sync = FALSE;
+
+
+  LNBuf_WP = 0;
+  LNBuf_RP = 0;
+
+}
+
+void SaveSwState(void) {
+  int i;
+
+  if (NV1 & CFG_ENABLE_SSW) {
+    for (i = 0; i < 256; i++) {
+      if (swState[i] != eeRead(EE_SWSTATE + i)) {
+        eeWrite(EE_SWSTATE + i, swState[i]);
+      }
+    }
+  }
 }
 
 void send2LocoNet(CANMsg *cmsg) {
@@ -985,29 +1060,14 @@ void send2LocoNet(CANMsg *cmsg) {
   byte i = 0;
   byte n = 0;
 
-  for (i = 0; i < LN_BUFFER_SIZE; i++) {
-    if (LNBuffer[i].status == LN_STATUS_FREE) {
-      break;
-    }
-  }
-
-  if (i >= LN_BUFFER_SIZE) {
-    // Buffer overflow...
-    LED6_FLIM = PORT_ON;
-    return;
-  }
-
-  if (mode != LN_MODE_WRITE_REQ) {
-    idle = 0; // reset idle timer
-    txtry = 0;
-  }
+  i = LNBuf_WP;
 
   switch (cmsg->b[d0]) {
     case OPC_RTON:
       LNBuffer[i].len = 2;
       LNBuffer[i].data[0] = OPC_GPON;
       checksumLN(i);
-      LNBuffer[i].status = LN_STATUS_USED;
+      LNFClk.trks = 3;
       //ln2CBusDebug(i);
       break;
 
@@ -1015,7 +1075,8 @@ void send2LocoNet(CANMsg *cmsg) {
       LNBuffer[i].len = 2;
       LNBuffer[i].data[0] = OPC_GPOFF;
       checksumLN(i);
-      LNBuffer[i].status = LN_STATUS_USED;
+      LNFClk.trks = 3;
+      SaveSwState();
       //ln2CBusDebug(i);
       break;
 
@@ -1032,7 +1093,6 @@ void send2LocoNet(CANMsg *cmsg) {
           LNBuffer[i].data[1] = i;
           LNBuffer[i].data[2] = 0;
           checksumLN(i);
-          LNBuffer[i].status = LN_STATUS_USED;
           //ln2CBusDebug(i);
           break;
         }
@@ -1045,18 +1105,18 @@ void send2LocoNet(CANMsg *cmsg) {
       addr += cmsg->b[d3];
       addr &= 0x3FFF;
       slot = LN_SLOTS;
-      for (i = 1; i < LN_SLOTS; i++) {
-        if (slotmap[i].session == cmsg->b[d1]) {
-          slot = i;
+      for (n = 1; n < LN_SLOTS; n++) {
+        if (slotmap[n].session == cmsg->b[d1]) {
+          slot = n;
           break;
         }
       }
 
       if (slot == LN_SLOTS) {
         // new session
-        for (i = 1; i < LN_SLOTS; i++) {
-          if (slotmap[i].session == LN_SLOT_UNUSED) {
-            slot = i;
+        for (n = 1; n < LN_SLOTS; n++) {
+          if (slotmap[n].session == LN_SLOT_UNUSED) {
+            slot = n;
             slotmap[slot].session = cmsg->b[d1];
             slottimer[slot] = 0;
             break;
@@ -1081,7 +1141,6 @@ void send2LocoNet(CANMsg *cmsg) {
       LNBuffer[i].len = 2;
       LNBuffer[i].data[0] = OPC_IDLE;
       checksumLN(i);
-      LNBuffer[i].status = LN_STATUS_USED;
       break;
 
     case OPC_ASRQ:
@@ -1094,7 +1153,6 @@ void send2LocoNet(CANMsg *cmsg) {
         LNBuffer[i].data[1] = 1017 & 0x7F;
         LNBuffer[i].data[2] = (1017 / 128)&0x0F;
         checksumLN(i);
-        LNBuffer[i].status = LN_STATUS_USED;
       }
       break;
 
@@ -1124,7 +1182,6 @@ void send2LocoNet(CANMsg *cmsg) {
       LNBuffer[i].data[11] = 0; // Throttle ID
       LNBuffer[i].data[12] = 0;
       checksumLN(i);
-      LNBuffer[i].status = LN_STATUS_USED;
     }
       break;
 
@@ -1173,29 +1230,24 @@ void send2LocoNet(CANMsg *cmsg) {
       }
       LNBuffer[i].data[6] = PXCT1;
       checksumLN(i);
-      LNBuffer[i].status = LN_STATUS_USED;
       break;
     }
 
     case OPC_FCLK:
-      LNBuffer[i].len = 14;
-      LNBuffer[i].data[0] = OPC_WR_SL_DATA;
-      LNBuffer[i].data[1] = 0x0E;
-      LNBuffer[i].data[2] = 0x7B;
-      LNBuffer[i].data[3] = cmsg->b[d4];
 
-      LNBuffer[i].data[4] = 0x7F; // fractional minutes L
-      LNBuffer[i].data[5] = 0x7F; // fractional minutes H
-      LNBuffer[i].data[6] = (255 - (60 - cmsg->b[d1]))&0x7F; // 256 - minutes 43
-      LNBuffer[i].data[7] = 0; // track status
+      if (LNFClk.wday != (cmsg->b[d3] & 0x0F)) {
+        LNFClk.wday = cmsg->b[d3] & 0x0F;
+        LNFClk.rlovr++;
+      }
+      LNFClk.hours = cmsg->b[d2];
+      LNFClk.mins = cmsg->b[d1];
+      LNFClk.sync = TRUE;
+      LNFClk.issync = TRUE;
+      if (LNFClk.rate != cmsg->b[d4]) {
+        LNFClk.rate = cmsg->b[d4];
+        doFastClock();
+      }
 
-      LNBuffer[i].data [8] = (256 - (24 - cmsg->b[d2]))&0x7F; // 256 - hours 14
-      LNBuffer[i].data [9] = 0; // clock rollovers
-      LNBuffer[i].data[10] = 0x70;
-      LNBuffer[i].data[11] = 0x7F;
-      LNBuffer[i].data[12] = 0x70;
-      checksumLN(i);
-      LNBuffer[i].status = LN_STATUS_USED;
       break;
 
     case OPC_ACON:
@@ -1208,6 +1260,17 @@ void send2LocoNet(CANMsg *cmsg) {
         // Switch
         byte dir = addr % 2;
         addr = addr / 2;
+
+        if (addr < 2048) {
+          if (cmsg->b[d0] == OPC_ACON || cmsg->b[d0] == OPC_ASON) {
+            if (dir) {
+              swState[addr / 8] |= (1 << (addr % 8));
+            } else {
+              swState[addr / 8] &= ~(1 << (addr % 8));
+            }
+          }
+        }
+
         LNBuffer[i].len = 4;
         LNBuffer[i].data[0] = OPC_SW_REQ;
         LNBuffer[i].data[1] = addr & 0x7F;
@@ -1215,7 +1278,6 @@ void send2LocoNet(CANMsg *cmsg) {
         LNBuffer[i].data[2] += ((cmsg->b[d0] & 0x01) ? 0x00 : 0x10);
         LNBuffer[i].data[2] += (dir ? 0x20 : 0x00);
         checksumLN(i);
-        LNBuffer[i].status = LN_STATUS_USED;
       } else if ((NV1 & CFG_ENABLE_FB2LN) && addr >= FBStart && addr <= FBEnd) {
         // Sensor
         byte dir = addr % 2;
@@ -1227,7 +1289,6 @@ void send2LocoNet(CANMsg *cmsg) {
         LNBuffer[i].data[2] += ((cmsg->b[d0] & 0x01) ? 0x00 : 0x10);
         LNBuffer[i].data[2] += (dir ? 0x20 : 0x00);
         checksumLN(i);
-        LNBuffer[i].status = LN_STATUS_USED;
       }
       break;
   }
@@ -1241,6 +1302,34 @@ void doSlotTimers(void) {
       slottimer[i] = 0;
     else
       slottimer[i]++;
+  }
+}
+
+void doFastClock(void) {
+
+  if (LNFClk.sync) {
+    LNFClk.sync = FALSE;
+
+    LNBuffer[LNBuf_WP].len = 14;
+    LNBuffer[LNBuf_WP].data[0] = OPC_WR_SL_DATA;
+    LNBuffer[LNBuf_WP].data[1] = 0x0E;
+    LNBuffer[LNBuf_WP].data[2] = 0x7B;
+    LNBuffer[LNBuf_WP].data[3] = LNFClk.rate;
+
+    LNBuffer[LNBuf_WP].data[4] = 0x7F; // fractional minutes L
+    LNBuffer[LNBuf_WP].data[5] = 0x7F; // fractional minutes H
+    LNBuffer[LNBuf_WP].data[6] = (255 - (60 - LNFClk.mins))&0x7F; // 256 - minutes 43
+    LNBuffer[LNBuf_WP].data[7] = LNFClk.trks; // track status
+
+    LNBuffer[LNBuf_WP].data [8] = (256 - (24 - LNFClk.hours))&0x7F; // 256 - hours 14
+    LNBuffer[LNBuf_WP].data [9] = LNFClk.rlovr; // clock rollovers
+    LNBuffer[LNBuf_WP].data[10] = 0x7F; // clock is valid
+    LNBuffer[LNBuf_WP].data[11] = 0x7F;
+    LNBuffer[LNBuf_WP].data[12] = 0x70;
+
+    checksumLN(LNBuf_WP);
+  } else {
+    LNFClk.issync = FALSE;
   }
 }
 

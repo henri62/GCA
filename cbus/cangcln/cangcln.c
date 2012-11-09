@@ -62,13 +62,14 @@ near unsigned char doSOD;
 near unsigned char doEV;
 near unsigned char evIdx;
 
-volatile near unsigned char tmr0_reload;
-
 #pragma udata VARS_MAIN_2
 far unsigned short SWStart;
 far unsigned short SWEnd;
 far unsigned short FBStart;
 far unsigned short FBEnd;
+
+#pragma udata VARS_SW
+byte swState[256];
 
 /*
   Para 1 Manufacturer number as allocated by the NMRA
@@ -167,6 +168,13 @@ void main(void) {
   if (FBEnd == 0 || FBEnd == 0xFFFF)
     FBEnd = 2048;
 
+  {
+    int i;
+    for (i = 0; i < 256; i++) {
+      swState[i] = eeRead(EE_SWSTATE + i);
+    }
+  }
+
   LED5_RUN = PORT_ON; /* signal running system */
 
   // Loop forever (nothing lasts forever...)
@@ -216,21 +224,18 @@ void main(void) {
         Wait4NN = 1;
       }
     }
-
-
   }
-
 }
 
 void initTimers(void) {
-  tmr0_reload = TMR0_NORMAL;
   // Start slot timeout timer
   led500ms_timer = 500; // 500ms
+  fclk90s_timer = 180;
   io_timer = 50; // 50ms
   led_timer = 4; // 4ms
 
   // ***** Timer0 *****
-  // 32000000/4/2/80 == 50kHz.
+  // 32000000/4/2/60 == 66kHz.
   T0CON = 0;
   // pre scaler 2:
   T0CONbits.PSA = 0;
@@ -240,7 +245,7 @@ void initTimers(void) {
   // 8 bit counter
   T0CONbits.T08BIT = 1;
   TMR0H = 0;
-  TMR0L = 256 - 80;
+  TMR0L = 256 - 60;
   // timer on
   T0CONbits.TMR0ON = 1;
   // interrupt
@@ -252,11 +257,12 @@ void initTimers(void) {
   T2CONbits.TMR2ON = 1; // Timer2 on
   T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
   T2CONbits.T2CKPS1 = 1;
-  TMR2 = 0; // 1 mS
-  PR2 = 100;
+  TMR2 = 0;
+  PR2 = 95; // 1 ms int
+
   PIE1bits.TMR2IE = 1;
   INTCONbits.PEIE = 1;
-  IPR1bits.TMR2IP = 0; // high prio
+  IPR1bits.TMR2IP = 0;  // low prio
 
 }
 

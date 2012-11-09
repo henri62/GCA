@@ -35,6 +35,7 @@ extern unsigned short sum;
 extern unsigned short ave;
 
 extern volatile unsigned near short led500ms_timer;
+extern volatile unsigned near short fclk90s_timer;
 extern volatile unsigned near short io_timer;
 extern volatile unsigned near short led_timer;
 

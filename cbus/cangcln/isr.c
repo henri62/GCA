@@ -28,11 +28,13 @@
 #include "loconet.h"
 
 #pragma udata access VARS_ISR
+near volatile unsigned short fclk90s_timer;
 near volatile unsigned short led500ms_timer;
 near volatile unsigned short led250ms_timer;
 near volatile unsigned short io_timer;
 near volatile unsigned short led_timer;
 near volatile unsigned short dim_timer;
+near volatile unsigned short ssw_timer;
 
 #pragma code ISR
 
@@ -49,10 +51,15 @@ near volatile unsigned short dim_timer;
 
 void isr_low(void) {
 
+  if (PIR3bits.FIFOWMIF == 1) {
+    PIR3bits.FIFOWMIF = 0;
+    canbusFifo();
+  }
+
   // Timer2 interrupt handler
   if (PIR1bits.TMR2IF) {
     PIR1bits.TMR2IF = 0; // Clear interrupt flag
-    TMR2 = 0; // reset counter
+    //    TMR2 = 0; // reset counter
 
     LocoNetWD();
 
@@ -65,6 +72,9 @@ void isr_low(void) {
     // I/O timeout - 50ms
     if (--io_timer == 0) {
       io_timer = 50;
+      if (--ssw_timer == 0) {
+        SaveSwState();
+      }
     }
 
     // Timer 200ms
@@ -78,16 +88,12 @@ void isr_low(void) {
       led500ms_timer = 500;
       doLEDs();
       doSlotTimers();
+      if ((NV1 & CFG_ENABLE_FCLK) && --fclk90s_timer == 0) {
+        fclk90s_timer = 180;
+        doFastClock();
+      }
     }
-
+    PIR3 = 0; // clear interrupts
   }
-
-  if (PIR3bits.FIFOWMIF == 1) {
-    PIR3bits.FIFOWMIF = 0;
-    canbusFifo();
-  }
-
-  PIR3 = 0; // clear interrupts
 
 }
-

@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 2     // zero is developer version
-#define MINOR_VER 'b'	// Minor version character
+#define MINOR_VER 'c'	// Minor version character
 
 #define EVT_NUM 5
 #define EVperEVT 0
@@ -44,6 +44,9 @@
 #define EE_FBSTART EE_SWEND + 2  // 2 short event port 1
 #define EE_FBEND EE_FBSTART + 2  // 2 short event port 1
 
+#define EE_SWSTATE  0x0200
+#define EE_BOOT 0x03FF
+
 // values
 #define MAGIC 93
 
@@ -52,6 +55,8 @@
 #define CFG_READONLY 0x01
 #define CFG_ENABLE_FB2LN 0x02
 #define CFG_ENABLE_SOD 0x04
+#define CFG_ENABLE_SSW 0x08
+#define CFG_ENABLE_FCLK 0x10
 
 
 
@@ -74,7 +79,7 @@ extern far unsigned short SWStart;
 extern far unsigned short SWEnd;
 extern far unsigned short FBStart;
 extern far unsigned short FBEnd;
-extern volatile near unsigned char tmr0_reload;
 
+extern byte swState[256];
 
 #endif

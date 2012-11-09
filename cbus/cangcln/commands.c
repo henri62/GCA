@@ -40,6 +40,7 @@ near ushort nn;
 near ushort addr;
 near byte nnH;
 near byte nnL;
+
 near struct {
   ushort id;
   ushort addr;
@@ -80,6 +81,8 @@ unsigned char parseCmd(CANMsg *cmsg) {
     case OPC_WLNID:
       LNModule.id = cmsg->b[d1] * 256 + cmsg->b[d2];
       LNModule.addr = cmsg->b[d3] * 256 + cmsg->b[d4];
+      if (LNModule.id > 9999)
+        LNModule.id /= 10;
       break;
 
     case OPC_QLNID:
@@ -143,7 +146,7 @@ unsigned char parseCmd(CANMsg *cmsg) {
     case OPC_BOOT:
       // Enter bootloader mode if NN matches
       if (thisNN(cmsg) == 1) {
-        eeWrite((unsigned char) (&bootflag), 0xFF);
+        eeWrite(EE_BOOT, 0xFF);
         Reset();
       }
       break;
@@ -235,9 +238,8 @@ unsigned char parseCmd(CANMsg *cmsg) {
       }
       break;
 
-
-
-    default: break;
+    default:
+      break;
   }
 
   return txed;

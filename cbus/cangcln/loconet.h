@@ -34,11 +34,12 @@ void LocoNetWD(void);
 void send2LocoNet(CANMsg *cmsg);
 void doSlotTimers(void);
 void doSlotPing(void);
+void doFastClock(void);
+void SaveSwState(void);
 
 typedef struct {
-    byte status;
-    byte data[16];
     byte len;
+    byte data[16];
 } LNPACKET;
 
 typedef struct {
@@ -47,6 +48,17 @@ typedef struct {
     byte speed; // dir = 0x80 & speed
     byte f[3];
 } LNSLOT;
+
+typedef struct {
+    byte rate;
+    byte hours;
+    byte mins;
+    byte wday;
+    byte trks;
+    byte rlovr;
+    byte sync;
+    byte issync;
+} LNFCLK;
 
 #define LN_BUFFER_SIZE 14
 #define LN_SLOTS 32
