@@ -105,195 +105,203 @@ void initTimers(void);
 #pragma code high_vector=0x208
 
 void HIGH_INT_VECT(void) {
-    _asm GOTO writeDisplays _endasm
+  _asm GOTO writeDisplays _endasm
 }
 
 #pragma code low_vector=0x218
 
 void LOW_INT_VECT(void) {
-    _asm GOTO isr_low _endasm
+  _asm GOTO isr_low _endasm
 }
 
 
 #pragma code APP
 
 void main(void) {
-    byte i;
-    byte l3 = 1;
-    unsigned char swTrig = 0;
+  byte i;
+  byte l3 = 1;
+  unsigned char swTrig = 0;
 
-    lDelay();
+  lDelay();
 
-    led1timer = 0;
-    doEV = FALSE;
-    doFC = FALSE;
-    evIdx = 0;
+  led1timer = 0;
+  doEV = FALSE;
+  doFC = FALSE;
+  evIdx = 0;
 
+  ee2fc();
+
+  if (FastClock.mins > 59)
     FastClock.mins = 0;
+  if (FastClock.hours > 23)
     FastClock.hours = 10;
+  if (FastClock.temp > 100)
     FastClock.temp = 21;
+  if (FastClock.mday > 30)
     FastClock.mday = 1;
+  if (FastClock.mon > 12)
     FastClock.mon = 1;
-    FastClock.issync = FALSE;
-    FastClock.synctime = 0;
-    FastClock.rate = 0;
-    FastClock.timer = 0;
-    FastClock.gotfirstsync = FALSE;
+  if (FastClock.rate > 100)
+    FastClock.rate = 1;
 
-    Wait4NN = FALSE;
-    isLearning = FALSE;
+  FastClock.issync = FALSE;
+  FastClock.synctime = 0;
+  FastClock.timer = 0;
 
-    NV1 = eeRead(EE_NV);
+  Wait4NN = FALSE;
+  isLearning = FALSE;
 
-    initIO();
-    initDisplays();
-    initTimers();
+  NV1 = eeRead(EE_NV);
 
-    NN_temp = eeRead(EE_NN) * 256;
-    NN_temp += eeRead(EE_NN + 1);
-    if (NN_temp == 0 || NN_temp == 0xFFFF)
-        NN_temp = DEFAULT_NN;
+  initIO();
+  initDisplays();
+  initTimers();
 
-    CANID = eeRead(EE_CANID);
-    if (CANID == 0 || CANID == 0xFF)
-        CANID = NN_temp & 0xFF;
-    initCAN();
+  NN_temp = eeRead(EE_NN) * 256;
+  NN_temp += eeRead(EE_NN + 1);
+  if (NN_temp == 0 || NN_temp == 0xFFFF)
+    NN_temp = DEFAULT_NN;
 
-    delay();
+  CANID = eeRead(EE_CANID);
+  if (CANID == 0 || CANID == 0xFF)
+    CANID = NN_temp & 0xFF;
+  initCAN();
 
-    setupDisplays();
+  delay();
 
-    LED3 = PORT_ON; /* signal running system */
+  setupDisplays();
+
+  LED3 = PORT_ON; /* signal running system */
 
 
-    // Loop forever (nothing lasts forever...)
-    while (1) {
-        CANMsg canmsg;
-        unsigned char txed = 0;
-        l3 ^= 1;
+  // Loop forever (nothing lasts forever...)
+  while (1) {
+    CANMsg canmsg;
+    unsigned char txed = 0;
+    l3 ^= 1;
 
-        // Check for Rx packet and setup pointer to it
-        while (canbusRecv(&canmsg)) {
-            // Decode the new command
-            txed = parseCmd(&canmsg);
-        }
-
-        if (doEV && l3) {
-            if (doPortEvent(evIdx)) {
-                evIdx++;
-                if (evIdx >= MAXDISPLAYS) {
-                    evIdx = 0;
-                    doEV = 0;
-                }
-            }
-        }
-
-        if (doFC) {
-          doFC = FALSE;
-          doFastClock();
-        }
-
-        if (checkFlimSwitch() && !swTrig) {
-            isLearning = FALSE;
-            swTrig = 1;
-        } else if (!checkFlimSwitch() && swTrig) {
-            swTrig = 0;
-            if (Wait4NN) {
-                Wait4NN = 0;
-            } else {
-                canmsg.b[d0] = OPC_NNACK;
-                canmsg.b[d1] = NN_temp / 256;
-                canmsg.b[d2] = NN_temp % 256;
-                canmsg.b[dlc] = 3;
-                canbusSend(&canmsg);
-                Wait4NN = 1;
-            }
-        }
+    // Check for Rx packet and setup pointer to it
+    while (canbusRecv(&canmsg)) {
+      // Decode the new command
+      txed = parseCmd(&canmsg);
     }
+
+    if (doEV && l3) {
+      if (doPortEvent(evIdx)) {
+        evIdx++;
+        if (evIdx >= MAXDISPLAYS) {
+          evIdx = 0;
+          doEV = 0;
+        }
+      }
+    }
+
+    if (doFC) {
+      doFC = FALSE;
+      doFastClock();
+    }
+
+    if (checkFlimSwitch() && !swTrig) {
+      isLearning = FALSE;
+      swTrig = 1;
+    } else if (!checkFlimSwitch() && swTrig) {
+      swTrig = 0;
+      if (Wait4NN) {
+        Wait4NN = 0;
+      } else {
+        canmsg.b[d0] = OPC_NNACK;
+        canmsg.b[d1] = NN_temp / 256;
+        canmsg.b[d2] = NN_temp % 256;
+        canmsg.b[dlc] = 3;
+        canbusSend(&canmsg);
+        Wait4NN = 1;
+      }
+    }
+  }
 }
 
 void initTimers(void) {
-    // Start slot timeout timer
-    led500ms_timer = 500; // 500ms
-    io_timer = 50; // 50ms
-    led_timer = 4; // 4ms
+  // Start slot timeout timer
+  led500ms_timer = 500; // 500ms
+  io_timer = 50; // 50ms
+  led_timer = 4; // 4ms
 
-    // ***** Timer0 *****
-    // 16000000/4/32/125 == 1ms.
-    T0CON = 0;
-    // pre scaler 2:
-    T0CONbits.PSA = 0;
-    T0CONbits.T0PS0 = 0;
-    T0CONbits.T0PS1 = 0;
-    T0CONbits.T0PS2 = 1;
-    // 8 bit counter
-    T0CONbits.T08BIT = 1;
-    TMR0H = 0;
+  // ***** Timer0 *****
+  // 16000000/4/32/125 == 1ms.
+  T0CON = 0;
+  // pre scaler 2:
+  T0CONbits.PSA = 0;
+  T0CONbits.T0PS0 = 0;
+  T0CONbits.T0PS1 = 0;
+  T0CONbits.T0PS2 = 1;
+  // 8 bit counter
+  T0CONbits.T08BIT = 1;
+  TMR0H = 0;
 #if (RESCLK == 4)
-    TMR0L = 256 - 125; // 4MHz resonator
+  TMR0L = 256 - 125; // 4MHz resonator
 #elif (RESCLK == 8)
-    TMR0L = 256 - 250; // 4MHz resonator
+  TMR0L = 256 - 250; // 4MHz resonator
 #else
 #error "Wrong Clock Value"
 #endif
-    // timer on
-    T0CONbits.TMR0ON = 1;
-    // interrupt
-    INTCONbits.TMR0IE = 1;
-    INTCON2bits.TMR0IP = 1;
+  // timer on
+  T0CONbits.TMR0ON = 1;
+  // interrupt
+  INTCONbits.TMR0IE = 1;
+  INTCON2bits.TMR0IP = 1;
 
-    // ***** Timer2 *****
-    T2CON = 4 << 3; // 5 post scaler
-    T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
-    T2CONbits.T2CKPS1 = 1;
-    TMR2 = 0; // 1 mS
+  // ***** Timer2 *****
+  T2CON = 4 << 3; // 5 post scaler
+  T2CONbits.T2CKPS0 = 0; // 16 pre scaler = 8MHz / 16
+  T2CONbits.T2CKPS1 = 1;
+  TMR2 = 0; // 1 mS
 #if (RESCLK == 4)
-    PR2 = 48; // 50 4MHz resonator
+  PR2 = 48; // 50 4MHz resonator
 #elif (RESCLK == 8)
-    PR2  = 96; // 100 8MHz resonator
+  PR2 = 96; // 100 8MHz resonator
 #else
 #error "Wrong Clock Value"
 #endif
-    T2CONbits.TMR2ON = 1; // Timer2 on
-    PIE1bits.TMR2IE = 1;
-    INTCONbits.PEIE = 1;
-    IPR1bits.TMR2IP = 0; // low prio
+  T2CONbits.TMR2ON = 1; // Timer2 on
+  PIE1bits.TMR2IE = 1;
+  INTCONbits.PEIE = 1;
+  IPR1bits.TMR2IP = 0; // low prio
 
 
 }
 
 void initIO(void) {
-    int idx = 0;
+  int idx = 0;
 
-    INTCON = 0;
-    EECON1 = 0;
+  INTCON = 0;
+  EECON1 = 0;
 
-    IPR3 = 0; // All IRQs low priority for now
-    IPR2 = 0;
-    IPR1 = 0;
-    PIE3 = 0;
-    PIE2 = 0;
-    PIE1 = 0;
-    INTCON3 = 0;
-    INTCON2 = 0; // Port B pullups are enabled
-    INTCON = 0;
-    PIR3 = 0;
-    PIR2 = 0;
-    PIR1 = 0;
+  IPR3 = 0; // All IRQs low priority for now
+  IPR2 = 0;
+  IPR1 = 0;
+  PIE3 = 0;
+  PIE2 = 0;
+  PIE1 = 0;
+  INTCON3 = 0;
+  INTCON2 = 0; // Port B pullups are enabled
+  INTCON = 0;
+  PIR3 = 0;
+  PIR2 = 0;
+  PIR1 = 0;
 
 
-    // Set up global interrupts
-    RCONbits.IPEN = 1; // Enable priority levels on interrupts
-    INTCONbits.GIE = 1; // Interrupting enabled.
-    INTCONbits.GIEL = 1; // Low priority interrupts allowed
-    INTCONbits.GIEH = 1; // High priority interrupts allowed
+  // Set up global interrupts
+  RCONbits.IPEN = 1; // Enable priority levels on interrupts
+  INTCONbits.GIE = 1; // Interrupting enabled.
+  INTCONbits.GIEL = 1; // Low priority interrupts allowed
+  INTCONbits.GIEH = 1; // High priority interrupts allowed
 
-    setupIO(FALSE);
+  setupIO(FALSE);
 }
 
 void initCAN(void) {
 
-    cbusSetup();
+  cbusSetup();
 }
 
 

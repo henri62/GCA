@@ -55,11 +55,11 @@ typedef struct {
     byte rate;
     byte mday;
     byte mon;
+    char temp;
     byte issync;
     int synctime;
-    byte gotfirstsync;
-    char temp;
     ushort timer;
+    byte run;
 } Clock;
 
 extern ram Clock FastClock;

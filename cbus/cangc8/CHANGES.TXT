@@ -1,0 +1,8 @@
+
+
+cangc8:         v2.b
+  new feature
+    NV1 bit2 (0x04) enable LN FastClock Master in case of missing other master
+    NV1 bit3 (0x08) save FastClock to EEPROM at Track-Power off
+
+

@@ -26,11 +26,11 @@
 #define __CANGC8_H
 
 
-#define RESCLK   8   // 4MHZ or 8MHZ Resonator, Change also BRGCON1 in Boot3.asm
+#define RESCLK   4   // 4MHZ or 8MHZ Resonator, Change also BRGCON1 in Boot3.asm
 
 
 #define MAJOR_VER 2
-#define MINOR_VER 'a'	// Minor version character
+#define MINOR_VER 'b'	// Minor version character
 
 #define EVT_NUM 2
 #define EVperEVT 0
@@ -43,6 +43,8 @@
 #define EE_CANID EE_NN + 2  // 1 byte CANID
 #define EE_PORT_ADDR EE_CANID + 1  // 2 short event port 1
 #define EE_PORT_CONF EE_PORT_ADDR + 4 // 2 bytes display configuration
+
+#define EE_FCLK 0x20    // 8 byte FastClock
 
 // values
 #define MAGIC 93

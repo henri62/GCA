@@ -73,11 +73,27 @@ void setupIO(byte clr) {
 
 void fc2ee(void) {
 
+  eeWrite(EE_FCLK + 0, FastClock.mins);
+  eeWrite(EE_FCLK + 1, FastClock.hours);
+  eeWrite(EE_FCLK + 2, FastClock.rate);
+  eeWrite(EE_FCLK + 3, FastClock.mday);
+  eeWrite(EE_FCLK + 4, FastClock.mon);
+  eeWrite(EE_FCLK + 5, FastClock.wday);
+  eeWrite(EE_FCLK + 6, FastClock.temp);
+  eeWrite(EE_FCLK + 7, FastClock.run);
 
 }
 
 void ee2fc(void) {
 
+  FastClock.mins = eeRead(EE_FCLK + 0);
+  FastClock.hours = eeRead(EE_FCLK + 1);
+  FastClock.rate = eeRead(EE_FCLK + 2);
+  FastClock.mday = eeRead(EE_FCLK + 3);
+  FastClock.mon = eeRead(EE_FCLK + 4);
+  FastClock.wday = eeRead(EE_FCLK + 5);
+  FastClock.temp = eeRead(EE_FCLK + 6);
+  FastClock.run = eeRead(EE_FCLK + 7);
 
 }
 
@@ -97,8 +113,8 @@ void doLEDTimers(void) {
 
 void doFastClock(void) {
 
-  if (!FastClock.issync && FastClock.timer++ > (120 / (FastClock.rate ? FastClock.rate : 20))) {
-    if (FastClock.rate) {
+  if (!FastClock.issync && FastClock.timer++ > (120 / FastClock.rate)) {
+    if (FastClock.run) {
       FastClock.mins++;
       if (FastClock.mins > 59) {
         FastClock.mins = 0;
@@ -118,7 +134,7 @@ void doFastClock(void) {
         }
       }
     }
-    FastClock.timer -= (120 / (FastClock.rate ? FastClock.rate : 20));
+    FastClock.timer -= (120 / FastClock.rate);
     displayFastClock();
     if (NV1 & CFG_ENABLE_FCLK) {
       CANMsg canmsg;
@@ -127,7 +143,10 @@ void doFastClock(void) {
       canmsg.b[d1] = FastClock.mins;
       canmsg.b[d2] = FastClock.hours;
       canmsg.b[d3] = (FastClock.mon << 4) + FastClock.wday;
-      canmsg.b[d4] = FastClock.rate;
+      if (FastClock.run)
+        canmsg.b[d4] = FastClock.rate;
+      else
+        canmsg.b[d4] = 0;
       canmsg.b[d5] = FastClock.mday;
       canmsg.b[d6] = FastClock.temp;
       canmsg.b[dlc] = 7;
@@ -135,13 +154,14 @@ void doFastClock(void) {
     }
   }
 
-  if (FastClock.rate > 0 && FastClock.issync) {
+  if (FastClock.run && FastClock.issync) {
     FastClock.synctime++;
 
-    if (FastClock.synctime > ((180 / FastClock.rate) + 4)) {
+    if (FastClock.synctime > ((120 / FastClock.rate) + 4)) {
       FastClock.issync = FALSE;
       FastClock.timer = FastClock.synctime;
       displayFastClock();
+      fc2ee();
     }
   }
 }
