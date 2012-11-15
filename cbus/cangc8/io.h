@@ -45,6 +45,9 @@ unsigned char checkFlimSwitch(void);
 void doIOTimers(void);
 void doFastClock(void);
 
+extern void fc2ee(void);
+extern void ee2fc(void);
+
 typedef struct {
     byte mins;
     byte hours;

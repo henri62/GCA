@@ -70,6 +70,7 @@ near unsigned short SOD;
 near unsigned char doSOD;
 near unsigned char doEV;
 near unsigned char evIdx;
+near unsigned char doFC;
 
 volatile unsigned char __LED2 = 0;
 
@@ -125,6 +126,7 @@ void main(void) {
 
     led1timer = 0;
     doEV = FALSE;
+    doFC = FALSE;
     evIdx = 0;
 
     FastClock.mins = 0;
@@ -186,6 +188,10 @@ void main(void) {
             }
         }
 
+        if (doFC) {
+          doFC = FALSE;
+          doFastClock();
+        }
 
         if (checkFlimSwitch() && !swTrig) {
             isLearning = FALSE;

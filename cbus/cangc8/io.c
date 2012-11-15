@@ -71,6 +71,16 @@ void setupIO(byte clr) {
   }
 }
 
+void fc2ee(void) {
+
+
+}
+
+void ee2fc(void) {
+
+
+}
+
 // Called every 5ms.
 
 void doLEDTimers(void) {
@@ -87,25 +97,48 @@ void doLEDTimers(void) {
 
 void doFastClock(void) {
 
-
-  if (!FastClock.issync && FastClock.timer++ > (120 / FastClock.rate)) {
-    FastClock.mins++;
-    if (FastClock.mins > 59) {
-      FastClock.mins = 0;
-      FastClock.hours++;
-      if (FastClock.hours > 23) {
-        FastClock.hours = 0;
-        // TODO Date
+  if (!FastClock.issync && FastClock.timer++ > (120 / (FastClock.rate ? FastClock.rate : 20))) {
+    if (FastClock.rate) {
+      FastClock.mins++;
+      if (FastClock.mins > 59) {
+        FastClock.mins = 0;
+        FastClock.hours++;
+        if (FastClock.hours > 23) {
+          FastClock.hours = 0;
+          FastClock.wday++;
+          if (FastClock.wday > 7)
+            FastClock.wday = 1;
+          FastClock.mday++;
+          if (FastClock.mday > 30) {
+            FastClock.mday = 1;
+            FastClock.mon++;
+            if (FastClock.mon > 12)
+              FastClock.mon = 1;
+          }
+        }
       }
     }
-    FastClock.timer -= (120 / FastClock.rate);
+    FastClock.timer -= (120 / (FastClock.rate ? FastClock.rate : 20));
     displayFastClock();
+    if (NV1 & CFG_ENABLE_FCLK) {
+      CANMsg canmsg;
+
+      canmsg.b[d0] = OPC_FCLK;
+      canmsg.b[d1] = FastClock.mins;
+      canmsg.b[d2] = FastClock.hours;
+      canmsg.b[d3] = (FastClock.mon << 4) + FastClock.wday;
+      canmsg.b[d4] = FastClock.rate;
+      canmsg.b[d5] = FastClock.mday;
+      canmsg.b[d6] = FastClock.temp;
+      canmsg.b[dlc] = 7;
+      canbusSend(&canmsg);
+    }
   }
 
   if (FastClock.rate > 0 && FastClock.issync) {
     FastClock.synctime++;
 
-    if (FastClock.synctime > (180 / FastClock.rate)) {
+    if (FastClock.synctime > ((180 / FastClock.rate) + 4)) {
       FastClock.issync = FALSE;
       FastClock.timer = FastClock.synctime;
       displayFastClock();
@@ -118,18 +151,6 @@ unsigned char checkFlimSwitch(void) {
   return !val;
 }
 
-unsigned char sodRFID(unsigned char i) {
-  return FALSE;
-}
-
-void saveOutputStates(void) {
-  int idx = 0;
-  for (idx = 0; idx < 4; idx++) {
-    //eeWrite(EE_SERVO_POSITION + idx, Servo[idx].position);
-  }
-
-}
-
 void doLEDs(void) {
   if (Wait4NN || isLearning) {
     LED2 = __LED2;
@@ -138,9 +159,6 @@ void doLEDs(void) {
     LED2 = PORT_OFF;
   }
 }
-
-
-static unsigned char __LED4 = 0;
 
 void doLED250(void) {
 }

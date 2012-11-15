@@ -127,7 +127,10 @@ unsigned char parseCmd(CANMsg *cmsg) {
 
         case OPC_BOOT:
             // Enter bootloader mode if NN matches
-            if (thisNN(cmsg) == 1) {
+          if (NV1 & CFG_SAVE_FCLK) {
+            fc2ee();
+          }
+          if (thisNN(cmsg) == 1) {
                 eeWrite((unsigned char) (&bootflag), 0xFF);
                 Reset();
             }

@@ -26,7 +26,7 @@
 #define __CANGC8_H
 
 
-#define RESCLK   4   // 4MHZ or 8MHZ Resonator, Change also BRGCON1 in Boot3.asm
+#define RESCLK   8   // 4MHZ or 8MHZ Resonator, Change also BRGCON1 in Boot3.asm
 
 
 #define MAJOR_VER 2
@@ -50,6 +50,8 @@
 // node var 1
 #define CFG_ALL  0xFF
 #define CFG_SHORT_EVENTS  0x01
+#define CFG_ENABLE_FCLK 0x04
+#define CFG_SAVE_FCLK 0x08
 
 // EE_FC_CONF
 #define CFG_SHOWTIME 0x20
@@ -63,6 +65,7 @@ extern near unsigned char  Wait4NN;
 extern near unsigned char  isLearning;
 extern near unsigned char  doEV;
 extern near unsigned char  evIdx;
+extern near unsigned char  doFC;
 
 extern const rom unsigned char bootflag;
 

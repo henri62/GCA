@@ -64,22 +64,11 @@ void isr_low(void) {
             doLEDTimers();
         }
 
-        // I/O timeout - 50ms
-        if (--io_timer == 0) {
-            io_timer = 50;
-        }
-
-        // Timer 200ms
-        if (--led250ms_timer == 0) {
-            led250ms_timer = 200;
-            doLED250();
-        }
-
         // Timer 500ms
         if (--led500ms_timer == 0) {
             led500ms_timer = 500;
             doLEDs();
-            doFastClock();
+            doFC = TRUE;
         }
     }
     PIR3 = 0;
