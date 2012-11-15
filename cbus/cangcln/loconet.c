@@ -78,6 +78,8 @@ far byte LNBufferIndex;
 far LNSLOT slotmap[LN_SLOTS];
 far byte dispatchSlot;
 
+extern volatile unsigned short ssw_timer;
+
 // TMR0 generates a heartbeat every 32000000/4/2/60 == 66kHz.
 #pragma interrupt scanLN
 
@@ -712,6 +714,7 @@ void ln2CBus(void) {
           } else {
             swState[addr / 8] &= ~(1 << (addr % 8));
           }
+          ssw_timer = 6000;
         }
       }
       if (addr == 1017 && (NV1 & CFG_ENABLE_SOD)) {
@@ -1046,10 +1049,15 @@ void SaveSwState(void) {
   int i;
 
   if (NV1 & CFG_ENABLE_SSW) {
-    for (i = 0; i < 256; i++) {
+    for (i = swSaveStart; i < (swSaveStart + 8); i++) {
       if (swState[i] != eeRead(EE_SWSTATE + i)) {
         eeWrite(EE_SWSTATE + i, swState[i]);
       }
+    }
+    swSaveStart += 8;
+    if (swSaveStart > 255) {
+      swSaveStart = 0;
+      doSwSave = FALSE;
     }
   }
 }
@@ -1076,7 +1084,7 @@ void send2LocoNet(CANMsg *cmsg) {
       LNBuffer[i].data[0] = OPC_GPOFF;
       checksumLN(i);
       LNFClk.trks = 3;
-      SaveSwState();
+      doSwSave = TRUE;
       //ln2CBusDebug(i);
       break;
 
@@ -1254,6 +1262,7 @@ void send2LocoNet(CANMsg *cmsg) {
     case OPC_ACOF:
     case OPC_ASON:
     case OPC_ASOF:
+      ssw_timer = 6000; // after 5 min save swState
       addr = cmsg->b[d3] * 256;
       addr += cmsg->b[d4];
       if (addr >= SWStart && addr <= SWEnd) {

@@ -1,4 +1,4 @@
-
+cangcln cbus loconet interface
 
 
 cangcln 2.c
@@ -8,7 +8,6 @@ cangcln 2.c
 
   bug fix in LN send/recv logic
   faster reply on longAck
-  bug fix eeWrite and eeRead short addr
 
 cangcln 2.b
   new

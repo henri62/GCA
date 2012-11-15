@@ -79,6 +79,8 @@ extern far unsigned short SWStart;
 extern far unsigned short SWEnd;
 extern far unsigned short FBStart;
 extern far unsigned short FBEnd;
+extern far int            swSaveStart;
+extern far byte           doSwSave;
 
 extern byte swState[256];
 

@@ -67,6 +67,8 @@ far unsigned short SWStart;
 far unsigned short SWEnd;
 far unsigned short FBStart;
 far unsigned short FBEnd;
+far int            swSaveStart;
+far byte           doSwSave;
 
 #pragma udata VARS_SW
 byte swState[256];
@@ -129,7 +131,8 @@ void main(void) {
   SWEnd = 1023;
   FBStart = 1024;
   FBEnd = 2048;
-
+  doSwSave = FALSE;
+  swSaveStart = 0;
 
   NV1 = eeRead(EE_NV);
 
@@ -197,6 +200,10 @@ void main(void) {
       ;
     }
 
+    if (doSwSave) {
+      SaveSwState();
+    }
+    
     if (l3) {
       if (doEvent(evIdx)) {
         evIdx++;

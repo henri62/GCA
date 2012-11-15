@@ -73,7 +73,8 @@ void isr_low(void) {
     if (--io_timer == 0) {
       io_timer = 50;
       if (--ssw_timer == 0) {
-        SaveSwState();
+        ssw_timer = 60000; // after 50 min save sw
+        doSwSave = TRUE;
       }
     }
 

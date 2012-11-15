@@ -146,6 +146,8 @@ unsigned char parseCmd(CANMsg *cmsg) {
     case OPC_BOOT:
       // Enter bootloader mode if NN matches
       if (thisNN(cmsg) == 1) {
+        doSwSave = TRUE;
+        while (doSwSave) SaveSwState();
         eeWrite(EE_BOOT, 0xFF);
         Reset();
       }
