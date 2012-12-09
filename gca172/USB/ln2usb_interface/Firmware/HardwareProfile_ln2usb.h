@@ -80,13 +80,13 @@
     #endif
 
 
-    //Uncomment the following line to make the output HEX of this  
-    //  project work with the MCHPUSB Bootloader    
+    //Uncomment the following line to make the output HEX of this
+    //  project work with the MCHPUSB Bootloader
     //#define PROGRAMMABLE_WITH_USB_MCHPUSB_BOOTLOADER
-	
-    //Uncomment the following line to make the output HEX of this 
+
+    //Uncomment the following line to make the output HEX of this
     //  project work with the HID Bootloader
-//Mo//    #define PROGRAMMABLE_WITH_USB_HID_BOOTLOADER		
+//Mo//    #define PROGRAMMABLE_WITH_USB_HID_BOOTLOADER
 
     /*******************************************************************/
     /*******************************************************************/
@@ -111,12 +111,12 @@
 #if 0 //lm//
     /** LED ************************************************************/
     #define mInitAllLEDs()      LATD &= 0xF0; TRISD &= 0xF0;
-    
+
     #define mLED_1              LATDbits.LATD0
     #define mLED_2              LATDbits.LATD1
     #define mLED_3              LATDbits.LATD2
     #define mLED_4              LATDbits.LATD3
-    
+
     #define mGetLED_1()         mLED_1
     #define mGetLED_2()         mLED_2
     #define mGetLED_3()         mLED_3
@@ -126,17 +126,17 @@
     #define mLED_2_On()         mLED_2 = 1;
     #define mLED_3_On()         mLED_3 = 1;
     #define mLED_4_On()         mLED_4 = 1;
-    
+
     #define mLED_1_Off()        mLED_1 = 0;
     #define mLED_2_Off()        mLED_2 = 0;
     #define mLED_3_Off()        mLED_3 = 0;
     #define mLED_4_Off()        mLED_4 = 0;
-    
+
     #define mLED_1_Toggle()     mLED_1 = !mLED_1;
     #define mLED_2_Toggle()     mLED_2 = !mLED_2;
     #define mLED_3_Toggle()     mLED_3 = !mLED_3;
     #define mLED_4_Toggle()     mLED_4 = !mLED_4;
-    
+
     /** SWITCH *********************************************************/
     #define mInitAllSwitches()  TRISBbits.TRISB4=1;TRISBbits.TRISB5=1;
     #define mInitSwitch2()      TRISBbits.TRISB4=1;
@@ -145,6 +145,7 @@
     #define sw3                 PORTBbits.RB5
 #endif //lm//
 
+#if defined (__18F4550)
     /** RS 232 lines ****************************************************/
     #define UART_TRISTx   TRISCbits.TRISC6
     #define UART_TRISRx   TRISCbits.TRISC7
@@ -159,7 +160,7 @@
     #define tris_usb_vp         TRISCbits.TRISC5    // Input
     #define tris_usb_vm         TRISCbits.TRISC4    // Input
     #define tris_usb_oe         TRISCbits.TRISC1    // Output
-    
+
     #define tris_usb_suspnd     TRISAbits.TRISA3    // Output
 
     /** I/O pin definitions ********************************************/
@@ -174,9 +175,45 @@
     #define UART_DTR LATDbits.LATD3
     #define UART_RTS LATAbits.LATA2
     #define UART_CTS PORTAbits.RA3
-    
-    #define mInitRTSPin() {TRISAbits.TRISA2 = 0;}   //Configure RTS as a digital output.  
+
+    #define mInitRTSPin() {TRISAbits.TRISA2 = 0;}   //Configure RTS as a digital output.
     #define mInitCTSPin() {TRISAbits.TRISA3 = 1;}   //Configure CTS as a digital input.  (Make sure pin is digital if ANxx functions is present on the pin)
     #define mInitDTSPin() {TRISBbits.TRISB4 = 1;}   //Configure DTS as a digital input.  (Make sure pin is digital if ANxx functions is present on the pin)
     #define mInitDTRPin() {TRISDbits.TRISD3 = 0;}   //Configure DTR as a digital output.
+#elif defined(__18F2550)
+    /** RS 232 lines ****************************************************/
+    #define UART_TRISTx   TRISCbits.TRISC6
+    #define UART_TRISRx   TRISCbits.TRISC7
+    #define UART_Tx       PORTCbits.RC6
+    #define UART_Rx       PORTCbits.RC7
+    #define UART_ENABLE	  RCSTAbits.SPEN
+
+    /** USB external transceiver interface (optional) ******************/
+    #define tris_usb_vpo        TRISBbits.TRISB3    // Output
+    #define tris_usb_vmo        TRISBbits.TRISB2    // Output
+    #define tris_usb_rcv        TRISAbits.TRISA4    // Input
+    #define tris_usb_vp         TRISCbits.TRISC5    // Input
+    #define tris_usb_vm         TRISCbits.TRISC4    // Input
+    #define tris_usb_oe         TRISCbits.TRISC1    // Output
+
+    #define tris_usb_suspnd     TRISAbits.TRISA3    // Output
+
+    /** I/O pin definitions ********************************************/
+    #define INPUT_PIN 1
+    #define OUTPUT_PIN 0
+
+    //These definitions are only relevant if the respective functions are enabled
+    //in the usb_config.h file.
+    //Make sure these definitions match the GPIO pins being used for your hardware
+    //setup.
+    #define UART_DTS PORTBbits.RB4
+    #define UART_DTR LATDbits.LATD3
+    #define UART_RTS LATAbits.LATA2
+    #define UART_CTS PORTAbits.RA3
+
+    #define mInitRTSPin() {TRISAbits.TRISA2 = 0;}   //Configure RTS as a digital output.
+    #define mInitCTSPin() {TRISAbits.TRISA3 = 1;}   //Configure CTS as a digital input.  (Make sure pin is digital if ANxx functions is present on the pin)
+    #define mInitDTSPin() {TRISBbits.TRISB4 = 1;}   //Configure DTS as a digital input.  (Make sure pin is digital if ANxx functions is present on the pin)
+    #define mInitDTRPin() {TRISDbits.TRISD3 = 0;}   //Configure DTR as a digital output.
+#endif
 #endif  //HARDWARE_PROFILE_PICDEM_FSUSB_H

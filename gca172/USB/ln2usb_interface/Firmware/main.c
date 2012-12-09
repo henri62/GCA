@@ -38,9 +38,9 @@
   1.0   Initial release
   2.1   Updated for simplicity and to use common coding style
   2.8   Improvements to USBCBSendResume(), to make it easier to use.
-        Added runtime check to avoid buffer overflow possibility if 
+        Added runtime check to avoid buffer overflow possibility if
         the USB IN data rate is somehow slower than the UART RX rate.
-  2.9b  Added support for optional hardware flow control.   
+  2.9b  Added support for optional hardware flow control.
 ********************************************************************/
 
 /** INCLUDES *******************************************************/
@@ -56,7 +56,7 @@
 /** CONFIGURATION **************************************************/
 #if defined(PICDEM_FS_USB)      // Configuration bits for PICDEM FS USB Demo Board (based on PIC18F4550)
         #pragma config PLLDIV   = 5         // (20 MHz crystal on PICDEM FS USB board)
-        #pragma config CPUDIV   = OSC1_PLL2   
+        #pragma config CPUDIV   = OSC1_PLL2
         #pragma config USBDIV   = 2         // Clock source from 96MHz PLL/2
         #pragma config FOSC     = HSPLL_HS
         #pragma config FCMEN    = OFF
@@ -108,12 +108,12 @@
         #pragma config WDTPS    = 32768
 //      #pragma config WAIT     = OFF      	// Commented choices are
 //      #pragma config BW       = 16      	// only available on the
-//      #pragma config MODE     = MM      	// 80 pin devices in the 
+//      #pragma config MODE     = MM      	// 80 pin devices in the
 //      #pragma config EASHFT   = OFF      	// family.
         #pragma config MSSPMSK  = MSK5
 //      #pragma config PMPMX    = DEFAULT
 //      #pragma config ECCPMX   = DEFAULT
-        #pragma config CCP2MX   = DEFAULT   
+        #pragma config CCP2MX   = DEFAULT
 
 #elif defined(PIC18F46J50_PIM) || defined(PIC18F47J53_PIM)
      #pragma config WDTEN = OFF          //WDT disabled (enabled by SWDTEN bit)
@@ -139,7 +139,7 @@
      #pragma config WPEND = PAGE_0       //Start protection at page 0
      #pragma config WPCFG = OFF          //Write/Erase last page protect Disabled
      #pragma config WPDIS = OFF          //WPFP[5:0], WPEND, and WPCFG bits ignored
- 
+
 #elif defined(LOW_PIN_COUNT_USB_DEVELOPMENT_KIT)
         //14K50
         #pragma config CPUDIV = NOCLKDIV
@@ -169,7 +169,7 @@
         #pragma config WRTC   = OFF
         #pragma config EBTR0  = OFF
         #pragma config EBTR1  = OFF
-        #pragma config EBTRB  = OFF       
+        #pragma config EBTRB  = OFF
 #endif
 
 /** I N C L U D E S **********************************************************/
@@ -198,7 +198,7 @@ unsigned char RS232_Out_Data_Rdy = 0;
 USB_HANDLE  lastTransmission;
 
 /**********
-** USB-LocoNet 
+** USB-LocoNet
 ************/
 unsigned char ucLnDataIdx = 0;
 char          cUsb2LnBuffer[20];
@@ -208,7 +208,7 @@ unsigned char ucUsb2LnWordsIndex = 0;
 Usb2LnFlags_type Usb2LnFlags;
 
 /**********
-** LocoNet-USB 
+** LocoNet-USB
 ************/
 
 volatile unsigned char ucLnBitValue = 0; // I need a char to can shift it left
@@ -243,7 +243,7 @@ unsigned char getcUSART ();
 
 	//On PIC18 devices, addresses 0x00, 0x08, and 0x18 are used for
 	//the reset, high priority interrupt, and low priority interrupt
-	//vectors.  However, the current Microchip USB bootloader 
+	//vectors.  However, the current Microchip USB bootloader
 	//examples are intended to occupy addresses 0x00-0x7FF or
 	//0x00-0xFFF depending on which bootloader is used.  Therefore,
 	//the bootloader code remaps these vectors to new locations
@@ -253,21 +253,21 @@ unsigned char getcUSART ();
 	//usb_config.h file and comment out the following defines:
 	//#define PROGRAMMABLE_WITH_USB_HID_BOOTLOADER
 	//#define PROGRAMMABLE_WITH_USB_LEGACY_CUSTOM_CLASS_BOOTLOADER
-	
+
 	#if defined(PROGRAMMABLE_WITH_USB_HID_BOOTLOADER)
 		#define REMAPPED_RESET_VECTOR_ADDRESS			0x1000
 		#define REMAPPED_HIGH_INTERRUPT_VECTOR_ADDRESS	0x1008
 		#define REMAPPED_LOW_INTERRUPT_VECTOR_ADDRESS	0x1018
-	#elif defined(PROGRAMMABLE_WITH_USB_MCHPUSB_BOOTLOADER)	
+	#elif defined(PROGRAMMABLE_WITH_USB_MCHPUSB_BOOTLOADER)
 		#define REMAPPED_RESET_VECTOR_ADDRESS			0x800
 		#define REMAPPED_HIGH_INTERRUPT_VECTOR_ADDRESS	0x808
 		#define REMAPPED_LOW_INTERRUPT_VECTOR_ADDRESS	0x818
-	#else	
+	#else
 		#define REMAPPED_RESET_VECTOR_ADDRESS			0x00
 		#define REMAPPED_HIGH_INTERRUPT_VECTOR_ADDRESS	0x08
 		#define REMAPPED_LOW_INTERRUPT_VECTOR_ADDRESS	0x18
 	#endif
-	
+
 	#if defined(PROGRAMMABLE_WITH_USB_HID_BOOTLOADER)||defined(PROGRAMMABLE_WITH_USB_MCHPUSB_BOOTLOADER)
 	extern void _startup (void);        // See c018i.c in your C18 compiler dir
 	#pragma code REMAPPED_RESET_VECTOR = REMAPPED_RESET_VECTOR_ADDRESS
@@ -286,7 +286,7 @@ unsigned char getcUSART ();
 	{
 	     _asm goto YourLowPriorityISRCode _endasm
 	}
-	
+
 	#if defined(PROGRAMMABLE_WITH_USB_HID_BOOTLOADER)||defined(PROGRAMMABLE_WITH_USB_MCHPUSB_BOOTLOADER)
 	//Note: If this project is built while one of the bootloaders has
 	//been defined, but then the output hex file is not programmed with
@@ -296,8 +296,8 @@ unsigned char getcUSART ();
 	//executes as nop instructions, but the PC would eventually reach the REMAPPED_RESET_VECTOR_ADDRESS
 	//(0x1000 or 0x800, depending upon bootloader), and would execute the "goto _startup".  This
 	//would effective reset the application.
-	
-	//To fix this situation, we should always deliberately place a 
+
+	//To fix this situation, we should always deliberately place a
 	//"goto REMAPPED_HIGH_INTERRUPT_VECTOR_ADDRESS" at address 0x08, and a
 	//"goto REMAPPED_LOW_INTERRUPT_VECTOR_ADDRESS" at address 0x18.  When the output
 	//hex file of this project is programmed with the bootloader, these sections do not
@@ -318,8 +318,8 @@ unsigned char getcUSART ();
 	#endif	//end of "#if defined(PROGRAMMABLE_WITH_USB_HID_BOOTLOADER)||defined(PROGRAMMABLE_WITH_USB_LEGACY_CUSTOM_CLASS_BOOTLOADER)"
 
 	#pragma code
-	
-	
+
+
 	//These are your actual interrupt handling routines.
 	#pragma interrupt YourHighPriorityISRCode
 	void YourHighPriorityISRCode() //if IPEN==0, all interrupts come here
@@ -331,48 +331,51 @@ unsigned char getcUSART ();
         #if defined(USB_INTERRUPT)
             USBDeviceTasks();
         #endif
-	
-       if(INTCONbits.TMR0IF && INTCONbits.TMR0IE)  
+
+       if(INTCONbits.TMR0IF && INTCONbits.TMR0IE)
        {
-          INTCONbits.TMR0IE = 0;    // stop the timer 
-          
+          INTCONbits.TMR0IE = 0;    // stop the timer
+
           if(!Usb2LnFlags.bSendUsbToLnData)   // loconet to usb
           {
-             TMR0L =80;  //80 = 60.166uS
-            
+//             TMR0L =80;  //80 = 60.166uS =  TMR0_FULL_BIT
+             TMR0L =TMR0_FULL_BIT;  //80 = 60.166uS =  TMR0_FULL_BIT
+
              ucLnBitValue = LN_IN_PIN;
              Ln2UsbFlags.bLnToUsbNewBit = 1;
           }
-          else //if(bSendUsbToLnData)   
+          else //if(bSendUsbToLnData)
           {
-             TMR0L = 171; // 29.833 uS; 
+//             TMR0L = 171; // 29.833 uS; TMR0_HALF_BIT
+             TMR0L = TMR0_HALF_BIT; // 29.833 uS; TMR0_HALF_BIT
              Usb2LnFlags.bUsb2LnSendingBit = 0;
              Usb2LnFlags.bHalfBit = 1;
           }
-       
+
           INTCONbits.TMR0IF = 0;
-          INTCONbits.TMR0IE = 1;    // start the timer 
-          
+          INTCONbits.TMR0IE = 1;    // start the timer
+
           Ln2UsbFlags.bLnValue = LN_IN_PIN;
           Ln2UsbFlags.bNewTmr0Int = 1;
-          
+
           INTCONbits.INT0IF=0;
        }//if(TMR0IF && TMR0IE
-   
+
        if(INTCONbits.INT0IF && INTCONbits.INT0IE)    /*receptie loconet*/
        {
           INTCONbits.INT0IE=0; //deactiveaza intreruperea RB0; de reactivat dupa receptia a 9 biti
-          INTCONbits.TMR0IE = 0;    // stop the timer 
-          TMR0L = 175; //171; // 29.833 uS; 
+          INTCONbits.TMR0IE = 0;    // stop the timer
+//          TMR0L = 175; //171; // 29.833 uS;
+          TMR0L = TMR0_HALF_BIT; // 29.833 uS; TMR0_HALF_BIT
           INTCONbits.TMR0IF = 0;
           INTCONbits.TMR0IE = 1; //activeaza inrtreruperea pentru timer 0 ca sa-mi dea momentele pentru testat intrarea LN
-          
+
           Ln2UsbFlags.bLnToUsbData=1;
           INTCONbits.INT0IF=0;
        } //if(INTF&&INTE)
-       
-	}	//This return will be a "retfie fast", since this is in a #pragma interrupt section 
-	
+
+	}	//This return will be a "retfie fast", since this is in a #pragma interrupt section
+
 	#pragma interruptlow YourLowPriorityISRCode
 	void YourLowPriorityISRCode()
 	{
@@ -380,7 +383,7 @@ unsigned char getcUSART ();
             //Service the interrupt
             //Clear the interrupt flag
             //Etc.
-		
+
 	}   //This return will be a "retfie", since this is in a #pragma interruptlow section
 
 /** DECLARATIONS ***************************************************/
@@ -406,7 +409,7 @@ void main(void)
 #else
 int main(void)
 #endif
-{   
+{
     InitializeSystem();
 
     #if defined(USB_INTERRUPT)
@@ -419,23 +422,23 @@ int main(void)
 		// Check bus status and service USB interrupts.
         USBDeviceTasks(); // Interrupt or polling method.  If using polling, must call
         				  // this function periodically.  This function will take care
-        				  // of processing and responding to SETUP transactions 
+        				  // of processing and responding to SETUP transactions
         				  // (such as during the enumeration process when you first
         				  // plug in).  USB hosts require that USB devices should accept
         				  // and process SETUP packets in a timely fashion.  Therefore,
-        				  // when using polling, this function should be called 
-        				  // regularly (such as once every 1.8ms or faster** [see 
+        				  // when using polling, this function should be called
+        				  // regularly (such as once every 1.8ms or faster** [see
         				  // inline code comments in usb_device.c for explanation when
-        				  // "or faster" applies])  In most cases, the USBDeviceTasks() 
-        				  // function does not take very long to execute (ex: <100 
+        				  // "or faster" applies])  In most cases, the USBDeviceTasks()
+        				  // function does not take very long to execute (ex: <100
         				  // instruction cycles) before it returns.
         #endif
-    				  
+
 
 		// Application-specific tasks.
 		// Application related code may be added here, or in the ProcessIO() function.
-		
-        ProcessIO();        
+
+        ProcessIO();
     }//end while
 }//end main
 
@@ -456,7 +459,7 @@ int main(void)
  *                  are called from here.
  *
  *                  User application initialization routine should
- *                  also be called from here.                  
+ *                  also be called from here.
  *
  * Note:            None
  *******************************************************************/
@@ -480,11 +483,11 @@ static void InitializeSystem(void)
 //	host is not actively providing power on Vbus. Therefore, implementing this
 //	bus sense feature is optional.  This firmware can be made to use this bus
 //	sense feature by making sure "USE_USB_BUS_SENSE_IO" has been defined in the
-//	HardwareProfile.h file.    
+//	HardwareProfile.h file.
     #if defined(USE_USB_BUS_SENSE_IO)
     tris_usb_bus_sense = INPUT_PIN; // See HardwareProfile.h
     #endif
-    
+
 //	If the host PC sends a GetStatus (device) request, the firmware must respond
 //	and let the host know if the USB peripheral device is currently bus powered
 //	or self powered.  See chapter 9 in the official USB specifications for details
@@ -493,14 +496,14 @@ static void InitializeSystem(void)
 //	Instead, firmware should check if it is currently self or bus powered, and
 //	respond accordingly.  If the hardware has been configured like demonstrated
 //	on the PICDEM FS USB Demo Board, an I/O pin can be polled to determine the
-//	currently selected power source.  On the PICDEM FS USB Demo Board, "RA2" 
+//	currently selected power source.  On the PICDEM FS USB Demo Board, "RA2"
 //	is used for	this purpose.  If using this feature, make sure "USE_SELF_POWER_SENSE_IO"
 //	has been defined in HardwareProfile.h, and that an appropriate I/O pin has been mapped
 //	to it in HardwareProfile.h.
     #if defined(USE_SELF_POWER_SENSE_IO)
     tris_self_power = INPUT_PIN;	// See HardwareProfile.h
     #endif
-    
+
     UserInit();
 
     USBDeviceInit();	//usb_device.c.  Initializes USB module SFRs and firmware
@@ -523,7 +526,7 @@ static void InitializeSystem(void)
  * Overview:        This routine should take care of all of the demo code
  *                  initialization that is required.
  *
- * Note:            
+ * Note:
  *
  *****************************************************************************/
 void UserInit(void)
@@ -537,7 +540,7 @@ void UserInit(void)
       {
           cUsb2LnBuffer[i] = 0;
     	  cLn2UsbBuffer[i] = 0;
-      }  	   
+      }
    }
 
    NextUSBOut = 0;
@@ -545,7 +548,7 @@ void UserInit(void)
    lastTransmission = 0;
 
 //lm//	mInitAllLEDs();
-	
+
  /*lm*/
 
    Ln2UsbFlags.bLn2UsbCheckSummTest = 0;
@@ -553,7 +556,7 @@ void UserInit(void)
    Ln2UsbFlags.bLnToUsbNewBit = 0;
    Usb2LnFlags.bSendUsbToLnData = 0;
    Ln2UsbFlags.bLnRecError = 0;
-   
+
 // TMR0
 // 1 - TMR0ON - activ
 // 1 - 8 bits mode timer
@@ -563,33 +566,33 @@ void UserInit(void)
 // 001 1:4 prescaler
 
    T0CON = 0xC1;
-     
-// PORTB: RB7 RB6 - ICSP 
+
+// PORTB: RB7 RB6 - ICSP
 //  RB0 - LocoNet input - genereaza intrerupere la inceputul comunicatiei
-//  RB1 - Loconet output -   
+//  RB1 - Loconet output -
    TRISB  = 0b00000001;
    LATB   = 0b00000000;
 
 #if defined(__18F4550)
-   //PORTD: LCD - all outputs 
+   //PORTD: LCD - all outputs
    TRISD = 0x00;
    LATD = 0x00;
 #endif
-    
-// configureaza intreruperile  
+
+// configureaza intreruperile
 //   INTCON = 0b01000000; //periferal interrupt enasble
    INTCONbits.PEIE = 1;
    INTCON2bits.INTEDG0=0;      // intrerupere RB0 pe frontul cazator, ca sa detectez trecerea din 1 in 0 - start comunicatie.
 
 
-// RB0 interrupt activ   
+// RB0 interrupt activ
 //    lcdInit();
 //    lcdScrieChar('0');
    Usb2LnFlags.bSendUsbData=0;
-    
+
    INTCONbits.INT0IE=1; //activeaza intreruperea RB0
 //    INTCONbits.TMR0IE=1; //activeaza intreruperea TMR0
-   INTCONbits.GIE = 1;        
+   INTCONbits.GIE = 1;
 }//end UserInit
 
 /******************************************************************************
@@ -608,7 +611,7 @@ void UserInit(void)
  *                  and determine if the application should update the baudrate
  *                  or not.
  *
- * Note:            
+ * Note:
  *
  *****************************************************************************/
 #if defined(USB_CDC_SET_LINE_CODING_HANDLER)
@@ -621,7 +624,7 @@ void mySetLineCodingHandler(void)
         //handled.  The first is just to ignore the request and don't change
         //the values.  That is what is currently implemented in this function.
         //The second possible method is to stall the STATUS stage of the request.
-        //STALLing the STATUS stage will cause an exception to be thrown in the 
+        //STALLing the STATUS stage will cause an exception to be thrown in the
         //requesting application.  Some programs, like HyperTerminal, handle the
         //exception properly and give a pop-up box indicating that the request
         //settings are not valid.  Any application that does not handle the
@@ -639,7 +642,7 @@ void mySetLineCodingHandler(void)
 
         //Update the baudrate info in the CDC driver
         CDCSetBaudRate(cdc_notice.GetLineCoding.dwDTERate.Val);
-        
+
         //Update the baudrate of the UART
             dwBaud.Val = (DWORD)(GetSystemClock()/4)/line_coding.dwDTERate.Val-1;
             SPBRG = dwBaud.v[0];
@@ -666,42 +669,42 @@ void mySetLineCodingHandler(void)
  * Note:            None
  *******************************************************************/
 void ProcessIO(void)
-{   
+{
     unsigned char ucIdx = 0;
     char cLn2UsbCheckSummXor = 0;
     char cUsb2LnCheckSummXor = 0;
     unsigned char ucLn2UsbOpCode = 0;
     unsigned char ucUsb2LnOpCode = 0;
     unsigned char ucUsb2LnIdx = 0;
-    
+
     char cLnMessRecStatus = 0;
-    
+
     char cUsb2LnRetVal = 0x0B; // -1..9 error values = bit wrong transmited, 0 = start bit
 
     LN_ACTIVITY_LED = ~LN_IN_PIN; //light a LED to signalize the state.
-  
-    if((USBDeviceState < CONFIGURED_STATE)||(USBSuspendControl==1)) 
+
+    if((USBDeviceState < CONFIGURED_STATE)||(USBSuspendControl==1))
        return;
 
     if(Ln2UsbFlags.bLnToUsbData)  // new ln data
     {
        usLnBitsNumber = 0;
        cLn2UsbBuffer[ucLn2UsbWordsIndex] = 0;
-        
+
        cLnMessRecStatus = lnRecMess(cLn2UsbBuffer, &cLn2UsbLength);
-        
+
        if(cLnMessRecStatus == 0)
        {
           lnCheckSummTest(cLn2UsbBuffer, cLn2UsbLength);
-       }   
-        
+       }
+
        if(Ln2UsbFlags.bLn2UsbCheckSummOK && (USBUSARTIsTxTrfReady()))
        {
            putUSBUSART(&cLn2UsbBuffer[0], cLn2UsbLength);
 	       cLn2UsbLength = 19;
 	       Ln2UsbFlags.bLn2UsbCheckSummOK = 0;
        }
-    } // if(Ln2UsbFlags.bLnToUsbData)   
+    } // if(Ln2UsbFlags.bLnToUsbData)
 
     if (RS232_Out_Data_Rdy == 0)  // only check for new USB buffer if the old RS232 buffer is
     {						  // empty.  This will cause additional USB packets to be NAK'd
@@ -712,35 +715,35 @@ void ProcessIO(void)
 		   RS232cp = 0;  // Reset the current position
         }
     }
-	 
+
     if (RS232_Out_Data_Rdy == 1)  // if some new USB data
     {						  // empty.  This will cause additional USB packets to be NAK'd
         RS232_Out_Data_Rdy = 0;
-		
+
         for(ucUsb2LnIdx = 0; ucUsb2LnIdx < LastRS232Out; ucUsb2LnIdx++)
         {
             cUsb2LnBuffer[ucUsb2LnWordsIndex] = RS232_Out_Data[ucUsb2LnIdx];
             ucUsb2LnWordsIndex++;
         }
-        if(ucUsb2LnWordsIndex == 2) 
+        if(ucUsb2LnWordsIndex == 2)
         {
 	        ucUsb2LnOpCode = cUsb2LnBuffer[0] & OPC_BITS;
    	        switch(ucUsb2LnOpCode)
 	        {
                case 0x80 : ucUsb2LnLength = 2;
 		                   break;
-		       case 0xB0 :                
+		       case 0xB0 :
 		       case 0xA0 : ucUsb2LnLength = 4;
-		                   break;    
+		                   break;
 		       case 0xC0 : ucUsb2LnLength = 6;
-		                   break;    
+		                   break;
 		       case 0xE0 : ucUsb2LnLength = cUsb2LnBuffer[1];
-		                   break;    
+		                   break;
 		       default :   ucUsb2LnLength = 250;
 		                   break;
             } //switch(ucUsb2LnOpCode)
 	    } // if(ucUsb2LnWordsIndex == 1)
-	    
+
         if((ucUsb2LnWordsIndex == ucUsb2LnLength) || (ucUsb2LnLength == 250))
         {
             if(ucUsb2LnWordsIndex == ucUsb2LnLength)
@@ -749,17 +752,17 @@ void ProcessIO(void)
             }
             ucUsb2LnWordsIndex = 0;
         } // if((ucUsb2LnW
-	 
+
         if(Usb2LnFlags.bUsb2LnCheckSummTest)
         {
 	        Usb2LnFlags.bUsb2LnCheckSummTest = 0;
 	        cUsb2LnCheckSummXor = 0;
 	        Usb2LnFlags.bUsb2LnCheckSummOK = 0;
-	     
+
 	        for (ucIdx=0; ucIdx < ucUsb2LnLength; ucIdx++)
 	        {
-	   	       cUsb2LnCheckSummXor ^= cUsb2LnBuffer[ucIdx];    
-		    } 
+	   	       cUsb2LnCheckSummXor ^= cUsb2LnBuffer[ucIdx];
+		    }
 	        if(cUsb2LnCheckSummXor == 0xFF)
 	        {
 	           Usb2LnFlags.bSendUsbToLnData = 1;
@@ -767,21 +770,21 @@ void ProcessIO(void)
 	           sendLnMessage(cUsb2LnBuffer, ucUsb2LnLength);
          	   Usb2LnFlags.bSendUsbToLnData = 0;
 
-            }   
+            }
          }  //  if(bLnCheckSummTest)
     } // if (RS232_Out_Dat
-       
-    if(Ln2UsbFlags.bLnRecError)  
+
+    if(Ln2UsbFlags.bLnRecError)
     {
-	   if(usLnBitsNumber > 3000)   
+	   if(usLnBitsNumber > 3000)
           LN_ACTIVITY_LED = 1;
-    }      
+    }
     else
        LN_ACTIVITY_LED = 0;
-            
+
 
     CDCTxService();
-    
+
 }//end ProcessIO
 
 // ******************************************************************************************************
@@ -822,7 +825,7 @@ void USBCBSuspend(void)
 	//Example power saving code.  Insert appropriate code here for the desired
 	//application behavior.  If the microcontroller will be put to sleep, a
 	//process similar to that shown below may be used:
-	
+
 	//ConfigureIOPinsForLowPower();
 	//SaveStateOfAllInterruptEnableBits();
 	//DisableAllInterruptEnableBits();
@@ -831,10 +834,10 @@ void USBCBSuspend(void)
 	//RestoreStateOfAllPreviouslySavedInterruptEnableBits();	//Preferrably, this should be done in the USBCBWakeFromSuspend() function instead.
 	//RestoreIOPinsToNormal();									//Preferrably, this should be done in the USBCBWakeFromSuspend() function instead.
 
-	//IMPORTANT NOTE: Do not clear the USBActivityIF (ACTVIF) bit here.  This bit is 
-	//cleared inside the usb_device.c file.  Clearing USBActivityIF here will cause 
-	//things to not work as intended.	
-	
+	//IMPORTANT NOTE: Do not clear the USBActivityIF (ACTVIF) bit here.  This bit is
+	//cleared inside the usb_device.c file.  Clearing USBActivityIF here will cause
+	//things to not work as intended.
+
 
     #if defined(__C30__)
     #if 0
@@ -877,7 +880,7 @@ void __attribute__ ((interrupt)) _USB1Interrupt(void)
             IEC5bits.USB1IE = 0;
             U1OTGIEbits.ACTVIE = 0;
             IFS5bits.USB1IF = 0;
-        
+
             //USBClearInterruptFlag(USBActivityIFReg,USBActivityIFBitNum);
             USBClearInterruptFlag(USBIdleIFReg,USBIdleIFBitNum);
             //USBSuspendControl = 0;
@@ -901,8 +904,8 @@ void __attribute__ ((interrupt)) _USB1Interrupt(void)
  *					suspend mode (by "sending" 3+ms of idle).  Once in suspend
  *					mode, the host may wake the device back up by sending non-
  *					idle state signalling.
- *					
- *					This call back is invoked when a wakeup from USB suspend 
+ *
+ *					This call back is invoked when a wakeup from USB suspend
  *					is detected.
  *
  * Note:            None
@@ -912,7 +915,7 @@ void USBCBWakeFromSuspend(void)
 	// If clock switching or other power savings measures were taken when
 	// executing the USBCBSuspend() function, now would be a good time to
 	// switch back to normal full power run mode conditions.  The host allows
-	// a few milliseconds of wakeup time, after which the device must be 
+	// a few milliseconds of wakeup time, after which the device must be
 	// fully back to normal, and capable of receiving and processing USB
 	// packets.  In order to do this, the USB module must receive proper
 	// clocking (IE: 48MHz clock must be available to SIE for full speed USB
@@ -977,7 +980,7 @@ void USBCBErrorHandler(void)
 	// data loss occurs.  The system will typically recover
 	// automatically, without the need for application firmware
 	// intervention.
-	
+
 	// Nevertheless, this callback function is provided, such as
 	// for debugging purposes.
 }
@@ -1004,9 +1007,9 @@ void USBCBErrorHandler(void)
  *					that is being implemented.  For example, a HID
  *					class device needs to be able to respond to
  *					"GET REPORT" type of requests.  This
- *					is not a standard USB chapter 9 request, and 
+ *					is not a standard USB chapter 9 request, and
  *					therefore not handled by usb_device.c.  Instead
- *					this request should be handled by class specific 
+ *					this request should be handled by class specific
  *					firmware, such as that contained in usb_function_hid.c.
  *
  * Note:            None
@@ -1055,9 +1058,9 @@ void USBCBStdSetDscHandler(void)
  *
  * Overview:        This function is called when the device becomes
  *                  initialized, which occurs after the host sends a
- * 					SET_CONFIGURATION (wValue not = 0) request.  This 
- *					callback function should initialize the endpoints 
- *					for the device's usage according to the current 
+ * 					SET_CONFIGURATION (wValue not = 0) request.  This
+ *					callback function should initialize the endpoints
+ *					for the device's usage according to the current
  *					configuration.
  *
  * Note:            None
@@ -1087,44 +1090,44 @@ void USBCBInitEP(void)
  *					button on a remote control, it is nice that the
  *					IR receiver can detect this signalling, and then
  *					send a USB "command" to the PC to wake up.
- *					
+ *
  *					The USBCBSendResume() "callback" function is used
- *					to send this special USB signalling which wakes 
+ *					to send this special USB signalling which wakes
  *					up the PC.  This function may be called by
  *					application firmware to wake up the PC.  This
  *					function will only be able to wake up the host if
  *                  all of the below are true:
- *					
+ *
  *					1.  The USB driver used on the host PC supports
  *						the remote wakeup capability.
  *					2.  The USB configuration descriptor indicates
  *						the device is remote wakeup capable in the
  *						bmAttributes field.
  *					3.  The USB host PC is currently sleeping,
- *						and has previously sent your device a SET 
+ *						and has previously sent your device a SET
  *						FEATURE setup packet which "armed" the
- *						remote wakeup capability.   
+ *						remote wakeup capability.
  *
  *                  If the host has not armed the device to perform remote wakeup,
  *                  then this function will return without actually performing a
- *                  remote wakeup sequence.  This is the required behavior, 
- *                  as a USB device that has not been armed to perform remote 
+ *                  remote wakeup sequence.  This is the required behavior,
+ *                  as a USB device that has not been armed to perform remote
  *                  wakeup must not drive remote wakeup signalling onto the bus;
  *                  doing so will cause USB compliance testing failure.
- *                  
+ *
  *					This callback should send a RESUME signal that
  *                  has the period of 1-15ms.
  *
  * Note:            This function does nothing and returns quickly, if the USB
- *                  bus and host are not in a suspended condition, or are 
+ *                  bus and host are not in a suspended condition, or are
  *                  otherwise not in a remote wakeup ready state.  Therefore, it
- *                  is safe to optionally call this function regularly, ex: 
+ *                  is safe to optionally call this function regularly, ex:
  *                  anytime application stimulus occurs, as the function will
  *                  have no effect, until the bus really is in a state ready
- *                  to accept remote wakeup. 
+ *                  to accept remote wakeup.
  *
  *                  When this function executes, it may perform clock switching,
- *                  depending upon the application specific code in 
+ *                  depending upon the application specific code in
  *                  USBCBWakeFromSuspend().  This is needed, since the USB
  *                  bus will no longer be suspended by the time this function
  *                  returns.  Therefore, the USB module will need to be ready
@@ -1157,42 +1160,42 @@ void USBCBInitEP(void)
 void USBCBSendResume(void)
 {
     static WORD delay_count;
-    
+
     //First verify that the host has armed us to perform remote wakeup.
     //It does this by sending a SET_FEATURE request to enable remote wakeup,
     //usually just before the host goes to standby mode (note: it will only
     //send this SET_FEATURE request if the configuration descriptor declares
     //the device as remote wakeup capable, AND, if the feature is enabled
-    //on the host (ex: on Windows based hosts, in the device manager 
-    //properties page for the USB device, power management tab, the 
-    //"Allow this device to bring the computer out of standby." checkbox 
+    //on the host (ex: on Windows based hosts, in the device manager
+    //properties page for the USB device, power management tab, the
+    //"Allow this device to bring the computer out of standby." checkbox
     //should be checked).
-    if(USBGetRemoteWakeupStatus() == TRUE) 
+    if(USBGetRemoteWakeupStatus() == TRUE)
     {
         //Verify that the USB bus is in fact suspended, before we send
         //remote wakeup signalling.
         if(USBIsBusSuspended() == TRUE)
         {
             USBMaskInterrupts();
-            
+
             //Clock switch to settings consistent with normal USB operation.
             USBCBWakeFromSuspend();
-            USBSuspendControl = 0; 
-            USBBusIsSuspended = FALSE;  //So we don't execute this code again, 
+            USBSuspendControl = 0;
+            USBBusIsSuspended = FALSE;  //So we don't execute this code again,
                                         //until a new suspend condition is detected.
 
             //Section 7.1.7.7 of the USB 2.0 specifications indicates a USB
             //device must continuously see 5ms+ of idle on the bus, before it sends
             //remote wakeup signalling.  One way to be certain that this parameter
-            //gets met, is to add a 2ms+ blocking delay here (2ms plus at 
+            //gets met, is to add a 2ms+ blocking delay here (2ms plus at
             //least 3ms from bus idle to USBIsBusSuspended() == TRUE, yeilds
             //5ms+ total delay since start of idle).
-            delay_count = 3600U;        
+            delay_count = 3600U;
             do
             {
                 delay_count--;
             }while(delay_count);
-            
+
             //Now drive the resume K-state signalling onto the USB bus.
             USBResumeControl = 1;       // Start RESUME signaling
             delay_count = 1800U;        // Set RESUME line for 1-13 ms
@@ -1225,7 +1228,7 @@ void USBCBSendResume(void)
  *                  thus the various class examples a way to get
  *                  data that is received via the control endpoint.
  *                  This function needs to be used in conjunction
- *                  with the USBCBCheckOtherReq() function since 
+ *                  with the USBCBCheckOtherReq() function since
  *                  the USBCBCheckOtherReq() function is the apps
  *                  method for getting the initial control transfer
  *                  before the data arrives.
@@ -1275,7 +1278,7 @@ BOOL USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, WORD size)
         case EVENT_RESUME:
             USBCBWakeFromSuspend();
             break;
-        case EVENT_CONFIGURED: 
+        case EVENT_CONFIGURED:
             USBCBInitEP();
             break;
         case EVENT_SET_DESCRIPTOR:
@@ -1290,29 +1293,29 @@ BOOL USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, WORD size)
         case EVENT_TRANSFER_TERMINATED:
             //Add application specific callback task or callback function here if desired.
             //The EVENT_TRANSFER_TERMINATED event occurs when the host performs a CLEAR
-            //FEATURE (endpoint halt) request on an application endpoint which was 
+            //FEATURE (endpoint halt) request on an application endpoint which was
             //previously armed (UOWN was = 1).  Here would be a good place to:
-            //1.  Determine which endpoint the transaction that just got terminated was 
+            //1.  Determine which endpoint the transaction that just got terminated was
             //      on, by checking the handle value in the *pdata.
-            //2.  Re-arm the endpoint if desired (typically would be the case for OUT 
+            //2.  Re-arm the endpoint if desired (typically would be the case for OUT
             //      endpoints).
             break;
         default:
             break;
-    }      
-    return TRUE; 
+    }
+    return TRUE;
 }
 
-void DelayUs(unsigned char ucDelay)	
-{ 
+void DelayUs(unsigned char ucDelay)
+{
 	unsigned char ucLocal;
-	
+
 	ucLocal = ucDelay/2;
-	
-    Delay10TCYx(ucLocal);	
-    
+
+    Delay10TCYx(ucLocal);
+
 }
-  
+
 void DelayMs(unsigned char cnt)
 {
 	unsigned char i;

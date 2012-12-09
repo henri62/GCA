@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=MPLAB.X
 
 # Active Configuration
-DEFAULTCONF=ln2usb
+DEFAULTCONF=2550
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=ln2usb 
+ALLCONFS=2550 4550 14k50 
 
 
 # build
@@ -45,13 +45,17 @@ ALLCONFS=ln2usb
 
 # clobber
 .clobber-impl: .clobber-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=ln2usb clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=2550 clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=4550 clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=14k50 clean
 
 
 
 # all
 .all-impl: .all-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=ln2usb build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=2550 build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=4550 build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=14k50 build
 
 
 

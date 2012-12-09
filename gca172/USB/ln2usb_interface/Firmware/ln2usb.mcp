@@ -45,9 +45,6 @@ file_017=.
 file_018=.
 file_019=.
 file_020=.
-file_021=.
-file_022=.
-file_023=.
 [GENERATED_FILES]
 file_000=no
 file_001=no
@@ -70,9 +67,6 @@ file_017=no
 file_018=no
 file_019=no
 file_020=no
-file_021=no
-file_022=no
-file_023=no
 [OTHER_FILES]
 file_000=no
 file_001=no
@@ -95,9 +89,6 @@ file_017=no
 file_018=no
 file_019=no
 file_020=no
-file_021=no
-file_022=no
-file_023=no
 [FILE_INFO]
 file_000=usb_descriptors.c
 file_001=main.c
@@ -119,10 +110,7 @@ file_016=..\..\..\Microchip\USB\usb_device_local.h
 file_017=specific.h
 file_018=controlLn.h
 file_019=HardwareProfile - PICDEM FSUSB.h
-file_020=HardwareProfile - PIC18F46J50 PIM.h
-file_021=HardwareProfile - PIC18F47J53 PIM.h
-file_022=HardwareProfile - PIC18F87J50 PIM.h
-file_023=HardwareProfile - Low Pin Count USB Development Kit.h
+file_020=HardwareProfile - Low Pin Count USB Development Kit.h
 [SUITE_INFO]
 suite_guid={5B7D72DD-9861-47BD-9F60-2BE967BF8416}
 suite_state=
