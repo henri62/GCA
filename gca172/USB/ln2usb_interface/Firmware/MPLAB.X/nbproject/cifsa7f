@@ -1,0 +1,11 @@
+#
+#Sat Sep 29 13:22:50 CEST 2012
+4550.languagetoolchain.dir=/opt/microchip/mplabc18/v3.40/bin
+14k50.com-microchip-mplab-nbide-toolchainC18-C18LanguageToolchain.md5=db1c0674398f590b65c1c1c4fb1e2b92
+conf.ids=4550,14k50
+14k50.languagetoolchain.version=3.40
+14k50.languagetoolchain.dir=/opt/microchip/mplabc18/v3.40/bin
+4550.languagetoolchain.version=3.40
+com-microchip-mplab-nbide-embedded-makeproject-MakeProject.md5=485c926ba2cd86275d1848ca44c226c5
+4550.com-microchip-mplab-nbide-toolchainC18-C18LanguageToolchain.md5=db1c0674398f590b65c1c1c4fb1e2b92
+host.platform=linux

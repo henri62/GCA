@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 2     // zero is developer version
-#define MINOR_VER 'c'	// Minor version character
+#define MINOR_VER 'd'	// Minor version character
 
 #define EVT_NUM 5
 #define EVperEVT 0
@@ -44,8 +44,11 @@
 #define EE_FBSTART EE_SWEND + 2  // 2 short event port 1
 #define EE_FBEND EE_FBSTART + 2  // 2 short event port 1
 
-#define EE_SWSTATE  0x0200
+#define EE_SWSTATE  0x0100
 #define EE_BOOT 0x03FF
+
+// for Uhlenbrock FRED in dispatch mode
+#define GPBUSY
 
 // values
 #define MAGIC 93

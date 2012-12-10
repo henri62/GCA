@@ -30,6 +30,7 @@
 #include "cbusdefs.h"
 #include "commands.h"
 #include "lnconst.h"
+#include "isr.h"
 
 #pragma udata access VARS_LOCONET1
 near byte work;
@@ -245,7 +246,7 @@ void scanLN(void) {
         LNTX = LNWrittenBit;
       }
     }
-//    LNSCAN = PORT_OFF;
+    //    LNSCAN = PORT_OFF;
   }
 }
 
@@ -309,6 +310,7 @@ void checksumLN(byte idx) {
 }
 
 void longAck(byte i, byte opc, byte rc) {
+
   LNBuffer[i].len = 4;
   LNBuffer[i].data[0] = OPC_LONG_ACK;
   LNBuffer[i].data[1] = (opc & 0x7F);
@@ -322,6 +324,7 @@ void longAck(byte i, byte opc, byte rc) {
 
     samplepart = 2;
     mode = LN_MODE_WRITE_REQ;
+    TMR0L = 255;
   }
 }
 
@@ -462,6 +465,11 @@ void ln2CBus(void) {
         throttleid[slot] = LNPacket[12];
         throttleid[slot] <<= 7;
         throttleid[slot] += LNPacket[11];
+#ifdef GPBUSY     // for Uhlenbrock FRED in dispatch mode
+        LNBuffer[LNBuf_WP].len = 2;
+        LNBuffer[LNBuf_WP].data[0] = OPC_GPBUSY;
+        checksumLN(LNBuf_WP);
+#endif
         longAck(LNBuf_WP, OPC_WR_SL_DATA, 0x7F); // weird return code
       } else if (slot == 0x7B) {
         /* Fast Clock Slot */
@@ -1247,7 +1255,10 @@ void send2LocoNet(CANMsg *cmsg) {
         LNFClk.wday = cmsg->b[d3] & 0x0F;
         LNFClk.rlovr++;
       }
-      LNFClk.hours = cmsg->b[d2];
+      if (LNFClk.hours != cmsg->b[d2]) {
+        LNFClk.hours = cmsg->b[d2];
+        fclk90s_timer = 1;
+      }
       LNFClk.mins = cmsg->b[d1];
       LNFClk.sync = TRUE;
       LNFClk.issync = TRUE;
@@ -1255,7 +1266,6 @@ void send2LocoNet(CANMsg *cmsg) {
         LNFClk.rate = cmsg->b[d4];
         doFastClock();
       }
-
       break;
 
     case OPC_ACON:

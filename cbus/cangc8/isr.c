@@ -33,6 +33,7 @@ near unsigned short led250ms_timer;
 near unsigned short io_timer;
 near unsigned short led_timer;
 near unsigned short dim_timer;
+near unsigned short fcr_timer;
 
 //#pragma code ISR
 
@@ -49,27 +50,34 @@ near unsigned short dim_timer;
 
 void isr_low(void) {
 
-    if (PIR3bits.FIFOWMIF == 1) {
-        PIR3bits.FIFOWMIF = 0;
-        canbusFifo();
+  if (PIR3bits.FIFOWMIF == 1) {
+    PIR3bits.FIFOWMIF = 0;
+    canbusFifo();
+  }
+
+  // Timer2 interrupt handler
+  if (PIR1bits.TMR2IF) {
+    PIR1bits.TMR2IF = 0; // Clear interrupt flag
+
+    // I/O timeout - 5ms
+    if (--led_timer == 0) {
+      led_timer = 5;
+      doLEDTimers();
     }
 
-    // Timer2 interrupt handler
-    if (PIR1bits.TMR2IF) {
-        PIR1bits.TMR2IF = 0; // Clear interrupt flag
-
-        // I/O timeout - 5ms
-        if (--led_timer == 0) {
-            led_timer = 5;
-            doLEDTimers();
-        }
-
-        // Timer 500ms
-        if (--led500ms_timer == 0) {
-            led500ms_timer = 500;
-            doLEDs();
-            doFC = TRUE;
-        }
+    // Timer 500ms
+    if (--led500ms_timer == 0) {
+      led500ms_timer = 500;
+      doLEDs();
+      doFC = TRUE;
     }
-    PIR3 = 0;
+    // Timer 10s
+    if (--fcr_timer == 0) {
+      rateFL ^= 1;
+      if (rateFL) fcr_timer = 3000;
+      else fcr_timer = 17000;
+      dispFC = TRUE;
+    }
+  }
+  PIR3 = 0;
 }

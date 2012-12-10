@@ -68,6 +68,8 @@ extern near unsigned char  isLearning;
 extern near unsigned char  doEV;
 extern near unsigned char  evIdx;
 extern near unsigned char  doFC;
+extern near unsigned char dispFC;
+extern near unsigned char rateFL;
 
 extern const rom unsigned char bootflag;
 

@@ -64,22 +64,28 @@ unsigned char parseCmd(CANMsg *cmsg) {
 
     case OPC_FCLK:
       // fast clock:
-      FastClock.mins = cmsg->b[d1];
-      FastClock.hours = cmsg->b[d2];
-      FastClock.wday = cmsg->b[d3] & 0x0F;
-      FastClock.mon = (cmsg->b[d3] & 0xF0) >> 4;
-      if (cmsg->b[d4] > 0) {
-        FastClock.rate = cmsg->b[d4];
-        FastClock.run = TRUE;
+      if (FastClock.issync) {
+        FastClock.mins = cmsg->b[d1];
+        FastClock.hours = cmsg->b[d2];
+        FastClock.wday = cmsg->b[d3] & 0x0F;
+        FastClock.mon = (cmsg->b[d3] & 0xF0) >> 4;
+        if (cmsg->b[d4] > 0) {
+          FastClock.rate = cmsg->b[d4];
+          FastClock.run = TRUE;
+        } else {
+          FastClock.run = FALSE;
+        }
+        FastClock.mday = cmsg->b[d5];
+        FastClock.temp = cmsg->b[d6];
+        FastClock.issync = TRUE;
+        FastClock.synctime = 0;
+        FastClock.timer = 0;
+        displayFastClock();
       } else {
-        FastClock.run = FALSE;
+        FastClock.timer = (120 / FastClock.rate) + 1;
+        doFastClock();
+        FastClock.issync = TRUE;
       }
-      FastClock.mday = cmsg->b[d5];
-      FastClock.temp = cmsg->b[d6];
-      FastClock.issync = TRUE;
-      FastClock.synctime = 0;
-      FastClock.timer = 0;
-      displayFastClock();
       break;
 
 

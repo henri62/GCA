@@ -166,6 +166,11 @@ void doFastClock(void) {
   }
 }
 
+unsigned char checkClockSwitch(void) {
+  unsigned char val = CLSW;
+  return !val;
+}
+
 unsigned char checkFlimSwitch(void) {
   unsigned char val = SW;
   return !val;

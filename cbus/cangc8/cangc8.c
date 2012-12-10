@@ -55,12 +55,12 @@ far DisplayDef DisplayB[MAXDISPLAYS];
  */
 #pragma udata access VARS_MAIN
 
-near unsigned char can_transmit_timeout;
-near unsigned char can_transmit_failed;
-near unsigned char can_bus_off;
+//near unsigned char can_transmit_timeout;
+//near unsigned char can_transmit_failed;
+//near unsigned char can_bus_off;
 near unsigned short NN_temp;
 near unsigned char CANID;
-near unsigned char Latcount;
+//near unsigned char Latcount;
 near unsigned char NV1;
 near unsigned char led1timer;
 near unsigned char ioIdx;
@@ -71,6 +71,8 @@ near unsigned char doSOD;
 near unsigned char doEV;
 near unsigned char evIdx;
 near unsigned char doFC;
+near unsigned char dispFC;
+near unsigned char rateFL;
 
 volatile unsigned char __LED2 = 0;
 
@@ -121,13 +123,19 @@ void main(void) {
   byte i;
   byte l3 = 1;
   unsigned char swTrig = 0;
+  unsigned char p5Trig = 0;
+  unsigned char p6Trig = 0;
+  unsigned char p7Trig = 0;
+  unsigned char p8Trig = 0;
 
   lDelay();
 
   led1timer = 0;
+  fcr_timer = 0;
   doEV = FALSE;
   doFC = FALSE;
   evIdx = 0;
+  rateFL = 0;
 
   ee2fc();
 
@@ -199,6 +207,76 @@ void main(void) {
     if (doFC) {
       doFC = FALSE;
       doFastClock();
+    }
+
+    if (dispFC) {
+      dispFC = FALSE;
+      displayFastClock();
+    }
+
+    if (!PORT5 && !p5Trig) {
+      p5Trig = 1;
+      FastClock.timer = (120 / FastClock.rate) + 1;
+      FastClock.issync = FALSE;
+      FastClock.mins = 0;
+      if (FastClock.hours < 23)
+        FastClock.hours++;
+      else
+        FastClock.hours = 0;
+      doFC = TRUE;
+    } else if (PORT5 && p5Trig) {
+      p5Trig = 0;
+    }
+
+    if (!PORT6 && !p6Trig) {
+      p6Trig = 1;
+      FastClock.timer = (120 / FastClock.rate) + 1;
+      FastClock.issync = FALSE;
+      FastClock.mins = 0;
+      if (FastClock.hours > 0)
+        FastClock.hours--;
+      else
+        FastClock.hours = 23;
+      doFC = TRUE;
+    } else if (PORT6 && p6Trig) {
+      p6Trig = 0;
+    }
+
+    if (!PORT7 && !p7Trig) {
+      p7Trig = 1;
+
+      switch (FastClock.rate) {
+        case 1:
+          FastClock.rate = 2;
+          break;
+        case 2:
+          FastClock.rate = 3;
+          break;
+        case 3:
+          FastClock.rate = 4;
+          break;
+        case 4:
+          FastClock.rate = 6;
+          break;
+        case 6:
+          FastClock.rate = 12;
+          break;
+        case 12:
+          FastClock.rate = 20;
+          break;
+        case 20:
+          FastClock.rate = 1;
+          break;
+        default:
+          FastClock.rate = 1;
+          break;
+      }
+
+      FastClock.timer = (120 / FastClock.rate) + 1;
+      FastClock.issync = FALSE;
+      doFC = TRUE;
+    } else if (PORT7 && p7Trig) {
+      p7Trig = 0;
     }
 
     if (checkFlimSwitch() && !swTrig) {

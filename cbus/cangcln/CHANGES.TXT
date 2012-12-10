@@ -1,9 +1,13 @@
 cangcln cbus loconet interface
 
 
+cangcln 2.d
+    fix for Uhlenbrock FRED in dispatch mode
+    fix LocoNet FastClock
+
 cangcln 2.c
   new feature
-    NV1 bit3 (0x08) enable LN switch state save at poweroff (0-2047) and reply
+    NV1 bit3 (0x08) enable LN Switch-state save at poweroff (0-2047) and reply
     NV1 bit4 (0x10) enable LN FastClock Master at LN if slave at CBUS
 
   bug fix in LN send/recv logic
