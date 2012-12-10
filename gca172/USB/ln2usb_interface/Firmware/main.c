@@ -570,9 +570,14 @@ void UserInit(void)
 // PORTB: RB7 RB6 - ICSP
 //  RB0 - LocoNet input - genereaza intrerupere la inceputul comunicatiei
 //  RB1 - Loconet output -
+#if defined(__18F4550) || defined(__18F2550)
    TRISB  = 0b00000001;
    LATB   = 0b00000000;
-
+#elif defined(__18F14K50) //RC0 = LN_IN_PIN
+   ANSEL  = 0x00; //deactivate all the analog pins
+   TRISC  = 0b00000001;
+   LATC   = 0b00000000;
+#endif
 #if defined(__18F4550)
    //PORTD: LCD - all outputs
    TRISD = 0x00;
@@ -580,18 +585,16 @@ void UserInit(void)
 #endif
 
 // configureaza intreruperile
-//   INTCON = 0b01000000; //periferal interrupt enasble
+//   INTCON = 0b01000000; //periferal interrupt enable
    INTCONbits.PEIE = 1;
-   INTCON2bits.INTEDG0=0;      // intrerupere RB0 pe frontul cazator, ca sa detectez trecerea din 1 in 0 - start comunicatie.
+   INTCON2bits.INTEDG0=0;      // INT0 interrupt on fallig edge (RB0 - 2550/4550, RC0 -14K50) to detect the start bit.
 
 
 // RB0 interrupt activ
-//    lcdInit();
-//    lcdScrieChar('0');
    Usb2LnFlags.bSendUsbData=0;
 
-   INTCONbits.INT0IE=1; //activeaza intreruperea RB0
-//    INTCONbits.TMR0IE=1; //activeaza intreruperea TMR0
+   INTCONbits.INT0IE=1; // Activate INT0 interrupt
+//    INTCONbits.TMR0IE=1; // Activate TMR0 interrupt
    INTCONbits.GIE = 1;
 }//end UserInit
 
