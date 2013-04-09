@@ -27,7 +27,7 @@
 
 
 #define MAJOR_VER 2
-#define MINOR_VER 'a'	// Minor version character
+#define MINOR_VER 'b'	// Minor version character
 
 #define EVT_NUM 17
 #define EVperEVT 0
@@ -58,6 +58,7 @@
 #define CFG_PULSETIME_1000 0x08
 #define CFG_PULSETIME_2000 0x0C
 #define CFG_SOD_REPORTALL 0x10
+#define CFG_PULSETIME_LONG 0x20         // for 1500 3000 6000 12000ms Pulse Time
 
 
 

@@ -449,6 +449,8 @@ void setOutput(ushort nn, ushort addr, byte on) {
                         Ports[i].timer = 20;
                     else if (pulsetime == CFG_PULSETIME_2000)
                         Ports[i].timer = 40;
+                    if (NV1 & CFG_PULSETIME_LONG)
+                      Ports[i].timer = Ports[i].timer * 6;
                 }
             }
         }

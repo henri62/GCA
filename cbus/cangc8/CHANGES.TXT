@@ -4,5 +4,11 @@ cangc8:         v2.b
   new feature
     NV1 bit2 (0x04) enable CBUS FastClock Master in case of missing other master
     NV1 bit3 (0x08) save FastClock to EEPROM at Track-Power off
+    PORT5 low mins=0 hour++
+    PORT6 low mins=0 hour--
+    PORT7 low change rate to next value
+
+cangc8:         v2.a
+    display FastClock
 
 
