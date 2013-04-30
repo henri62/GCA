@@ -248,7 +248,11 @@ void doTimedOff(int i) {
             if (Ports[i].cfg & PORTCFG_IN) {
                 CANMsg canmsg;
                 // Send an OPC.
-                canmsg.b[d0] = Ports[i].cfg & PORTCFG_INV ? OPC_ASON : OPC_ASOF;
+                if (NV1 & CFG_SHORTEVENTS) {
+                  canmsg.b[d0] = Ports[i].cfg & PORTCFG_INV ? OPC_ASON : OPC_ASOF;
+                } else {
+                  canmsg.b[d0] = Ports[i].cfg & PORTCFG_INV ? OPC_ARON : OPC_AROF;
+                }
                 canmsg.b[d1] = (NN_temp / 256) & 0xFF;
                 canmsg.b[d2] = (NN_temp % 256) & 0xFF;
                 canmsg.b[d3] = (Ports[i].addr / 256) & 0xFF;
@@ -295,8 +299,11 @@ unsigned char checkInput(unsigned char idx, unsigned char sod) {
                     } else if (val) {
                         canmsg.b[d0] = OPC_ARON;
                     }
-                } else
+                } else if (NV1 & CFG_SHORTEVENTS) {
                     canmsg.b[d0] = val ? OPC_ASON : OPC_ASOF;
+                } else {
+                    canmsg.b[d0] = val ? OPC_ARON : OPC_AROF;
+                }
                 if (canmsg.b[d0] > 0) {
                     canmsg.b[d1] = (NN_temp / 256) & 0xFF;
                     canmsg.b[d2] = (NN_temp % 256) & 0xFF;

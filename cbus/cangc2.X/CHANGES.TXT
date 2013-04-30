@@ -1,5 +1,8 @@
 
 
+cangc2:         v2.c
+  fix for short/long rm messages
+
 cangc2:         v2.b
   new feature
     NV1 bit5 (0x20) Multiply Pulsetime by 6 for 1500/3000/6000/12000ms pulse
