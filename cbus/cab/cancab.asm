@@ -2831,11 +2831,29 @@ mskloop	clrf	POSTINC0
 
 ;set up LCD
 		clrwdt
+
+		; LCD init Routine
+		bsf		LCD_PORT,LCD_RS
+		bsf		LCD_PORT,LCD_EN
+		movlw	B'11110000'
+		call dely
+		call dely
+		call dely
+		call dely
 		bcf		LCD_PORT,LCD_RS	;control register
-		movlw	B'00110011'		;reset and 4 bit mode
-		call	lcd_wrt
-		movlw	B'00110010'		;reset and 4 bit mode sequence
-		call	lcd_wrt
+		bcf		LCD_PORT,LCD_EN
+
+		; Go to 4 bits mode
+		movlw	B'00110000'
+		call 	lcd_wrt_init
+		call 	dely
+		movlw	B'00110000'
+		call 	lcd_wrt_init
+		movlw	B'00110000'
+		call 	lcd_wrt_init
+		movlw	B'00100000'
+		call 	lcd_wrt_init
+
 		movlw	B'00101000'		;2 lines, 5x7 dots
 		call	lcd_wrt
 		movlw	B'00000110'		;Cursor left to right, don't shift display
@@ -3387,7 +3405,34 @@ lcd_wrt	movwf	Temp		;store char
 		swapf	Temp,F			;restore W
 		movf	Temp,W
 		return
+
+;*********************************************************
+;		Write a char to the LCD - special init , sends only 4 upper bits
+;		The register must be set by calling routine
+;		0 is control reg, 1 is data reg
+;		Char to be sent is in W		
+lcd_wrt_init
+		movwf	Temp		;store char
 		
+		movlw	B'00001111' ;clear data lines
+		andwf	LCD_PORT,F
+		
+		movlw	B'11110000'	;upper nibble
+		andwf	Temp,W
+		iorwf	LCD_PORT,F	;data to LCD
+
+		bsf		LCD_PORT,LCD_EN		;strobe
+		nop
+		nop
+		bcf		LCD_PORT,LCD_EN
+
+		call	dely
+		swapf	Temp,F			;restore W
+		movf	Temp,W
+		return
+	
+
+
 ;**************************************************************************
 
 ;		LCD next line (CR,LF)
