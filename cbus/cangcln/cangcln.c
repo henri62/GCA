@@ -84,7 +84,7 @@ byte swState[256];
  */
 
 #pragma romdata parameters
-const rom unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGCLN, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
+const unsigned char params[32] = {MANU_ROCRAIL, MINOR_VER, MTYP_CANGCLN, EVT_NUM, EVperEVT, NV_NUM, MAJOR_VER};
 
 #pragma rom bootflag
 

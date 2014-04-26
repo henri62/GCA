@@ -44,6 +44,6 @@ typedef unsigned char byte;
 
 extern near unsigned char Latcount;
 extern near unsigned short NN_temp;
-extern const rom unsigned char params[32];
+extern const unsigned char params[32];
 
 #endif	// __PROJECT_H
