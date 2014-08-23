@@ -3,7 +3,7 @@
 Define CONF_WORD = 0x3f50
 AllDigital
 CMCON = 7
-TRISA = %00011001
+TRISA = %01011001
 TRISB = %00000000
 PORTA = 255
 PORTB = 0
@@ -24,6 +24,7 @@ Symbol greensign = RA7
 Dim position As Byte
 Dim speed As Word
 PWMon 1, 1
+start_motor = 0
 fbup = 1
 fbdn = 1
 Read 0, position
@@ -33,6 +34,7 @@ Endif
 Gosub signals
 main:
 	While cmd_down = cmd_up  'do nothing before 1st command
+		WaitMs 100
 	Wend
 	If cmd_up = 0 Then  'bridge cmd up
 		If position = 0 Then  'ís bridge down?
@@ -48,11 +50,11 @@ Goto main
 End                                               
 bridge_up:
 	Gosub signals
-	speed = 200
+	speed = 300
 	PWMduty 1, speed  'speed of motor set to 30%
 	rev = 0
 	fwd = 1  'run forward
-	start_motor = 1  'inhibit output L293
+	start_motor = 1  'enable output L293
 	While limit_up = 1  'wait for limit switch
 		If speed < 800 Then
 			speed = speed + 4  'increase motor speed
@@ -71,7 +73,7 @@ bridge_up:
 Return                                            
 bridge_down:
 	Gosub signals
-	speed = 200
+	speed = 300
 	PWMduty 1, speed  'speed of motor set to 30%
 	fwd = 0
 	rev = 1  'run backward
@@ -85,7 +87,7 @@ bridge_down:
 	Wend
 	fwd = 1
 	rev = 0  'run forward
-	PWMduty 1, 150  'speed of motor
+	PWMduty 1, 300  'speed of motor
 'now start bouncing
 	While limit_down = 0  'wait for limit switch
 	Wend
