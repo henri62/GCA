@@ -8,109 +8,67 @@ TRISB = %00000000
 PORTA = 255
 PORTB = 0
 
-Symbol fwd = RB5
-Symbol rev = RB4
-Symbol start_motor = RB3
-Symbol red_led = RB6
-Symbol green_led = RB7
-Symbol fbup = RA1
-Symbol fbdn = RA2
-Symbol limit_up = RA3
-Symbol limit_down = RA4
-Symbol redsign = RA5
-Symbol cmd_down = RA6
-Symbol cmd_up = RA0
-Symbol greensign = RA7
-Dim position As Byte
-Dim speed As Word
+Symbol fwd = PORTB.4
+Symbol rev = PORTB.5
+Symbol red_led = PORTB.6
+Symbol green_led = PORTB.7
+Symbol fbup = PORTA.1
+Symbol fbdn = PORTA.2
+Symbol limit_up = PORTA.3
+Symbol limit_dn = PORTA.4
+Symbol redsign = PORTA.5
+Symbol yellowsign = PORTA.6
+Symbol greensign = PORTA.7
+Dim direction As Byte
 PWMon 1, 1
-fbup = 1
-fbdn = 1
-Read 0, position
-If position > 1 Then
-	position = 0
-Endif
-Gosub signals
+PWMduty 1, 100          'speed of motor ,  can be between 1 and 1023
+
 main:
-	While cmd_down = cmd_up  'do nothing before 1st command
-	Wend
-	If cmd_up = 0 Then  'bridge cmd up
-		If position = 0 Then  'ís bridge down?
-			Gosub bridge_up
-		Endif
+If PORTA.0 = 0 Then
+	direction = 0
+Else
+	direction = 1
+Endif
+Select Case direction
+Case 1          'bridge should be up
+	red_led = 1
+	green_led = 0
+	If limit_up = 0 Then          'bridge is upper most position
+		fwd = 0          'stop the motor
+		rev = 0
+		fbup = 0
+		fbdn = 1
+		redsign = 0
+		yellowsign = 0
+		greensign = 1
+	Else
+		fbup = 1
+		fbdn = 1
+		fwd = 1          'run forward
+		rev = 0
+		redsign = 1
+		yellowsign = 1
+		greensign = 0
 	Endif
-	If cmd_down = 0 Then  'bridge cmd down
-		If position = 1 Then  'ís bridge up?
-			Gosub bridge_down
-		Endif
+Case Else          'bridge must be in down position
+	red_led = 0
+	green_led = 1
+	redsign = 1
+	yellowsign = 1
+	greensign = 0
+	If limit_dn = 0 Then          'bridge is lower most position
+		fbup = 1
+		fbdn = 0
+		fwd = 0          'stop the motor
+		rev = 0
+	Else
+		fbup = 1
+		fbdn = 1
+		fwd = 0          'run backward
+		rev = 1
 	Endif
+EndSelect
+WaitMs 50          'there is no hurry
+
 Goto main
 End                                               
-bridge_up:
-	Gosub signals
-	speed = 200
-	PWMduty 1, speed  'speed of motor set to 30%
-	rev = 0
-	fwd = 1  'run forward
-	start_motor = 1  'inhibit output L293
-	While limit_up = 1  'wait for limit switch
-		If speed < 800 Then
-			speed = speed + 4  'increase motor speed
-			PWMduty 1, speed  'speed of motor
-		Endif
-		WaitMs 10
-	Wend
-	start_motor = 0
-	position = 1  'bridge = up now
-	Write 0, position
-	WaitMs 1000
-	redsign = 0
-	greensign = 1
-	fbup = 0
-	fbdn = 1
-Return                                            
-bridge_down:
-	Gosub signals
-	speed = 200
-	PWMduty 1, speed  'speed of motor set to 30%
-	fwd = 0
-	rev = 1  'run backward
-	start_motor = 1  'enable output L293
-	While limit_down = 1  'wait for limit switch
-		If speed < 800 Then
-			speed = speed + 4  'increase motor speed
-			PWMduty 1, speed  'speed of motor
-		Endif
-		WaitMs 10
-	Wend
-	fwd = 1
-	rev = 0  'run forward
-	PWMduty 1, 150  'speed of motor
-'now start bouncing
-	While limit_down = 0  'wait for limit switch
-	Wend
-	fwd = 0
-	rev = 1  'run backward
-	While limit_down = 1  'wait for limit switch
-	Wend
-	start_motor = 0  'diable output L293
-	position = 0  'bridge = down now
-	Write 0, position
-	WaitMs 1000
-	fbup = 1
-	fbdn = 0
-Return                                            
-signals:
-	If position = 0 Then
-		red_led = 1
-		green_led = 0
-		redsign = 1
-		greensign = 0
-	Else
-		red_led = 1
-		green_led = 0
-		redsign = 1
-		greensign = 0
-	Endif
-
-Return                                            
