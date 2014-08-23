@@ -1,0 +1,18 @@
+Bill of materials
+
+Qty	 Reference	 description
+4	 R1,R2,R4,R5	 1K
+1	 R3	 330E
+1	 C1	 ELCO 1000 uF 25V
+1	 C2	 ELCO 10 uF 25V
+1	 C3	 100 nF
+1	 Le1	 LED 3mm green
+1	 Le2	 LED 3mm red
+1	 VR1	 7805
+1	 U1	 16F628 with socket
+1	 U2	 L293B
+2	 J1,J3	 AKL012-04
+1	 J2	 AKL012-03
+2	 J4,J5	 AKL012-02
+1	 F1	 FUSE 0.9 MFR
+1	 GR1	 BRIDGE B80C1500 round
