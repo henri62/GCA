@@ -31,7 +31,6 @@ Symbol cmd_up = RA0
 Symbol greensign = RA7
 Dim position As Bit
 Dim speed As Word
-'Dim runtime_calculated As Word  'totsl time for runnung up to be calibrated
 Dim runtime_up As Word
 Dim runtime_down As Word
 Dim runtime As Word
@@ -82,16 +81,18 @@ Goto main
 End                                               
 
 Proc bridge()
-	PWMduty 1, speed  'speed of motor set to minimum
-	rev = position
-	fwd = Not position  'run forward
 	runtime = 0
-	red_led = Not position
-	green_led = position
 	If position = 0 Then  'bridge going up
+		redsign = 1
+		greensign = 0
+		WaitMs 1000
 		speed = 150
+		PWMduty 1, speed  'speed of motor set to minimum
 		switchtime = runtime_up - breaktime
+		rev = 0
+		fwd = 1  'set direction
 		While limit_up = 1  'wait for limit switch
+			WaitMs ctrl_pause
 			runtime = runtime + 1
 			If runtime < breaktime Then
 				If speed < 550 Then
@@ -105,18 +106,25 @@ Proc bridge()
 				Endif
 			Endif
 			PWMduty 1, speed  'speed of motor
-			WaitMs ctrl_pause
 		Wend
-		WaitMs 1000
+		fwd = 0
+		rev = 0
 		redsign = 0
+		WaitMs 1000
 		greensign = 1
+		WaitMs 2000
 	Else  'bridge going down
 		redsign = 1
+		WaitMs 1000
 		greensign = 0
 		WaitMs 2000
 		speed = 150
+		PWMduty 1, speed  'speed of motor set to minimum
 		switchtime = runtime_down - breaktime
+		rev = 1
+		fwd = 0  'set direction
 		While limit_down = 1  'wait for limit switch
+			WaitMs ctrl_pause
 			runtime = runtime + 1
 			If runtime < breaktime Then
 				If speed < 550 Then
@@ -130,30 +138,35 @@ Proc bridge()
 				Endif
 			Endif
 			PWMduty 1, speed  'speed of motor
-			WaitMs ctrl_pause
 		Wend
+		rev = 0
+		fwd = 0
 	Endif
-	fwd = 0  'stop motor
-	rev = 0
+'now calculate the difference between old en new time and correct it
 	If position = 0 Then  'bridge went up
 		position = 1
 		If runtime > runtime_up Then
-			runtime = runtime / 30
+			runtime = runtime - runtime_up
+			runtime = runtime / 5
 			runtime_up = runtime_up + runtime
 		Else
-			runtime = runtime / 30
+			runtime = runtime_up - runtime
+			runtime = runtime / 5
 			runtime_up = runtime_up - runtime
 		Endif
 	Else  'bridge went down
 		position = 0
 		If runtime > runtime_down Then
-			runtime = runtime / 30
+			runtime = runtime - runtime_down
+			runtime = runtime / 5
 			runtime_down = runtime_down + runtime
 		Else
-			runtime = runtime / 30
+			runtime = runtime_down - runtime
+			runtime = runtime / 5
 			runtime_down = runtime_down - runtime
 		Endif
 	Endif
+'*************** end calculation
 	WaitMs 1000
 	fbup = Not position
 	fbdn = position
