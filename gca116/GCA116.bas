@@ -81,6 +81,8 @@ Goto main
 End                                               
 
 Proc bridge()
+	fbup = 1
+	fbdn = 1
 	runtime = 0
 	If position = 0 Then  'bridge going up
 		redsign = 1
