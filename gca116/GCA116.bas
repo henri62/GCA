@@ -8,7 +8,8 @@
 '25-8-14 version v1.17 red led switched before going down en brigde delayed
 '_                     Min_speed is lower on going down
 '-                     extra delay between red sign on and start bridge down
-
+'27-8-14 VERSION V1.23 eeprom used for storing up- and down time.
+'28-8-14 VERSION V1.24 improved eeprom storage.
 Define CONF_WORD = 0x3f50
 'Define SIMULATION_WAITMS_VALUE = 1
 AllDigital
@@ -38,6 +39,7 @@ Dim switchtime As Word  'time when motor should slow down
 Dim breaktime As Word  'time that is needed from min_ tot max_speed
 Const ctrl_pause = 15
 Const speed_step = 2
+
 PWMon 1, 1
 fbup = 1
 fbdn = 1
@@ -47,8 +49,14 @@ If limit_up = 0 Then
 		position = 1
 	Endif
 Endif
-runtime_up = 900
-runtime_down = 900
+Call handle_eeprom(0)
+If runtime_up > 5000 Then
+	runtime_up = 1000
+Endif
+If runtime_down > 5000 Then
+	runtime_down = 1000
+Endif
+Call handle_eeprom(1)
 breaktime = 400
 WaitMs 3000
 redsign = 1
@@ -84,6 +92,7 @@ Proc bridge()
 	fbup = 1
 	fbdn = 1
 	runtime = 0
+	Call handle_eeprom(0)
 	If position = 0 Then  'bridge going up
 		redsign = 1
 		greensign = 0
@@ -169,14 +178,25 @@ Proc bridge()
 		Endif
 	Endif
 '*************** end calculation
+	Call handle_eeprom(1)
 	WaitMs 1000
 	fbup = Not position
 	fbdn = position
 End Proc                                          
 
-
-
-
+Proc handle_eeprom(task As Bit)
+	If task = 0 Then  'this is reading eeprom
+		Read 20, runtime_up.LB
+		Read 21, runtime_up.HB
+		Read 22, runtime_down.LB
+		Read 23, runtime_down.HB
+	Else  'write to eeprom
+		Write 20, runtime_up.LB
+		Write 21, runtime_up.HB
+		Write 22, runtime_down.LB
+		Write 23, runtime_down.HB
+	Endif
+End Proc                                          
 
 	
 	
