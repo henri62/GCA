@@ -5,8 +5,6 @@
 'RA1 used for decreasing speeds
 'V1.2  feed-back also activated when same position is commanded.
 Define CONF_WORD = 0x3f50
-
-
 AllDigital
 CMCON = 7
 TRISA = %00111111
@@ -22,8 +20,9 @@ Symbol cmd_down = RA5
 Symbol fbup = RA6
 Symbol fbdn = RA7
 Symbol redsign = RB0
-Symbol yellowsign = RB1  '********* Not implemented yet
+'Symbol yellowsign = RB1 ********* NOT IMPLEMENTED YET
 Symbol greensign = RB2
+'symbol PWM output = RB3
 Symbol redled = RB4
 Symbol greenled = RB5
 Symbol fwd = RB6
@@ -39,6 +38,15 @@ Dim min_speed As Word
 Dim max_speed As Word
 Dim value As Byte
 Call init_value()
+Read 0, value
+If value > 0 Then  'FIRST TIME THIS PROGRAM IS RUNNING.
+	min_speed = 250
+	max_speed = 750
+	runtime_up = 1000
+	runtime_down = 1000
+	Call handle_eeprom(1)
+	Write 0, 0
+Endif
 Call handle_eeprom(0)
 Const ctrl_pause = 15
 Const speed_step = 2
@@ -67,12 +75,11 @@ main:
 				If limit_up = 1 Then  'is it already up?
 					Call bridge()  'no
 				Endif
-			Else  'signal for rocrail, here feed back is first disabled and after delay enabled agaain
+			Else  'signal for rocrail, here feed back is first disabled and after delat enabled agaain
 				fbup = 1
 				fbdn = 1
 				WaitMs 1000
-				Call feed_back(position, 0)
-				Call feed_back(position, 1)
+				Call feed_back(position)
 			Endif
 		Else  'bridge cmd down
 			If position = 1 Then  'ís bridge up?
@@ -81,9 +88,10 @@ main:
 				If limit_down = 1 Then  'is it already down?
 					Call bridge()  'no
 				Endif
-			Else  'signal for rocrail, here feed back is first disabled and after delay enabled agaain
-				Call feed_back(position, 0)
-				Call feed_back(position, 1)
+			Else  'signal for rocrail
+				fbup = 1
+				fbdn = 1
+				Call feed_back(position)
 			Endif
 		Endif
 	Endif
@@ -132,11 +140,12 @@ Proc check_keys()
 			greenled = position
 			redled = Not position
 		Endif
-	WaitMs 20
+		WaitMs 20
 End Proc                                          
 
 Proc bridge()
-	Call feed_back(position, 0)
+	fbup = 1
+	fbdn = 1
 	runtime = 0
 	Call signs(1, 0)
 	Call handle_eeprom(0)
@@ -191,7 +200,6 @@ Proc bridge()
 			PWMduty 1, speed  'speed of motor
 		Wend
 		Call ctrl_motor(0, 0)  'motor stop
-		WaitMs 1000
 		Call signs(1, 0)
 	Endif
 'now calculate the difference between old en new time and correct it
@@ -219,7 +227,7 @@ Proc bridge()
 '*************** end calculation
 	Call handle_eeprom(1)
 	position = Not position
-	Call feed_back(position, 1)
+	Call feed_back(position)
 End Proc                                          
 
 Proc handle_eeprom(task As Bit)
@@ -244,15 +252,10 @@ Proc handle_eeprom(task As Bit)
 	Endif
 End Proc                                          
 
-Proc feed_back(pos As Bit, onoff As Bit)
+Proc feed_back(pos As Bit)
 	WaitMs 1000
-	If onoff = 1 Then
-		fbdn = pos
-		fbup = Not pos
-	Else
-		fbdn = 1
-		fbup = 1
-	Endif
+	fbdn = position
+	fbup = Not position
 End Proc                                          
 
 Proc init_value()
@@ -270,7 +273,6 @@ End Proc
 Proc signs(red As Bit, green As Bit)
 	redsign = red
 	greensign = green
-	yellowsign = 0
 End Proc                                          
 Proc ctrl_motor(dir As Bit, onoff As Bit)
 	If onoff = 0 Then
