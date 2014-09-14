@@ -42,18 +42,17 @@ Call handle_eeprom(0)
 Const ctrl_pause = 15
 Const speed_step = 2
 PWMon 1, 1
-fbup = 1
-fbdn = 1
-position = 0
-If limit_up = 0 Then
+position = 0  'assume bridge is down
+Call signs(1, 0)
+If limit_up = 0 Then  'check otherwise
 	If limit_down = 1 Then
-		position = 1
+		position = 1  'bridge is up
+		Call signs(0, 1)
 	Endif
 Endif
+Call feed_back(position)
 breaktime = 400
-WaitMs 3000
-redsign = 1
-greensign = 0
+WaitMs 2000
 greenled = 1
 redled = 1
 
@@ -67,7 +66,7 @@ main:
 				If limit_up = 1 Then  'is it already up?
 					Call bridge()  'no
 				Endif
-			Else  'signal for rocrail
+			Else  'signal for rocrail, here feed back is first disabled and after delat enabled agaain
 				fbup = 1
 				fbdn = 1
 				WaitMs 1000
@@ -139,16 +138,14 @@ Proc bridge()
 	fbup = 1
 	fbdn = 1
 	runtime = 0
+	Call signs(1, 0)
 	Call handle_eeprom(0)
 	If position = 0 Then  'bridge going up
-		redsign = 0
-		greensign = 1
 		WaitMs 1000
 		speed = min_speed
 		PWMduty 1, speed  'speed of motor set to minimum
 		switchtime = runtime_up - breaktime
-		rev = 0
-		fwd = 1  'set direction
+		Call ctrl_motor(1, 1)  'motor forward
 		While limit_up = 1  'wait for limit switch
 			WaitMs ctrl_pause
 			runtime = runtime + 1
@@ -165,22 +162,18 @@ Proc bridge()
 			Endif
 			PWMduty 1, speed  'speed of motor
 		Wend
-		fwd = 0
-		rev = 0
-		redsign = 0
+		Call ctrl_motor(1, 0)  'motor stop
 		WaitMs 1000
-		greensign = 1
-		WaitMs 2000
+		Call signs(1, 1)
+		WaitMs 1000
+		Call signs(0, 1)
 	Else  'bridge going down
-		redsign = 0
+		Call signs(1, 0)
 		WaitMs 1000
-		greensign = 1
-		WaitMs 2000
 		speed = min_speed
 		PWMduty 1, speed  'speed of motor set to minimum
 		switchtime = runtime_down - breaktime
-		rev = 1
-		fwd = 0  'set direction
+		Call ctrl_motor(0, 1)  'motor reverse
 		While limit_down = 1  'wait for limit switch
 			WaitMs ctrl_pause
 			runtime = runtime + 1
@@ -197,8 +190,8 @@ Proc bridge()
 			Endif
 			PWMduty 1, speed  'speed of motor
 		Wend
-		rev = 0
-		fwd = 0
+		Call ctrl_motor(0, 0)  'motor stop
+		Call signs(1, 0)
 	Endif
 'now calculate the difference between old en new time and correct it
 	If position = 0 Then  'bridge went up
@@ -268,4 +261,16 @@ If value > 0 Then  'FIRST TIME THIS PROGRAM IS RUNNING.
 Endif
 End Proc                                          
 
-	
+Proc signs(red As Bit, green As Bit)
+	redsign = red
+	greensign = green
+End Proc                                          
+Proc ctrl_motor(dir As Bit, onoff As Bit)
+	If onoff = 0 Then
+		fwd = 0
+		rev = 0
+	Else
+		fwd = dir
+		rev = Not dir
+	Endif
+End Proc                                          
