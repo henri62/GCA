@@ -20,9 +20,9 @@ Symbol cmd_down = RA5
 Symbol fbup = RA6
 Symbol fbdn = RA7
 Symbol redsign = RB0
-'Symbol yellowsign = RB1 ********* NOT IMPLEMENTED YET
+Symbol yellowsign = RB1  '* * * * * * * * * Not implemented yet
 Symbol greensign = RB2
-'symbol PWM output = RB3
+'symbol PWM output = RB3 'do not define this one
 Symbol redled = RB4
 Symbol greenled = RB5
 Symbol fwd = RB6
@@ -38,15 +38,6 @@ Dim min_speed As Word
 Dim max_speed As Word
 Dim value As Byte
 Call init_value()
-Read 0, value
-If value > 0 Then  'FIRST TIME THIS PROGRAM IS RUNNING.
-	min_speed = 250
-	max_speed = 750
-	runtime_up = 1000
-	runtime_down = 1000
-	Call handle_eeprom(1)
-	Write 0, 0
-Endif
 Call handle_eeprom(0)
 Const ctrl_pause = 15
 Const speed_step = 2
@@ -260,20 +251,26 @@ End Proc
 
 Proc init_value()
 Read 0, value
+If value = 0 Then
+	Read 1, value
+Endif
 If value > 0 Then  'FIRST TIME THIS PROGRAM IS RUNNING.
 	min_speed = 250
 	max_speed = 750
 	runtime_up = 1000
-	runtime_down = 100
+	runtime_down = 1000
 	Call handle_eeprom(1)
 	Write 0, 0
+	Write 1, 0
 Endif
 End Proc                                          
 
 Proc signs(red As Bit, green As Bit)
 	redsign = red
 	greensign = green
+	yellowsign = 0
 End Proc                                          
+
 Proc ctrl_motor(dir As Bit, onoff As Bit)
 	If onoff = 0 Then
 		fwd = 0
