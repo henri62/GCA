@@ -1,0 +1,290 @@
+<plan rocrailversion="1.1.0 svn3805" rocguiversion="1.4.999 revision 1531" title="fiddleyard_nieuw_klein.xml">
+  <zlevel title="Module 1" z="0" active="true"/>
+  <tklist>
+    <tk type="connector" id="tk20080418083143545" x="0" y="7" z="0" ori="east" prev_x="0" prev_y="7" prev_ori="east"/>
+    <tk type="connector" id="tk20080418083641304" x="0" y="8" z="0" ori="east" prev_x="0" prev_y="8" prev_ori="east"/>
+    <tk type="buffer" id="tk20080418083704409" x="2" y="10" z="0" ori="east" prev_x="2" prev_y="10" prev_ori="east"/>
+    <tk type="straight" id="tk20080418083838117" x="1" y="8" z="0" prev_x="1" prev_y="8"/>
+    <tk type="straight" id="tk20080418083839239" x="2" y="8" z="0" prev_x="2" prev_y="8"/>
+    <tk type="straight" id="tk20080418083839743" x="3" y="8" z="0" prev_x="3" prev_y="8"/>
+    <tk type="straight" id="tk20080418083840311" x="5" y="8" z="0" prev_x="5" prev_y="8"/>
+    <tk type="straight" id="tk20080418083841015" x="16" y="10" z="0" prev_x="16" prev_y="10"/>
+    <tk type="curve" id="tk20080418083927007" x="17" y="7" z="0" prev_x="17" prev_y="7"/>
+    <tk type="curve" id="tk20080418084038235" x="16" y="9" z="0" ori="south" prev_x="16" prev_y="9" prev_ori="south"/>
+    <tk type="straight" id="tk20080418084135861" x="17" y="9" z="0" ori="north" prev_x="17" prev_y="9" prev_ori="north"/>
+    <tk type="curve" id="tk20080418084140494" x="17" y="10" z="0" ori="south" prev_x="17" prev_y="10" prev_ori="south"/>
+    <tk type="dir" id="tk20080607163359558" x="15" y="7" z="0" prev_x="15" prev_y="7"/>
+    <tk type="dir" id="tk20080607163417698" x="7" y="9" z="0" ori="east" prev_x="7" prev_y="9" prev_ori="east"/>
+    <tk type="dir" id="tk20080607163428441" x="7" y="10" z="0" ori="east" prev_x="7" prev_y="10" prev_ori="east"/>
+    <tk type="straight" id="tk20080712160721877" x="3" y="10" z="0" prev_id="tk20080712160721877" blockid="" road="false" ori="west" prev_x="3" prev_y="10" prev_ori="west"/>
+    <tk type="curve" id="tk20080712160722959" x="4" y="9" z="0" ori="east" prev_x="4" prev_y="9" prev_ori="east"/>
+    <tk type="curve" id="tk20080712160934502" x="6" y="8" z="0" prev_x="6" prev_y="8"/>
+    <tk type="curve" id="tk20080712160938303" x="6" y="9" z="0" ori="east" prev_x="6" prev_y="9" prev_ori="east"/>
+    <tk type="straight" id="tk20080712161001515" x="4" y="10" z="0" prev_x="4" prev_y="10"/>
+    <tk type="straight" id="tk20080712161002164" x="6" y="10" z="0" prev_x="6" prev_y="10"/>
+    <tk type="straight" ori="north" id="tk20100606114418921" x="2" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114424328" x="3" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114425031" x="4" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114425562" x="5" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114426093" x="6" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114427609" x="7" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114427234" x="8" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114428812" x="9" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114428406" x="10" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114429968" x="11" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114429546" x="12" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20100606114430078" x="13" y="6" z="0"/>
+  </tklist>
+  <swlist>
+    <sw type="right" id="8t2" x="5" y="10" z="0" ori="east" prev_id="8t2" blockid="" savepos="none" dir="true" swtype="default" road="false" iid="" bus="0" addr1="0" port1="46" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="true" delay="0" prot="M" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="5" prev_y="10" prev_ori="east" switched="0"/>
+    <sw type="right" id="8t1" x="4" y="8" z="0" prev_id="8t1" blockid="" savepos="none" dir="true" swtype="default" road="false" ori="west" iid="" bus="0" addr1="0" port1="47" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="true" delay="0" prot="M" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="4" prev_y="8" prev_ori="west" switched="0"/>
+    <sw type="right" id="8t3" x="16" y="7" z="0" prev_id="8t3" blockid="" savepos="none" dir="true" swtype="default" road="false" ori="west" iid="" bus="0" addr1="0" port1="45" gate1="0" inv="true" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="true" delay="0" prot="M" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="16" prev_y="7" prev_ori="west" accnr="1" switched="0"/>
+  </swlist>
+  <fblist>
+    <fb id="16f3" x="16" y="3" z="0" ori="north" prev_id="16f3" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="104" activelow="false" action="false" prev_x="11" prev_y="1" prev_ori="north" state="false" curve="false" routeids="" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="16f2" x="15" y="3" z="0" ori="north" prev_id="16f2" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="105" activelow="false" action="false" prev_x="12" prev_y="1" prev_ori="north" state="false" curve="false" routeids="" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="16F1" x="14" y="3" z="0" ori="north" prev_id="8f24" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="106" activelow="false" action="false" prev_x="13" prev_y="1" prev_ori="north" state="false" curve="false" routeids="" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="8f26" x="9" y="9" z="0" prev_id="8f26" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="77" activelow="false" action="false" prev_x="9" prev_y="9" prev_ori="west" state="false"/>
+    <fb id="8f27" x="14" y="9" z="0" prev_id="8f27" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="38" activelow="false" action="false" prev_x="14" prev_y="9" prev_ori="west" state="false"/>
+    <fb id="8f28" x="9" y="10" z="0" prev_x="9" prev_y="10" state="false" prev_id="8f28" desc="" show="true" road="false" curve="false" blockid="" ori="west" iid="" bus="0" addr="78" activelow="false" action="false" prev_ori="west"/>
+    <fb id="8f29" x="14" y="10" z="0" prev_id="8f29" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="37" activelow="false" action="false" prev_x="14" prev_y="10" prev_ori="west" state="false"/>
+    <fb id="8f30" x="8" y="10" z="0" prev_id="8f30" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="74" activelow="false" action="false" prev_x="8" prev_y="10" prev_ori="west" state="false"/>
+    <fb id="8f31" x="5" y="9" z="0" prev_id="8f31" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="75" activelow="false" action="false" curve="true" prev_x="5" prev_y="9" prev_ori="west" state="false"/>
+    <fb id="8f32" x="8" y="9" z="0" prev_id="8f32" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="73" activelow="false" action="false" prev_x="8" prev_y="9" prev_ori="west" state="false"/>
+    <fb id="8f33" x="16" y="8" z="0" ori="north" prev_id="8f33" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="79" activelow="false" action="false" prev_x="16" prev_y="8" prev_ori="north" state="false"/>
+    <fb id="8f34" x="17" y="8" z="0" ori="north" prev_id="8f34" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="80" activelow="false" action="false" prev_x="17" prev_y="8" prev_ori="north" state="false"/>
+    <fb id="16f8" prev_id="16f8" desc="FY Position Signal" show="true" road="false" curve="false" blockid="" x="14" y="7" z="0" ori="west" iid="" bus="0" addr="186" activelow="true" action="false" state="false" prev_x="14" prev_y="7" prev_ori="west" routeids="" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="16f7" x="17" y="5" z="0" prev_id="16f7" desc="" show="true" road="false" curve="false" blockid="" ori="north" iid="" bus="0" addr="189" activelow="true" action="false" prev_x="15" prev_y="2" prev_ori="west" state="-" routeids="" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="16f6" x="16" y="5" z="0" prev_id="16f6" desc="" show="true" road="false" curve="false" blockid="" ori="north" iid="" bus="0" addr="190" activelow="true" action="false" prev_x="15" prev_y="3" prev_ori="west" state="-" routeids="" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="16f5" x="15" y="5" z="0" prev_id="16f5" desc="" show="true" road="false" curve="false" blockid="" ori="north" iid="" bus="0" addr="191" activelow="true" action="false" prev_x="15" prev_y="4" prev_ori="west" state="-" routeids="" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="16f4" x="14" y="5" z="0" prev_id="16f4" desc="" show="true" road="false" curve="false" blockid="" ori="south" iid="" bus="0" addr="192" activelow="true" action="false" state="false" prev_x="15" prev_y="5" prev_ori="west" routeids="" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+  </fblist>
+  <sglist>
+    <sg id="8s12" x="1" y="7" z="0" ori="west" desc="" blockid="8b12" road="false" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="212" port2="212" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="2" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="32" red="33" yellow="34" white="34" prev_x="13" prev_y="0" prev_ori="south" manual="false"/>
+    <sg id="8s13" x="15" y="9" z="0" ori="east" prev_x="15" prev_y="9" prev_ori="east" desc="" blockid="8b13" road="false" iid="" bus="0" addr="0" addr2="0" addr3="108" addr4="0" port1="107" port2="108" port3="0" port4="0" gate1="1" gate2="0" gate3="1" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="true" asswitch="false" green="16" red="1" yellow="0" white="34" manual="false"/>
+    <sg id="8s14" x="15" y="10" z="0" ori="east" prev_x="15" prev_y="10" prev_ori="east" desc="" blockid="8b14" road="false" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="105" port2="106" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" manual="false"/>
+  </sglist>
+  <colist/>
+  <bklist>
+    <bk id="16b1" x="13" y="2" z="0" state="open" reserved="false" ori="north" prev_id="16b1" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="2" prev_y="2" prev_ori="north" entering="false" allowchgdir="false" locid="" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f2" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f1" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b2" x="12" y="2" z="0" state="open" reserved="false" ori="north" prev_id="8b2" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="3" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f4" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f3" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b3" x="11" y="2" z="0" state="open" reserved="false" ori="north" prev_id="8b3" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="4" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f6" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f5" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b4" x="10" y="2" z="0" state="open" reserved="false" ori="north" prev_id="8b4" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="5" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f8" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f7" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b5" x="9" y="2" z="0" state="open" reserved="false" ori="north" prev_id="8b5" desc="" len="0" electrified="false" station="false" gomanual="true" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="6" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f10" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f9" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b6" x="8" y="2" z="0" state="open" reserved="false" ori="north" prev_id="16b6" desc="" len="0" electrified="false" station="false" gomanual="true" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="7" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f12" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f11" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b7" x="7" y="2" z="0" state="open" reserved="false" ori="north" prev_id="8b7" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="8" prev_y="2" prev_ori="north" entering="false" allowchgdir="false" locid="" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f14" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f13" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b8" x="6" y="2" z="0" state="open" reserved="false" ori="north" prev_id="16b8" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="9" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f16" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f15" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b9" x="5" y="2" z="0" state="open" reserved="false" ori="north" prev_id="16b9" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="10" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f18" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f17" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b10" x="4" y="2" z="0" state="open" reserved="false" ori="north" prev_id="16b10" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="11" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f21" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f20" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b11" x="3" y="2" z="0" state="open" reserved="false" ori="north" prev_id="16b11" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="12" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f23" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f22" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b12" x="2" y="2" z="0" state="open" reserved="false" ori="north" prev_id="16b12" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="8s12" wsignal="" signalR="" wsignalR="" speed="min" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="13" prev_y="2" prev_ori="north" entering="false" locid="" allowchgdir="false" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f25" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f24" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b14" x="10" y="10" z="0" state="open" reserved="false" prev_id="16b14" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="yes" ttid="" signal="8s14" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="10" prev_y="10" entering="false" locid="" allowchgdir="false" turnouts="" speedpercent="70" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f30" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f28" action="pre2in" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f29" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="16b13" x="10" y="9" z="0" state="open" reserved="false" prev_id="16b13" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="yes" ttid="" signal="8s13" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="cruise" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="10" prev_y="9" entering="false" locid="" allowchgdir="false" turnouts="" speedpercent="70" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="8f32" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f26" action="pre2in" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="8f27" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+  </bklist>
+  <txlist/>
+  <ttlist/>
+  <seltablist>
+    <seltab id="fy2" x="2" y="7" z="0" pending="false" prev_id="fy2" desc="Nieuwe Fiddle yard in oude positie" nrtracks="12" iid="" addr0="9" addr1="9" addr2="9" addr3="9" addr4="10" port0="1" port1="2" port2="3" port3="4" port4="1" gate0="0" gate1="0" gate2="0" gate3="0" gate4="0" swcmd="false" prot="D" psen="16f8" b0sen="16f4" b1sen="16f5" b2sen="16f6" b3sen="16f7" prev_x="2" prev_y="7" inv="false" state="open" pos="0" sharedfb="true" manager="false" minocc="2" movedelay="0" fifo="true" offpos="0" ori="west" invnew="false">
+      <seltabpos nr="1" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="2" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="3" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="4" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="5" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="6" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="7" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="8" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="9" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="10" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="11" desc="" s1id="" s2id="" bkid=""/>
+      <seltabpos nr="12" desc="" s1id="" s2id="" bkid=""/>
+      <fbevent id="16F1" action="enter" from="all"/>
+      <fbevent id="16f2" action="occupied" from="all"/>
+      <fbevent id="16f3" action="in" from="all"/>
+    </seltab>
+  </seltablist>
+  <stlist>
+    <st id="8b13-8b1" prev_id="NEW" bka="8b13" bkb="8b1" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="1"/>
+    </st>
+    <st id="8b13-8b2" prev_id="NEW" bka="8b13" bkb="8b2" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="2"/>
+    </st>
+    <st id="8b13-8b3" prev_id="NEW" bka="8b13" bkb="8b3" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="3"/>
+    </st>
+    <st id="8b13-8b4" prev_id="NEW" bka="8b13" bkb="8b4" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="4"/>
+    </st>
+    <st id="8b13-8b5" prev_id="NEW" bka="8b13" bkb="8b5" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="5"/>
+    </st>
+    <st id="8b13-8b6" prev_id="NEW" bka="8b13" bkb="8b6" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="6"/>
+    </st>
+    <st id="8b13-8b7" prev_id="NEW" bka="8b13" bkb="8b7" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="7"/>
+    </st>
+    <st id="8b13-8b8" prev_id="NEW" bka="8b13" bkb="8b8" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="8"/>
+    </st>
+    <st id="8b13-8b9" prev_id="NEW" bka="8b13" bkb="8b9" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="9"/>
+    </st>
+    <st id="8b13-8b10" prev_id="NEW" bka="8b13" bkb="8b10" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="10"/>
+    </st>
+    <st id="8b13-8b11" prev_id="NEW" bka="8b13" bkb="8b11" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="11"/>
+    </st>
+    <st id="8b13-8b12" prev_id="NEW" bka="8b13" bkb="8b12" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="turnout"/>
+      <swcmd id="fy1" cmd="track" track="12"/>
+    </st>
+    <st id="8b14-8b1" prev_id="NEW" bka="8b14" bkb="8b1" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="1"/>
+    </st>
+    <st id="8b14-8b2" prev_id="NEW" bka="8b14" bkb="8b2" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="2"/>
+    </st>
+    <st id="8b14-8b3" prev_id="NEW" bka="8b14" bkb="8b3" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="3"/>
+    </st>
+    <st id="8b14-8b4" prev_id="NEW" bka="8b14" bkb="8b4" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="4"/>
+    </st>
+    <st id="8b14-8b5" prev_id="NEW" bka="8b14" bkb="8b5" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="5"/>
+    </st>
+    <st id="8b14-8b6" prev_id="NEW" bka="8b14" bkb="8b6" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="6"/>
+    </st>
+    <st id="8b14-8b7" prev_id="NEW" bka="8b14" bkb="8b7" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="7"/>
+    </st>
+    <st id="8b14-8b8" prev_id="NEW" bka="8b14" bkb="8b8" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="8"/>
+    </st>
+    <st id="8b14-8b9" prev_id="NEW" bka="8b14" bkb="8b9" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="9"/>
+    </st>
+    <st id="8b14-8b10" prev_id="NEW" bka="8b14" bkb="8b10" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="10"/>
+    </st>
+    <st id="8b14-8b11" prev_id="NEW" bka="8b14" bkb="8b11" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="11"/>
+    </st>
+    <st id="8b14-8b12" prev_id="NEW" bka="8b14" bkb="8b12" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" prev_x="-1" prev_y="-1" status="0">
+      <swcmd id="8t3" cmd="straight"/>
+      <swcmd id="fy1" cmd="track" track="12"/>
+    </st>
+    <st id="ws-8b13" prev_id="NEW" bka="point-ws" bkb="8b13" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="8t1" cmd="straight"/>
+    </st>
+    <st id="ws-8b14" prev_id="NEW" bka="point-ws" bkb="8b14" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="8t1" cmd="turnout"/>
+      <swcmd id="8t2" cmd="turnout"/>
+    </st>
+    <st id="8b1-wn" prev_id="8b1-wn" bka="8b1" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="1"/>
+    </st>
+    <st id="8b2-wn" prev_id="8b2-wn" bka="8b2" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="2"/>
+    </st>
+    <st id="8b3-wn" prev_id="8b3-wn" bka="8b3" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="3"/>
+    </st>
+    <st id="8b4-wn" prev_id="8b4-wn" bka="8b4" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="4"/>
+    </st>
+    <st id="8b5-wn" prev_id="8b5-wn" bka="8b5" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="5"/>
+    </st>
+    <st id="8b6-wn" prev_id="8b6-wn" bka="8b6" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="6"/>
+    </st>
+    <st id="8b7-wn" prev_id="8b7-wn" bka="8b7" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="7"/>
+    </st>
+    <st id="8b8-wn" prev_id="8b8-wn" bka="8b8" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="8"/>
+    </st>
+    <st id="8b9-wn" prev_id="8b9-wn" bka="8b9" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="9"/>
+    </st>
+    <st id="8b10-wn" prev_id="8b10-wn" bka="8b10" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="10"/>
+    </st>
+    <st id="8b11-wn" prev_id="8b11-wn" bka="8b11" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="11"/>
+    </st>
+    <st id="8b12-wn" prev_id="8b12-wn" bka="8b12" bkb="point-wn" bkc="" modid="Fiddle Yard" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0">
+      <swcmd id="fy1" cmd="track" track="12"/>
+    </st>
+  </stlist>
+</plan>

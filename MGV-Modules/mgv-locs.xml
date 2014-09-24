@@ -1,0 +1,50 @@
+<plan title="MGV Locomotieven">
+<lclist>
+<lc id="6513 peter" image="DB_V200.png" addr="52"/>
+<lc id="Big Boy" addr="75"/>
+<lc id="Blauwe stoomlok" image="Blauwe stoomlok.png" addr="9"/>
+<lc id="BR005" image="Mar3048.png" addr="5"/>
+<lc id="DB 01 1087" image="Mar3048.png" addr="23"/>
+<lc id="DB 38 2581" image="Mar3099.png" addr="38" spcnt="28"/>
+<lc id="DB rood marklin" image="db_215.png" addr="5"/>
+<lc id="DB stoom 18434" image="br_18_106.png" addr="79"/>
+<lc id="DB10"	remark="Nick Schreurs" image="DB10.png" addr="8"/>
+<lc id="DB120 Kerst" remark="Nick Schreurs" image="DB120 Kerst.png" addr="12"/>
+<lc id="DBV200" image="DB V200.png" addr="4"/>
+<lc id="gele lok" image="db_103.png" addr="58"/>
+<lc id="Groene DB 151" image="DB_E151 groen.png" addr="20"/>
+<lc id="ICE III" image="db_ICE.png" addr="3"/>
+<lc id="ICE1" image="db_ICE.png" addr="62"/>
+<lc id="Koploper" image="ns_koploper.png" addr="36" spcnt="28"/>
+<lc id="Krokodil SBB" remark="Eddy Canters" image="krokodil.png" addr="68"/>
+<lc id="NS 343" image="" addr="35" spcnt="28"/>
+<lc id="NS 1117" remark="Peter Giling" image="ns_1108.png" addr="37"/>
+<lc id="NS 1139" image="NS 1139.png" addr="39"/>
+<lc id="NS 1144" remark="Gerard Drost" image="ns_1135.png" addr="40"/>
+<lc id="NS 1160" remark="Gerard Drost" image="ns_1101.png" addr="60"/>
+<lc id="NS 1202" remark="Peter Giling" image="ns_1211.png" addr="41"/>
+<lc id="NS 1202-Nick" remark="Nick Schreurs" image="NS1202.png" addr="2"/>
+<lc id="NS 1205" image="tn_ns_1212.png" addr="42"/>
+<lc id="NS 1211" image="tn_ns_1212.png" addr="54"/>
+<lc id="NS 1302" remark="Gerard Drost" image="ns_1307.png" addr="25"/>
+<lc id="NS 1307" remark="Gerard Drost" image="ns_1300-blauw.png" addr="19"/>
+<lc id="NS 1631" remark="Gerard Drost" image="ns_1631.png" addr="61"/>
+<lc id="NS 1736" remark="Peter Giling" image="ns_1748.png" addr="49"/>
+<lc id="NS 1835" remark="Eddy Canters" image="ns_1858.png" addr="17"/>
+<lc id="NS 2201" remark="Gerard Drost" image="ns_2252.png" addr="29"/>
+<lc id="NS 2401" image="" addr="55"/>
+<lc id="NS 6513 DCC" remark="Erik Hendriks" image="ns_6519.png" addr="65" spcnt="28"/>
+<lc id="NS 9104" remark="Gerard Drost" image="ns_blokkendoos_2.png" addr="24"/>
+<lc id="NS ICE 3" remark="Eddy Canters" image="db_ICE.png" addr="74"/>
+<lc id="NS regio runner" image="ns_regiorunner.png" addr="21"/>
+<lc id="NS 1211(2)" addr="12"/>
+<lc id="NS1855" addr="17"/>
+<lc id="PTT 3004" remark="Peter Giling" image="ns_Motorpost1.png" addr="3"/>
+<lc id="Rail4Chem" image="rail4chem.png" addr="64"/>
+<lc id="Railion BR189" addr="14"/>
+<lc id="Stoomlok 03 2202-4" image="Mar3048.png" addr="78"/>
+<lc id="Stoomlok 3048" image="Mar3048.png" addr="80"/>
+<lc id="V200"	remark="Nick Schreurs" image="V200.png" addr="22"/>
+<lc id="V260"	remark="Nick Schreurs" image="DB260.png" addr="26"/></lclist>
+</plan>
+

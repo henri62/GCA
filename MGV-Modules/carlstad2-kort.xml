@@ -1,0 +1,70 @@
+<plan rocrailversion="1.1.0 svn3805" rocguiversion="1.4.999 revision 1767">
+  <zlevel title="Module 1" z="7" active="true"/>
+  <tklist>
+    <tk type="curve" id="tk20080608121758338" x="4" y="9" z="7" ori="north" prev_x="4" prev_y="9" prev_ori="north"/>
+    <tk type="curve" id="tk20080608121804074" x="4" y="10" z="7" ori="south" prev_x="4" prev_y="10" prev_ori="south"/>
+    <tk type="connector" id="tk20080608121825700" x="0" y="10" z="7" ori="east" prev_x="0" prev_y="10" prev_ori="east"/>
+    <tk type="connector" id="tk20080608121829455" x="0" y="11" z="7" ori="east" prev_x="0" prev_y="11" prev_ori="east" prev_id="tk20080608121829455" blockid="" road="false" routeids="ws-ne"/>
+    <tk type="straight" id="tk20080608121841301" x="4" y="11" z="7" prev_x="4" prev_y="11"/>
+    <tk type="curve" id="tk20080608121851934" x="6" y="11" z="7" ori="east" prev_x="6" prev_y="11" prev_ori="east" prev_id="tk20080608121851934" blockid="" road="false" routeids="nw-es"/>
+    <tk type="curve" id="tk20080608121900215" x="7" y="10" z="7" ori="east" prev_x="7" prev_y="10" prev_ori="east" prev_id="tk20080608121900215" blockid="" road="false" routeids="en-ne"/>
+    <tk type="straight" id="tk20080608121908928" x="7" y="11" z="7" prev_x="7" prev_y="11" prev_id="tk20080608121908928" blockid="" road="false" routeids="nw-es" ori="west"/>
+    <tk type="connector" id="tk20080608122002219" x="11" y="10" z="7" prev_x="11" prev_y="10" prev_id="tk20080608122002219" blockid="" road="false" routeids="en-ne" ori="west"/>
+    <tk type="connector" id="tk20080608122002916" x="11" y="11" z="7" prev_x="11" prev_y="11" prev_id="tk20080608122002916" blockid="" road="false" routeids="nw-es" ori="west"/>
+    <tk type="connector" id="tk20080608122026461" x="7" y="0" z="7" ori="north" prev_x="7" prev_y="0" prev_ori="north" prev_id="tk20080608122026461" blockid="" road="false" routeids="en-ne"/>
+    <tk type="connector" id="tk20080608122124561" x="6" y="0" z="7" ori="north" prev_x="6" prev_y="0" prev_ori="north" prev_id="tk20080608122124561" blockid="" road="false" routeids="nw-es"/>
+    <tk type="dir" id="tk20080608122332592" x="6" y="1" z="7" ori="north" prev_x="6" prev_y="1" prev_ori="north" prev_id="tk20080608122332592" blockid="" road="false" routeids="nw-es"/>
+    <tk type="curve" id="tk20080610173420859" x="5" y="10" z="7" ori="north" prev_x="5" prev_y="10" prev_ori="north"/>
+    <tk type="curve" id="tk20080610173432827" x="5" y="11" z="7" ori="south" prev_x="5" prev_y="11" prev_ori="south"/>
+    <tk type="curve" id="tk20080610173700676" x="5" y="9" z="7" ori="south" prev_x="5" prev_y="9" prev_ori="south"/>
+    <tk type="curve" id="tk20080610173703092" x="5" y="8" z="7" ori="north" prev_x="5" prev_y="8" prev_ori="north"/>
+    <tk type="dir" id="tk20080619170020374" x="7" y="1" z="7" ori="south" prev_x="7" prev_y="1" prev_ori="south" prev_id="tk20080619170020374" blockid="" road="false" routeids="en-ne"/>
+    <tk type="straight" id="tk20080619170348172" x="1" y="10" z="7" prev_x="1" prev_y="10"/>
+    <tk type="straight" id="tk20080619170348845" x="3" y="10" z="7" prev_x="3" prev_y="10"/>
+    <tk type="straight" id="tk20080619170349373" x="2" y="11" z="7" prev_x="2" prev_y="11"/>
+    <tk type="straight" id="tk20080619170350285" x="9" y="11" z="7" prev_x="9" prev_y="11" prev_id="tk20080619170350285" blockid="" road="false" routeids="nw-es" ori="west"/>
+    <tk type="straight" id="tk20080619170351006" x="8" y="10" z="7" prev_x="8" prev_y="10" prev_id="tk20080619170351006" blockid="" road="false" routeids="en-ne" ori="west"/>
+    <tk type="straight" id="tk20080619170351613" x="10" y="10" z="7" prev_x="10" prev_y="10" prev_id="tk20080619170351613" blockid="" road="false" routeids="en-ne" ori="west"/>
+    <tk type="straight" id="tk20080619170352285" x="7" y="8" z="7" ori="north" prev_x="7" prev_y="8" prev_ori="north" prev_id="tk20080619170352285" blockid="" road="false" routeids="en-ne"/>
+    <tk type="straight" id="tk20080712155214323" x="2" y="10" z="7" prev_x="2" prev_y="10"/>
+    <tk type="straight" id="tk20080712155215018" x="1" y="11" z="7" prev_x="1" prev_y="11"/>
+    <tk type="straight" id="tk20080712155215730" x="3" y="11" z="7" prev_x="3" prev_y="11"/>
+    <tk type="straight" id="tk20080712155248110" x="7" y="7" z="7" ori="north" prev_x="7" prev_y="7" prev_ori="north" prev_id="tk20080712155248110" blockid="" road="false" routeids="en-ne"/>
+    <tk type="straight" id="tk20100304210622062" x="6" y="3" z="7" ori="north" prev_id="tk20100304210622062" blockid="" road="false" routeids="nw-es"/>
+    <tk type="straight" id="tk20100304210623078" x="6" y="4" z="7" ori="north" prev_id="tk20100304210623078" blockid="" road="false" routeids="nw-es"/>
+    <tk type="straight" id="tk20100304210624656" x="6" y="5" z="7" ori="north" prev_id="tk20100304210624656" blockid="" road="false" routeids="nw-es"/>
+    <tk type="straight" id="tk20100304210624203" x="6" y="6" z="7" ori="north" prev_id="tk20100304210624203" blockid="" road="false" routeids="nw-es"/>
+    <tk type="straight" id="tk20100304210625734" x="7" y="6" z="7" ori="north" prev_id="tk20100304210625734" blockid="" road="false" routeids="en-ne"/>
+    <tk type="straight" id="tk20100304210625234" x="7" y="5" z="7" ori="north" prev_id="tk20100304210625234" blockid="" road="false" routeids="en-ne"/>
+    <tk type="straight" id="tk20100304210626859" x="7" y="4" z="7" ori="north" prev_id="tk20100304210626859" blockid="" road="false" routeids="en-ne"/>
+    <tk type="straight" id="tk20100304210627171" x="7" y="3" z="7" ori="north" prev_id="tk20100304210627171" blockid="" road="false" routeids="en-ne"/>
+  </tklist>
+  <swlist>
+    <sw type="right" id="10t1" x="6" y="8" z="7" ori="south" prev_x="6" prev_y="8" prev_ori="south" switched="0"/>
+    <sw type="right" id="10t2" x="7" y="9" z="7" ori="south" prev_x="7" prev_y="9" prev_ori="south" switched="0"/>
+    <sw type="crossing" id="10t3" x="6" y="9" z="7" ori="south" prev_id="10t3" blockid="" savepos="none" dir="true" swtype="default" road="false" iid="" bus="0" addr1="302" port1="0" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="true" delay="0" prot="N" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="6" prev_y="9" prev_ori="south" accnr="1" switched="0"/>
+  </swlist>
+  <fblist>
+    <fb id="10f2" x="7" y="2" z="7" ori="south" prev_id="10f2" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="254" activelow="false" action="false" curve="false" prev_x="7" prev_y="2" prev_ori="south" state="false" routeids="en-ne" carcount="0" countedcars="0" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="10f3" x="8" y="11" z="7" ori="east" prev_id="10f3" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="207" activelow="false" action="false" curve="false" prev_x="8" prev_y="11" prev_ori="east" state="false" routeids="nw-es" carcount="0" countedcars="0" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="10f4" x="10" y="11" z="7" prev_id="10f4" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="211" activelow="false" action="false" curve="false" prev_x="10" prev_y="11" prev_ori="west" state="false" routeids="nw-es" carcount="0" countedcars="0" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="10f1" x="9" y="10" z="7" prev_id="10f1" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="205" activelow="false" action="false" curve="false" prev_x="9" prev_y="10" prev_ori="west" state="false" routeids="en-ne" carcount="0" countedcars="0" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="10f5" x="6" y="2" z="7" ori="north" prev_id="10f5" desc="" show="true" road="false" curve="false" blockid="" routeids="nw-es" iid="" bus="0" addr="253" activelow="false" state="false" carcount="0" countedcars="0" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="10f6" x="6" y="7" z="7" ori="north" prev_id="10f6" desc="" show="true" road="false" curve="false" blockid="" routeids="nw-es" iid="" bus="0" addr="256" activelow="false" state="false" carcount="0" countedcars="0" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+  </fblist>
+  <sglist/>
+  <colist/>
+  <bklist/>
+  <txlist/>
+  <ttlist/>
+  <seltablist/>
+  <stlist>
+    <st id="nw-es" prev_id="nw-10b2" bka="point-nw" bkb="point-es" bkc="" modid="Aanloop FY" dir="true" lcdir="true" speed="max" swap="false" function="0" funtime="1" funevent="none" z="7" reduceV="false" swappost="false" crossingblocksignals="false" typeperm="all" maxlen="0" status="0">
+      <swcmd id="10t1" cmd="straight"/>
+      <swcmd id="10t3" cmd="straight"/>
+    </st>
+    <st id="en-ne" prev_id="en-ne" bka="point-en" bkb="point-ne" bkc="" modid="Aanloop FY" dir="true" lcdir="true" speed="percent" swap="false" function="0" funtime="1" funevent="none" z="7" reduceV="false" swappost="false" speedpercent="80" crossingblocksignals="false" typeperm="all" maxlen="0" status="0">
+      <swcmd id="10t2" cmd="straight"/>
+    </st>
+  </stlist>
+</plan>

@@ -1,0 +1,44 @@
+<plan rocrailversion="1.1.0 svn3805">
+  <zlevel title="Module 1" z="1"/>
+  <tklist>
+    <tk type="connector" id="tk20080608152916083" x="0" y="1" z="1" ori="east" prev_x="0" prev_y="1" prev_ori="east"/>
+    <tk type="connector" id="tk20080608152919469" x="0" y="2" z="1" ori="east" prev_x="0" prev_y="2" prev_ori="east"/>
+    <tk type="dir" id="tk20080608152933645" x="1" y="2" z="1" ori="east" prev_x="1" prev_y="2" prev_ori="east"/>
+    <tk type="dir" id="tk20080608152941030" x="9" y="1" z="1" prev_x="9" prev_y="1"/>
+    <tk type="connector" id="tk20080608152946470" x="10" y="1" z="1" prev_x="10" prev_y="1"/>
+    <tk type="connector" id="tk20080608152947390" x="10" y="2" z="1" prev_x="10" prev_y="2"/>
+  </tklist>
+  <swlist>
+    <sw type="accessory" id="6a1" x="3" y="1" z="1" prev_id="6a1" blockid="" accnr="1" savepos="none" dir="false" swtype="default" road="false" ori="west" iid="" bus="0" addr1="0" port1="31" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="false" delay="0" prot="D" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="3" prev_y="1" prev_ori="west"/>
+  </swlist>
+  <fblist>
+    <fb id="6f1" x="2" y="2" z="1" prev_id="6b30b1" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="52" activelow="false" action="false" prev_x="2" prev_y="2" prev_ori="west" state="false"/>
+    <fb id="6f2" x="8" y="2" z="1" prev_id="6b30b2" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="53" activelow="false" action="false" prev_x="8" prev_y="2" prev_ori="west" state="false"/>
+    <fb id="6f3" x="8" y="1" z="1" prev_id="6b31b1" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="54" activelow="false" action="false" prev_x="8" prev_y="1" prev_ori="west" state="false"/>
+    <fb id="6f4" x="2" y="1" z="1" prev_id="6b31b2" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="51" activelow="false" action="false" prev_x="2" prev_y="1" prev_ori="west" state="false"/>
+  </fblist>
+  <sglist>
+    <sg id="6s1" x="9" y="2" z="1" ori="east" desc="" blockid="6b1" road="false" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="109" port2="110" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" prev_x="9" prev_y="2" prev_ori="east"/>
+    <sg id="6s2" x="1" y="1" z="1" desc="" blockid="6b2" road="false" ori="west" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="111" port2="112" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" prev_x="1" prev_y="1" prev_ori="west"/>
+  </sglist>
+  <colist/>
+  <bklist>
+    <bk id="6b1" x="4" y="2" z="1" state="open" reserved="false" prev_id="6b1" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="no" ttid="" signal="6s1" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="fixed" minwaittime="0" maxwaittime="0" waittime="0" mvscale="87" mvdistance="1210" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="4" prev_y="2" entering="false" allowchgdir="true" locid="">
+      <fbevent id="6f1" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="6f2" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="6b2" x="4" y="1" z="1" state="open" reserved="false" prev_id="6b2" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="no" ttid="" signal="6s2" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="fixed" minwaittime="0" maxwaittime="0" waittime="0" mvscale="87" mvdistance="1210" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="4" prev_y="1" entering="false" allowchgdir="true" locid="">
+      <fbevent id="6f3" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="6f4" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+  </bklist>
+  <txlist/>
+  <ttlist/>
+  <seltablist/>
+  <stlist>
+    <st id="ws-6b1" prev_id="NEW" bka="point-ws" bkb="6b1" bkc="" modid="Landschap" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="1"/>
+    <st id="6b1-es" prev_id="6b1-es" bka="6b1" bkb="point-es" bkc="" modid="Landschap" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="1"/>
+    <st id="en-6b2" prev_id="NEW" bka="point-en" bkb="6b2" bkc="" modid="Landschap" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="1"/>
+    <st id="6b2-wn" prev_id="NEW" bka="6b2" bkb="point-wn" bkc="" modid="Landschap" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="1"/>
+  </stlist>
+</plan>

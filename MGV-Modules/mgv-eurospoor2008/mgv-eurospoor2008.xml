@@ -1,0 +1,53 @@
+<modplan title="MGV Eurospoor 2008" locs="mgv-dcc-locs.xml" routes="eurospoor2008-routes.xml" occupation="occ.xml" savemodplan="true" savemodules="false" initfield="false" modroutes="true">
+  <module id="m10" title="StationCarlstad 2" filename="..\modules\carlstad2.xml" x="3" y="5" rotation="270" cx="12" cy="12">
+    <connection side="point-n" modid="m9" id="m10"/>
+    <connection side="point-e" modid="m8" id="m10"/>
+  </module>
+  <module id="m8" title="Fiddle Yard" filename="..\modules\fiddleyard.xml" x="1" y="17" rotation="270" cx="18" cy="11">
+    <connection side="point-w" modid="m10" id="m8"/>
+  </module>
+  <module id="m3" title="Strand" filename="..\modules\bocht1.xml" x="25" y="2" rotation="90" cx="5" cy="5">
+    <connection side="point-s" modid="m7" id="m3"/>
+    <connection side="point-w" modid="m9" id="m3"/>
+  </module>
+  <module id="m9" title="StationCarlstad" filename="..\modules\carlstad.xml" x="15" y="7" rotation="270" cx="21" cy="14">
+    <connection side="point-e" modid="m5" id="m9"/>
+    <connection side="point-s" modid="m10" id="m9"/>
+    <connection side="point-w" modid="m3" id="m9"/>
+  </module>
+  <module id="m6" title="Ongelukje" filename="..\modules\landschap-drost.xml" x="53" y="11" rotation="90" cx="11" cy="3">
+    <connection side="point-w" modid="m13" id="m6"/>
+    <connection side="point-e" modid="m11" id="m6"/>
+  </module>
+  <module id="m7" title="De Draaischijf" filename="..\modules\draaischijf.xml" x="-2559" y="-2559" rotation="180" cx="15" cy="8">
+    <connection side="point-e" modid="m3" id="m7"/>
+    <connection side="point-w" modid="m11" id="m7"/>
+  </module>
+  <module id="m11" title="Station Canterbury" filename="..\modules\canterbury.xml" x="42" y="0" cx="14" cy="10">
+    <connection side="point-s" modid="m6" id="m11"/>
+    <connection side="point-w" modid="m7" id="m11"/>
+  </module>
+  <module id="logo" title="Logo" filename="..\modules\mgv-logo.xml" x="31" y="25" cx="20" cy="8"/>
+  <module id="m5" title="Tsaar Peterstraat" filename="..\modules\peterstraat.xml" x="87" y="72" rotation="90" cx="11" cy="4">
+    <connection side="point-e" modid="m9" id="m5"/>
+    <connection side="point-w" modid="m4" id="m5"/>
+  </module>
+  <module id="m13" title="Snelweg" filename="..\modules\snelweg.xml" x="133" y="61" rotation="270" cx="11" cy="3">
+    <connection side="point-e" modid="m1" id="m13"/>
+    <connection side="point-w" modid="m6" id="m13"/>
+  </module>
+  <module id="m4" title="Bocht" filename="..\modules\bocht2.xml" x="23" y="40" rotation="270" cx="5" cy="6">
+    <connection side="point-s" modid="m12" id="m4"/>
+    <connection side="point-w" modid="m5" id="m4"/>
+  </module>
+  <module id="m12" title="De fabriek" filename="..\modules\fabriek.xml" x="11" y="42" rotation="0" cx="12" cy="6">
+    <connection side="point-e" modid="m4" id="m12"/>
+    <connection side="point-w" modid="m2" id="m12"/>
+  </module>
+  <module id="m2" title="Keerlus 2" filename="..\modules\keerlus2.xml" x="3" y="10" rotation="180" cx="8" cy="4">
+    <connection side="point-w" modid="m12" id="m2"/>
+  </module>
+  <module id="m1" title="Keerlus 1" filename="..\modules\keerlus1.xml" x="1" y="1" rotation="90" cx="8" cy="4">
+    <connection side="point-e" modid="m13" id="m1"/>
+  </module>
+</modplan>

@@ -1,0 +1,81 @@
+<plan rocrailversion="1.1.0 svn0" rocguiversion="2.0.999 revision 2521">
+  <zlevel title="De Draaischijf" z="5" active="true"/>
+  <tklist>
+    <tk type="curve" id="tk20080608134615904" x="10" y="3" z="5" prev_x="10" prev_y="3"/>
+    <tk type="curve" id="tk20080608134619196" x="10" y="4" z="5" ori="east" prev_x="10" prev_y="4" prev_ori="east"/>
+    <tk type="curve" id="tk20080608134624756" x="11" y="4" z="5" prev_x="11" prev_y="4"/>
+    <tk type="curve" id="tk20080608134627396" x="11" y="5" z="5" ori="east" prev_x="11" prev_y="5" prev_ori="east"/>
+    <tk type="curve" id="tk20080608134700859" x="4" y="3" z="5" ori="north" prev_x="4" prev_y="3" prev_ori="north"/>
+    <tk type="curve" id="tk20080608134709463" x="4" y="4" z="5" ori="south" prev_x="4" prev_y="4" prev_ori="south"/>
+    <tk type="curve" id="tk20080608134717167" x="3" y="4" z="5" ori="north" prev_x="3" prev_y="4" prev_ori="north"/>
+    <tk type="curve" id="tk20080608134721591" x="3" y="5" z="5" ori="south" prev_x="3" prev_y="5" prev_ori="south"/>
+    <tk type="curve" id="tk20080608134725944" x="2" y="5" z="5" ori="north" prev_x="2" prev_y="5" prev_ori="north"/>
+    <tk type="connector" id="tk20080608134811296" x="0" y="6" z="5" ori="east" prev_x="0" prev_y="6" prev_ori="east"/>
+    <tk type="connector" id="tk20080608134815498" x="0" y="7" z="5" ori="east" prev_x="0" prev_y="7" prev_ori="east"/>
+    <tk type="connector" id="tk20080608134819291" x="14" y="6" z="5" prev_x="14" prev_y="6"/>
+    <tk type="connector" id="tk20080608134819883" x="14" y="7" z="5" prev_x="14" prev_y="7"/>
+    <tk type="straight" id="tk20080608134830930" x="1" y="6" z="5" prev_x="1" prev_y="6"/>
+    <tk type="straight" id="tk20080608134831580" x="1" y="7" z="5" prev_x="1" prev_y="7"/>
+    <tk type="straight" id="tk20080608134832603" x="12" y="5" z="5" prev_x="13" prev_y="6"/>
+    <tk type="straight" id="tk20080608134833075" x="11" y="7" z="5" prev_x="13" prev_y="7"/>
+    <tk type="straight" id="tk20080608134833755" x="12" y="7" z="5" prev_x="12" prev_y="7"/>
+    <tk type="dir" id="tk20080608134834668" x="3" y="7" z="5" prev_id="tk20080608134834668" blockid="" road="false" ori="east" prev_x="3" prev_y="7" prev_ori="east"/>
+    <tk type="dir" id="tk20080608134910956" x="11" y="6" z="5" prev_x="11" prev_y="6"/>
+    <tk type="straight" id="tk20080608134917917" x="2" y="7" z="5" prev_x="2" prev_y="7"/>
+    <tk type="straight" id="tk20080608135048299" x="4" y="7" z="5" prev_x="4" prev_y="7"/>
+    <tk type="straight" id="tk20080608135048835" x="10" y="6" z="5" prev_x="10" prev_y="6"/>
+    <tk type="straight" id="tk20080915214212614" x="12" y="6" z="5"/>
+    <tk type="buffer" id="tk20080915214234222" x="14" y="5" z="5"/>
+  </tklist>
+  <swlist>
+    <sw type="right" id="7t1" x="13" y="6" z="5" ori="east" prev_x="12" prev_y="6" prev_ori="east" prev_id="7t1" blockid="" accnr="1" savepos="none" dir="true" swtype="default" road="false" iid="" bus="0" addr1="0" port1="16" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="false" delay="0" prot="D" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" switched="0"/>
+    <sw type="left" id="7t2" x="2" y="6" z="5" ori="east" prev_x="2" prev_y="6" prev_ori="east" prev_id="7t2" blockid="" accnr="1" savepos="none" dir="false" swtype="default" road="false" iid="" bus="0" addr1="0" port1="15" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="false" delay="0" prot="D" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" switched="0"/>
+    <sw type="right" id="0" x="13" y="5" z="5" switched="0"/>
+  </swlist>
+  <fblist>
+    <fb id="7f1" x="9" y="6" z="5" prev_id="7f1" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="71" activelow="false" action="false" prev_x="9" prev_y="6" prev_ori="west" state="false" carcount="0" countedcars="0"/>
+    <fb id="7f2" x="4" y="6" z="5" prev_id="7f2" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="70" activelow="false" action="false" prev_x="4" prev_y="6" prev_ori="west" state="false" carcount="0" countedcars="0"/>
+    <fb id="7f3" x="5" y="7" z="5" prev_id="7f3" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="69" activelow="false" action="false" prev_x="5" prev_y="7" prev_ori="west" state="false" carcount="0" countedcars="0"/>
+    <fb id="7f4" x="10" y="7" z="5" prev_id="7f4" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="72" activelow="false" action="false" prev_x="10" prev_y="7" prev_ori="west" state="false" carcount="0" countedcars="0"/>
+  </fblist>
+  <sglist>
+    <sg id="7s1" x="3" y="6" z="5" prev_x="3" prev_y="6" desc="" blockid="7b2" road="false" ori="west" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="213" port2="214" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" manual="false"/>
+    <sg id="7s2" x="13" y="7" z="5" ori="east" prev_x="11" prev_y="7" prev_ori="east" desc="" blockid="7b1" road="false" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="215" port2="216" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" manual="false"/>
+  </sglist>
+  <colist/>
+  <bklist>
+    <bk id="7b2" x="5" y="6" z="5" state="open" reserved="false" prev_id="7b2" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="no" ttid="" signal="7s1" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="fixed" minwaittime="0" maxwaittime="0" waittime="0" mvscale="87" mvdistance="1210" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="5" prev_y="6" entering="false" allowchgdir="true">
+      <fbevent id="7f1" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="7f2" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="7b1" x="6" y="7" z="5" state="open" reserved="false" prev_id="7b1" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="no" ttid="" signal="7s2" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="fixed" minwaittime="0" maxwaittime="0" waittime="0" mvscale="87" mvdistance="1210" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="6" prev_y="7" entering="false" allowchgdir="true">
+      <fbevent id="7f3" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="7f4" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+  </bklist>
+  <txlist/>
+  <ttlist>
+    <tt id="7tt1" x="5" y="1" z="5" bridgepos="0" state1="false" state2="false" prev_id="7tt1" desc="" iid="" bus="0" addr="0" type="multiport" V="75" prot="D" s1="" s2="" prev_x="5" prev_y="1" stateMid="false" state="open" pending="false" pos="0" manager="false" embeddedblock="false" diraddr="0" poladdr="0" delay="0" pause="0" actfn="0" motoroffdelay="1000" sMid="" psen="" swaprotation="false" addr0="0" addr1="0" addr2="0" addr3="0" addr4="0" addr5="0" port0="701" port1="702" port2="703" port3="704" port4="705" port5="707" invpos="false" invnew="false">
+      <track nr="1" desc="" posfb="" decnr="1" oppositetrack="0" polarization="false" show="true" bkid=""/>
+      <track nr="2" decnr="2" oppositetrack="0" desc="" posfb="" polarization="false" show="true" bkid=""/>
+      <track nr="3" decnr="3" oppositetrack="0" desc="" posfb="" polarization="false" show="true" bkid=""/>
+      <track nr="4" decnr="4" oppositetrack="0" desc="" posfb="" polarization="false" show="true" bkid=""/>
+      <track nr="5" decnr="5" oppositetrack="0" desc="" posfb="" polarization="false" show="true" bkid=""/>
+      <track nr="6" decnr="6" oppositetrack="0" desc="" posfb="" polarization="false" show="true" bkid=""/>
+      <track nr="7" decnr="7" oppositetrack="0" desc="" posfb="" polarization="false" show="true" bkid=""/>
+      <track nr="8" decnr="8" oppositetrack="0" desc="" posfb="" polarization="false" show="true" bkid=""/>
+      <track nr="9" decnr="9" oppositetrack="0" desc="" posfb="" polarization="false" show="true" bkid=""/>
+    </tt>
+  </ttlist>
+  <seltablist/>
+  <stlist>
+    <st id="ws-7b1" prev_id="NEW" bka="point-ws" bkb="7b1" bkc="" modid="" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none"/>
+    <st id="7b1-es" prev_id="NEW" bka="7b1" bkb="point-es" bkc="" modid="" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none"/>
+    <st id="en-7b2" prev_id="NEW" bka="point-en" bkb="7b2" bkc="" modid="" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none">
+      <swcmd id="7t1" cmd="straight"/>
+    </st>
+    <st id="7b2-wn" prev_id="7b2-wn" bka="7b2" bkb="point-wn" bkc="" modid="" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none">
+      <swcmd id="7t2" cmd="straight"/>
+    </st>
+  </stlist>
+</plan>

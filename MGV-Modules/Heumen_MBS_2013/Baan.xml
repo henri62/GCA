@@ -1,0 +1,24 @@
+<modplan title="MBS_2013" locs="locs.xml" routes="routes.xml" occupation="occ.xml" savemodplan="true" savemodules="true" initfield="false" modroutes="true" subtitle="Modular Track Layout">
+  <module filename="C:\Rocrail\Heumen_MBS_2013\canterbury.xml" x="0" y="9" id="eddybaan" title="eddybaan" cx="14" cy="10" rotation="180" swaprrd="false">
+    <connection side="point-s" modid="bocht1" id="eddybaan"/>
+    <connection side="point-w" modid="draaischijf" id="eddybaan"/>
+  </module>
+  <module filename="C:\Rocrail\Heumen_MBS_2013\keerlus1.xml" x="6" y="4" id="keerlus1" title="keerlus1" cx="14" cy="4" rotation="180" swaprrd="false">
+    <connection side="point-e" modid="bocht1" id="keerlus1"/>
+  </module>
+  <module filename="C:\Rocrail\Heumen_MBS_2013\module17.xml" x="14" y="7" id="draaischijf" title="draaischijf" cx="64" cy="11" rotation="180" swaprrd="false">
+    <connection side="point-e" modid="eddybaan" id="draaischijf"/>
+    <connection side="point-w" modid="bocht2" id="draaischijf"/>
+  </module>
+  <module filename="C:\Rocrail\Heumen_MBS_2013\bocht2.xml" x="78" y="12" id="bocht2" title="bocht2" cx="6" cy="6" rotation="270" swaprrd="false">
+    <connection side="point-w" modid="keerlus2" id="bocht2"/>
+    <connection side="point-s" modid="draaischijf" id="bocht2"/>
+  </module>
+  <module filename="C:\Rocrail\Heumen_MBS_2013\keerlus2.xml" x="79" y="0" id="keerlus2" title="keerlus2" cx="12" cy="12" rotation="90" swaprrd="false">
+    <connection side="point-w" modid="bocht2" id="keerlus2"/>
+  </module>
+  <module filename="C:\Rocrail\Heumen_MBS_2013\bocht1.xml" x="0" y="4" id="bocht1" title="bocht1" cx="5" cy="6" rotation="90" swaprrd="false">
+    <connection side="point-s" modid="keerlus1" id="bocht1"/>
+    <connection side="point-w" modid="eddybaan" id="bocht1"/>
+  </module>
+</modplan>

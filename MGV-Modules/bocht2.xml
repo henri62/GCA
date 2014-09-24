@@ -1,0 +1,40 @@
+<plan rocrailversion="2.0.999-6046" rocrailpwd="D:\MGV-Banen-Data\Rocrail-Data\MBS_2013" rocguiversion="2.0.999 revision 6046">
+  <zlevel title="bocht2" z="0" active="true"/>
+  <tklist>
+    <tk type="connector" id="tk20080706175518979" x="0" y="1" z="0" ori="east" prev_x="0" prev_y="1" prev_ori="east"/>
+    <tk type="connector" id="tk20080706175520538" x="0" y="2" z="0" ori="east" prev_x="0" prev_y="2" prev_ori="east"/>
+    <tk type="curve" id="tk20080706175616901" x="3" y="3" z="0" prev_id="tk20080706175616901" blockid="" road="false" ori="west" prev_x="3" prev_y="3" prev_ori="west"/>
+    <tk type="straight" id="tk20080706175618309" x="2" y="1" z="0" prev_x="2" prev_y="1" prev_ori="west" ori="west"/>
+    <tk type="curve" id="tk20080706175618877" x="3" y="1" z="0" prev_id="tk20080706175618877" blockid="" road="false" ori="west" prev_x="3" prev_y="1" prev_ori="west"/>
+    <tk type="curve" id="tk20080706175623734" x="2" y="3" z="0" ori="east" prev_id="tk20080706175623734" blockid="" road="false" prev_x="2" prev_y="3" prev_ori="east"/>
+    <tk type="straight" id="tk20080706175624846" x="3" y="4" z="0" ori="north" prev_x="3" prev_y="4" prev_ori="north"/>
+    <tk type="straight" id="tk20080706175627014" x="4" y="3" z="0" ori="north" prev_x="4" prev_y="3" prev_ori="north"/>
+    <tk type="curve" id="tk20080706175627558" x="4" y="2" z="0" ori="west" prev_id="tk20080706175627558" blockid="" road="false" prev_x="4" prev_y="2" prev_ori="west"/>
+    <tk type="connector" id="tk20080706175646009" x="3" y="5" z="0" ori="south" prev_x="3" prev_y="5" prev_ori="south"/>
+    <tk type="connector" id="tk20080706175646871" x="4" y="5" z="0" ori="south" prev_x="4" prev_y="5" prev_ori="south"/>
+    <tk type="curve" id="tk20080706175656506" x="2" y="2" z="0" prev_x="2" prev_y="2" prev_ori="west" ori="west"/>
+    <tk type="curve" id="tk20080706175659746" x="3" y="2" z="0" ori="east" prev_x="3" prev_y="2" prev_ori="east"/>
+  </tklist>
+  <swlist/>
+  <fblist>
+    <fb id="4f1" x="4" y="4" z="0" ori="north" prev_id="4f1" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="44" activelow="false" action="false" prev_x="4" prev_y="4" prev_ori="north" state="false" carcount="0" countedcars="0" counter="1" identifier="" direction="true" load="0" shortcut="false" wheelcount="0" val="0"/>
+    <fb id="4f2" x="1" y="2" z="0" prev_id="4f2" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="43" activelow="false" action="false" prev_x="1" prev_y="2" prev_ori="west" state="false" carcount="0" countedcars="0" counter="0" identifier="" direction="true" load="0" shortcut="false" wheelcount="0" val="0"/>
+  </fblist>
+  <sglist>
+    <sg id="4s1" x="1" y="1" z="0" prev_x="1" prev_y="1" manual="false" prev_ori="west" ori="west" state="red" aspect="0"/>
+  </sglist>
+  <colist/>
+  <bklist/>
+  <sblist/>
+  <txlist/>
+  <ttlist/>
+  <seltablist/>
+  <locationlist/>
+  <sclist/>
+  <aclist/>
+  <boosterlist/>
+  <stlist>
+    <st id="se-wn" prev_id="se-wn" bka="point-se" bkb="point-wn" bkc="" modid="bocht2" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="0" status="0" bkaside="false" bkbside="true" sga="0" sgb="0" countcars="no" reduceV="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="" maxlen="0" commuter="false" x="5" y="0" ori="south" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0" prev_x="0" prev_y="0" prev_ori="west" desc="" maxkmh="0" minlen="0" ctcoutput1="" ctcoutput2="" ctcoutput3=""/>
+    <st id="ws-sw" desc="" prev_id="ws-sw" bka="point-ws" bkb="point-sw" bkc="" modid="" bkaside="false" bkbside="false" sga="0" sgb="0" speed="max" countcars="no" reduceV="true" maxkmh="0" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="" maxlen="0" minlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0" ctcoutput1="" ctcoutput2="" ctcoutput3=""/>
+  </stlist>
+</plan>

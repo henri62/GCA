@@ -1,0 +1,32 @@
+<modplan title="opendag2_2010" locs="mgv-dcc-locs.xml" routes="routes.xml" occupation="occ.xml" savemodplan="true" savemodules="false" initfield="false" modroutes="true">
+  <module filename="..\modules\peterstraat.xml" x="8" y="27" id="peterstraat" cx="11" cy="4" title="peterstraat" rotation="180" swaprrd="false">
+    <connection side="point-w" modid="fabriek" id="peterstraat"/>
+    <connection side="point-e" modid="bocht2" id="peterstraat"/>
+  </module>
+  <module filename="..\modules\bocht2.xml" x="3" y="25" id="bocht2" cx="5" cy="6" title="bocht2" rotation="180" swaprrd="false">
+    <connection side="point-s" modid="landschap" id="bocht2"/>
+    <connection side="point-w" modid="peterstraat" id="bocht2"/>
+  </module>
+  <module filename="D:\Rocrail-Data\Modules\keerlus2.xml" x="27" y="26" id="keerlusje2" cx="12" cy="4" title="Module 1" swaprrd="false" rotation="0">
+    <connection side="point-w" modid="fabriek" id="keerlusje2"/>
+  </module>
+  <module filename="D:\Rocrail-Data\Modules\keerlus1.xml" x="30" y="9" id="keerlus1" cx="14" cy="4" title="Module 1" swaprrd="false" rotation="180">
+    <connection side="point-e" modid="nfy" id="keerlus1"/>
+  </module>
+  <module filename="D:\Rocrail-Data\Modules\fiddleyard_nieuw_hoofdbaan.xml" x="8" y="1" id="nfy" cx="22" cy="11" title="Module 1" swaprrd="false">
+    <connection side="point-e" modid="keerlus1" id="nfy"/>
+    <connection side="point-w" modid="hoek1" id="nfy"/>
+  </module>
+  <module filename="D:\Rocrail-Data\Modules\bocht1.xml" x="2" y="9" id="hoek1" cx="5" cy="6" rotation="90" title="Module 1" swaprrd="false">
+    <connection side="point-s" modid="nfy" id="hoek1"/>
+    <connection side="point-w" modid="landschap" id="hoek1"/>
+  </module>
+  <module filename="D:\Rocrail-Data\Modules\landschap-drost.xml" x="3" y="14" id="landschap" cx="11" cy="3" rotation="270" title="Module 1" swaprrd="false">
+    <connection side="point-e" modid="bocht2" id="landschap"/>
+    <connection side="point-w" modid="hoek1" id="landschap"/>
+  </module>
+  <module filename="D:\Rocrail-Data\Modules\fabriek.xml" x="19" y="27" id="fabriek" cx="8" cy="5" title="Module 1" swaprrd="false">
+    <connection side="point-e" modid="keerlusje2" id="fabriek"/>
+    <connection side="point-w" modid="peterstraat" id="fabriek"/>
+  </module>
+</modplan>

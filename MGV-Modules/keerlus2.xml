@@ -1,0 +1,79 @@
+<plan rocrailversion="2.0.999-6046" rocrailpwd="D:\MGV-Banen-Data\Rocrail-Data\MBS_2013" rocguiversion="2.0.999 revision 6046">
+  <zlevel title="keerlus2" z="4" active="true"/>
+  <tklist>
+    <tk type="curve" id="tk20080608163151160" x="11" y="3" z="4" ori="south" prev_x="11" prev_y="3" prev_ori="south" prev_id="tk20080608163151160" blockid="" road="false" routeids="ws-2b1"/>
+    <tk type="curve" id="tk20080608163239196" x="1" y="1" z="4" ori="north" prev_id="tk20080608163239196" blockid="" road="false" prev_x="1" prev_y="1" prev_ori="north"/>
+    <tk type="connector" id="tk20080608163305222" x="0" y="3" z="4" ori="east" prev_x="0" prev_y="3" prev_ori="east" prev_id="tk20080608163305222" blockid="" road="false" routeids="ws-2b2,ws-2b1"/>
+    <tk type="connector" id="tk20080608163306199" x="0" y="2" z="4" ori="east" prev_x="0" prev_y="2" prev_ori="east" prev_id="tk20080608163306199" blockid="" road="false" routeids="2b1-wn,2b2-wn"/>
+    <tk type="dir" id="tk20080608163354097" x="1" y="3" z="4" ori="east" prev_x="1" prev_y="3" prev_ori="east" prev_id="tk20080608163354097" blockid="" road="false" routeids="ws-2b2,ws-2b1"/>
+    <tk type="straight" id="tk20080608163453501" x="4" y="3" z="4" prev_x="4" prev_y="3" prev_id="tk20080608163453501" blockid="" road="false" routeids="ws-2b1" ori="west" prev_ori="west"/>
+    <tk type="curve" id="tk20080608163454718" x="11" y="1" z="4" prev_id="tk20080608163454718" blockid="" road="false" ori="west" prev_x="11" prev_y="1" prev_ori="west" routeids="ws-2b1"/>
+    <tk type="straight" id="tk20080608163455734" x="10" y="3" z="4" prev_x="10" prev_y="3" prev_id="tk20080608163455734" blockid="" road="false" routeids="ws-2b1" ori="west" prev_ori="west"/>
+    <tk type="straight" id="tk20080608163456230" x="10" y="1" z="4" prev_x="10" prev_y="1" prev_id="tk20080608163456230" blockid="" road="false" routeids="ws-2b1" ori="west" prev_ori="west"/>
+    <tk type="straight" id="tk20080618201712128" x="6" y="3" z="4" prev_x="6" prev_y="3" prev_id="tk20080618201712128" blockid="" road="false" routeids="ws-2b1" ori="west" prev_ori="west"/>
+    <tk type="buffer" id="tk20080618201716114" x="10" y="2" z="4" prev_x="10" prev_y="2" prev_id="tk20080618201716114" blockid="2b2" road="false" routeids="2b2-wn,ws-2b2" ori="west" prev_ori="west"/>
+    <tk type="straight" ori="east" id="tk20100503205947671" x="7" y="3" z="4" prev_id="tk20100503205947671" blockid="" road="false" routeids="ws-2b1" prev_x="7" prev_y="3" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20100503205956421" x="4" y="2" z="4" prev_id="tk20100503205956421" blockid="" road="false" routeids="ws-2b1" prev_x="4" prev_y="2" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20100503210001343" x="8" y="3" z="4" prev_id="tk20100503210001343" blockid="" road="false" routeids="ws-2b1" prev_x="8" prev_y="3" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20100503210005921" x="3" y="1" z="4" prev_id="tk20100503210005921" blockid="" road="false" routeids="2b1-wn" prev_x="3" prev_y="1" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20100503210005421" x="2" y="1" z="4" prev_id="tk20100503210005421" blockid="" road="false" routeids="2b1-wn" prev_x="2" prev_y="1" prev_ori="east"/>
+    <tk type="straight" ori="north" id="tk20100503215610750" x="11" y="2" z="4" prev_id="tk20100503215610750" blockid="" road="false" routeids="ws-2b1" prev_x="11" prev_y="2" prev_ori="north"/>
+    <tk type="straight" ori="west" id="tk20130309153933562" x="9" y="3" z="4" prev_x="9" prev_y="3" prev_ori="west"/>
+    <tk type="dir" id="tk20130927104424846" x="5" y="3" z="4" ori="east"/>
+  </tklist>
+  <swlist>
+    <sw type="left" id="2t1" x="2" y="3" z="4" ori="east" prev_x="2" prev_y="3" prev_ori="east" prev_id="2t1" blockid="" accnr="1" savepos="straight" dir="false" swtype="default" road="false" iid="" bus="0" addr1="0" port1="1" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="false" delay="0" prot="D" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" switched="1548" state="straight" fieldstate="straight" testing="false" porttype="0" frogporttype="0" desc="" routeids="" subtype="default" show="true" rectcrossing="true" accessory="true" param1="0" value1="1" param2="0" value2="1" tdiid="" tdaddr="0" tdport="0" td="false" fbR="" fbG="" fb2R="" fb2G="" fbOcc="" fbOcc2="" fbset="false" fbusefield="false" ctciid1="" ctciid2="" ctcaddr1="0" ctcaddr2="0" ctccmdon1="false" ctccmdon2="false" ctcflip1="true" ctcflip2="true" ctciidled1="" ctciidled2="" ctcaddrled1="0" ctcaddrled2="0" ctcportled1="0" ctcportled2="0" ctcgateled1="0" ctcgateled2="0" ctcasswitchled1="false" ctcasswitchled2="false" frogiid="" buspol="0" frogtimer="0" addr0pol1="0" port0pol1="0" gate0pol1="0" addr0pol2="0" port0pol2="0" gate0pol2="0" addr1pol1="0" port1pol1="0" gate1pol1="0" addr1pol2="0" port1pol2="0" gate1pol2="0" frogaccessory="true" frogswitch="false">
+      <accessoryctrl active="false" interval="0" delay="0" lockroutes=""/>
+    </sw>
+    <sw type="left" id="2t2" x="2" y="2" z="4" ori="west" prev_x="2" prev_y="2" prev_ori="west" prev_id="2t2" blockid="" accnr="1" savepos="straight" dir="false" swtype="default" road="false" iid="" bus="0" addr1="0" port1="3" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="false" delay="0" prot="D" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" switched="24" state="straight" fieldstate="straight" testing="false" porttype="0" frogporttype="0" desc="" routeids="" subtype="default" show="true" rectcrossing="true" accessory="true" param1="0" value1="1" param2="0" value2="1" tdiid="" tdaddr="0" tdport="0" td="false" fbR="" fbG="" fb2R="" fb2G="" fbOcc="" fbOcc2="" fbset="false" fbusefield="false" ctciid1="" ctciid2="" ctcaddr1="0" ctcaddr2="0" ctccmdon1="false" ctccmdon2="false" ctcflip1="true" ctcflip2="true" ctciidled1="" ctciidled2="" ctcaddrled1="0" ctcaddrled2="0" ctcportled1="0" ctcportled2="0" ctcgateled1="0" ctcgateled2="0" ctcasswitchled1="false" ctcasswitchled2="false" frogiid="" buspol="0" frogtimer="0" addr0pol1="0" port0pol1="0" gate0pol1="0" addr0pol2="0" port0pol2="0" gate0pol2="0" addr1pol1="0" port1pol1="0" gate1pol1="0" addr1pol2="0" port1pol2="0" gate1pol2="0" frogaccessory="true" frogswitch="false">
+      <accessoryctrl active="false" interval="0" delay="0" lockroutes=""/>
+    </sw>
+    <sw type="left" id="2t3" x="1" y="2" z="4" ori="east" prev_x="1" prev_y="2" prev_ori="east" prev_id="2t3" blockid="" accnr="1" savepos="turnout" dir="false" swtype="default" road="false" iid="" bus="0" addr1="0" port1="2" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="false" delay="0" prot="D" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" switched="1533" state="turnout" fieldstate="turnout" testing="false" porttype="0" frogporttype="0" desc="" routeids="" subtype="default" show="true" rectcrossing="true" accessory="true" param1="0" value1="1" param2="0" value2="1" tdiid="" tdaddr="0" tdport="0" td="false" fbR="" fbG="" fb2R="" fb2G="" fbOcc="" fbOcc2="" fbset="false" fbusefield="false" ctciid1="" ctciid2="" ctcaddr1="0" ctcaddr2="0" ctccmdon1="false" ctccmdon2="false" ctcflip1="true" ctcflip2="true" ctciidled1="" ctciidled2="" ctcaddrled1="0" ctcaddrled2="0" ctcportled1="0" ctcportled2="0" ctcgateled1="0" ctcgateled2="0" ctcasswitchled1="false" ctcasswitchled2="false" frogiid="" buspol="0" frogtimer="0" addr0pol1="0" port0pol1="0" gate0pol1="0" addr0pol2="0" port0pol2="0" gate0pol2="0" addr1pol1="0" port1pol1="0" gate1pol1="0" addr1pol2="0" port1pol2="0" gate1pol2="0" frogaccessory="true" frogswitch="false">
+      <accessoryctrl active="false" interval="0" delay="0" lockroutes=""/>
+    </sw>
+  </swlist>
+  <fblist>
+    <fb id="2f1" x="3" y="3" z="4" prev_id="2f1" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="27" activelow="false" action="false" prev_x="3" prev_y="3" prev_ori="west" state="false" curve="false" routeids="ws-2b1" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false" carcount="0" countedcars="0" counter="1" identifier="" shortcut="false" load="0" direction="true" wheelcount="0" val="0"/>
+    <fb id="2f4" x="4" y="1" z="4" prev_id="2f4" desc="" show="true" road="false" blockid="2b1" ori="west" iid="" bus="0" addr="26" activelow="false" action="false" prev_x="4" prev_y="1" prev_ori="west" state="false" curve="false" routeids="2b1-wn" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false" carcount="0" countedcars="0" counter="1" identifier="" shortcut="false" load="0" direction="true" wheelcount="0" val="0"/>
+    <fb id="2f5" x="3" y="2" z="4" prev_id="2f5" desc="" show="true" road="false" curve="false" blockid="2b2" routeids="2b2-wn,ws-2b2" ori="west" iid="" bus="0" addr="11" activelow="false" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false" state="false" carcount="0" countedcars="0" prev_x="3" prev_y="2" prev_ori="west" counter="0" identifier="" shortcut="false" accnr="0" timer="0" cutoutbus="0" cutoutaddr="0" fbtype="0" resetwc="true" load="0" direction="true" wheelcount="0" val="0"/>
+    <fb id="2f6" x="9" y="2" z="4" prev_id="2f6" desc="" show="true" road="false" curve="false" blockid="2b2" routeids="2b2-wn,ws-2b2" ori="west" iid="" bus="0" addr="12" activelow="false" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false" state="false" carcount="0" countedcars="0" prev_x="9" prev_y="2" prev_ori="west" counter="0" identifier="" shortcut="false" accnr="0" timer="0" cutoutbus="0" cutoutaddr="0" fbtype="0" resetwc="true" load="0" direction="true" wheelcount="0" val="0"/>
+    <fb id="2f2" x="9" y="1" z="4" state="false" carcount="0" countedcars="0" prev_id="2f2" desc="" show="true" road="false" curve="false" blockid="2b1" routeids="ws-2b1" ori="west" iid="" bus="0" addr="9" activelow="false" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false" prev_x="9" prev_y="1" prev_ori="west" counter="1" identifier="" shortcut="false" load="0" direction="true" wheelcount="0" val="0"/>
+  </fblist>
+  <sglist/>
+  <colist/>
+  <bklist>
+    <bk id="2b1" x="5" y="1" z="4" state="open" reserved="false" prev_id="2b1" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="yes" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="fixed" minwaittime="1" maxwaittime="30" waittime="0" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="5" prev_y="1" entering="false" allowchgdir="true" locid="" smallsymbol="false" turnouts="" typeperm="" show="true" extstop="false" stopspeed="mid" evttimer2="0" prev_ori="west" ori="west" updateenterside="false" managerid="" blankatredsignal="false" blankatredsignalR="false" maxkmh="0" forceblocktimer="false" acceptident="false" departdelay="0" allowbbt="true" cmd="loc">
+      <fbevent id="2f1" action="occupied" from="all-reverse" byroute="all-reverse" endpuls="false" use_timer2="false"/>
+      <fbevent id="2f2" action="enter" from="all-reverse" byroute="all-reverse" endpuls="false" use_timer2="false"/>
+      <fbevent id="2f4" action="in" from="all-reverse" byroute="all-reverse" endpuls="false" use_timer2="false"/>
+    </bk>
+    <bk id="2b2" x="5" y="2" z="4" state="open" reserved="false" prev_id="2b2" desc="" len="0" electrified="true" station="false" gomanual="true" acceptghost="false" terminalstation="true" wait="true" road="false" allowchgdir="true" smallsymbol="false" show="true" extstop="false" commuter="only" ttid="" signal="" wsignal="" signalR="" wsignalR="" speed="mid" exitspeed="max" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" typeperm="" speedpercent="40" stopspeed="min" evttimer2="0" prev_x="5" prev_y="2" prev_ori="west" ori="west" entering="false" updateenterside="false" managerid="" acceptident="false" blankatredsignal="false" blankatredsignalR="false" maxkmh="0" forceblocktimer="false" departdelay="0" locid="" allowbbt="true">
+      <fbevent id="2f5" action="enter" from="all" byroute="all" endpuls="false" use_timer2="false"/>
+      <fbevent id="2f6" action="in" from="all" byroute="all" endpuls="false" use_timer2="false"/>
+    </bk>
+  </bklist>
+  <sblist/>
+  <txlist/>
+  <ttlist/>
+  <seltablist/>
+  <locationlist/>
+  <sclist/>
+  <aclist/>
+  <boosterlist/>
+  <stlist>
+    <st id="ws-2b2" prev_id="ws-2b2" bka="point-ws" bkb="2b2" bkc="" modid="keerlus2" dir="true" lcdir="true" sga="0" sgb="0" speed="cruise" reduceV="true" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="" maxlen="0" x="0" y="0" z="4" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0" bkaside="false" bkbside="true" countcars="no" commuter="true" tomodid="keerlus2" desc="" ctcoutput1="" ctcoutput2="" ctcoutput3="" maxkmh="0" minlen="0" prev_x="11" prev_y="0" prev_ori="south" status="0">
+      <swcmd id="2t1" cmd="turnout" lock="true"/>
+      <swcmd id="2t2" cmd="turnout" lock="true"/>
+    </st>
+    <st id="ws-2b1" prev_id="ws-2b1" bka="point-ws" bkb="2b1" bkc="" modid="keerlus2" dir="true" lcdir="true" speed="cruise" swap="false" function="0" funtime="1" funevent="none" z="4" status="0" sga="0" sgb="0" reduceV="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="" maxlen="0" x="0" y="11" ori="north" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0" bkaside="false" bkbside="false" countcars="no" commuter="true" tomodid="keerlus2" desc="" maxkmh="0" minlen="0" ctcoutput1="" ctcoutput2="" ctcoutput3="" prev_x="0" prev_y="0" prev_ori="west">
+      <swcmd id="2t1" cmd="straight"/>
+    </st>
+    <st id="2b1-wn" desc="" prev_id="2b1-wn" bka="2b1" bkb="point-wn" bkc="" modid="" bkaside="true" bkbside="false" sga="0" sgb="0" speed="cruise" countcars="no" reduceV="true" maxkmh="0" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="" maxlen="0" minlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0" ctcoutput1="" ctcoutput2="" ctcoutput3="">
+      <swcmd id="2t3" cmd="turnout" lock="true" reduceV="true"/>
+    </st>
+    <st id="2b2-wn" desc="" prev_id="2b2-wn" bka="2b2" bkb="point-wn" bkc="" modid="" bkaside="true" bkbside="false" sga="0" sgb="0" speed="cruise" countcars="no" reduceV="true" maxkmh="0" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="" maxlen="0" minlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0" ctcoutput1="" ctcoutput2="" ctcoutput3="">
+      <swcmd id="2t2" cmd="straight" lock="true" reduceV="true"/>
+      <swcmd id="2t3" cmd="straight" lock="true" reduceV="true"/>
+    </st>
+  </stlist>
+</plan>

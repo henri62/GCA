@@ -1,0 +1,80 @@
+<plan rocrailversion="2.0.999-2098" rocguiversion="2.0.999 revision 2098">
+  <zlevel title="Module 1" z="1" active="true"/>
+  <tklist>
+    <tk type="curve" id="tk20080418111440639" x="8" y="3" z="1" ori="north" prev_x="8" prev_y="3" prev_ori="north"/>
+    <tk type="straight" id="tk20080418111538321" x="8" y="13" z="1" prev_x="8" prev_y="13" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080418111539185" x="20" y="12" z="1" prev_x="20" prev_y="12" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080418111545193" x="18" y="12" z="1" prev_x="18" prev_y="12" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080418111545793" x="19" y="12" z="1" prev_x="19" prev_y="12" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080418111547010" x="7" y="9" z="1" ori="north" prev_x="7" prev_y="9" prev_ori="north"/>
+    <tk type="curve" id="tk20080418111615476" x="22" y="13" z="1" ori="south" prev_x="22" prev_y="13" prev_ori="south"/>
+    <tk type="curve" id="tk20080418111618468" x="7" y="13" z="1" ori="east" prev_x="7" prev_y="13" prev_ori="east"/>
+    <tk type="connector" id="tk20080418111643254" x="9" y="2" z="1" ori="west" prev_x="9" prev_y="2" prev_ori="west"/>
+    <tk type="connector" id="tk20080418111644396" x="9" y="3" z="1" ori="west" prev_x="9" prev_y="3" prev_ori="west"/>
+    <tk type="connector" id="tk20080418111645748" x="22" y="10" z="1" ori="north" prev_x="22" prev_y="10" prev_ori="north"/>
+    <tk type="connector" id="tk20080418111646604" x="21" y="10" z="1" ori="north" prev_x="21" prev_y="10" prev_ori="north"/>
+    <tk type="curve" id="tk20080610172615964" x="7" y="2" z="1" prev_x="7" prev_y="2" prev_id="tk20080610172615964" blockid="" road="false" routeids="" ori="north" prev_ori="north"/>
+    <tk type="straight" id="tk20080610172618492" x="7" y="4" z="1" prev_x="7" prev_y="4" prev_id="tk20080610172618492" blockid="" road="false" ori="north" prev_ori="north"/>
+    <tk type="straight" id="tk20080610172619511" x="7" y="5" z="1" ori="north" prev_x="7" prev_y="5" prev_ori="north"/>
+    <tk type="curve" id="tk20080610172751995" x="21" y="12" z="1" prev_x="21" prev_y="12" ori="south" prev_ori="south"/>
+    <tk type="curve" id="tk20080610172812021" x="8" y="12" z="1" prev_x="8" prev_y="12" ori="east" prev_ori="east"/>
+    <tk type="straight" id="tk20080712151836189" x="7" y="3" z="1" ori="north" prev_x="7" prev_y="3" prev_ori="north"/>
+    <tk type="straight" id="tk20080712151837057" x="7" y="6" z="1" ori="north" prev_x="7" prev_y="6" prev_ori="north"/>
+    <tk type="straight" id="tk20080712151837401" x="7" y="8" z="1" ori="north" prev_x="7" prev_y="8" prev_ori="north"/>
+    <tk type="straight" id="tk20080712151837721" x="7" y="7" z="1" ori="north" prev_x="7" prev_y="7" prev_ori="north"/>
+    <tk type="straight" id="tk20080712152300578" x="8" y="2" z="1" prev_x="8" prev_y="2" prev_ori="west" ori="west"/>
+    <tk type="straight" ori="north" id="tk20110110213239187" x="7" y="10" z="1" prev_x="7" prev_y="10" prev_ori="north"/>
+    <tk type="straight" ori="north" id="tk20110110213240500" x="7" y="11" z="1" prev_x="7" prev_y="11" prev_ori="north"/>
+    <tk type="straight" ori="north" id="tk20110110213248734" x="7" y="12" z="1" prev_x="7" prev_y="12" prev_ori="north"/>
+    <tk type="straight" ori="east" id="tk20110110213301484" x="9" y="13" z="1" prev_x="9" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213306734" x="10" y="13" z="1" prev_x="10" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213306171" x="11" y="13" z="1" prev_x="11" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213306578" x="12" y="13" z="1" prev_x="12" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213307984" x="13" y="13" z="1" prev_x="13" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213307390" x="14" y="13" z="1" prev_x="14" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213308843" x="15" y="13" z="1" prev_x="15" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213308296" x="16" y="13" z="1" prev_x="16" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213309734" x="17" y="13" z="1" prev_x="17" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213309187" x="18" y="13" z="1" prev_x="18" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213309640" x="19" y="13" z="1" prev_x="19" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213310156" x="20" y="13" z="1" prev_x="20" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="east" id="tk20110110213311843" x="21" y="13" z="1" prev_x="21" prev_y="13" prev_ori="east"/>
+    <tk type="straight" ori="south" id="tk20110110213326171" x="22" y="12" z="1" prev_x="22" prev_y="12" prev_ori="south"/>
+    <tk type="straight" ori="south" id="tk20110110213330296" x="22" y="11" z="1" prev_x="22" prev_y="11" prev_ori="south"/>
+    <tk type="straight" ori="north" id="tk20110110213351187" x="21" y="11" z="1" prev_x="21" prev_y="11" prev_ori="north"/>
+    <tk type="straight" ori="west" id="tk20110110213416781" x="17" y="12" z="1" prev_x="17" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="west" id="tk20110110213419109" x="16" y="12" z="1" prev_x="16" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="west" id="tk20110110213419500" x="15" y="12" z="1" prev_x="15" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="west" id="tk20110110213420890" x="14" y="12" z="1" prev_x="14" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="west" id="tk20110110213420328" x="13" y="12" z="1" prev_x="13" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="west" id="tk20110110213421734" x="12" y="12" z="1" prev_x="12" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="west" id="tk20110110213421125" x="11" y="12" z="1" prev_x="11" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="west" id="tk20110110213421515" x="10" y="12" z="1" prev_x="10" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="west" id="tk20110110213422531" x="9" y="12" z="1" prev_x="9" prev_y="12" prev_ori="west"/>
+    <tk type="straight" ori="south" id="tk20110110213433546" x="8" y="11" z="1" prev_x="8" prev_y="11" prev_ori="south"/>
+    <tk type="straight" ori="south" id="tk20110110213436562" x="8" y="10" z="1" prev_x="8" prev_y="10" prev_ori="south"/>
+    <tk type="straight" ori="south" id="tk20110110213437015" x="8" y="9" z="1" prev_x="8" prev_y="9" prev_ori="south"/>
+    <tk type="straight" ori="south" id="tk20110110213437468" x="8" y="8" z="1" prev_x="8" prev_y="8" prev_ori="south"/>
+    <tk type="straight" ori="south" id="tk20110110213438984" x="8" y="7" z="1" prev_x="8" prev_y="7" prev_ori="south"/>
+    <tk type="straight" ori="south" id="tk20110110213439703" x="8" y="6" z="1" prev_x="8" prev_y="6" prev_ori="south"/>
+    <tk type="straight" ori="south" id="tk20110110213439328" x="8" y="5" z="1" prev_x="8" prev_y="5" prev_ori="south"/>
+    <tk type="straight" ori="south" id="tk20110110213440031" x="8" y="4" z="1" prev_x="8" prev_y="4" prev_ori="south"/>
+  </tklist>
+  <swlist/>
+  <fblist/>
+  <sglist>
+    <sg id="11s1" x="-730" y="726" z="1" desc="" blockid="11b1" road="false" ori="west" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="217" port2="218" port3="219" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="true" usepatterns="false" inv="false" pair="false" asswitch="false" green="32" red="32" yellow="32" white="34" prev_x="-730" prev_y="726" prev_ori="west" manual="false"/>
+  </sglist>
+  <colist/>
+  <bklist/>
+  <txlist/>
+  <ttlist/>
+  <seltablist/>
+  <locationlist/>
+  <aclist/>
+  <boosterlist/>
+  <stlist>
+    <st id="nw-ws" prev_id="NEW" bka="" bkb="" bkc="" modid="" bkaside="false" bkbside="true" dir="true" lcdir="true" sga="0" sgb="0" speed="max" countcars="no" reduceV="true" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0"/>
+    <st id="wn-ne" prev_id="NEW" bka="" bkb="" bkc="" modid="" bkaside="false" bkbside="true" dir="true" lcdir="true" sga="0" sgb="0" speed="max" countcars="no" reduceV="true" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0"/>
+  </stlist>
+</plan>

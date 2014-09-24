@@ -1,0 +1,46 @@
+<plan rocrailversion="1.1.0 svn3805" rocguiversion="1.4.999 revision 1767">
+  <zlevel title="Module 1" z="2" active="true"/>
+  <tklist>
+    <tk type="connector" id="tk20080608152916083" x="0" y="1" z="2" ori="east" prev_x="0" prev_y="1" prev_ori="east" prev_id="tk20080608152916083" blockid="" road="false" routeids="13b1-wn"/>
+    <tk type="connector" id="tk20080608152919469" x="0" y="2" z="2" ori="east" prev_x="0" prev_y="2" prev_ori="east" prev_id="tk20080608152919469" blockid="" road="false" routeids="ws-13b2"/>
+    <tk type="dir" id="tk20080608152933645" x="1" y="2" z="2" ori="east" prev_x="1" prev_y="2" prev_ori="east" prev_id="tk20080608152933645" blockid="" road="false" routeids="ws-13b2"/>
+    <tk type="connector" id="tk20080608152946470" x="10" y="1" z="2" prev_x="10" prev_y="1" prev_id="tk20080608152946470" blockid="" road="false" routeids="en-13b1" ori="west"/>
+    <tk type="connector" id="tk20080608152947390" x="10" y="2" z="2" prev_x="10" prev_y="2" prev_id="tk20080608152947390" blockid="" road="false" routeids="13b2-es" ori="west"/>
+    <tk type="straight" ori="west" id="tk20100803141522406" x="8" y="1" z="2" prev_id="tk20100803141522406" blockid="" road="false" routeids="en-13b1"/>
+  </tklist>
+  <swlist>
+    <sw type="accessory" id="13a1" x="9" y="1" z="2" ori="east" prev_x="8" prev_y="1" prev_ori="east" switched="0" prev_id="13a1" desc="" blockid="" accnr="1" savepos="none" dir="false" swtype="default" road="false" show="true" iid="" bus="0" addr1="0" port1="0" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="false" delay="0" prot="D" fbR="" fbG="" fb2R="" fb2G="" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" ctciid1="" ctciid2="" ctcaddr1="0" ctcaddr2="0" ctccmdon1="false" ctccmdon2="false" ctcflip1="true" ctcflip2="true" ctciidled1="" ctciidled2="" ctcaddrled1="0" ctcaddrled2="0" ctcportled1="0" ctcportled2="0" ctcgateled1="0" ctcgateled2="0" ctcasswitchled1="false" ctcasswitchled2="false">
+      <accessoryctrl active="false" interval="0" delay="0" lockroutes=""/>
+    </sw>
+  </swlist>
+  <fblist>
+    <fb id="13f1" x="7" y="1" z="2" prev_id="13f1" desc="" show="true" road="false" curve="false" blockid="13b1" ori="west" iid="" bus="0" addr="55" activelow="false" action="false" prev_x="7" prev_y="1" prev_ori="west" state="false" carcount="0" countedcars="0" routeids="en-13b1" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="13f2" x="2" y="1" z="2" prev_id="13f2" desc="" show="true" road="false" curve="false" blockid="13b1" ori="west" iid="" bus="0" addr="59" activelow="false" action="false" prev_x="2" prev_y="1" prev_ori="west" state="false" carcount="0" countedcars="0" routeids="13b1-wn" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="13f3" x="2" y="2" z="2" prev_id="13f3" desc="" show="true" road="false" curve="false" blockid="13b2" ori="west" iid="" bus="0" addr="60" activelow="false" action="false" prev_x="2" prev_y="2" prev_ori="west" state="false" carcount="0" countedcars="0" routeids="ws-13b2" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+    <fb id="13f4" x="7" y="2" z="2" prev_id="13f4" desc="" show="true" road="false" curve="false" blockid="13b2" ori="west" iid="" bus="0" addr="56" activelow="false" action="false" prev_x="7" prev_y="2" prev_ori="west" state="false" carcount="0" countedcars="0" routeids="13b2-es" ctciid="" ctcaddr="0" ctcport="0" ctcgate="0" ctcasswitch="false"/>
+  </fblist>
+  <sglist>
+    <sg id="13s1" x="8" y="2" z="2" ori="east" desc="" blockid="13b2" road="false" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="77" port2="78" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" prev_x="9" prev_y="2" prev_ori="east" manual="false" routeids="13b2-es"/>
+    <sg id="13s2" x="1" y="1" z="2" desc="" blockid="13b1" road="false" ori="west" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="79" port2="80" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" prev_x="1" prev_y="1" prev_ori="west" manual="false" routeids="13b1-wn"/>
+  </sglist>
+  <colist/>
+  <bklist>
+    <bk id="13b1" x="3" y="1" z="2" state="open" reserved="false" prev_id="13b1" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="yes" ttid="" signal="13s2" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="cruise" type="none" incline="0" waitmode="fixed" minwaittime="1" maxwaittime="30" waittime="0" mvscale="87" mvdistance="1210" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="3" prev_y="1" entering="false" allowchgdir="false" locid="" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="13f1" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="13f2" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+    <bk id="13b2" x="3" y="2" z="2" state="open" reserved="false" prev_id="13b2" desc="" len="0" electrified="true" station="false" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="yes" ttid="" signal="13s1" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="cruise" type="none" incline="0" waitmode="fixed" minwaittime="1" maxwaittime="30" waittime="0" mvscale="87" mvdistance="1210" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="3" prev_y="2" entering="false" allowchgdir="false" locid="" smallsymbol="false" show="true" extstop="false" typeperm="all">
+      <fbevent id="13f3" action="enter" from="all" endpuls="false" ghostdetection="false"/>
+      <fbevent id="13f4" action="in" from="all" endpuls="false" ghostdetection="false"/>
+    </bk>
+  </bklist>
+  <txlist/>
+  <ttlist/>
+  <seltablist/>
+  <stlist>
+    <st id="ws-13b2" prev_id="ws-13b2" bka="point-ws" bkb="13b2" bkc="" modid="Snelweg" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="2" status="0" sga="0" sgb="0" countcars="no" reduceV="true" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0"/>
+    <st id="13b2-es" prev_id="NEW" bka="13b2" bkb="point-es" bkc="" modid="Snelweg" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="2" status="0"/>
+    <st id="en-13b1" prev_id="NEW" bka="point-en" bkb="13b1" bkc="" modid="Snelweg" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="2" status="0"/>
+    <st id="13b1-wn" prev_id="13b1-wn" bka="13b1" bkb="point-wn" bkc="" modid="Snelweg" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="2" status="0"/>
+  </stlist>
+</plan>

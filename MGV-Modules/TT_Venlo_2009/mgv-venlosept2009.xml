@@ -1,0 +1,49 @@
+<modplan title="MGV TT Venlo 2009" locs="mgv-dcc-locs.xml" routes="mgv-venlosept2009-routes.xml" occupation="mgv-venlosept2009-occ.xml" savemodplan="true" savemodules="false" initfield="false" modroutes="true">
+  <module id="logo" title="Logo" filename="..\modules\mgv-logo.xml" x="47" y="8" cx="20" cy="8"/>
+  <module filename="..\modules\fiddleyard.xml" x="20" y="12" id="fiddleyard" cx="18" cy="11" title="fiddleyard" rotation="180">
+    <connection side="point-w" modid="carlstad2" id="fiddleyard"/>
+  </module>
+  <module filename="..\modules\carlstad2.xml" x="39" y="12" id="carlstad2" cx="12" cy="12" title="carlstad2" rotation="180">
+    <connection side="point-n" modid="carlstad" id="carlstad2"/>
+    <connection side="point-e" modid="fiddleyard" id="carlstad2"/>
+  </module>
+  <module filename="..\modules\carlstad_lang.xml" x="22" y="25" id="carlstad" cx="29" cy="14" title="carlstad" rotation="180">
+    <connection side="point-e" modid="drost" id="carlstad"/>
+    <connection side="point-s" modid="carlstad2" id="carlstad"/>
+    <connection side="point-w" modid="draaischijf" id="carlstad"/>
+  </module>
+  <module filename="..\modules\landschap-drost.xml" x="10" y="35" id="drost" cx="11" cy="3" title="drost" rotation="180">
+    <connection side="point-w" modid="carlstad" id="drost"/>
+    <connection side="point-e" modid="bocht1" id="drost"/>
+  </module>
+  <module filename="..\modules\snelweg.xml" x="4" y="21" id="snelweg" cx="11" cy="3" title="snelweg" rotation="270">
+    <connection side="point-e" modid="bocht1" id="snelweg"/>
+    <connection side="point-w" modid="canterbury" id="snelweg"/>
+  </module>
+  <module filename="..\modules\canterbury.xml" x="2" y="6" id="canterbury" cx="14" cy="10" title="canterbury" rotation="90">
+    <connection side="point-s" modid="peterstraat" id="canterbury"/>
+    <connection side="point-w" modid="snelweg" id="canterbury"/>
+  </module>
+  <module filename="..\modules\peterstraat.xml" x="13" y="6" id="peterstraat" cx="11" cy="4" title="peterstraat" rotation="180">
+    <connection side="point-w" modid="keerlus1" id="peterstraat"/>
+    <connection side="point-e" modid="canterbury" id="peterstraat"/>
+  </module>
+  <module filename="..\modules\draaischijf.xml" x="52" y="30" id="draaischijf" cx="15" cy="8" title="draaischijf" rotation="0">
+    <connection side="point-e" modid="bocht2" id="draaischijf"/>
+    <connection side="point-w" modid="carlstad" id="draaischijf"/>
+  </module>
+  <module filename="..\modules\bocht2.xml" x="69" y="33" id="bocht2" cx="5" cy="6" title="bocht2" rotation="270">
+    <connection side="point-s" modid="draaischijf" id="bocht2"/>
+    <connection side="point-w" modid="keerlus2" id="bocht2"/>
+  </module>
+  <module filename="..\modules\bocht1.xml" x="4" y="33" id="bocht1" cx="5" cy="6" title="bocht1" rotation="180">
+    <connection side="point-s" modid="snelweg" id="bocht1"/>
+    <connection side="point-w" modid="drost" id="bocht1"/>
+  </module>
+  <module filename="..\modules\keerlus2.xml" x="70" y="24" id="keerlus2" cx="8" cy="4" title="keerlus2" rotation="90">
+    <connection side="point-w" modid="bocht2" id="keerlus2"/>
+  </module>
+  <module filename="..\modules\keerlus1.xml" x="25" y="7" id="keerlus1" cx="14" cy="4" rotation="180" title="keerlus1">
+    <connection side="point-e" modid="peterstraat" id="keerlus1"/>
+  </module>
+</modplan>

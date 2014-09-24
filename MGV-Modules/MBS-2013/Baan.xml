@@ -1,0 +1,24 @@
+<modplan title="MBS_2013" locs="locs.xml" routes="routes.xml" occupation="occ.xml" savemodplan="true" savemodules="true" initfield="false" modroutes="true">
+  <module filename="bocht2.xml" x="79" y="12" id="bocht2" cx="5" cy="6" rotation="270" title="bocht2" swaprrd="false">
+    <connection side="point-s" modid="tt" id="bocht2"/>
+    <connection side="point-w" modid="keerlus2" id="bocht2"/>
+  </module>
+  <module filename="bocht1.xml" x="1" y="4" id="bocht1" cx="5" cy="6" title="bocht1" swaprrd="false" rotation="90">
+    <connection side="point-s" modid="keerlus1" id="bocht1"/>
+    <connection side="point-w" modid="eddybaan" id="bocht1"/>
+  </module>
+  <module filename="canterbury.xml" x="1" y="9" id="eddybaan" cx="14" cy="10" rotation="180" title="eddybaan" swaprrd="false">
+    <connection side="point-s" modid="bocht1" id="eddybaan"/>
+    <connection side="point-w" modid="tt" id="eddybaan"/>
+  </module>
+  <module filename="module17.xml" x="15" y="7" id="tt" cx="64" cy="11" rotation="180" title="draaicschijf" swaprrd="false">
+    <connection side="point-e" modid="eddybaan" id="tt"/>
+    <connection side="point-w" modid="bocht2" id="tt"/>
+  </module>
+  <module filename="keerlus2.xml" x="80" y="0" id="keerlus2" cx="12" cy="4" rotation="90" title="keerlus2" swaprrd="false">
+    <connection side="point-w" modid="bocht2" id="keerlus2"/>
+  </module>
+  <module filename="keerlus1.xml" x="7" y="4" id="keerlus1" cx="14" cy="4" rotation="180" title="keerlus1" swaprrd="false">
+    <connection side="point-e" modid="bocht1" id="keerlus1"/>
+  </module>
+</modplan>

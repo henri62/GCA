@@ -1,0 +1,248 @@
+<plan rocrailversion="2.0.999-2098" rocguiversion="2.0.999 revision 2098" title="canterbury_circle.xml">
+  <zlevel title="Module 1" z="0" active="true"/>
+  <tklist>
+    <tk type="curve" id="tk20080418111439103" x="6" y="1" z="0" ori="north" prev_x="1" prev_y="1" prev_ori="north"/>
+    <tk type="curve" id="tk20080418111440639" x="6" y="4" z="0" ori="east" prev_x="1" prev_y="4" prev_ori="east"/>
+    <tk type="straight" id="tk20080418111538321" x="14" y="2" z="0" prev_x="9" prev_y="2" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080418111539185" x="15" y="2" z="0" prev_x="10" prev_y="2" prev_ori="west" ori="west"/>
+    <tk type="dir" id="tk20080418111543497" x="17" y="3" z="0" prev_id="tk20080418111543497" blockid="" road="false" ori="south" prev_x="12" prev_y="3" prev_ori="south"/>
+    <tk type="straight" id="tk20080418111544161" x="17" y="1" z="0" prev_x="12" prev_y="1" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080418111545193" x="14" y="1" z="0" prev_x="9" prev_y="1" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080418111545793" x="15" y="1" z="0" prev_x="10" prev_y="1" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080418111547010" x="18" y="2" z="0" ori="north" prev_x="13" prev_y="2" prev_ori="north"/>
+    <tk type="dir" id="tk20080418111547594" x="18" y="3" z="0" prev_id="tk20080418111547594" blockid="" road="false" ori="south" prev_x="13" prev_y="3" prev_ori="south"/>
+    <tk type="curve" id="tk20080418111615476" x="18" y="7" z="0" ori="south" prev_x="13" prev_y="7" prev_ori="south"/>
+    <tk type="curve" id="tk20080418111618468" x="15" y="7" z="0" ori="east" prev_x="10" prev_y="7" prev_ori="east"/>
+    <tk type="curve" id="tk20080610172527472" x="15" y="4" z="0" prev_x="10" prev_y="4" prev_ori="west" ori="west"/>
+    <tk type="curve" id="tk20080610172615964" x="16" y="3" z="0" prev_x="11" prev_y="3" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080610172618492" x="16" y="4" z="0" prev_x="11" prev_y="4" prev_id="tk20080610172618492" blockid="" road="false" ori="north" prev_ori="north"/>
+    <tk type="straight" id="tk20080610172619511" x="16" y="5" z="0" ori="north" prev_x="11" prev_y="5" prev_ori="north"/>
+    <tk type="curve" id="tk20080610172751995" x="17" y="2" z="0" prev_x="12" prev_y="2" prev_ori="west" ori="west"/>
+    <tk type="curve" id="tk20080610172812021" x="18" y="1" z="0" prev_x="13" prev_y="1" prev_ori="west" ori="west"/>
+    <tk type="straight" id="tk20080712151836189" x="17" y="4" z="0" ori="north" prev_x="12" prev_y="4" prev_ori="north"/>
+    <tk type="straight" id="tk20080712151837057" x="17" y="5" z="0" ori="north" prev_x="12" prev_y="5" prev_ori="north"/>
+    <tk type="straight" id="tk20080712151837401" x="18" y="5" z="0" ori="north" prev_x="13" prev_y="5" prev_ori="north"/>
+    <tk type="straight" id="tk20080712151837721" x="18" y="4" z="0" ori="north" prev_x="13" prev_y="4" prev_ori="north"/>
+    <tk type="straight" id="tk20080712152300578" x="13" y="3" z="0" prev_x="8" prev_y="3" prev_ori="west" ori="west"/>
+    <tk type="curve" ori="north" id="tk20110110225533937" x="15" y="8" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230855281" x="5" y="2" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230856437" x="4" y="2" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230857546" x="5" y="3" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230858046" x="4" y="3" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230909359" x="4" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230910843" x="5" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230910281" x="6" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230911687" x="7" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230911171" x="8" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230912593" x="9" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230912000" x="10" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230912390" x="11" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230913765" x="12" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230913171" x="13" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230914578" x="14" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230914000" x="15" y="16" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230915468" x="4" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230916859" x="5" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230916312" x="7" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230917812" x="6" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230917203" x="8" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230918578" x="9" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230918984" x="10" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230918390" x="12" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230919984" x="11" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230919437" x="13" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230920031" x="14" y="17" z="0"/>
+    <tk type="straight" ori="west" id="tk20110110230920468" x="15" y="17" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230924687" x="17" y="9" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230929750" x="16" y="9" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230932656" x="17" y="10" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230937015" x="3" y="4" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230938765" x="3" y="5" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230938296" x="3" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230939750" x="3" y="8" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230940625" x="3" y="9" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230941531" x="2" y="10" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110230945062" x="3" y="17" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110230946093" x="16" y="17" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230947140" x="2" y="9" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230947484" x="2" y="8" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230948031" x="2" y="7" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230948515" x="2" y="6" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230949031" x="2" y="5" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230950593" x="2" y="4" z="0"/>
+    <tk type="straight" ori="north" id="tk20110110230950265" x="2" y="3" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110230951500" x="3" y="2" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231046406" x="3" y="10" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231050062" x="3" y="11" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231050515" x="3" y="12" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231051328" x="2" y="11" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231052828" x="2" y="12" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231054453" x="2" y="13" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231056000" x="16" y="10" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231056531" x="16" y="11" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231057046" x="16" y="12" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231057546" x="17" y="11" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231058000" x="17" y="12" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231058406" x="17" y="13" z="0"/>
+    <tk type="curve" ori="north" id="tk20110110231113843" x="2" y="2" z="0"/>
+    <tk type="curve" ori="north" id="tk20110110231128250" x="3" y="3" z="0"/>
+    <tk type="curve" ori="south" id="tk20110110231134515" x="17" y="17" z="0"/>
+    <tk type="curve" ori="south" id="tk20110110231144500" x="16" y="16" z="0"/>
+    <tk type="curve" ori="east" id="tk20110110231146343" x="3" y="16" z="0"/>
+    <tk type="curve" ori="east" id="tk20110110231147000" x="2" y="17" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231320468" x="2" y="14" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231332843" x="2" y="15" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231333906" x="2" y="16" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231334640" x="3" y="15" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231334171" x="3" y="14" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231335734" x="3" y="13" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231336687" x="16" y="13" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231336421" x="16" y="14" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231337843" x="16" y="15" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231338578" x="17" y="16" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231338234" x="17" y="15" z="0"/>
+    <tk type="straight" ori="south" id="tk20110110231339828" x="17" y="14" z="0"/>
+    <tk type="curve" ori="south" id="tk20110110231346609" x="15" y="9" z="0"/>
+    <tk type="curve" ori="north" id="tk20110110231355718" x="14" y="9" z="0"/>
+    <tk type="curve" ori="south" id="tk20110110231359218" x="14" y="10" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110231413578" x="13" y="10" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110231416953" x="12" y="10" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110231416562" x="11" y="10" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110231417031" x="10" y="10" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110231418703" x="9" y="10" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110231418140" x="8" y="10" z="0"/>
+    <tk type="straight" ori="east" id="tk20110110231420734" x="7" y="10" z="0"/>
+    <tk type="curve" ori="east" id="tk20110110231424656" x="6" y="10" z="0"/>
+    <tk type="curve" ori="west" id="tk20110110231427359" x="6" y="9" z="0"/>
+    <tk type="curve" ori="west" id="tk20110110231448984" x="4" y="7" z="0"/>
+    <tk type="curve" ori="east" id="tk20110110231635312" x="4" y="8" z="0"/>
+    <tk type="curve" ori="west" id="tk20110110231646437" x="5" y="8" z="0"/>
+    <tk type="curve" ori="west" id="tk20110110231657046" x="5" y="8" z="0"/>
+    <tk type="curve" ori="east" id="tk20110110231659906" x="5" y="9" z="0"/>
+  </tklist>
+  <swlist>
+    <sw type="left" id="11t1" x="6" y="2" z="0" ori="east" prev_id="m11t1" blockid="" savepos="none" dir="false" swtype="default" road="false" iid="" bus="0" addr1="0" port1="81" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="true" delay="0" prot="D" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="1" prev_y="2" prev_ori="east" switched="0"/>
+    <sw type="right" id="11t2" x="6" y="3" z="0" prev_id="m11t2" blockid="" savepos="none" dir="true" swtype="default" road="false" ori="west" iid="" bus="0" addr1="0" port1="82" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="true" delay="0" prot="M" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="1" prev_y="3" prev_ori="west" switched="0"/>
+    <sw type="left" id="11t4" x="16" y="7" z="0" prev_id="m11t4" blockid="" savepos="none" dir="false" swtype="default" road="false" ori="south" iid="" bus="0" addr1="0" port1="83" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="true" delay="0" prot="M" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="11" prev_y="7" prev_ori="south" switched="0"/>
+    <sw type="right" id="11t3" x="17" y="7" z="0" ori="north" prev_id="m11t3" blockid="" savepos="none" dir="true" swtype="default" road="false" iid="" bus="0" addr1="0" port1="84" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="true" delay="0" prot="M" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" prev_x="12" prev_y="7" prev_ori="north" switched="0"/>
+    <sw type="right" id="11t5" x="16" y="8" z="0" switched="0" ori="south" prev_id="11t5" desc="" blockid="" accnr="1" savepos="none" dir="true" swtype="default" road="false" show="true" iid="" bus="0" addr1="0" port1="85" gate1="0" inv="false" singlegate="false" addr2="0" port2="0" inv2="false" actdelay="false" delay="0" prot="D" fbR="" fbG="" fb2R="" fb2G="" fbRinv="false" fbGinv="false" fb2Rinv="false" fb2Ginv="false" ctciid1="" ctciid2="" ctcaddr1="0" ctcaddr2="0" ctccmdon1="false" ctccmdon2="false" ctcflip1="true" ctcflip2="true" ctciidled1="" ctciidled2="" ctcaddrled1="0" ctcaddrled2="0" ctcportled1="0" ctcportled2="0" ctcgateled1="0" ctcgateled2="0" ctcasswitchled1="false" ctcasswitchled2="false">
+      <accessoryctrl active="false" interval="0" delay="0" lockroutes=""/>
+    </sw>
+    <sw type="left" id="11T6" x="3" y="7" z="0" switched="0" ori="north"/>
+  </swlist>
+  <fblist>
+    <fb id="11f7" x="8" y="1" z="0" prev_id="11f7" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="221" activelow="false" action="false" prev_x="3" prev_y="1" prev_ori="west" state="false" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f6" x="18" y="6" z="0" prev_id="m11f6" desc="" show="true" road="false" blockid="" ori="north" iid="" bus="0" addr="247" activelow="false" action="false" prev_x="13" prev_y="6" prev_ori="north" state="false" carcount="0" countedcars="0"/>
+    <fb id="11f8" x="8" y="2" z="0" prev_id="11f8" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="222" activelow="false" action="false" prev_x="3" prev_y="2" prev_ori="west" state="false" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f5" x="17" y="6" z="0" prev_id="11f5" desc="" show="true" road="false" blockid="" ori="north" iid="" bus="0" addr="248" activelow="false" action="false" prev_x="12" prev_y="6" prev_ori="north" state="false" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f1" x="7" y="3" z="0" prev_id="m11f1" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="223" activelow="false" action="false" prev_x="2" prev_y="3" prev_ori="west" state="false" carcount="0" countedcars="0"/>
+    <fb id="11f3" x="12" y="3" z="0" prev_id="11f3" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="235" activelow="false" action="false" prev_x="7" prev_y="3" prev_ori="west" state="false" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f2" x="7" y="4" z="0" prev_id="m11f2" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="224" activelow="false" action="false" prev_x="2" prev_y="4" prev_ori="west" state="false" carcount="0" countedcars="0"/>
+    <fb id="11f4" x="12" y="4" z="0" prev_id="11f4" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="236" activelow="false" action="false" prev_x="7" prev_y="4" prev_ori="west" state="false" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f9" x="14" y="3" z="0" prev_id="11f9" desc="" show="true" road="false" blockid="" ori="east" iid="" bus="0" addr="231" activelow="false" action="false" prev_x="9" prev_y="3" prev_ori="east" state="false" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f10" x="13" y="4" z="0" prev_id="11f10" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="232" activelow="false" action="false" state="false" prev_x="8" prev_y="4" prev_ori="west" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f11" x="9" y="1" z="0" prev_id="11f11" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="229" activelow="false" action="false" prev_x="4" prev_y="1" prev_ori="west" state="false" carcount="0" countedcars="0"/>
+    <fb id="11f12" x="9" y="2" z="0" prev_id="11f12" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="234" activelow="false" action="false" prev_x="4" prev_y="2" prev_ori="west" state="false" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f13" x="16" y="1" z="0" prev_id="11f13" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="237" activelow="false" action="false" prev_x="11" prev_y="1" prev_ori="west" state="false" carcount="0" countedcars="0"/>
+    <fb id="11f14" x="16" y="2" z="0" prev_id="11f14" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="238" activelow="false" action="false" prev_x="11" prev_y="2" prev_ori="west" state="false" curve="false" carcount="0" countedcars="0"/>
+    <fb id="11f15" x="15" y="5" z="0" ori="north" prev_id="11f15" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="240" activelow="false" action="false" prev_x="10" prev_y="5" prev_ori="north" state="false" carcount="0" countedcars="0"/>
+    <fb id="11f16" x="15" y="6" z="0" ori="north" prev_id="11f16" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="250" activelow="false" action="false" prev_x="10" prev_y="6" prev_ori="north" state="false" carcount="0" countedcars="0"/>
+    <fb id="11f17" x="16" y="6" z="0" ori="north" prev_id="11f17" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="249" activelow="false" action="false" prev_x="11" prev_y="6" prev_ori="north" state="false" carcount="0" countedcars="0"/>
+    <fb id="11f20" x="17" y="8" z="0" ori="north" prev_id="11f20" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="245" activelow="false" action="false" prev_x="12" prev_y="8" prev_ori="north" state="false" carcount="0" countedcars="0"/>
+  </fblist>
+  <sglist>
+    <sg id="11s1" x="7" y="1" z="0" desc="" blockid="11b1" road="false" ori="west" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="217" port2="218" port3="219" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="true" usepatterns="false" inv="false" pair="false" asswitch="false" green="32" red="32" yellow="32" white="34" prev_x="2" prev_y="1" prev_ori="west" manual="false"/>
+    <sg id="11s2" x="7" y="2" z="0" desc="" blockid="11b2" road="false" ori="west" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="220" port2="221" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" prev_x="2" prev_y="2" prev_ori="west" manual="false"/>
+    <sg id="11s3" x="15" y="3" z="0" ori="east" desc="" blockid="11b3" road="false" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="224" port2="225" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="true" inv="false" pair="false" asswitch="false" green="16" red="1" yellow="0" white="34" prev_x="10" prev_y="3" prev_ori="east" manual="false"/>
+    <sg id="11s3" x="9" y="4" z="0" ori="east" desc="" blockid="" road="false" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="0" port2="0" port3="0" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="false" usepatterns="false" inv="false" pair="false" asswitch="false" green="0" red="0" yellow="0" white="0" prev_x="9" prev_y="4" prev_ori="east"/>
+    <sg id="11s4" x="14" y="4" z="0" ori="east" prev_x="9" prev_y="4" prev_ori="east" desc="" blockid="11b4" road="false" iid="" bus="0" addr="0" addr2="0" addr3="0" addr4="0" port1="226" port2="227" port3="228" port4="0" gate1="0" gate2="0" gate3="0" gate4="0" prot="M" type="light" signal="main" aspects="3" dwarf="true" usepatterns="false" inv="false" pair="false" asswitch="false" green="32" red="32" yellow="32" white="34" manual="false"/>
+  </sglist>
+  <colist/>
+  <bklist>
+    <bk id="11b1" x="10" y="1" z="0" state="open" reserved="false" prev_id="11b1" desc="" len="0" electrified="true" station="true" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="11s1" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="5" prev_y="1" entering="false" allowchgdir="true" smallsymbol="false" show="true" extstop="false" stopspeed="mid" evttimer2="0" typeperm="all" prev_ori="west" ori="west">
+      <fbevent id="11f6" action="enter" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f13" action="occupied" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f11" action="shortin" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f7" action="in" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+    </bk>
+    <bk id="11b2" x="10" y="2" z="0" state="open" reserved="false" prev_id="11b2" desc="" len="0" electrified="true" station="true" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="11s2" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="5" prev_y="2" entering="false" allowchgdir="true" smallsymbol="false" show="true" extstop="false" stopspeed="mid" evttimer2="0" typeperm="all" prev_ori="west" ori="west">
+      <fbevent id="11f5" action="enter" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f14" action="occupied" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f12" action="shortin" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f8" action="in" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+    </bk>
+    <bk id="11b3" x="8" y="3" z="0" state="open" reserved="false" prev_id="11b3" desc="" len="0" electrified="true" station="true" gomanual="false" acceptghost="false" terminalstation="false" wait="false" road="false" commuter="yes" ttid="" signal="11s3" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="3" prev_y="3" entering="false" allowchgdir="true" smallsymbol="false" show="true" extstop="false" stopspeed="mid" evttimer2="0" typeperm="all" prev_ori="west" ori="west">
+      <fbevent id="11f1" action="enter" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f3" action="in" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f9" action="occupied" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f17" action="occupied" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+    </bk>
+    <bk id="11b4" x="8" y="4" z="0" state="open" reserved="false" prev_id="11b4" desc="" len="0" electrified="true" station="true" gomanual="false" acceptghost="false" terminalstation="false" wait="true" road="false" commuter="yes" ttid="" signal="11s4" wsignal="" signalR="" wsignalR="" speed="cruise" exitspeed="max" type="none" incline="0" waitmode="random" minwaittime="1" maxwaittime="30" waittime="10" mvscale="87" mvdistance="0" mvmph="false" evttimer="0" iid="" addr="0" port="0" td="false" prev_x="3" prev_y="4" entering="false" allowchgdir="true" smallsymbol="false" show="true" extstop="false" stopspeed="mid" evttimer2="0" typeperm="all" prev_ori="west" ori="west">
+      <fbevent id="11f2" action="enter" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f4" action="shortin" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f10" action="in" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f15" action="occupied" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+      <fbevent id="11f16" action="occupied" from="all" endpuls="false" ghostdetection="false" byroute="all" use_timer2="false"/>
+    </bk>
+  </bklist>
+  <txlist/>
+  <ttlist/>
+  <seltablist/>
+  <locationlist/>
+  <aclist/>
+  <boosterlist/>
+  <stlist>
+    <st id="b1-b2" prev_id="b1-b2" bka="11b1" bkb="11b2" bkc="" modid="" bkaside="false" bkbside="true" dir="true" lcdir="true" sga="0" sgb="0" speed="max" countcars="no" reduceV="false" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0">
+      <swcmd id="11t1" cmd="turnout" lock="true"/>
+      <swcmd id="11t3" cmd="straight" lock="true"/>
+      <fbevent id="11f5"/>
+      <fbevent id="11f14"/>
+      <fbevent id="11f12"/>
+      <fbevent id="11f8"/>
+    </st>
+    <st id="b2-b1" prev_id="b2-b1" bka="11b2" bkb="11b1" bkc="" modid="" bkaside="false" bkbside="true" dir="true" lcdir="true" sga="0" sgb="0" speed="max" countcars="no" reduceV="false" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0">
+      <swcmd id="11t1" cmd="straight" lock="true"/>
+      <swcmd id="11t3" cmd="turnout" lock="true"/>
+      <fbevent id="11f6"/>
+      <fbevent id="11f13"/>
+    </st>
+    <st id="b3-b4" prev_id="b3-b4" bka="11b3" bkb="11b4" bkc="" modid="" bkaside="false" bkbside="true" dir="true" lcdir="true" sga="0" sgb="0" speed="max" countcars="no" reduceV="false" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0">
+      <swcmd id="11t4" cmd="straight" lock="true"/>
+      <swcmd id="11t5" cmd="straight" lock="true"/>
+      <swcmd id="11t2" cmd="turnout" lock="true"/>
+      <fbevent id="11f16"/>
+      <fbevent id="11f15"/>
+      <fbevent id="11f2"/>
+      <fbevent id="11f10"/>
+      <fbevent id="11f4"/>
+    </st>
+    <st id="b4-b3" prev_id="b4-b3" bka="11b4" bkb="11b3" bkc="" modid="" bkaside="false" bkbside="true" dir="true" lcdir="true" sga="0" sgb="0" speed="max" countcars="no" reduceV="false" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0">
+      <swcmd id="11t4" cmd="turnout" lock="true"/>
+      <swcmd id="11t5" cmd="straight" lock="true"/>
+      <swcmd id="11t2" cmd="straight" lock="true"/>
+      <fbevent id="11f17"/>
+      <fbevent id="11f9"/>
+      <fbevent id="11f3"/>
+      <fbevent id="11f1"/>
+    </st>
+    <st id="b3-k-b4" prev_id="b3-k-b4" bka="11b3" bkb="11b4" bkc="" modid="" bkaside="false" bkbside="true" dir="true" lcdir="true" sga="0" sgb="0" speed="max" countcars="no" reduceV="false" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0">
+      <swcmd id="11t4" cmd="straight" lock="true"/>
+      <swcmd id="11t5" cmd="turnout" lock="true"/>
+      <swcmd id="11t2" cmd="turnout" lock="true"/>
+      <fbevent id="11f16"/>
+      <fbevent id="11f15"/>
+      <fbevent id="11f10"/>
+      <fbevent id="11f4"/>
+      <fbevent id="11f2"/>
+    </st>
+    <st id="b4-k-b3" prev_id="b4-k-b3" bka="11b4" bkb="11b3" bkc="" modid="" bkaside="false" bkbside="true" dir="true" lcdir="true" sga="0" sgb="0" speed="max" countcars="no" reduceV="false" swap="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="0" y="0" z="0" ori="west" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0">
+      <swcmd id="11t4" cmd="turnout" lock="true"/>
+      <swcmd id="11t5" cmd="turnout" lock="true"/>
+      <swcmd id="11t2" cmd="straight" lock="true"/>
+      <fbevent id="11f1"/>
+      <fbevent id="11f3"/>
+      <fbevent id="11f9"/>
+      <fbevent id="11f17"/>
+    </st>
+  </stlist>
+</plan>

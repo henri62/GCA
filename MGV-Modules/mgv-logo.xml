@@ -1,0 +1,19 @@
+<plan rocrailversion="1.1.0 svn0">
+  <zlevel title="Logo" z="7"/>
+  <tklist/>
+  <swlist/>
+  <fblist/>
+  <sglist/>
+  <colist/>
+  <bklist/>
+  <txlist>
+    <tx text="mgv-logo.png" id="tx20080611180330828" x="0" y="0" z="7" ori="west" prev_id="tx20080611180330828" desc="" pointsize="0" bold="false" underlined="false" italic="false" transparent="true" cx="19" cy="6" prev_x="0" prev_y="0" prev_ori="west"/>
+    <tx text="rocrail.png" id="tx20080611181031479" x="12" y="6" z="7" prev_id="tx20080611181031479" desc="" pointsize="0" bold="false" underlined="false" italic="false" transparent="true" ori="west" cx="7" cy="2" prev_x="12" prev_y="6" prev_ori="west"/>
+    <tx text="." id="tx20080611200924712" x="19" y="0" z="7" prev_id="tx20080611200924712" desc="" pointsize="0" bold="false" underlined="false" italic="false" transparent="true" ori="west" cx="1" cy="1" prev_x="19" prev_y="0" prev_ori="west"/>
+    <tx text="." id="tx20080611200929057" x="19" y="7" z="7" prev_id="tx20080611200929057" desc="" pointsize="0" bold="false" underlined="false" italic="false" transparent="true" ori="west" cx="1" cy="1" prev_x="19" prev_y="7" prev_ori="west"/>
+  </txlist>
+  <ttlist/>
+  <seltablist/>
+  <stlist>
+  </stlist>
+</plan>

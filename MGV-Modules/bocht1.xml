@@ -1,0 +1,39 @@
+<plan rocrailversion="2.0.999-6046" rocrailpwd="D:\MGV-Banen-Data\Rocrail-Data\MBS_2013">
+  <zlevel title="bocht1" z="1"/>
+  <tklist>
+    <tk type="connector" id="tk20080610175518979" x="0" y="1" z="1" ori="east" prev_x="0" prev_y="1" prev_ori="east"/>
+    <tk type="connector" id="tk20080610175520538" x="0" y="2" z="1" ori="east" prev_x="0" prev_y="2" prev_ori="east"/>
+    <tk type="curve" id="tk20080610175616901" x="3" y="3" z="1" prev_id="tk20080610175616901" blockid="" road="false" ori="west" prev_x="3" prev_y="3" prev_ori="west"/>
+    <tk type="straight" id="tk20080610175618309" x="2" y="1" z="1" prev_x="2" prev_y="1" prev_ori="west" ori="west"/>
+    <tk type="curve" id="tk20080610175618877" x="3" y="1" z="1" prev_id="tk20080610175618877" blockid="" road="false" ori="west" prev_x="3" prev_y="1" prev_ori="west"/>
+    <tk type="curve" id="tk20080610175623734" x="2" y="3" z="1" ori="east" prev_id="tk20080610175623734" blockid="" road="false" prev_x="2" prev_y="3" prev_ori="east"/>
+    <tk type="straight" id="tk20080610175627014" x="4" y="3" z="1" ori="north" prev_x="4" prev_y="3" prev_ori="north"/>
+    <tk type="curve" id="tk20080610175627558" x="4" y="2" z="1" ori="west" prev_id="tk20080610175627558" blockid="" road="false" prev_x="4" prev_y="2" prev_ori="west"/>
+    <tk type="connector" id="tk20080610175646009" x="3" y="5" z="1" ori="south" prev_x="3" prev_y="5" prev_ori="south"/>
+    <tk type="connector" id="tk20080610175646871" x="4" y="5" z="1" ori="south" prev_x="4" prev_y="5" prev_ori="south"/>
+    <tk type="curve" id="tk20080610175656506" x="2" y="2" z="1" prev_x="2" prev_y="2" prev_ori="west" ori="west"/>
+    <tk type="curve" id="tk20080610175659746" x="3" y="2" z="1" ori="east" prev_x="3" prev_y="2" prev_ori="east"/>
+  </tklist>
+  <swlist/>
+  <fblist>
+    <fb id="3f1" x="4" y="4" z="1" ori="north" prev_id="3f1" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="33" activelow="false" action="false" prev_x="4" prev_y="4" prev_ori="north" state="false" carcount="0" countedcars="0" counter="0" identifier="" direction="true" load="0"/>
+    <fb id="3f2" x="1" y="1" z="1" prev_id="3f2" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="41" activelow="false" action="false" prev_x="1" prev_y="1" prev_ori="west" state="false" carcount="0" countedcars="0" counter="0" identifier="" direction="true" load="0"/>
+    <fb id="3f3" x="3" y="4" z="1" ori="north" prev_id="3f3" desc="" show="true" road="false" blockid="" iid="" bus="0" addr="34" activelow="false" action="false" prev_x="3" prev_y="4" prev_ori="north" state="false" carcount="0" countedcars="0" counter="0" identifier="" direction="true" load="0"/>
+    <fb id="3f4" x="1" y="2" z="1" prev_id="3f4" desc="" show="true" road="false" blockid="" ori="west" iid="" bus="0" addr="42" activelow="false" action="false" prev_x="1" prev_y="2" prev_ori="west" state="false" carcount="0" countedcars="0" counter="0" identifier="" direction="true" load="0"/>
+  </fblist>
+  <sglist/>
+  <colist/>
+  <bklist/>
+  <sblist/>
+  <txlist/>
+  <ttlist/>
+  <seltablist/>
+  <locationlist/>
+  <sclist/>
+  <aclist/>
+  <boosterlist/>
+  <stlist>
+    <st id="ws-sw" prev_id="ws-sw" bka="point-ws" bkb="point-sw" bkc="" modid="bocht1" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="1" status="0" bkaside="false" bkbside="true" sga="0" sgb="0" countcars="no" reduceV="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="4" y="4" ori="east" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0" prev_x="0" prev_y="4" prev_ori="north"/>
+    <st id="se-wn" prev_id="se-wn" bka="point-se" bkb="point-wn" bkc="" modid="bocht1" dir="true" lcdir="true" speed="none" swap="false" function="0" funtime="1" funevent="none" z="1" status="0" bkaside="false" bkbside="true" sga="0" sgb="0" countcars="no" reduceV="false" swappost="false" crossingblocksignals="false" show="false" manual="false" typeperm="all" maxlen="0" commuter="false" x="4" y="4" ori="east" ctciid1="" ctciid2="" ctciid3="" ctcaddr1="0" ctcaddr2="0" ctcaddr3="0" prev_x="0" prev_y="4" prev_ori="north"/>
+  </stlist>
+</plan>
