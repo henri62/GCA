@@ -131,6 +131,11 @@ unsigned char parseCmdEth(CANMsg* p_canmsg, unsigned char frametype) {
         eeWrite(EE_NN + 1, nnL);
         Wait4NN = 0;
         broadcast = FALSE;
+        canmsg.b[d0] = OPC_NNACK;
+        canmsg.b[d1] = nnH / 256;
+        canmsg.b[d2] = nnL % 256;
+        canmsg.b[dlc] = 3;
+        CBusEthBroadcast(&canmsg);
       }
       break;
     }

@@ -96,6 +96,11 @@ unsigned char parseCmd(CANMsg *cmsg) {
                 eeWrite(EE_NN + 1, nnL);
                 Wait4NN = 0;
                 LED2 = 0;
+                canmsg.b[d0] = OPC_NNACK;
+                canmsg.b[d1] = nnH / 256;
+                canmsg.b[d2] = nnL % 256;
+                canmsg.b[dlc] = 3;
+                canbusSend(&canmsg);
             }
             break;
         }

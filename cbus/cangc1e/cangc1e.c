@@ -185,7 +185,7 @@ void main(void) {
         CANMsg canmsg;
         canmsg.b[sidh] = (CANID >> 3);
         canmsg.b[sidl] = (CANID << 5);
-        canmsg.b[d0] = OPC_NNACK;
+        canmsg.b[d0] = OPC_RQNN;
         canmsg.b[d1] = NN_temp / 256;
         canmsg.b[d2] = NN_temp % 256;
         canmsg.b[dlc] = 3;

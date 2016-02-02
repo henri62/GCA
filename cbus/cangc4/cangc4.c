@@ -204,7 +204,7 @@ void main(void) {
             if (Wait4NN) {
                 Wait4NN = 0;
             } else {
-                canmsg.b[d0] = OPC_NNACK;
+                canmsg.b[d0] = OPC_RQNN;
                 canmsg.b[d1] = NN_temp / 256;
                 canmsg.b[d2] = NN_temp % 256;
                 canmsg.b[dlc] = 3;

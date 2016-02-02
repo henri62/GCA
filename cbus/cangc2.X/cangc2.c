@@ -208,7 +208,7 @@ void main(void) {
             } else {
                 CANMsg canmsg;
                 LED2 = 1;
-                canmsg.b[d0] = OPC_NNACK;
+                canmsg.b[d0] = OPC_RQNN;
                 canmsg.b[d1] = NN_temp / 256;
                 canmsg.b[d2] = NN_temp % 256;
                 canmsg.b[dlc] = 3;

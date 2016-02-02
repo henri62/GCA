@@ -180,7 +180,7 @@ void main(void) {
         Wait4NN = 0;
       }
       else {
-        canmsg.opc = OPC_NNACK;
+        canmsg.opc = OPC_RQNN;
         canmsg.d[0] = NN_temp / 256;
         canmsg.d[1] = NN_temp % 256;
         canmsg.len = 2;
