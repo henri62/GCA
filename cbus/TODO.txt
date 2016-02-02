@@ -1,0 +1,43 @@
+I just had a quick look at the CAN-GC4 code at <https://github.com/rocrail/GCA/blob/master/cbus/cangc4/cangc4.c>
+
+Here is the bit in cangc4.c where it requests a node id in response to  pressing the pushbutton:
+
+
+     if (checkFlimSwitch() && !swTrig) {
+           swTrig = 1;
+       } else if (!checkFlimSwitch() && swTrig) {
+           swTrig = 0;
+           if (Wait4NN) {
+               Wait4NN = 0;
+           } else {
+               canmsg.b[d0] = OPC_NNACK;
+               canmsg.b[d1] = NN_temp / 256;
+               canmsg.b[d2] = NN_temp % 256;
+               canmsg.b[dlc] = 3;
+               canbusSend(&canmsg);
+               Wait4NN = 1;
+           }
+
+It looks to me like it is definitely sending NNACK, not RQNN.
+
+In commands.c, it does not seem to be sending any response to SNN, when it should be sending NNACK:
+
+    case OPC_SNN:
+       {
+           if (Wait4NN) {
+               nnH = cmsg->b[d1];
+               nnL = cmsg->b[d2];
+               NN_temp = nnH * 256 + nnL;
+               eeWrite(EE_NN, nnH);
+               eeWrite(EE_NN + 1, nnL);
+               Wait4NN = 0;
+           }
+           break;
+       }
+
+As I suggested previously, if it were changed to RQNN, to make it CBUS compliant, it would be possible to have a timeout on response to sending RQNN, and then it could retry using NNACK, this would ensure backwards compatibility.
+
+
+Regards,
+
+Pete
